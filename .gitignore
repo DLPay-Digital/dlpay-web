@@ -1,0 +1,46 @@
+# --- Dependencias y build -----------------------------------------------
+node_modules/
+dist/
+.astro/
+.output/
+.vercel/
+.wrangler/
+*.tsbuildinfo
+
+# --- Variables de entorno (NUNCA versionar valores reales) ---------------
+# Se versiona únicamente .env.example. Ver ADR-0003.
+.env
+.env.*
+!.env.example
+
+# --- Sistema operativo y editores ---------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# --- Logs y temporales ---------------------------------------------------
+*.log
+npm-debug.log*
+.cache/
+tmp/
+
+# --- Datos sensibles de DLPay (Principio 7 de CLAUDE.md) -----------------
+# Estos patrones son una RED DE SEGURIDAD, no un permiso.
+# Los documentos internos de DLPay viven en una carpeta SEPARADA de este repo
+# y nunca se copian aquí: KYC/KYB, documentos de identidad, datos bancarios de
+# clientes, historial de operaciones, contratos, credenciales y auditorías.
+# Nunca `git add .` sin revisar lo que entra.
+*.p12
+*.pem
+*.key
+*.pfx
+credentials*
+secrets*
+kyc/
+kyb/
+clientes/
+operaciones/
+contratos/
