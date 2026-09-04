@@ -52,6 +52,7 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
 | Este archivo | Principios, límites, Definition of Done. |
 | `docs/development.md` | Cómo levantar el proyecto, estructura, dependencias y verificaciones. |
 | `docs/legal-brief.md` | Qué falta en las páginas legales y qué decisiones lo bloquean. Para Compliance. |
+| `docs/migracion-urls.md` | Qué pasa con cada URL del sitio actual en el cutover. Para Fase 6. |
 | `docs/design-system/board-tipografia.html` | Board que sustentó la elección de tipografía. Se abre en el navegador. |
 
 **De consulta (no rehacer, sí citar):** `docs/research/phase-0-findings.md` (hechos técnicos,

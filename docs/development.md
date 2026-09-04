@@ -139,6 +139,23 @@ devuelve un valor de muestra configurable por `PUBLIC_QUOTE_SAMPLE_RATE`. **No e
 precio real.** Cuando DLPay defina la fuente oficial (pendiente D7) se agrega
 `DLPayApiPriceSource` y se cambia por variable de entorno, **sin tocar la UI**.
 
+## SEO y metadatos
+
+Generados, no escritos a mano:
+
+- **`/sitemap.xml`** se deriva de `src/pages/`. Una página nueva entra sola; no puede quedar fuera
+  por olvido. Cero dependencias: el paquete oficial no aporta nada sobre nueve rutas estáticas.
+- **`/robots.txt`** toma la URL del sitemap del `site` configurado.
+- **`og:image`** (`public/og-image.png`, 1200×630) se compuso con la tipografía real del proyecto
+  incrustada en un SVG y se rasterizó con el motor de macOS. Importa más de lo habitual: este
+  producto vive de enlaces compartidos por WhatsApp, y esa previsualización es lo primero que ve
+  quien recibe el enlace. Para regenerarla hay un guion en el historial del commit correspondiente.
+- **Datos estructurados** (`Organization`): sólo nombre, razón social, sitio y logo. Nada de
+  fundación, cobertura ni valoraciones — el mismo criterio que rige el resto del contenido.
+- **Favicon** SVG derivado del isotipo, más `apple-touch-icon.png`.
+
+El mapa de URLs para el cutover está en `docs/migracion-urls.md`.
+
 ## Despliegue
 
 No hay despliegue todavía, y es deliberado: el proveedor está diferido (ADR-0005).
@@ -183,6 +200,9 @@ Lo que falta y qué decisiones lo bloquean está en **`docs/legal-brief.md`**.
   (4.90:1). Sobre tinta el verde da 8.45:1 y sí sirve. El token `--focus` cambia según
   la superficie.
 - Dos breakpoints en todo el sitio: 760px y 900px.
+- **Contraste verificado por cálculo en los 12 pares en uso.** El más ajustado queda 1.09× sobre
+  su mínimo. La revisión encontró que `--aviso` sólo daba 2.75:1 sobre `papel-2`, insuficiente
+  incluso para un borde: se desdobló en `--aviso-deep`, igual que el verde.
 - El CTA de WhatsApp se arma **también en el servidor** con la misma función que usa
   el cliente: sin JavaScript el botón ya lleva el monto de ejemplo escrito.
 

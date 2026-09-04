@@ -76,12 +76,14 @@ const showSampleMark = !source.isReal && !preview;
     color: var(--ink-mute);
   }
   /* Imposible de pasar por alto, y sale del propio estado de la fuente */
+  /* Todo el aviso sobre superficie clara va en --aviso-deep: el tono claro
+     sólo alcanza 2.75:1 sobre papel-2, bajo el mínimo incluso para un borde. */
   .sample {
     font-family: var(--f-num);
     font-size: var(--t-dato-sm);
     font-weight: 500;
-    color: var(--aviso);
-    border: 1px solid currentColor;
+    color: var(--aviso-deep);
+    border: 1px solid var(--aviso-deep);
     border-radius: var(--r-1);
     padding: 1px var(--s-2);
   }

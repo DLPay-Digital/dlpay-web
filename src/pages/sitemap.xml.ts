@@ -1,0 +1,40 @@
+/**
+ * Sitemap generado desde las páginas reales del proyecto.
+ *
+ * Se deriva de `src/pages/` en vez de mantener una lista a mano: una página
+ * nueva entra sola, y no puede quedar fuera por olvido. Cero dependencias — el
+ * paquete oficial de sitemap no aporta nada sobre nueve rutas estáticas.
+ */
+import type { APIRoute } from 'astro';
+
+const pages = import.meta.glob('./**/*.astro');
+
+/** `./index.astro` -> `/` · `./como-funciona.astro` -> `/como-funciona/` */
+function routeOf(file: string): string {
+  const path = file.replace(/^\.\//, '').replace(/\.astro$/, '');
+  return path === 'index' ? '/' : `/${path}/`;
+}
+
+export const GET: APIRoute = ({ site }) => {
+  const base = site?.href.replace(/\/$/, '') ?? '';
+
+  // La Home y el cotizador son las entradas del sitio; el resto las sostiene.
+  const priority = (route: string): string =>
+    route === '/' ? '1.0' : route === '/cotizar/' ? '0.9' : '0.7';
+
+  const urls = Object.keys(pages)
+    .map(routeOf)
+    .sort()
+    .map(
+      (route) =>
+        `  <url>\n    <loc>${base}${route}</loc>\n` +
+        `    <priority>${priority(route)}</priority>\n  </url>`
+    )
+    .join('\n');
+
+  return new Response(
+    `<?xml version="1.0" encoding="UTF-8"?>\n` +
+      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
+    { headers: { 'Content-Type': 'application/xml; charset=utf-8' } }
+  );
+};

@@ -52,7 +52,8 @@ planos, sin antialias intermedio. Son los oficiales (ver ADR-0001 §2, enmienda 
 |---|---|---|
 | `--sube` | `#16C784` | Precio/valor que sube (coincide con el verde de marca, a propósito). |
 | `--baja` | `#C7593B` | Precio que baja, alertas suaves (rojo-arcilla apagado, **no** rojo puro). |
-| `--aviso` | `#B5852A` | Estado "mercado moviéndose", avisos. |
+| `--aviso` | `#B5852A` | Avisos **sobre tinta**. Sobre superficie clara no alcanza ni para un borde. |
+| `--aviso-deep` | `#825E17` | **Todo aviso sobre superficie clara**, texto y bordes. 5.40:1 sobre papel, 4.90:1 sobre papel-2. |
 | `--error-bg` | `#FBF1EC` / borde `#E7C3B4` | Fondo de mensaje de error/aviso. |
 
 ### 2.4 Contraste (a verificar en implementación)
@@ -62,7 +63,10 @@ planos, sin antialias intermedio. Son los oficiales (ver ADR-0001 §2, enmienda 
   encima y para líneas decorativas. Un conector de diagrama que indica el flujo del dinero **sí**
   carga significado: va en `--verde-deep`.
 - `#0B7A54` (`--verde-deep`) sobre `#F6F5F1`: **4.90:1** — sirve para texto, foco y gráficos.
-- `#16C784` sobre `#0B1320`: **8.45:1** — sirve para todo. Para texto-enlace sobre claro usar `--verde-deep`.
+- `#16C784` sobre `#0B1320`: **8.45:1** — sirve para todo.
+- `#B5852A` (`--aviso`) sobre `#F6F5F1`: **3.03:1**, y sobre `#ECEAE3` sólo **2.75:1** — no alcanza
+  ni para un borde. Sobre superficie clara se usa siempre `--aviso-deep` (5.40:1 / 4.90:1), texto y
+  bordes por igual. Mismo desdoblamiento que el verde, y por la misma razón. Para texto-enlace sobre claro usar `--verde-deep`.
 - Piso: **WCAG AA** (4.5:1 texto normal, 3:1 texto grande y UI).
 
 ---

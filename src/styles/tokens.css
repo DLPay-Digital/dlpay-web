@@ -27,7 +27,8 @@
   /* ── Semánticos (separados del acento) ─────────────────────────────────── */
   --sube:#16C784;         /* coincide con el verde de marca, a propósito */
   --baja:#C7593B;         /* rojo-arcilla apagado, no rojo puro */
-  --aviso:#B5852A;
+  --aviso:#B5852A;        /* Reservado para avisos sobre tinta. Sobre claro NO alcanza. */
+  --aviso-deep:#825E17;   /* Todo aviso sobre superficie clara: texto y bordes. */
   --error-bg:#FBF1EC;
   --error-line:#E7C3B4;
 
