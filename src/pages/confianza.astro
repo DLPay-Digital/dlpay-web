@@ -148,21 +148,22 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
      parte de su bloque y no como un elemento suelto entre dos. */
   .item {
     display: grid;
-    grid-template-columns: 16px 1fr;
+    grid-template-columns: 18px 1fr;
     column-gap: var(--s-3);
     align-items: start;
   }
 
-  /* 16px es la grilla del Design System (§7). El trazo adelgaza solo: 1.6 en un
-     viewBox de 24 rinde ~1.07px aquí, frente a ~1.47px cuando medía 22px. Baja
-     el peso visual sin tocar el set de iconos ni volverlos adorno.
+  /* 18px: entre los escalones 16 y 20 del Design System §7. A 16px el icono se
+     leía subordinado de más; a 20px iguala el cuerpo del titular en escritorio y
+     vuelve a competir. El trazo adelgaza solo — 1.6 en un viewBox de 24 rinde
+     ~1.20px aquí, frente a ~1.47px cuando medía 22px.
      El margen superior lo alinea con la altura de mayúscula del titular, no con
      el borde de la caja de línea. */
   .icon {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     color: var(--verde-deep);
-    margin-top: 3px;
+    margin-top: 2px;
   }
   .item h3 {
     font-size: var(--t-h3-m);
@@ -246,6 +247,6 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
     .item h3, .req-list h3, .honesty-list h3, .contact-card h3 { font-size: var(--t-h3); }
     /* El titular pasa a 20px: el icono baja 1px para seguir alineado a su
        altura de mayúscula. */
-    .icon { margin-top: 4px; }
+    .icon { margin-top: 3px; }
   }
 </style>
