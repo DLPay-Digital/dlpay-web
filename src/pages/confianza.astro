@@ -1,0 +1,218 @@
+---
+/**
+ * /confianza — concentra las señales de legitimidad (Fase 1 §14, phase-2.5 §5).
+ *
+ * DLPay no puede apoyarse en un sello regulatorio, así que la confianza se
+ * construye mostrando el MECANISMO: el banco de por medio, la persona real, los
+ * requisitos y — deliberadamente — lo que no afirmamos.
+ */
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import { mechanisms, honesty, requirements } from '../content/trust.ts';
+import { site, contact } from '../lib/config/site.ts';
+
+const wa = `https://wa.me/${contact.whatsappNumber}`;
+---
+<Base
+  title="Confianza"
+  description="Cómo cuidamos tu operación en DLPay: el dinero pasa por un banco, una persona identificable cierra cada operación y el precio es referencial. Sin sellos ni cifras sin respaldo."
+  path="/confianza"
+>
+  <Header />
+  <main id="main">
+    <PageHero
+      title="Confianza que se comprueba"
+      lead="No tenemos un sello que mostrarte. Tenemos un mecanismo que puedes revisar paso a paso, y la disciplina de no afirmar lo que no podemos probar."
+    />
+
+    <section class="mech" aria-labelledby="mech-title">
+      <div class="inner">
+        <header class="head">
+          <h2 id="mech-title">Qué pasa con tu plata</h2>
+          <p>Tres cosas que puedes verificar tú mismo en tu próxima operación.</p>
+        </header>
+        <ul class="list">
+          {mechanisms.map((item) => (
+            <li class="item">
+              <Icon name={item.icon} class="icon" />
+              <div>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="req" aria-labelledby="req-title">
+      <div class="inner">
+        <header class="head">
+          <h2 id="req-title">Qué te pedimos, y por qué</h2>
+          <p>Los requisitos no son burocracia: son lo que permite operar con un banco de por medio.</p>
+        </header>
+        <ul class="req-list">
+          {requirements.map((item) => (
+            <li>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="honesty on-tinta-surface" aria-labelledby="honesty-title">
+      <div class="inner">
+        <header class="head">
+          <h2 id="honesty-title">Lo que no vas a leer acá</h2>
+          <p>
+            Una web que afirma lo que no puede probar es menos creíble, no más. Estas son
+            las cosas que decidimos no decir.
+          </p>
+        </header>
+        <ul class="honesty-list">
+          {honesty.map((item) => (
+            <li>
+              <h3>{item.claim}</h3>
+              <p>{item.reality}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="who" aria-labelledby="who-title">
+      <div class="inner">
+        <div class="who-grid">
+          <div>
+            <h2 id="who-title">Quiénes somos</h2>
+            <p>
+              {site.name} es la marca comercial de <strong>{site.legalName}</strong>, una
+              sociedad chilena. El equipo está en Chile y opera bajo el marco legal chileno.
+            </p>
+            <p class="note">
+              Si quieres saber con quién estás hablando antes de operar, escríbenos y te
+              atiende una persona del equipo.
+            </p>
+          </div>
+          <div class="contact-card">
+            <h3>Hablar con alguien</h3>
+            <p>Atención por WhatsApp, con una persona real.</p>
+            <a class="cta" href={wa} target="_blank" rel="noopener">
+              <Icon name="whatsapp" class="wa-icon" />
+              Escribir por WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 var(--pad-section-m);
+  }
+  .head { max-width: 48ch; margin-bottom: var(--s-7); }
+  h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: var(--s-3);
+  }
+  .head p { color: var(--ink-mute); }
+
+  .mech { background: var(--papel); padding: var(--s-9) 0; }
+  .list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
+  .item { display: flex; gap: var(--s-4); align-items: flex-start; }
+  .icon { width: 22px; height: 22px; color: var(--verde-deep); flex: none; margin-top: 3px; }
+  .item h3 {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    margin-bottom: var(--s-2);
+    max-width: 34ch;
+  }
+  .item p { color: var(--ink-mute); max-width: 62ch; }
+
+  .req { background: var(--papel-2); padding: var(--s-9) 0; }
+  .req-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-5); }
+  .req-list li { padding-top: var(--s-4); border-top: 1px solid var(--line); }
+  .req-list h3 {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    margin-bottom: var(--s-2);
+  }
+  .req-list p { color: var(--ink-mute); max-width: 52ch; }
+
+  /* La sección más honesta del sitio: va sobre tinta, con peso propio */
+  .honesty { background: var(--tinta); color: var(--on-tinta); padding: var(--s-9) 0; }
+  .honesty h2 { color: var(--on-tinta); }
+  .honesty .head p { color: var(--on-tinta-mute); }
+  .honesty-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-5); }
+  .honesty-list li {
+    padding-left: var(--s-4);
+    border-left: 2px solid var(--verde);
+  }
+  .honesty-list h3 {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    margin-bottom: var(--s-2);
+    max-width: 40ch;
+  }
+  .honesty-list p { color: var(--on-tinta-mute); max-width: 54ch; }
+
+  .who { background: var(--papel); padding: var(--s-9) 0; }
+  .who-grid { display: grid; gap: var(--s-7); }
+  .who p { color: var(--ink-mute); max-width: 52ch; margin-bottom: var(--s-3); }
+  .who strong { color: var(--ink); font-weight: 600; }
+  .who .note { font-size: var(--t-body-sm); }
+
+  .contact-card {
+    background: var(--papel-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-3);
+    padding: var(--s-5);
+  }
+  .contact-card h3 {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    margin-bottom: var(--s-2);
+  }
+  .contact-card p { margin-bottom: var(--s-5); font-size: var(--t-body-sm); }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    background: var(--verde);
+    color: #04140e;
+    font-weight: 700;
+    font-size: var(--t-body-sm);
+    padding: var(--s-4) var(--s-5);
+    border-radius: var(--r-2);
+    text-decoration: none;
+  }
+  .cta:hover { background: var(--verde-hi); }
+  .wa-icon { width: 16px; height: 16px; }
+
+  @media (min-width: 760px) {
+    .req-list { grid-template-columns: repeat(3, 1fr); gap: var(--s-6); }
+    .honesty-list { grid-template-columns: repeat(2, 1fr); gap: var(--s-6) var(--s-7); }
+    .who-grid { grid-template-columns: 1.4fr 1fr; gap: var(--s-8); align-items: start; }
+  }
+  @media (min-width: 900px) {
+    .inner { padding-inline: var(--pad-section); }
+    h2 { font-size: var(--t-h2); }
+    .item h3, .req-list h3, .honesty-list h3, .contact-card h3 { font-size: var(--t-h3); }
+  }
+</style>

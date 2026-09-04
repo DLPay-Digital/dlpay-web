@@ -57,9 +57,12 @@ planos, sin antialias intermedio. Son los oficiales (ver ADR-0001 §2, enmienda 
 
 ### 2.4 Contraste (a verificar en implementación)
 
-- `#16C784` sobre `#0B1320`: alto — OK para texto grande, CTA, dato.
-- `#16C784` sobre `#F6F5F1`: **bajo (~2.0:1)** — **no usar para texto**; sólo para fills/CTA con
-  texto oscuro encima, o líneas. Para texto-enlace sobre claro usar `--verde-deep`.
+- `#16C784` sobre `#F6F5F1`: **2.02:1** (medido) — **no usar para texto ni para gráficos que
+  carguen significado** (WCAG pide 3:1 para estos últimos). Sólo para fills/CTA con texto oscuro
+  encima y para líneas decorativas. Un conector de diagrama que indica el flujo del dinero **sí**
+  carga significado: va en `--verde-deep`.
+- `#0B7A54` (`--verde-deep`) sobre `#F6F5F1`: **4.90:1** — sirve para texto, foco y gráficos.
+- `#16C784` sobre `#0B1320`: **8.45:1** — sirve para todo. Para texto-enlace sobre claro usar `--verde-deep`.
 - Piso: **WCAG AA** (4.5:1 texto normal, 3:1 texto grande y UI).
 
 ---
@@ -137,13 +140,26 @@ resolverla con contraste y espacio.
 `4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 · 96 · 128` px. Layout con **flex/grid + `gap`**, no márgenes
 por elemento.
 
-### 4.2 Grid
+### 4.2 Breakpoints
+
+Sólo dos, y se usan de forma consistente en todo el sitio. Móvil es la base;
+los breakpoints **añaden**, nunca deshacen.
+
+| Ancho | Qué cambia |
+|---|---|
+| `760px` | Rejillas de 1 → 2 o 3 columnas (casos, bloques de confianza, pie). |
+| `900px` | Layout completo de escritorio: héroe a dos columnas, padding de sección a 64px, escala tipográfica de escritorio, navegación desplegada. |
+
+Anchos mínimos puntuales (una tabla que no puede comprimirse más, un menú
+desplegable) **no** son breakpoints y no cuentan para esta regla.
+
+### 4.3 Grid
 
 - Contenedor de contenido: **máx. ~1112 px**, centrado.
 - Padding lateral de sección: 64 px desktop / 20 px móvil.
 - Héroes: grid de 2 columnas (`~1.05fr .95fr`) — copy izquierda, cotizador derecha. Móvil: 1 columna, cotizador primero.
 
-### 4.3 Radios (discretos — nada de "pill")
+### 4.4 Radios (discretos — nada de "pill")
 
 | Token | Valor | Uso |
 |---|---|---|
@@ -155,7 +171,7 @@ por elemento.
 
 Botones **nunca** con `border-radius` tipo píldora.
 
-### 4.4 Elevación (mínima, por rol)
+### 4.5 Elevación (mínima, por rol)
 
 | Token | Valor | Uso |
 |---|---|---|
@@ -163,7 +179,7 @@ Botones **nunca** con `border-radius` tipo píldora.
 | `--elev-card` | `0 24px 60px -24px rgba(11,19,32,.45)` | **Sólo** la tarjeta del cotizador sobre la tinta. |
 | `--elev-pop` | `0 8px 24px -12px rgba(11,19,32,.25)` | Menús/popovers (futuro). |
 
-### 4.5 Bordes
+### 4.6 Bordes
 
 Hairline `1px solid var(--line)`. Los campos de formulario usan borde, no sombra. "No todo es una
 tarjeta": borde/fill/radio/sombra se gastan por rol, para levantar **una** cosa.
@@ -251,7 +267,11 @@ Cada uno se construye sólo cuando una página real lo necesita (Principio 5, CL
 ## 10. Accesibilidad (piso, se verifica en el Definition of Done)
 
 - Contraste **AA**; los cruces verde/claro resueltos con `--verde-deep` (§2.4).
-- Foco visible (`outline` 2px `--verde`, offset 2px) en todo lo interactivo.
+- Foco visible (`outline` 2px `var(--focus)`, offset 2px) en todo lo interactivo.
+  **`--focus` depende del fondo:** `--verde-deep` sobre superficies claras y
+  `--verde` sobre tinta. El verde de marca sobre papel da **2.02:1**, insuficiente
+  incluso para un elemento gráfico. Las superficies oscuras declaran la clase
+  `.on-tinta-surface`, que redefine el token.
 - Objetivos táctiles ≥ **44px**.
 - HTML semántico, jerarquía de headings correcta, labels en formularios, `alt` en imágenes.
 - `prefers-reduced-motion` respetado.

@@ -104,15 +104,35 @@ El desarrollo avanza en local durante toda la Fase 4.
 Regla de portabilidad vinculante: **el sitio debe poder publicarse copiando `dist/` a
 cualquier servidor estático.** Lo que rompa esa afirmación necesita una enmienda de ADR.
 
-## Estado de la Home (2026-09-04)
+## Páginas
 
-- `npm run check` → 0 errores en 22 archivos · `npm test` → 22 tests en verde · `build` verde.
+| Ruta | Qué es | JS |
+|---|---|---|
+| `/` | Home: héroe con cotizador, cómo funciona, confianza, empresas, FAQ | 3,2 KB |
+| `/cotizar` | Acceso rápido al cotizador, para recurrentes y enlaces de WhatsApp | 3,2 KB |
+| `/como-funciona` | El recorrido completo con el diagrama de flujo y los tiempos | 0 |
+| `/empresas` | Carril B2B: casos de uso, diferencias, incorporación | 0 |
+| `/confianza` | El mecanismo, los requisitos y lo que no afirmamos | 0 |
+
+Páginas legales (`/terminos`, `/privacidad`, `/tarifas`, canal de denuncias): **pendientes**.
+Requieren revisión de Compliance (Fase 5). El pie las lista como "en preparación" en vez de
+crear enlaces muertos.
+
+## Estado (2026-09-04)
+
+- `npm run check` → 0 errores en 31 archivos · `npm test` → 22 tests en verde · `build` verde.
 - **JS enviado al cliente: ~3,2 KB**, y es sólo el cotizador. Astro lo inlinea por
   pequeño, así que no aparece como archivo `.js` suelto en `dist/`. El resto de la
   página es HTML y CSS: cero JavaScript, como promete ADR-0002.
-- HTML ~21 KB + CSS ~20 KB, más las fuentes.
-- Jerarquía de headings correcta (un `h1`, sin saltos de nivel), `lang="es-CL"`,
-  cero enlaces muertos.
+- HTML entre 13 y 22 KB por página + 35 KB de CSS + 92 KB de fuentes.
+- Las cinco páginas: un solo `h1`, sin saltos de nivel, `lang="es-CL"`, cero enlaces
+  muertos, todos los campos con etiqueta, enlace de salto al contenido y `aria-current`
+  en la navegación.
+- Contraste verificado por cálculo, no a ojo: `--verde` sobre papel da **2.02:1**, así
+  que no se usa para texto ni para gráficos con significado; ahí va `--verde-deep`
+  (4.90:1). Sobre tinta el verde da 8.45:1 y sí sirve. El token `--focus` cambia según
+  la superficie.
+- Dos breakpoints en todo el sitio: 760px y 900px.
 - El CTA de WhatsApp se arma **también en el servidor** con la misma función que usa
   el cliente: sin JavaScript el botón ya lleva el monto de ejemplo escrito.
 

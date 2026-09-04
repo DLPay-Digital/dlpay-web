@@ -1,0 +1,242 @@
+---
+/**
+ * /como-funciona — el recorrido completo, web + WhatsApp + verificación, como
+ * UNA sola secuencia con tiempos concretos (Fase 1 §5.5, phase-2.5 §3).
+ *
+ * El objetivo es que el salto a WhatsApp y a la plataforma no se sienta un
+ * corte: aquí se anticipa qué va a pasar y cuánto demora.
+ */
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
+import FlowDiagram from '../components/FlowDiagram.astro';
+import Icon from '../components/Icon.astro';
+import { detailedSteps, checklist } from '../content/process.ts';
+import { contact, platform } from '../lib/config/site.ts';
+
+const wa = `https://wa.me/${contact.whatsappNumber}`;
+---
+<Base
+  title="Cómo funciona"
+  description="El recorrido completo de una operación en DLPay: cotizas en la web, confirmas con un ejecutivo por WhatsApp, transfieres, verificamos y recibes tu dólar digital."
+  path="/como-funciona"
+>
+  <Header />
+  <main id="main">
+    <PageHero
+      title="Cómo funciona una operación"
+      lead="La web te deja listo y una persona cierra. Esto es todo lo que pasa, en orden y con los tiempos reales."
+    />
+
+    <section class="diagram-band" aria-labelledby="flow-title">
+      <div class="inner">
+        <h2 id="flow-title" class="sr-only">Recorrido del dinero</h2>
+        <FlowDiagram />
+      </div>
+    </section>
+
+    <section class="detail" aria-labelledby="detail-title">
+      <div class="inner">
+        <header class="head">
+          <h2 id="detail-title">Paso a paso</h2>
+          <p>Marcamos quién hace qué, para que no quede ninguna zona gris.</p>
+        </header>
+
+        <ol class="steps">
+          {detailedSteps.map((step) => (
+            <li class="step">
+              <div class="marker">
+                <span class="n num">{step.n}</span>
+              </div>
+              <div class="body">
+                <div class="line">
+                  <h3>{step.title}</h3>
+                  <span class:list={['who', step.who === 'tú' ? 'you' : 'us']}>
+                    {step.who === 'tú' ? 'Lo haces tú' : 'Lo hacemos nosotros'}
+                  </span>
+                </div>
+                <p>{step.body}</p>
+                <span class="time num">{step.time}</span>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <section class="prep" aria-labelledby="prep-title">
+      <div class="inner">
+        <div class="prep-grid">
+          <div>
+            <h2 id="prep-title">Ten esto a mano</h2>
+            <ul class="check">
+              {checklist.map((item) => (
+                <li>
+                  <svg class="tick" viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M3 8.5l3.5 3.5L13 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="kyc">
+            <h2>Registro y verificación</h2>
+            <p>
+              Antes de tu primera operación pedimos registro y verificación de identidad,
+              a personas y a empresas. Es un requisito de seguridad y cumplimiento, no un
+              trámite opcional.
+            </p>
+            <p class="note">
+              El registro se hace en la plataforma de DLPay. Si tienes dudas antes de
+              empezar, escríbenos y te acompañamos.
+            </p>
+            <div class="kyc-actions">
+              <a class="ghost" href={platform.registerUrl}>Crear mi cuenta</a>
+              <a class="ghost" href={wa} target="_blank" rel="noopener">
+                <Icon name="whatsapp" class="wa-icon" />
+                Preguntar primero
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="close on-tinta-surface" aria-labelledby="close-title">
+      <div class="inner">
+        <h2 id="close-title">¿Listo para ver tu precio?</h2>
+        <p>Toma menos de un minuto y no necesitas cuenta para cotizar.</p>
+        <a class="cta" href="/cotizar">Cotizar ahora</a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 var(--pad-section-m);
+  }
+
+  .diagram-band { background: var(--papel); padding: var(--s-8) 0; }
+
+  .detail { background: var(--papel-2); padding: var(--s-9) 0; }
+  .head { max-width: 44ch; margin-bottom: var(--s-7); }
+  h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: var(--s-3);
+  }
+  .head p { color: var(--ink-mute); }
+
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
+  .step { display: flex; gap: var(--s-4); align-items: flex-start; }
+  .marker { flex: none; }
+  .n {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-2);
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    background: var(--papel);
+  }
+  .line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s-2) var(--s-3);
+    margin-bottom: var(--s-2);
+  }
+  .step h3 { font-size: var(--t-h3-m); font-weight: 600; line-height: var(--lh-h3); }
+  .who {
+    font-size: var(--t-dato-sm);
+    font-weight: 600;
+    padding: 2px var(--s-2);
+    border-radius: var(--r-1);
+    white-space: nowrap;
+  }
+  .who.you { background: rgba(11, 19, 32, 0.07); color: var(--ink-mute); }
+  .who.us { background: rgba(11, 122, 84, 0.1); color: var(--verde-deep); }
+  .step p { color: var(--ink-mute); max-width: 58ch; }
+  .time {
+    display: inline-block;
+    margin-top: var(--s-2);
+    font-size: var(--t-dato-sm);
+    font-weight: 500;
+    color: var(--ink-mute);
+  }
+
+  .prep { background: var(--papel); padding: var(--s-9) 0; }
+  .prep-grid { display: grid; gap: var(--s-8); }
+  .check { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  .check li {
+    display: flex;
+    gap: var(--s-3);
+    align-items: flex-start;
+    color: var(--ink-mute);
+  }
+  .tick { width: 17px; height: 17px; color: var(--verde-deep); flex: none; margin-top: 3px; }
+
+  .kyc p { color: var(--ink-mute); max-width: 52ch; margin-bottom: var(--s-3); }
+  .kyc .note { font-size: var(--t-body-sm); }
+  .kyc-actions { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
+  .ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-2);
+    padding: var(--s-3) var(--s-4);
+    color: var(--ink);
+    text-decoration: none;
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+  }
+  .ghost:hover { border-color: var(--ink); }
+  .wa-icon { width: 15px; height: 15px; }
+
+  .close { background: var(--tinta); color: var(--on-tinta); padding: var(--s-8) 0; }
+  .close h2 { color: var(--on-tinta); }
+  .close p { color: var(--on-tinta-mute); margin-bottom: var(--s-5); }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    background: var(--verde);
+    color: #04140e;
+    font-weight: 700;
+    font-size: var(--t-body);
+    padding: var(--s-4) var(--s-6);
+    border-radius: var(--r-2);
+    text-decoration: none;
+  }
+  .cta:hover { background: var(--verde-hi); }
+
+  @media (min-width: 760px) {
+    .prep-grid { grid-template-columns: 1fr 1.3fr; gap: var(--s-8); }
+  }
+  @media (min-width: 900px) {
+    .inner { padding-inline: var(--pad-section); }
+    h2 { font-size: var(--t-h2); }
+    .step h3 { font-size: var(--t-h3); }
+    .steps { grid-template-columns: repeat(2, 1fr); gap: var(--s-7) var(--s-8); }
+  }
+</style>

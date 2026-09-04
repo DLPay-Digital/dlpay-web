@@ -22,6 +22,7 @@ import { trust } from '../content/home.ts';
         </li>
       ))}
     </ul>
+    <p class="more"><a href="/confianza">Cómo cuidamos tu operación</a></p>
   </div>
 </section>
 
@@ -42,6 +43,9 @@ import { trust } from '../content/home.ts';
   .icon { width: 24px; height: 24px; color: var(--verde-deep); display: block; margin-bottom: var(--s-3); }
   h3 { font-size: var(--t-h3-m); font-weight: 600; line-height: var(--lh-h3); margin-bottom: var(--s-2); }
   .block p { color: var(--ink-mute); max-width: 46ch; }
+  .more { margin-top: var(--s-6); }
+  .more a { color: var(--verde-deep); font-weight: 600; text-decoration: none; font-size: var(--t-body-sm); }
+  .more a:hover { text-decoration: underline; }
 
   @media (min-width: 760px) {
     .grid { grid-template-columns: repeat(3, 1fr); gap: var(--s-7); }

@@ -1,0 +1,95 @@
+---
+/**
+ * Diagrama del recorrido del dinero.
+ *
+ * Es el uso principal del sistema geométrico (Design System §6): los puntos son
+ * contrapartes reales y los tramos angulares son el dinero moviéndose. El
+ * diagrama identifica y explica a la vez — no es una ilustración.
+ *
+ * Se apila en móvil con la cuña apuntando hacia abajo y se despliega en fila en
+ * desktop. La geometría cambia de eje porque el flujo cambia de eje.
+ */
+import { flow } from '../content/process.ts';
+---
+<figure class="flow">
+  <figcaption class="cap">Dónde está tu dinero en cada momento</figcaption>
+  <ol class="track">
+    {flow.map((node, i) => (
+      <li class="node">
+        <div class="dot" aria-hidden="true"></div>
+        <h3>{node.label}</h3>
+        <p>{node.detail}</p>
+        {i < flow.length - 1 && (
+          <svg class="link" viewBox="0 0 40 12" aria-hidden="true" preserveAspectRatio="none">
+            <path d="M0 6h12l6-5 6 10 6-5h10" fill="none" stroke="currentColor" stroke-width="1.25" />
+          </svg>
+        )}
+      </li>
+    ))}
+  </ol>
+</figure>
+
+<style>
+  .flow { margin: 0; }
+  .cap {
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: var(--ls-label);
+    color: var(--ink-mute);
+    margin-bottom: var(--s-5);
+  }
+
+  .track {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-6);
+  }
+
+  .node { position: relative; padding-left: var(--s-5); }
+  .dot {
+    position: absolute;
+    left: 0;
+    top: 6px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--verde);
+  }
+  .node h3 {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    margin-bottom: var(--s-1);
+  }
+  .node p { color: var(--ink-mute); font-size: var(--t-body-sm); max-width: 34ch; }
+
+  /* El tramo representa el dinero moviéndose: es información, no adorno.
+     Sobre papel necesita 3:1, de ahí verde-deep y sin bajar la opacidad. */
+  .link {
+    color: var(--verde-deep);
+    display: block;
+    width: 12px;
+    height: 34px;
+    margin: var(--s-3) 0 0 -2px;
+    transform: rotate(90deg);
+    transform-origin: 6px 6px;
+  }
+
+  @media (min-width: 900px) {
+    .track { grid-template-columns: repeat(4, 1fr); gap: var(--s-4); }
+    .node { padding-left: 0; padding-top: var(--s-5); }
+    .dot { top: 0; left: 0; }
+    .node p { max-width: 24ch; }
+    .link {
+      position: absolute;
+      top: 0;
+      left: calc(100% - var(--s-5));
+      width: calc(var(--s-5) * 2);
+      height: 9px;
+      margin: 0;
+      transform: none;
+    }
+  }
+</style>

@@ -39,6 +39,7 @@ import { steps } from '../content/home.ts';
     <p class="foot">
       Antes de tu primera operación te pedimos registro y verificación de identidad.
       Es obligatorio para todos, personas y empresas.
+      <a href="/como-funciona">Ver el proceso completo</a>
     </p>
   </div>
 </section>
@@ -89,8 +90,9 @@ import { steps } from '../content/home.ts';
     font-weight: 600;
     color: var(--ink);
   }
-  /* La cuña apunta al paso siguiente: representa avance */
-  .wedge { width: 12px; height: 30px; color: var(--verde); flex: none; }
+  /* La cuña apunta al paso siguiente: representa avance, así que es un elemento
+     gráfico con significado y necesita 3:1. Sobre papel, verde-deep. */
+  .wedge { width: 12px; height: 30px; color: var(--verde-deep); flex: none; }
 
   .body { padding-bottom: var(--s-2); }
   h3 {
@@ -116,6 +118,8 @@ import { steps } from '../content/home.ts';
     color: var(--ink-mute);
     max-width: 60ch;
   }
+  .foot a { color: var(--verde-deep); font-weight: 600; text-decoration: none; }
+  .foot a:hover { text-decoration: underline; }
 
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }

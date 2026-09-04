@@ -14,9 +14,15 @@ import { site, contact } from '../lib/config/site.ts';
 
 const wa = `https://wa.me/${contact.whatsappNumber}`;
 const legal = ['Términos y condiciones', 'Política de privacidad', 'Tarifas', 'Canal de denuncias'];
+const product = [
+  { label: 'Cotizar', href: '/cotizar' },
+  { label: 'Cómo funciona', href: '/como-funciona' },
+  { label: 'Empresas', href: '/empresas' },
+  { label: 'Confianza', href: '/confianza' },
+];
 const year = new Date().getFullYear();
 ---
-<footer class="site-footer">
+<footer class="site-footer on-tinta-surface">
   <div class="inner">
     <div class="cols">
       <div class="col brand-col">
@@ -27,6 +33,15 @@ const year = new Date().getFullYear();
         <p class="tagline">
           Mesa de cambio de dólar digital. Para personas y para empresas.
         </p>
+      </div>
+
+      <div class="col">
+        <h2>Producto</h2>
+        <ul>
+          {product.map((item) => (
+            <li><a href={item.href}>{item.label}</a></li>
+          ))}
+        </ul>
       </div>
 
       <div class="col">
@@ -90,7 +105,7 @@ const year = new Date().getFullYear();
   }
 
   @media (min-width: 760px) {
-    .cols { grid-template-columns: 2fr 1fr 1fr; gap: var(--s-8); }
+    .cols { grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: var(--s-7); }
   }
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }

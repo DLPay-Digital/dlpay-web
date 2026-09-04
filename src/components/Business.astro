@@ -8,13 +8,9 @@
  * Enlaza a WhatsApp mientras /empresas no exista como página propia.
  */
 import Icon from './Icon.astro';
-import { contact } from '../lib/config/site.ts';
 
-const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
-  'Hola, escribo por DLPay Empresas. Operamos volumen y quiero conocer las condiciones.'
-)}`;
 ---
-<section class="business" id="empresas" aria-labelledby="business-title">
+<section class="business on-tinta-surface" id="empresas" aria-labelledby="business-title">
   <div class="inner">
     <div class="copy">
       <h2 id="business-title">¿Tu empresa mueve volumen?</h2>
@@ -23,8 +19,8 @@ const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
         un ejecutivo asignado, condiciones conversadas y verificación de la empresa.
         La misma mesa, otro tamaño de operación.
       </p>
-      <a class="cta" href={wa} target="_blank" rel="noopener">
-        Hablar con un ejecutivo
+      <a class="cta" href="/empresas">
+        Ver DLPay Empresas
         <Icon name="chevron" class="chev" />
       </a>
     </div>

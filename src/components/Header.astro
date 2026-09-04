@@ -1,11 +1,6 @@
 ---
 /**
  * Cabecera. Navegación corta (Fase 1 §5.2) y WhatsApp siempre visible.
- *
- * Los enlaces apuntan a secciones de la Home mientras /empresas, /confianza y
- * /como-funciona no existan como páginas propias. Se cambian a rutas reales
- * cuando esas páginas se construyan — sin enlaces muertos entretanto.
- *
  * El menú móvil usa <details>: sin JavaScript (ADR-0004 §6).
  */
 import Logo from './Logo.astro';
@@ -13,14 +8,18 @@ import Icon from './Icon.astro';
 import { contact, platform } from '../lib/config/site.ts';
 
 const nav = [
-  { label: 'Cotizar', href: '#cotizador' },
-  { label: 'Cómo funciona', href: '#como-funciona' },
-  { label: 'Empresas', href: '#empresas' },
-  { label: 'Confianza', href: '#confianza' },
+  { label: 'Cotizar', href: '/cotizar' },
+  { label: 'Cómo funciona', href: '/como-funciona' },
+  { label: 'Empresas', href: '/empresas' },
+  { label: 'Confianza', href: '/confianza' },
 ];
 const wa = `https://wa.me/${contact.whatsappNumber}`;
+
+/** Marca la página actual para lectores de pantalla y para el estilo. */
+const current = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => href === current;
 ---
-<header class="site-header">
+<header class="site-header on-tinta-surface">
   <a class="skip" href="#main">Saltar al contenido</a>
 
   <div class="bar">
@@ -32,7 +31,11 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
     <nav class="desktop-nav" aria-label="Principal">
       <ul>
         {nav.map((item) => (
-          <li><a href={item.href}>{item.label}</a></li>
+          <li>
+            <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
         ))}
       </ul>
     </nav>
@@ -51,7 +54,11 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
         <nav class="drawer" aria-label="Principal, móvil">
           <ul>
             {nav.map((item) => (
-              <li><a href={item.href}>{item.label}</a></li>
+              <li>
+                <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              </li>
             ))}
             <li><a href={platform.loginUrl}>Iniciar sesión</a></li>
           </ul>
@@ -112,6 +119,14 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
     font-weight: 500;
   }
   .desktop-nav a:hover { color: var(--on-tinta); }
+  .desktop-nav a[aria-current='page'] { color: var(--on-tinta); }
+  .desktop-nav a[aria-current='page']::after {
+    content: '';
+    display: block;
+    height: 1.5px;
+    background: var(--verde);
+    margin-top: 5px;
+  }
 
   .actions {
     margin-left: auto;
@@ -169,6 +184,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
     border-radius: var(--r-2);
   }
   .drawer a:hover { background: rgba(237, 242, 239, 0.06); }
+  .drawer a[aria-current='page'] { color: var(--verde); }
 
   @media (min-width: 900px) {
     .bar { padding-inline: var(--pad-section); gap: var(--s-8); }

@@ -1,0 +1,249 @@
+---
+/**
+ * /empresas — el carril B2B (phase-2.5 §4).
+ *
+ * Misma mesa, otro tamaño de operación. Lenguaje de tesorería, sin volverse un
+ * folleto corporativo ni prometer nada que no exista (no hay API todavía).
+ */
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import { useCases, differences, onboarding } from '../content/business.ts';
+import { contact } from '../lib/config/site.ts';
+
+const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
+  'Hola, escribo por DLPay Empresas. Quiero conocer las condiciones para operar con mi empresa.'
+)}`;
+---
+<Base
+  title="DLPay Empresas"
+  description="Cambio de divisas y tesorería en dólar digital para empresas en Chile: ejecutivo asignado, condiciones conversadas según volumen y verificación de la sociedad."
+  path="/empresas"
+>
+  <Header />
+  <main id="main">
+    <PageHero
+      title="La misma mesa, otro tamaño de operación"
+      lead="Para tesorerías y empresas que cambian montos grandes o de forma recurrente, donde un banco es lento y una app retail no alcanza."
+    />
+
+    <section class="cases" aria-labelledby="cases-title">
+      <div class="inner">
+        <header class="head">
+          <h2 id="cases-title">Para qué lo usan</h2>
+          <p>Cuatro situaciones concretas. Si la tuya no está acá, conversémosla.</p>
+        </header>
+        <ul class="grid">
+          {useCases.map((item) => (
+            <li class="case">
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="diff" aria-labelledby="diff-title">
+      <div class="inner">
+        <header class="head">
+          <h2 id="diff-title">Qué cambia respecto de una persona</h2>
+          <p>El producto es el mismo. Lo que cambia es el acompañamiento y la verificación.</p>
+        </header>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">&nbsp;</th>
+                <th scope="col">Persona</th>
+                <th scope="col">Empresa</th>
+              </tr>
+            </thead>
+            <tbody>
+              {differences.map((row) => (
+                <tr>
+                  <th scope="row">{row.aspect}</th>
+                  <td>{row.person}</td>
+                  <td class="hi">{row.company}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="steps-band" aria-labelledby="onboarding-title">
+      <div class="inner">
+        <div class="split">
+          <div>
+            <h2 id="onboarding-title">Cómo empezamos</h2>
+            <p class="lead">
+              No hay formulario que llenar a ciegas. Se parte conversando y seguimos desde ahí.
+            </p>
+          </div>
+          <ol class="onboarding">
+            {onboarding.map((step, i) => (
+              <li>
+                <span class="n num">{i + 1}</span>
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact on-tinta-surface" aria-labelledby="contact-title">
+      <div class="inner">
+        <h2 id="contact-title">Hablemos de tu operación</h2>
+        <p>
+          Cuéntanos qué montos manejas y con qué frecuencia. Te responde una persona del
+          equipo, no un formulario.
+        </p>
+        <div class="actions">
+          <a class="cta" href={wa} target="_blank" rel="noopener">
+            <Icon name="whatsapp" class="wa-icon" />
+            Escribir por WhatsApp
+          </a>
+          <a class="ghost" href="/cotizar">Ver el cotizador</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 var(--pad-section-m);
+  }
+  .head { max-width: 46ch; margin-bottom: var(--s-7); }
+  h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: var(--s-3);
+  }
+  .head p { color: var(--ink-mute); }
+
+  .cases { background: var(--papel); padding: var(--s-9) 0; }
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
+  .case h3 {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    margin-bottom: var(--s-2);
+    padding-top: var(--s-3);
+    border-top: 2px solid var(--verde);
+    display: inline-block;
+  }
+  .case p { color: var(--ink-mute); max-width: 46ch; }
+
+  .diff { background: var(--papel-2); padding: var(--s-9) 0; }
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    min-width: 520px;
+    border-collapse: collapse;
+    text-align: left;
+  }
+  thead th {
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: var(--ls-label);
+    color: var(--ink-mute);
+    padding: 0 var(--s-4) var(--s-3) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  tbody th {
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    color: var(--ink);
+    padding: var(--s-4) var(--s-4) var(--s-4) 0;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  tbody td {
+    font-size: var(--t-body-sm);
+    color: var(--ink-mute);
+    padding: var(--s-4) var(--s-4) var(--s-4) 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  tbody td.hi { color: var(--ink); }
+
+  .steps-band { background: var(--papel); padding: var(--s-9) 0; }
+  .split { display: grid; gap: var(--s-6); }
+  .lead { color: var(--ink-mute); max-width: 40ch; }
+  .onboarding { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-4); }
+  .onboarding li {
+    display: flex;
+    gap: var(--s-3);
+    align-items: flex-start;
+    color: var(--ink-mute);
+    padding-bottom: var(--s-4);
+    border-bottom: 1px solid var(--line);
+  }
+  .onboarding li:last-child { border-bottom: 0; padding-bottom: 0; }
+  .n {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-2);
+    font-size: var(--t-dato-sm);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .contact { background: var(--tinta-2); color: var(--on-tinta); padding: var(--s-9) 0; }
+  .contact h2 { color: var(--on-tinta); }
+  .contact p { color: var(--on-tinta-mute); max-width: 50ch; margin-bottom: var(--s-6); }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    background: var(--verde);
+    color: #04140e;
+    font-weight: 700;
+    font-size: var(--t-body-sm);
+    padding: var(--s-4) var(--s-5);
+    border-radius: var(--r-2);
+    text-decoration: none;
+  }
+  .cta:hover { background: var(--verde-hi); }
+  .ghost {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgba(237, 242, 239, 0.28);
+    color: var(--on-tinta);
+    font-weight: 600;
+    font-size: var(--t-body-sm);
+    padding: var(--s-4) var(--s-5);
+    border-radius: var(--r-2);
+    text-decoration: none;
+  }
+  .ghost:hover { border-color: var(--on-tinta); }
+  .wa-icon { width: 16px; height: 16px; }
+
+  @media (min-width: 760px) {
+    .grid { grid-template-columns: repeat(2, 1fr); gap: var(--s-7); }
+    .split { grid-template-columns: 1fr 1.2fr; gap: var(--s-8); }
+  }
+  @media (min-width: 900px) {
+    .inner { padding-inline: var(--pad-section); }
+    h2 { font-size: var(--t-h2); }
+    .case h3 { font-size: var(--t-h3); }
+  }
+</style>

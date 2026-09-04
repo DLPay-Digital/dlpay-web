@@ -1,0 +1,63 @@
+---
+/**
+ * Encabezado de páginas interiores. Misma banda de tinta y mismas cuñas del
+ * héroe de la Home, en menor escala: las páginas deben sentirse el mismo
+ * producto, no diseños independientes.
+ */
+interface Props {
+  title: string;
+  lead: string;
+}
+const { title, lead } = Astro.props;
+---
+<section class="page-hero on-tinta-surface">
+  <div class="wedges" aria-hidden="true"></div>
+  <div class="inner">
+    <h1>{title}</h1>
+    <p>{lead}</p>
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    background: var(--tinta);
+    color: var(--on-tinta);
+    position: relative;
+    overflow: hidden;
+    padding: var(--s-7) 0 var(--s-8);
+  }
+  .wedges {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--verde);
+    opacity: 0.07;
+    clip-path: polygon(0 100%, 46% 0, 60% 0, 15% 100%, 20% 100%, 66% 0, 71% 0, 26% 100%);
+  }
+  .inner {
+    position: relative;
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 var(--pad-section-m);
+  }
+  h1 {
+    font-size: var(--t-display-m);
+    font-weight: 700;
+    line-height: var(--lh-display);
+    letter-spacing: var(--ls-display);
+    margin-bottom: var(--s-4);
+    max-width: 18ch;
+  }
+  .inner p {
+    color: var(--on-tinta-mute);
+    max-width: 54ch;
+    font-size: var(--t-body);
+  }
+
+  @media (min-width: 900px) {
+    .page-hero { padding: var(--s-8) 0 var(--s-9); }
+    .inner { padding-inline: var(--pad-section); }
+    h1 { font-size: var(--t-h2); }
+    .inner p { font-size: var(--t-h3-m); }
+  }
+</style>

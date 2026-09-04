@@ -69,7 +69,16 @@
   /* ── Elevación (mínima, por rol) ───────────────────────────────────────── */
   --elev-card:0 24px 60px -24px rgba(11,19,32,.45);
   --elev-pop:0 8px 24px -12px rgba(11,19,32,.25);
+
+  /* ── Foco ──────────────────────────────────────────────────────────────── */
+  /* El verde de marca sobre papel da 2.02:1 — insuficiente incluso para un
+     elemento gráfico (WCAG pide 3:1). Sobre tinta da 8.45:1 y sí sirve.
+     Las superficies oscuras redefinen este token; el resto usa verde-deep. */
+  --focus:var(--verde-deep);
 }
+
+/* Superficies en tinta: ahí el verde de marca sí contrasta */
+.on-tinta-surface{ --focus:var(--verde); }
 
 /* ── Base ────────────────────────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box}
@@ -100,7 +109,7 @@ img{max-width:100%; height:auto}
 a{color:var(--verde-deep)}
 
 /* Foco visible en todo lo interactivo (Design System §10) */
-:focus-visible{outline:2px solid var(--verde); outline-offset:2px}
+:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
 
 /* Objetivos táctiles ≥44px */
 button,a[role="button"],input,select{min-height:44px}
