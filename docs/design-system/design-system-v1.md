@@ -97,6 +97,12 @@ modificar y usar comercialmente. Conservar el archivo de licencia junto a las fu
 
 1. **La cifra manda, siempre.** El precio referencial y el "recibes aprox." son los elementos más
    fuertes de su pantalla. Ningún titular debe ganarles el pulso visual.
+   *Caso resuelto:* en `/cotizar` el cotizador va plano sobre papel, sin la tarjeta elevada que en
+   la Home compensa el peso del titular. Ahí un `h1` de 52px le ganaba a un precio de 32px, y el
+   titular bajó a 32px. En la Home el `h1` sí mide 52px porque la tarjeta elevada y el contraste
+   sobre tinta le devuelven el protagonismo a la cifra.
+   **Volumen del titular:** la Home habla a `--t-display`; **todas** las páginas interiores hablan
+   a `--t-h2`. Son dos voces, no cinco.
 2. **La escala es un techo, no un objetivo.** Si un titular compite con la cifra, se **reduce el
    titular** — nunca se agranda la cifra para compensar. La tipografía no debe volverse
    excesivamente grande: la jerarquía la dan el contraste y el espacio, no el tamaño bruto.
@@ -158,6 +164,20 @@ desplegable) **no** son breakpoints y no cuentan para esta regla.
 - Contenedor de contenido: **máx. ~1112 px**, centrado.
 - Padding lateral de sección: 64 px desktop / 20 px móvil.
 - Héroes: grid de 2 columnas (`~1.05fr .95fr`) — copy izquierda, cotizador derecha. Móvil: 1 columna, cotizador primero.
+
+### 4.3.1 Ritmo vertical de sección (revisión global 2026-09-04)
+
+Un rol, un valor. Cuando dos páginas dan el mismo rol a una sección, la sección
+mide lo mismo en ambas.
+
+| Rol | Padding vertical |
+|---|---|
+| Héroe (Home y páginas interiores) | `--s-8` arriba / `--s-9` abajo |
+| Sección de contenido | `--s-9` |
+| Banda de cierre con CTA | `--s-8` |
+| Pie | `--s-8` arriba / `--s-6` abajo |
+
+Intro de sección (`h2` + una línea): medida única de **46ch**.
 
 ### 4.4 Radios (discretos — nada de "pill")
 
@@ -246,7 +266,7 @@ Cada uno se construye sólo cuando una página real lo necesita (Principio 5, CL
 
 | Componente | Propósito | Notas de anatomía / estados |
 |---|---|---|
-| **Botón** | Acción | `primary` (fill `--verde`, texto `#04140E`) · `ghost` (borde `--line`) · `dark-ghost` (sobre tinta). Estados: hover, focus-visible (outline 2px `--verde`), disabled. `--r-2`. Nunca píldora. Sin "→". |
+| **Botón** | Acción | `primary` (fill `--verde`, texto `#04140E`, `--s-4`/`--s-6`, cuerpo 16px) · `ghost` (con borde, `--s-4`/`--s-5`, cuerpo 14px, en versión clara y sobre tinta). El primario del cotizador es a ancho completo, con padding uniforme `--s-4`. Estados: hover, focus-visible (outline 2px `var(--focus)`), disabled. `--r-2`. Nunca píldora. Sin "→". **Un botón con borde nunca se llama `cta`:** ese nombre es sólo del primario relleno, y mezclarlos es por donde se cuela la deriva. |
 | **Campo de formulario** | Entrada | Label 12–13px `--ink-mute` · borde `--line` · foco: borde `--verde` + outline. Error: borde `--baja` + mensaje inline. |
 | **Cotizador** | Acción central | Spec propia → `cotizador-spec.md`. |
 | **Desglose de precio** | Transparencia | Lista label/valor, valores tabulares alineados a la derecha, divisores hairline. |

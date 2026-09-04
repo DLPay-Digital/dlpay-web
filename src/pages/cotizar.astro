@@ -88,7 +88,7 @@ const next = steps.slice(1, 4);
   }
   .intro p { color: var(--ink-mute); max-width: 44ch; }
 
-  .after { background: var(--papel-2); padding: var(--s-8) 0; }
+  .after { background: var(--papel-2); padding: var(--s-9) 0; }
   h2 {
     font-size: var(--t-h3);
     font-weight: 600;
@@ -144,7 +144,13 @@ const next = steps.slice(1, 4);
       gap: var(--s-8);
       align-items: center;
     }
-    h1 { font-size: var(--t-display); }
+    /* El titular baja de 52px a 32px en escritorio por dos razones que apuntan
+       al mismo lado. Una: en esta página el cotizador va PLANO sobre papel, sin
+       la tarjeta elevada del héroe de la Home, así que un titular de 52px le
+       ganaba el pulso a un precio de 32px — y la regla del Design System §3.0 es
+       que en ese caso se reduce el titular, no se agranda la cifra. Dos: iguala
+       la voz de las otras páginas interiores, que hablan a --t-h2. */
+    h1 { font-size: var(--t-h2); }
     .mini { grid-template-columns: repeat(3, 1fr); gap: var(--s-6); }
   }
 </style>

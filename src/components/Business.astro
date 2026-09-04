@@ -19,7 +19,7 @@ import Icon from './Icon.astro';
         un ejecutivo asignado, condiciones conversadas y verificación de la empresa.
         La misma mesa, otro tamaño de operación.
       </p>
-      <a class="cta" href="/empresas">
+      <a class="ghost" href="/empresas">
         Ver DLPay Empresas
         <Icon name="chevron" class="chev" />
       </a>
@@ -40,7 +40,7 @@ import Icon from './Icon.astro';
   }
   .copy p { color: var(--on-tinta-mute); margin-bottom: var(--s-5); }
 
-  .cta {
+  .ghost {
     display: inline-flex;
     align-items: center;
     gap: var(--s-2);
@@ -49,10 +49,10 @@ import Icon from './Icon.astro';
     text-decoration: none;
     font-size: var(--t-body-sm);
     font-weight: 600;
-    padding: var(--s-3) var(--s-4);
+    padding: var(--s-4) var(--s-5);
     border-radius: var(--r-2);
   }
-  .cta:hover { background: var(--verde); color: #04140e; }
+  .ghost:hover { background: var(--verde); color: #04140e; }
   .chev { width: 15px; height: 15px; }
 
   @media (min-width: 900px) {
