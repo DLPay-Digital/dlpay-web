@@ -134,10 +134,17 @@ cualquier servidor estático.** Lo que rompa esa afirmación necesita una enmien
 | `/como-funciona` | El recorrido completo con el diagrama de flujo y los tiempos | 0 |
 | `/empresas` | Carril B2B: casos de uso, diferencias, incorporación | 0 |
 | `/confianza` | El mecanismo, los requisitos y lo que no afirmamos | 0 |
+| `/tarifas` | Cómo se compone el precio y qué lo mueve | 0 |
+| `/canal-de-denuncias` | Cómo presentar un reclamo y qué ocurre después | 0 |
+| `/terminos` | Página de estado: lo que rige hoy, mientras el texto está en revisión | 0 |
+| `/privacidad` | Página de estado: lo verificable sobre esta web | 0 |
 
-Páginas legales (`/terminos`, `/privacidad`, `/tarifas`, canal de denuncias): **pendientes**.
-Requieren revisión de Compliance (Fase 5). El pie las lista como "en preparación" en vez de
-crear enlaces muertos.
+**Textos legales.** Claude Code **no redacta documentos vinculantes** (CLAUDE.md §7).
+`/tarifas` y `/canal-de-denuncias` tienen contenido real porque describen el servicio, no
+obligaciones contractuales. `/terminos` y `/privacidad` declaran de frente que están en
+revisión y ofrecen el documento vigente por WhatsApp, en vez de publicar un texto provisorio.
+
+Lo que falta y qué decisiones lo bloquean está en **`docs/legal-brief.md`**.
 
 ## Estado (2026-09-04)
 

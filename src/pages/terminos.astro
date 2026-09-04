@@ -1,0 +1,74 @@
+---
+/**
+ * /terminos — Términos y Condiciones.
+ *
+ * El TEXTO de este documento NO lo redacta Claude Code: es vinculante y lo
+ * aprueba Compliance (CLAUDE.md §7 y §3).
+ *
+ * Esta página existe porque la ruta daba 404 pese a estar referenciada por los
+ * propios documentos legales de DLPay. Publica lo que es cierto hoy y el canal
+ * para obtener el documento vigente, sin inventar cláusulas.
+ *
+ * Ver docs/legal-brief.md para lo que Compliance debe resolver.
+ */
+import Legal from '../layouts/Legal.astro';
+import PendingNotice from '../components/PendingNotice.astro';
+import { contact, site } from '../lib/config/site.ts';
+
+const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
+  'Hola, quiero recibir los Términos y Condiciones vigentes de DLPay.'
+)}`;
+---
+<Legal
+  title="Términos y condiciones"
+  description="Términos y condiciones del servicio de DLPay. Documento en actualización; solicita la versión vigente por WhatsApp."
+  path="/terminos"
+  lead="El documento que rige tu relación con DLPay. Estamos publicando la versión actualizada acá mismo."
+>
+  <PendingNotice title="Documento en actualización">
+    <p>
+      Estamos actualizando los Términos y Condiciones de <strong>{site.legalName}</strong> para
+      publicarlos en esta página, en lugar de un archivo alojado por un tercero.
+    </p>
+    <p>
+      <strong>Si vas a operar y necesitas el documento vigente,
+      <a href={wa} target="_blank" rel="noopener">pídelo por WhatsApp</a></strong> y te lo
+      enviamos antes de que operes. No publicamos un texto provisorio: un documento vinculante a
+      medias es peor que decir que está en revisión.
+    </p>
+  </PendingNotice>
+
+  <h2>Lo que sí puedes dar por cierto hoy</h2>
+  <p>
+    Estos puntos no dependen de la revisión en curso y rigen toda operación con DLPay:
+  </p>
+  <ul>
+    <li>
+      <strong>El precio de la web es referencial.</strong> El precio final te lo confirma un
+      ejecutivo antes de que transfieras, y no cambia después de que lo aceptas.
+    </li>
+    <li>
+      <strong>El servicio es el cambio de divisas.</strong> Recibes dólar digital en tu billetera.
+      DLPay no deposita en cuentas bancarias en el extranjero.
+    </li>
+    <li>
+      <strong>Verificación de identidad obligatoria</strong> antes de la primera operación, a
+      personas y a empresas.
+    </li>
+    <li>
+      <strong>Operamos sólo con fondos del titular.</strong> Recibimos transferencias desde
+      cuentas a nombre de quien opera.
+    </li>
+    <li>
+      <strong>Las operaciones con dólar digital son irreversibles</strong> una vez ejecutadas. Por
+      eso confirmamos cada paso contigo antes de darlo.
+    </li>
+  </ul>
+
+  <h2>Advertencia de riesgo</h2>
+  <p>
+    Operar con dólar digital tiene riesgos. El valor del dólar respecto del peso varía, las
+    transferencias en redes blockchain no se pueden revertir, y existe riesgo de contraparte en
+    cualquier operación. <strong>DLPay no garantiza rentabilidad ni protección del capital.</strong>
+  </p>
+</Legal>

@@ -51,6 +51,7 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
 | `docs/research/phase-2.5-definicion-experiencia.md` | Experiencia, arquitectura de información, estructura de la Home, principios UX. **El documento operativo más útil para construir.** |
 | Este archivo | Principios, límites, Definition of Done. |
 | `docs/development.md` | Cómo levantar el proyecto, estructura, dependencias y verificaciones. |
+| `docs/legal-brief.md` | Qué falta en las páginas legales y qué decisiones lo bloquean. Para Compliance. |
 | `docs/design-system/board-tipografia.html` | Board que sustentó la elección de tipografía. Se abre en el navegador. |
 
 **De consulta (no rehacer, sí citar):** `docs/research/phase-0-findings.md` (hechos técnicos,
@@ -240,7 +241,13 @@ vuelve corporativa · español chileno plano · identidad propia.
 
 **Arquitectura de información v1 (cerrada):**
 `/` (Home con el cotizador en el hero) · `/cotizar` · `/como-funciona` · `/empresas` ·
-`/confianza` · `/faq` · legales (`/terminos`, `/privacidad`, `/tarifas`, canal de denuncias).
+`/confianza` · legales: `/terminos`, `/privacidad`, `/tarifas`, `/canal-de-denuncias`.
+Las nueve rutas existen y resuelven. La FAQ vive en la Home, no como página propia.
+
+**Textos legales:** Claude Code **no los redacta**. `/tarifas` y `/canal-de-denuncias` tienen
+contenido real porque describen el servicio, no obligaciones contractuales. `/terminos` y
+`/privacidad` son páginas de estado hasta que Compliance entregue el texto — ver
+`docs/legal-brief.md`.
 
 **El cotizador:** modelo `qué quieres hacer → monto → cuánto recibes → precio referencial →
 WhatsApp prellenado → el ejecutivo confirma el precio final y coordina el destino`. La intención
@@ -366,14 +373,16 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | ~~D2~~ | ~~Familia tipográfica~~ | ✅ Cerrado 2026-09-04: **T-C** (Familjen Grotesk + Spline Sans Mono) | ADR-0001 §4 |
 | D3 | **Titularidad de la organización GitHub** de DLPay | No — el repo es local por ahora (ADR-0003) | Sebastián |
 | ~~D4~~ | ~~Idioma de código y commits~~ | ✅ Cerrado: código en inglés, commits/docs/contenido en español | ADR-0003 |
-| D5 | **Transparencia del spread**: ¿la web muestra la lógica de tramos o solo un referencial? Define el contenido de `/tarifas` | No para Fase 3; sí para Fase 5 | DLPay (I10/I11) |
+| D5 | **Transparencia del spread**: ¿la web muestra la lógica de tramos o solo un referencial? Define la tabla de `/tarifas` | **Sí — es lo único que falta para completar `/tarifas`** | DLPay (I10/I11) |
 | D6 | **Monto mínimo/máximo reales** y precio de muestra del cotizador | No — hoy son placeholders | DLPay |
 | D7 | **Fuente oficial de market price** | No — `ConfigPriceSource` cubre v1 | DLPay |
 | ~~D8~~ | ~~Alcance de servicios a comunicar~~ | ✅ Cerrado 2026-09-04: el amplio, alineado con los T&C publicados | Equipo DLPay |
 | ~~D16~~ | ~~Cómo llega el dinero al destinatario final~~ | ✅ Cerrado 2026-09-04: DLPay entrega **dólar digital en la billetera**; no deposita en cuentas bancarias en el extranjero. Ver §1 | Equipo DLPay |
 | ~~D17~~ | ~~"Sin esperar días"~~ | ✅ Reformulado 2026-09-04: la rapidez se predica de la conversión y del movimiento del dólar digital, nunca de una recepción bancaria en destino | Equipo DLPay |
 | D18 | **Fuente real de actividad reciente** (operaciones confirmadas y anonimizadas). Hoy hay datos de ejemplo, marcados como tales por el propio componente | No | DLPay |
-| D9 | **Razón social**: se usa **DLPZ INCZ SpA**. Los T&C publicados dicen "DLPZ PRO SpA" (RUT 78.378.714-8) | No | `REQUIERE VALIDACIÓN DE COMPLIANCE` — Joaquín. **No reinvestigar.** |
+| D9 | **Razón social**: se usa **DLPZ INCZ SpA**. Los T&C publicados dicen "DLPZ PRO SpA" (RUT 78.378.714-8) | **Sí — bloquea publicar los textos legales.** No se puede publicar bajo una entidad que contradiga el contrato vigente | `REQUIERE VALIDACIÓN DE COMPLIANCE` — Joaquín. **No reinvestigar.** |
+| D19 | **Correo oficial de contacto**: los T&C dicen `contacto@dlpay.cl`, la Política dice `contacto@dlpzpro.cl` | Sí, para el canal de denuncias. La web no publica ninguno hasta confirmarlo | Compliance |
+| D20 | **El alcance de los T&C ya no coincide con el servicio**: hablan de custodia y liquidaciones internacionales; el servicio real es cambio de divisas con entrega de dólar digital | Sí, antes de publicar los textos | Compliance |
 | D10 | **Testimonios, cifras de clientes/volumen, logos de empresas** | No — no se publican hasta verificar | DLPay (I15) |
 | D11 | **Equipo con nombre y foto** en `/confianza` | No | Sebastián |
 | D12 | **Quién redacta y aprueba el copy** | No para Fase 3 | DLPay |

@@ -1,0 +1,65 @@
+---
+/**
+ * /privacidad — Política de Privacidad.
+ *
+ * El TEXTO de este documento NO lo redacta Claude Code (CLAUDE.md §7 y §3).
+ *
+ * Fase 0 encontró que la política publicada es una plantilla genérica orientada
+ * a GDPR, desalineada del marco chileno que los propios T&C invocan, y que
+ * nombra otra razón social y otro correo. Reescribirla es trabajo de Compliance.
+ *
+ * Ver docs/legal-brief.md.
+ */
+import Legal from '../layouts/Legal.astro';
+import PendingNotice from '../components/PendingNotice.astro';
+import { contact, site } from '../lib/config/site.ts';
+
+const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
+  'Hola, tengo una consulta sobre el tratamiento de mis datos personales.'
+)}`;
+---
+<Legal
+  title="Privacidad"
+  description="Cómo trata DLPay tus datos personales. Documento en reescritura para alinearlo al marco legal chileno; consulta por WhatsApp mientras tanto."
+  path="/privacidad"
+  lead="Qué datos te pedimos, para qué, y qué puedes hacer con ellos."
+>
+  <PendingNotice title="Documento en reescritura">
+    <p>
+      La política de privacidad de <strong>{site.legalName}</strong> se está reescribiendo para
+      alinearla al marco chileno de protección de datos personales y publicarla en esta página.
+    </p>
+    <p>
+      Si tienes una consulta sobre tus datos o quieres ejercer tus derechos,
+      <a href={wa} target="_blank" rel="noopener">escríbenos</a> y te atiende una persona del
+      equipo.
+    </p>
+  </PendingNotice>
+
+  <h2>Lo que sí puedes dar por cierto hoy</h2>
+  <ul>
+    <li>
+      <strong>Te pedimos datos porque la operación lo exige</strong>, no para perfilarte: identidad
+      para verificarte, y los datos de la operación para ejecutarla.
+    </li>
+    <li>
+      <strong>No vendemos tus datos</strong> ni los cedemos con fines comerciales.
+    </li>
+    <li>
+      <strong>Puedes pedirnos acceso, rectificación o eliminación</strong> de tus datos personales,
+      con los límites que impone la normativa que nos obliga a conservar cierta información.
+    </li>
+  </ul>
+
+  <h2>Esta web</h2>
+  <p>
+    Este sitio <strong>no usa cookies de seguimiento ni herramientas de analítica de terceros</strong>.
+    El cotizador funciona en tu navegador: los montos que escribes <strong>no se envían a ningún
+    servidor</strong>. Sólo viajan a WhatsApp cuando tú aprietas el botón, porque van dentro del
+    mensaje que le mandas al ejecutivo.
+  </p>
+  <p>
+    Las tipografías se sirven desde este mismo sitio, no desde un proveedor externo, así que
+    cargar la página no le informa a nadie más que la visitaste.
+  </p>
+</Legal>

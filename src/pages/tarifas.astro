@@ -1,0 +1,79 @@
+---
+/**
+ * /tarifas — divulgación tarifaria.
+ *
+ * Los T&C publicados obligan a DLPay a mantener esta página con la tabla de
+ * comisiones, tipo de cambio y spread (Fase 0, Frente 11). Hoy la ruta daba 404,
+ * incumpliendo el propio contrato.
+ *
+ * Se publica lo que SÍ está respaldado —cómo se compone el precio y qué lo
+ * mueve— y se marca de frente lo que falta, en vez de inventar una tabla.
+ */
+import Legal from '../layouts/Legal.astro';
+import PendingNotice from '../components/PendingNotice.astro';
+import { formatCLP } from '../lib/pricing/format.ts';
+import { contact } from '../lib/config/site.ts';
+
+// PENDIENTE DE DECISIÓN — monto mínimo real (CLAUDE.md §13, D6)
+const minPay = Number(import.meta.env.PUBLIC_QUOTE_MIN_CLP ?? '50000') || 50000;
+const wa = `https://wa.me/${contact.whatsappNumber}`;
+---
+<Legal
+  title="Tarifas"
+  description="Cómo se compone el precio en DLPay: un solo precio que ya incluye el spread, sin comisiones que aparezcan después. Qué mueve ese precio y qué es referencial."
+  path="/tarifas"
+  lead="Un solo número, y ese número ya lo incluye todo. Acá está cómo se compone y qué lo mueve."
+>
+  <h2>Cómo se compone el precio</h2>
+  <p>
+    DLPay toma una <strong>referencia de mercado</strong> y le aplica su <strong>spread</strong>.
+    El resultado es el precio que ves en el cotizador: un solo número, con el spread ya
+    incorporado.
+  </p>
+  <p>
+    Esto significa que <strong>no hay una comisión aparte que se sume al final</strong>. Tampoco
+    hay un tipo de cambio inflado por dentro para esconder un cobro. Lo que ves al cotizar es la
+    base de lo que el ejecutivo te confirma.
+  </p>
+
+  <h2>Qué mueve el precio</h2>
+  <dl>
+    <dt>El mercado</dt>
+    <dd>
+      El valor del dólar cambia durante el día. Por eso el precio de la web es
+      <strong>referencial</strong> y el precio final te lo confirma tu ejecutivo en el momento
+      de cerrar.
+    </dd>
+    <dt>El monto</dt>
+    <dd>
+      Las operaciones de mayor volumen se conversan con el ejecutivo. Si operas montos grandes o
+      de forma recurrente, las condiciones se acuerdan contigo.
+    </dd>
+  </dl>
+
+  <h2>Monto mínimo</h2>
+  <p>
+    La operación mínima es de <strong>CLP {formatCLP(minPay)}</strong>. Bajo ese monto puedes
+    escribirnos igual y te orientamos.
+  </p>
+
+  <PendingNotice title="Tabla de tarifas: en publicación">
+    <p>
+      Los Términos y Condiciones de DLPay comprometen la publicación de una tabla con las
+      comisiones aplicables, el tipo de cambio y el spread informado. Esa tabla está en
+      revisión y se publica en esta misma página.
+    </p>
+    <p>
+      Mientras tanto, el precio aplicable a tu operación te lo informa tu ejecutivo antes de que
+      transfieras, y no cambia después de que lo aceptas.
+      <a href={wa} target="_blank" rel="noopener">Consúltalo por WhatsApp</a>.
+    </p>
+  </PendingNotice>
+
+  <h2>Qué no está incluido acá</h2>
+  <p>
+    DLPay entrega dólar digital en tu billetera. Lo que hagas después con ese dólar digital
+    —moverlo a otra billetera, convertirlo a moneda local en otro país— puede tener costos de
+    los servicios que uses para eso, que son ajenos a DLPay.
+  </p>
+</Legal>

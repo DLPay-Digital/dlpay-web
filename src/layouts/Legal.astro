@@ -1,0 +1,99 @@
+---
+/**
+ * Layout de las páginas legales. Comparten estructura para que se lean como un
+ * mismo cuerpo de documentos y no como cuatro páginas sueltas.
+ *
+ * Medida de lectura propia: son textos largos, no secciones de marketing.
+ */
+import Base from './Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../lib/config/site.ts';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  lead: string;
+  /** Fecha de la última revisión del contenido de la página. */
+  updated?: string;
+}
+const { title, description, path, lead, updated } = Astro.props;
+---
+<Base title={title} description={description} path={path}>
+  <Header />
+  <main id="main">
+    <PageHero title={title} lead={lead} />
+    <div class="doc">
+      <article class="prose">
+        <slot />
+        <footer class="meta">
+          {updated && <p>Última actualización: {updated}</p>}
+          <p>{site.legalName}, que opera bajo la marca {site.name}.</p>
+        </footer>
+      </article>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .doc { background: var(--papel); padding: var(--s-9) 0; }
+  .prose {
+    max-width: 68ch;
+    margin: 0 auto;
+    padding: 0 var(--pad-section-m);
+  }
+
+  .prose :global(h2) {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    margin: var(--s-7) 0 var(--s-3);
+  }
+  .prose :global(h2:first-child) { margin-top: 0; }
+  .prose :global(h3) {
+    font-size: var(--t-body);
+    font-weight: 600;
+    margin: var(--s-5) 0 var(--s-2);
+  }
+  .prose :global(p) { color: var(--ink-mute); margin-bottom: var(--s-4); }
+  .prose :global(strong) { color: var(--ink); font-weight: 600; }
+  .prose :global(ul) {
+    list-style: none;
+    margin: 0 0 var(--s-4);
+    padding: 0;
+    display: grid;
+    gap: var(--s-3);
+  }
+  .prose :global(li) {
+    color: var(--ink-mute);
+    padding-left: var(--s-4);
+    border-left: 1px solid var(--line);
+  }
+  .prose :global(dl) { margin: 0 0 var(--s-4); }
+  .prose :global(dt) {
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    color: var(--ink-mute);
+  }
+  .prose :global(dd) {
+    margin: 0 0 var(--s-3);
+    color: var(--ink);
+  }
+
+  .meta {
+    margin-top: var(--s-8);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--line);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+  }
+  .meta p { margin: 0 0 var(--s-1); }
+
+  @media (min-width: 900px) {
+    .prose { padding-inline: var(--pad-section); }
+    .prose :global(h2) { font-size: var(--t-h3); }
+  }
+</style>

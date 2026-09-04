@@ -1,0 +1,72 @@
+---
+/**
+ * /canal-de-denuncias — canal formal de reclamos y denuncias.
+ *
+ * El sitio actual tiene una ruta /complaints cuya base legal no está confirmada
+ * (Fase 0, I18). Acá se publica el proceso, que sí es describible, y se marca lo
+ * que requiere confirmación legal.
+ *
+ * El plazo de 10 días hábiles proviene del texto de los T&C publicados.
+ * REQUIERE VALIDACIÓN DE COMPLIANCE.
+ */
+import Legal from '../layouts/Legal.astro';
+import PendingNotice from '../components/PendingNotice.astro';
+import { contact } from '../lib/config/site.ts';
+
+const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
+  'Hola, quiero presentar un reclamo formal.'
+)}`;
+---
+<Legal
+  title="Canal de denuncias"
+  description="Cómo presentar un reclamo o una denuncia ante DLPay, qué información incluir, qué ocurre después y en qué plazo respondemos."
+  path="/canal-de-denuncias"
+  lead="Si algo salió mal o viste una conducta que no corresponde, queremos saberlo. Acá está cómo decírnoslo y qué pasa después."
+>
+  <h2>Para qué es este canal</h2>
+  <p>
+    Para presentar un <strong>reclamo</strong> sobre una operación o sobre la atención recibida, y
+    para <strong>denunciar</strong> una conducta que consideres irregular, dentro o fuera del
+    equipo de DLPay.
+  </p>
+  <p>
+    Si tu consulta es sobre una operación en curso, es más rápido escribirle directamente a tu
+    ejecutivo por el chat de siempre. Este canal es para cuando eso no basta.
+  </p>
+
+  <h2>Qué incluir</h2>
+  <ul>
+    <li>Qué ocurrió y cuándo</li>
+    <li>Si corresponde, el monto y la fecha de la operación</li>
+    <li>Cómo prefieres que te respondamos</li>
+  </ul>
+  <p>
+    No necesitas adjuntar documentos para presentarlo. Si hacen falta para revisarlo, te los
+    pedimos después.
+  </p>
+
+  <h2>Qué ocurre después</h2>
+  <p>
+    Recibimos el reclamo, lo revisamos y te respondemos por el medio que nos indiques.
+    <strong>El plazo de respuesta a un reclamo formal es de 10 días hábiles.</strong>
+  </p>
+  <p>
+    Presentar un reclamo ante DLPay <strong>no limita tus derechos como consumidor</strong>: puedes
+    acudir igualmente a las instancias que la ley chilena contempla.
+  </p>
+
+  <h2>Cómo presentarlo</h2>
+  <p>
+    Hoy el canal operativo es WhatsApp, atendido por una persona del equipo.
+    <a href={wa} target="_blank" rel="noopener">Escríbenos por WhatsApp</a>.
+  </p>
+
+  <PendingNotice title="Canal formal escrito: en definición">
+    <p>
+      La dirección de correo para reclamos formales y el detalle del procedimiento están en
+      revisión legal. No la publicamos hasta confirmarla, porque una dirección equivocada en un
+      canal de reclamos es peor que no tenerla.
+    </p>
+    <p>Mientras tanto, todo reclamo presentado por WhatsApp se registra y se responde igual.</p>
+  </PendingNotice>
+</Legal>

@@ -2,18 +2,22 @@
 /**
  * Pie. Incluye la razón social donde corresponde legalmente.
  *
- * Las páginas legales todavía no existen: sus textos requieren revisión de
- * Compliance (Fase 5). Se listan como pendientes en vez de crear enlaces
- * muertos o publicar documentos sin validar.
- * PENDIENTE DE DECISIÓN — páginas legales (términos, privacidad, tarifas,
- * canal de denuncias). REQUIERE VALIDACIÓN DE COMPLIANCE.
+ * Las cuatro rutas legales existen y resuelven. El TEXTO de términos y
+ * privacidad sigue en revisión de Compliance: esas páginas lo declaran de
+ * frente en vez de publicar un texto provisorio.
+ * Ver docs/legal-brief.md.
  */
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import { site, contact } from '../lib/config/site.ts';
 
 const wa = `https://wa.me/${contact.whatsappNumber}`;
-const legal = ['Términos y condiciones', 'Política de privacidad', 'Tarifas', 'Canal de denuncias'];
+const legal = [
+  { label: 'Términos y condiciones', href: '/terminos' },
+  { label: 'Privacidad', href: '/privacidad' },
+  { label: 'Tarifas', href: '/tarifas' },
+  { label: 'Canal de denuncias', href: '/canal-de-denuncias' },
+];
 const product = [
   { label: 'Cotizar', href: '/cotizar' },
   { label: 'Cómo funciona', href: '/como-funciona' },
@@ -60,10 +64,9 @@ const year = new Date().getFullYear();
         <h2>Legal</h2>
         <ul>
           {legal.map((item) => (
-            <li><span class="pending">{item}</span></li>
+            <li><a href={item.href}>{item.label}</a></li>
           ))}
         </ul>
-        <p class="pending-note">En preparación.</p>
       </div>
     </div>
 
@@ -88,9 +91,6 @@ const year = new Date().getFullYear();
   .col a { color: var(--on-tinta); text-decoration: none; font-size: var(--t-body-sm); display: inline-flex; align-items: center; gap: var(--s-2); }
   .col a:hover { color: var(--verde); }
   .wa-icon { width: 15px; height: 15px; }
-
-  .pending { color: var(--on-tinta-mute); font-size: var(--t-body-sm); opacity: 0.65; }
-  .pending-note { font-size: var(--t-dato-sm); color: var(--on-tinta-mute); opacity: 0.65; margin-top: var(--s-3); }
 
   .base {
     display: flex;

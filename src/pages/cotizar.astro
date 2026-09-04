@@ -24,6 +24,10 @@ import ActivityFeed from '../components/ActivityFeed.astro';
   <main id="main">
     <div class="tool">
       <div class="column">
+        <!-- La página tiene título aunque el diseño no lo muestre: la herramienta
+             se explica sola a la vista, pero un lector de pantalla necesita saber
+             dónde está. -->
+        <h1 class="sr-only">Cotizar tu operación</h1>
         <div class="instrument">
           <Quoter variant="flat" />
         </div>
@@ -35,6 +39,17 @@ import ActivityFeed from '../components/ActivityFeed.astro';
 </Base>
 
 <style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   /* El cotizador manda: centrado en los dos ejes, con espacio propio para que
      se lea como una herramienta y no como una sección más de una página. */
   .tool {
