@@ -36,6 +36,18 @@ export interface ActivitySource {
   list(limit: number): Promise<ActivityEvent[]>;
 }
 
+/**
+ * Fuente que además emite operaciones nuevas a medida que ocurren.
+ *
+ * La mesa está operando: que aparezca una operación nueva lo transmite mejor
+ * que cualquier texto. Una fuente real implementaría esto con SSE o con un
+ * sondeo; la de ejemplo lo hace con un temporizador.
+ */
+export interface StreamingActivitySource extends ActivitySource {
+  /** Devuelve la función para dejar de escuchar. */
+  subscribe(onEvent: (event: ActivityEvent) => void): () => void;
+}
+
 export const KIND_LABEL: Record<ActivityKind, string> = {
   conversion_to_usd: 'Conversión CLP → USD',
   conversion_to_clp: 'Conversión USD → CLP',

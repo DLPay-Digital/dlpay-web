@@ -99,8 +99,30 @@ pasar por operaciones reales, aunque alguien lo olvide.
 El tipo `ActivityEvent` sólo admite tipo de operación, monto redondeado y momento. **No hay dónde
 poner un nombre, un RUT ni un dato personal**, aunque se quisiera.
 
-Cuando exista la fuente real: se agrega `DLPayActivitySource` con `isReal = true` sobre operaciones
-confirmadas y anonimizadas, y se cambia una línea en `ActivityFeed.astro`.
+**En vivo.** El feed se actualiza solo: los tiempos relativos se refrescan cada 5 s y aparecen
+operaciones nuevas cada 14–46 s, con un intervalo irregular a propósito —una cadencia exacta se lee
+como un contador, no como una mesa operando—. La operación nueva **aparece con una atenuación de
+420 ms, no se desliza ni parpadea**, y bajo `prefers-reduced-motion` no se anima. Nada corre
+mientras la pestaña está oculta.
+
+Refrescar los tiempos es la parte que más dice "esto está vivo" y **es honesta también con datos
+reales**: el dato no cambia, sólo su antigüedad.
+
+**Previsualizar el diseño sin el distintivo.** En `.env` (que no se versiona):
+
+```
+PUBLIC_ACTIVITY_PREVIEW=true
+```
+
+Oculta el distintivo de "Datos de ejemplo" **sólo en `npm run dev`**. No tiene efecto en un build:
+`import.meta.env.DEV` es false fuera del servidor de desarrollo, así que un sitio publicado siempre
+lo muestra mientras la fuente no sea real. Ponerlo en un servidor no hace nada. Verificado
+construyendo con la variable activada.
+
+Cuando exista la fuente real: se agrega `DLPayActivitySource` que implemente
+`StreamingActivitySource` con `isReal = true` sobre operaciones confirmadas y anonimizadas, y se
+cambian dos líneas —una en el frontmatter de `ActivityFeed.astro` y otra en su script—. El resto no
+se toca.
 
 ## El cotizador
 
@@ -130,7 +152,7 @@ cualquier servidor estático.** Lo que rompa esa afirmación necesita una enmien
 | Ruta | Qué es | JS |
 |---|---|---|
 | `/` | Home: héroe con cotizador, cómo funciona, confianza, empresas, FAQ | 3,2 KB |
-| `/cotizar` | La herramienta sola: cotizador centrado + actividad reciente | 3,2 KB |
+| `/cotizar` | La herramienta sola: cotizador centrado + actividad reciente en vivo | 5,5 KB |
 | `/como-funciona` | El recorrido completo con el diagrama de flujo y los tiempos | 0 |
 | `/empresas` | Carril B2B: casos de uso, diferencias, incorporación | 0 |
 | `/confianza` | El mecanismo, los requisitos y lo que no afirmamos | 0 |

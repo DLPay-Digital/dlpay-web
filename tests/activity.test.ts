@@ -56,6 +56,37 @@ describe('fuente de ejemplo', () => {
   });
 });
 
+describe('emisión en vivo', () => {
+  test('next() fecha la operación en el momento en que ocurre', () => {
+    const at = new Date('2026-09-04T12:00:00Z');
+    const event = new MockActivitySource().next(at);
+    assert.equal(event.at.getTime(), at.getTime());
+    assert.ok(event.kind in KIND_LABEL);
+    assert.equal(event.amountUsd % 10, 0);
+  });
+
+  test('cada operación emitida tiene id propio', () => {
+    const src = new MockActivitySource();
+    const ids = new Set([src.next().id, src.next().id, src.next().id]);
+    assert.equal(ids.size, 3);
+  });
+
+  test('tampoco al emitir en vivo aparece un dato personal', () => {
+    const event = new MockActivitySource().next();
+    assert.deepEqual(new Set(Object.keys(event)), new Set(['id', 'kind', 'amountUsd', 'at']));
+  });
+
+  test('subscribe devuelve una función para dejar de escuchar, y no emite de inmediato', () => {
+    let received = 0;
+    const stop = new MockActivitySource().subscribe(() => {
+      received += 1;
+    });
+    assert.equal(typeof stop, 'function');
+    assert.equal(received, 0, 'no debe emitir de forma síncrona');
+    stop();
+  });
+});
+
 describe('formato de la actividad', () => {
   const now = new Date('2026-09-04T12:00:00Z');
   const ago = (s: number) => new Date(now.getTime() - s * 1000);

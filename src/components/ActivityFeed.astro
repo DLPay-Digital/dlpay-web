@@ -7,37 +7,51 @@
  *
  * SALVAGUARDA: si la fuente no es real, se muestra un distintivo visible de
  * datos de ejemplo. La condición la comprueba el componente, no la memoria de
- * quien despliegue, así que no hay forma de publicar datos inventados como si
- * fueran operaciones reales.
+ * quien despliegue.
+ *
+ * La única excepción es la previsualización de diseño, y está atada al servidor
+ * de desarrollo: `import.meta.env.DEV` es false en cualquier build, así que un
+ * sitio publicado SIEMPRE muestra el distintivo, exista o no la variable.
  */
 import { MockActivitySource } from '../lib/activity/mock-activity-source.ts';
 import { KIND_LABEL } from '../lib/activity/types.ts';
 import { relativeTime, formatUsd } from '../lib/activity/format.ts';
 
-// PENDIENTE DE DECISIÓN — fuente real de operaciones confirmadas y anonimizadas.
-// Al existir, se cambia esta línea y nada más.
+// PENDIENTE DE DECISIÓN — fuente real de operaciones confirmadas y anonimizadas
+// (CLAUDE.md §13, D18). Al existir, se cambia esta línea y nada más.
 const source = new MockActivitySource();
-const events = await source.list(4);
+const VISIBLE = 4;
+const events = await source.list(VISIBLE);
 const now = new Date();
+
+/** Sólo en desarrollo, y sólo si se pide explícitamente. */
+const preview = import.meta.env.DEV && import.meta.env.PUBLIC_ACTIVITY_PREVIEW === 'true';
+const showSampleMark = !source.isReal && !preview;
 ---
-<section class="activity" aria-labelledby="activity-title">
+<section
+  class="activity"
+  aria-labelledby="activity-title"
+  data-max={VISIBLE}
+>
   <div class="head">
     <h2 id="activity-title">Actividad reciente</h2>
-    {!source.isReal && <span class="sample">{source.label}</span>}
+    {showSampleMark && <span class="sample">{source.label}</span>}
   </div>
 
-  <ol class="events">
+  <ol class="events" data-events aria-live="polite" aria-relevant="additions">
     {events.map((event) => (
       <li class="event">
         <span class="dot" aria-hidden="true"></span>
         <span class="kind">{KIND_LABEL[event.kind]}</span>
         <span class="amount num">{formatUsd(event.amountUsd)}</span>
-        <span class="when num">{relativeTime(event.at, now)}</span>
+        <time class="when num" datetime={event.at.toISOString()}>
+          {relativeTime(event.at, now)}
+        </time>
       </li>
     ))}
   </ol>
 
-  {!source.isReal && (
+  {showSampleMark && (
     <p class="disclaimer">
       Estas operaciones son un ejemplo para mostrar cómo se verá esta sección. No
       corresponden a operaciones reales de DLPay.
@@ -103,6 +117,17 @@ const now = new Date();
     color: var(--ink-mute);
   }
 
+  /* La operación nueva aparece, no se desliza ni parpadea. Es una mesa
+     operando, no un marcador. */
+  .event.is-new { animation: appear 420ms ease-out both; }
+  @keyframes appear {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .event.is-new { animation: none; }
+  }
+
   .disclaimer {
     margin-top: var(--s-4);
     font-size: var(--t-dato-sm);
@@ -115,3 +140,68 @@ const now = new Date();
     .when { grid-column: auto; text-align: right; min-width: 12ch; }
   }
 </style>
+
+<script>
+  import { MockActivitySource } from '../lib/activity/mock-activity-source.ts';
+  import { KIND_LABEL } from '../lib/activity/types.ts';
+  import { relativeTime, formatUsd } from '../lib/activity/format.ts';
+  import type { ActivityEvent } from '../lib/activity/types.ts';
+
+  const root = document.querySelector<HTMLElement>('.activity');
+  const list = root?.querySelector<HTMLOListElement>('[data-events]');
+
+  if (root && list) {
+    const max = Number(root.dataset.max) || 4;
+
+    /**
+     * Refrescar los tiempos es lo que más dice "esto está vivo", y es honesto
+     * también con datos reales: el dato no cambia, sólo su antigüedad.
+     */
+    const refreshTimes = (): void => {
+      const now = new Date();
+      list.querySelectorAll<HTMLTimeElement>('time[datetime]').forEach((el) => {
+        el.textContent = relativeTime(new Date(el.dateTime), now);
+      });
+    };
+    setInterval(refreshTimes, 5_000);
+
+    const rowFor = (event: ActivityEvent): HTMLLIElement => {
+      const li = document.createElement('li');
+      li.className = 'event is-new';
+
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.setAttribute('aria-hidden', 'true');
+
+      const kind = document.createElement('span');
+      kind.className = 'kind';
+      kind.textContent = KIND_LABEL[event.kind];
+
+      const amount = document.createElement('span');
+      amount.className = 'amount num';
+      amount.textContent = formatUsd(event.amountUsd);
+
+      const when = document.createElement('time');
+      when.className = 'when num';
+      when.dateTime = event.at.toISOString();
+      when.textContent = relativeTime(event.at, new Date());
+
+      li.append(dot, kind, amount, when);
+      return li;
+    };
+
+    // PENDIENTE — al existir la fuente real, se cambia esta línea por su
+    // implementación de StreamingActivitySource y el resto no se toca.
+    const source = new MockActivitySource(Date.now() % 100000);
+
+    const stop = source.subscribe((event) => {
+      // Sin trabajo mientras nadie mira: ni animación ni temporizadores en vano.
+      if (document.hidden) return;
+
+      list.prepend(rowFor(event));
+      while (list.children.length > max) list.lastElementChild?.remove();
+    });
+
+    window.addEventListener('pagehide', stop, { once: true });
+  }
+</script>
