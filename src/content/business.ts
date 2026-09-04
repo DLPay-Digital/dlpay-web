@@ -20,15 +20,15 @@ export interface Difference {
 export const useCases: UseCase[] = [
   {
     title: 'Pagos a proveedores en el exterior',
-    body: 'Pagas sin depender de la cadena de bancos corresponsales, de sus horarios ni de los días hábiles. El proveedor cobra antes y tú dejas de perseguir la transferencia.',
+    body: 'Conviertes a dólar digital y pagas a proveedores que operan con él, sin la cadena de bancos corresponsales ni sus horarios. Si tu proveedor sólo recibe por banco, conversémoslo antes.',
   },
   {
     title: 'Tesorería en dólares',
-    body: 'Mantienes parte de la caja en dólares y la conviertes de vuelta cuando la necesitas, sin abrir una cuenta en el extranjero.',
+    body: 'Mantienes parte de la caja en dólar digital y la conviertes de vuelta a pesos cuando la necesitas, sin abrir una cuenta en el extranjero.',
   },
   {
     title: 'Pagos recurrentes al exterior',
-    body: 'Remuneraciones, servicios o proveedores fijos. Tu ejecutivo ya conoce la operación y el ida y vuelta se acorta cada mes.',
+    body: 'Servicios, equipos o proveedores fijos que reciben en dólar digital. Tu ejecutivo ya conoce la operación y el ida y vuelta se acorta cada mes.',
   },
   {
     title: 'Cambio de divisas por volumen',

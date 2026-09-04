@@ -24,7 +24,7 @@ export const flow: FlowNode[] = [
   { label: 'Tú', detail: 'Transfieres en pesos desde tu banco' },
   { label: 'El banco', detail: 'Confirmamos que el dinero llegó' },
   { label: 'DLPay', detail: 'Cambiamos al precio acordado' },
-  { label: 'El destino', detail: 'Tu dinero llega adonde lo necesitas' },
+  { label: 'Tu billetera', detail: 'Recibes el dólar digital y decides qué hacer' },
 ];
 
 export const detailedSteps: DetailedStep[] = [
@@ -45,8 +45,8 @@ export const detailedSteps: DetailedStep[] = [
   {
     n: 3,
     who: 'DLPay',
-    title: 'Un ejecutivo confirma y coordina',
-    body: 'El precio de la web es referencial porque el mercado se mueve. Una persona te confirma el precio final, coordina contigo adónde va el dinero y te da los datos para transferir.',
+    title: 'Un ejecutivo confirma el precio',
+    body: 'El precio de la web es referencial porque el mercado se mueve. Una persona te confirma el precio final, te pide la billetera de destino y te da los datos para transferir.',
     time: 'minutos',
   },
   {
@@ -67,12 +67,11 @@ export const detailedSteps: DetailedStep[] = [
     n: 6,
     who: 'DLPay',
     // REQUIERE VALIDACIÓN DE COMPLIANCE — el tiempo de ~5 minutos
-    title: 'Tu dinero llega a destino',
-    // REQUIERE VALIDACIÓN DE COMPLIANCE — cómo llega el dinero al destinatario
-    // final (entrega en cuenta local en el extranjero vs. entrega de dólar
-    // digital). El copy describe el resultado sin comprometer un mecanismo
-    // concreto hasta que DLPay lo confirme.
-    body: 'Ejecutamos la operación y te confirmamos por el mismo chat, con el comprobante de que el dinero salió.',
+    title: 'Recibes el dólar digital',
+    // Cerrado el 2026-09-04: DLPay entrega dólar digital en la billetera. NO
+    // realiza depósito en cuenta bancaria en destino. El tiempo es el de nuestra
+    // operación, no el de una liquidación bancaria.
+    body: 'Enviamos el dólar digital a la billetera que nos indicaste y te confirmamos por el mismo chat. Ahí termina nuestra operación: desde ese punto decides tú.',
     time: '~5 min desde el pago',
   },
 ];
@@ -81,5 +80,5 @@ export const detailedSteps: DetailedStep[] = [
 export const checklist: string[] = [
   'Tu cédula de identidad vigente',
   'Una cuenta bancaria a tu nombre',
-  'Los datos de destino: a quién le llega el dinero y dónde',
+  'La dirección de la billetera donde quieres recibir el dólar digital',
 ];

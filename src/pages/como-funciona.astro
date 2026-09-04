@@ -19,14 +19,14 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
 ---
 <Base
   title="Cómo funciona"
-  description="El recorrido completo de una operación en DLPay: cotizas en la web, confirmas con un ejecutivo por WhatsApp, transfieres, verificamos y tu dinero llega a destino."
+  description="El recorrido completo de una operación en DLPay: cotizas en la web, confirmas con un ejecutivo por WhatsApp, transfieres, verificamos y recibes dólar digital en tu billetera."
   path="/como-funciona"
 >
   <Header />
   <main id="main">
     <PageHero
       title="Cómo funciona una operación"
-      lead="Da igual si envías al extranjero o cambias pesos por dólares: el recorrido es el mismo. La web te deja listo y una persona cierra."
+      lead="El recorrido es el mismo cambies pesos por dólares o al revés. La web te deja listo y una persona cierra. Acá está todo, en orden y con los tiempos reales."
     />
 
     <section class="diagram-band" aria-labelledby="flow-title">
@@ -101,6 +101,24 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
               </a>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scope" aria-labelledby="scope-title">
+      <div class="inner">
+        <div class="scope-box">
+          <h2 id="scope-title">Dónde termina nuestra operación</h2>
+          <p>
+            DLPay hace el cambio de divisas y te entrega dólar digital en tu billetera.
+            <strong>No depositamos dinero en cuentas bancarias en el extranjero.</strong>
+          </p>
+          <p>
+            Desde tu billetera decides: lo mantienes, se lo envías a otra persona o lo
+            conviertes a moneda local en destino. Ese último paso es un proceso distinto,
+            con otros servicios, y no lo realiza DLPay. Lo decimos acá para que no haya
+            sorpresas después.
+          </p>
         </div>
       </div>
     </section>
@@ -213,6 +231,18 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
   }
   .ghost:hover { border-color: var(--ink); }
   .wa-icon { width: 15px; height: 15px; }
+
+  /* El límite del servicio, dicho antes de que el usuario opere. Va sobre papel-2
+     y con un borde de aviso: es información que protege, no letra chica. */
+  .scope { background: var(--papel-2); padding: var(--s-9) 0; }
+  .scope-box {
+    max-width: 66ch;
+    border-left: 2px solid var(--aviso);
+    padding-left: var(--s-5);
+  }
+  .scope-box p { color: var(--ink-mute); margin-bottom: var(--s-3); }
+  .scope-box p:last-child { margin-bottom: 0; }
+  .scope-box strong { color: var(--ink); font-weight: 600; }
 
   .close { background: var(--tinta); color: var(--on-tinta); padding: var(--s-8) 0; }
   .close h2 { color: var(--on-tinta); }

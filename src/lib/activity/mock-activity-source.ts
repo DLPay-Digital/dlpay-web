@@ -14,18 +14,18 @@ import type { ActivityEvent, ActivityKind, ActivitySource } from './types.ts';
 
 const KINDS: ActivityKind[] = [
   'conversion_to_usd',
-  'international_send',
+  'international_move',
   'conversion_to_clp',
   'business',
   'conversion_to_usd',
-  'international_send',
+  'international_move',
 ];
 
 /** Montos verosímiles por tipo, para que la composición se vea real al diseñar. */
 const RANGES: Record<ActivityKind, [number, number]> = {
   conversion_to_usd: [300, 3_000],
   conversion_to_clp: [300, 2_500],
-  international_send: [500, 4_000],
+  international_move: [500, 4_000],
   business: [4_000, 20_000],
 };
 

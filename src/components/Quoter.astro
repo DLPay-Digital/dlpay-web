@@ -122,8 +122,9 @@ const intents = [
     <span class="source">Referencia: {price.source}</span>
   </p>
   <p class="rail">
-    Movemos tu dinero con dólar digital. Es la infraestructura que permite que no
-    dependa de días hábiles.
+    Recibes <strong>dólar digital</strong> en tu billetera, equivalente 1:1 al dólar. Es lo
+    que permite moverlo en minutos y a cualquier hora. No depositamos en cuentas bancarias
+    en el extranjero.
   </p>
 
   <a class="cta" href={wa} target="_blank" rel="noopener" data-cta>
@@ -304,6 +305,7 @@ const intents = [
   .source { font-family: var(--f-num); font-size: var(--t-dato-sm); }
 
   /* El riel se explica, pero en el peso que le corresponde: no es el titular */
+  .rail strong { color: var(--ink); font-weight: 600; }
   .rail {
     font-size: var(--t-dato-sm);
     line-height: 1.45;

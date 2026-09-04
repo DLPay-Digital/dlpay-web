@@ -90,9 +90,30 @@ persona que cierra la operación por WhatsApp. Personas y empresas.
 propia, empresa a persona, empresa a empresa) · pagos internacionales y a proveedores ·
 tesorería en dólares · cambio de divisas CLP ↔ USD como operación independiente.
 
-**El dólar digital (USDT/USDC) es la infraestructura, no el mensaje comercial.** Se explica
-donde aporta —una nota en el cotizador, una respuesta en la FAQ— y nunca protagoniza un titular.
-La web **no** debe leerse como un sitio de criptomonedas.
+**El dólar digital (USDT) es la infraestructura, no el mensaje comercial.** Se explica donde
+aporta —una nota en el cotizador, una respuesta en la FAQ— y nunca protagoniza un titular. La web
+**no** debe leerse como un sitio de criptomonedas.
+
+### Dónde termina el servicio (definido el 2026-09-04 — regla dura de contenido)
+
+El flujo real es: **CLP del cliente → DLPay convierte → entrega dólar digital en la billetera del
+cliente → desde ahí él decide** si lo mantiene, lo mueve o lo convierte en destino.
+
+**Prohibido afirmar o sugerir:** que DLPay deposita en una cuenta bancaria en el extranjero, que
+realiza una transferencia bancaria internacional, o que el destinatario recibe moneda local. La
+conversión a moneda fiat en destino es un proceso distinto, con otros servicios, que DLPay no
+presta hoy.
+
+**Sí se puede comunicar:** que DLPay facilita el cambio de divisas y el movimiento internacional
+de valor mediante dólar digital, que mantiene una equivalencia 1:1 con el dólar y se transfiere
+por distintas redes en minutos, sin depender de los tiempos de una transferencia bancaria.
+
+**La rapidez se predica de NUESTRA operación** —la conversión y la entrega del dólar digital—,
+nunca de una recepción bancaria final. "Sin esperar días" jamás debe poder leerse como "el
+destinatario recibe dinero en su cuenta en minutos".
+
+El límite se declara **de frente** en `/como-funciona` y en `/confianza`, antes de que el usuario
+opere. Es una señal de confianza, no letra chica.
 
 Este posicionamiento **coincide con los servicios que los T&C publicados ya declaran**
 (tesorería transfronteriza, pagos B2B, liquidaciones internacionales), y con ello cierra el
@@ -349,8 +370,8 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | D6 | **Monto mínimo/máximo reales** y precio de muestra del cotizador | No — hoy son placeholders | DLPay |
 | D7 | **Fuente oficial de market price** | No — `ConfigPriceSource` cubre v1 | DLPay |
 | ~~D8~~ | ~~Alcance de servicios a comunicar~~ | ✅ Cerrado 2026-09-04: el amplio, alineado con los T&C publicados | Equipo DLPay |
-| **D16** | **Cómo llega el dinero al destinatario final**: ¿moneda local en su cuenta en el extranjero, o entrega de dólar digital y el destino lo resuelve el cliente? El copy hoy describe el resultado sin comprometer el mecanismo | **Sí para Fase 5** — condiciona el claim central de la web | **REQUIERE VALIDACIÓN DE COMPLIANCE** |
-| D17 | **"Sin esperar días"** es una comparación contra la banca. Los ~5 min documentados son de la ejecución, no de un giro puerta a puerta | No para Fase 4; sí antes de publicar | DLPay |
+| ~~D16~~ | ~~Cómo llega el dinero al destinatario final~~ | ✅ Cerrado 2026-09-04: DLPay entrega **dólar digital en la billetera**; no deposita en cuentas bancarias en el extranjero. Ver §1 | Equipo DLPay |
+| ~~D17~~ | ~~"Sin esperar días"~~ | ✅ Reformulado 2026-09-04: la rapidez se predica de la conversión y del movimiento del dólar digital, nunca de una recepción bancaria en destino | Equipo DLPay |
 | D18 | **Fuente real de actividad reciente** (operaciones confirmadas y anonimizadas). Hoy hay datos de ejemplo, marcados como tales por el propio componente | No | DLPay |
 | D9 | **Razón social**: se usa **DLPZ INCZ SpA**. Los T&C publicados dicen "DLPZ PRO SpA" (RUT 78.378.714-8) | No | `REQUIERE VALIDACIÓN DE COMPLIANCE` — Joaquín. **No reinvestigar.** |
 | D10 | **Testimonios, cifras de clientes/volumen, logos de empresas** | No — no se publican hasta verificar | DLPay (I15) |

@@ -14,7 +14,7 @@
 export type ActivityKind =
   | 'conversion_to_usd'
   | 'conversion_to_clp'
-  | 'international_send'
+  | 'international_move'
   | 'business';
 
 export interface ActivityEvent {
@@ -39,6 +39,8 @@ export interface ActivitySource {
 export const KIND_LABEL: Record<ActivityKind, string> = {
   conversion_to_usd: 'Conversión CLP → USD',
   conversion_to_clp: 'Conversión USD → CLP',
-  international_send: 'Envío internacional',
+  // "Movimiento", no "envío bancario": DLPay entrega dólar digital, no deposita
+  // en cuentas en el extranjero.
+  international_move: 'Movimiento internacional',
   business: 'Operación empresarial',
 };

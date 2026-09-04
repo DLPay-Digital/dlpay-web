@@ -36,8 +36,8 @@ export interface UseCase {
 
 export const useCases: UseCase[] = [
   {
-    title: 'Enviar dinero fuera de Chile',
-    body: 'A una persona, o a tu propia cuenta en el extranjero. Sin depender de días hábiles ni de la cadena de bancos corresponsales.',
+    title: 'Mover dinero fuera de Chile',
+    body: 'Recibes dólar digital y desde ahí lo envías a quien necesites, en otro país o a tu propia billetera. Se mueve en minutos, sin cadena de bancos corresponsales.',
   },
   {
     title: 'Tener tus pesos en dólares',
@@ -45,7 +45,7 @@ export const useCases: UseCase[] = [
   },
   {
     title: 'Pagar desde tu empresa',
-    body: 'Proveedores en el exterior, remuneraciones, tesorería. Con un ejecutivo que conoce tu operación.',
+    body: 'A proveedores, servicios o equipos en el exterior que operan con dólar digital. Con un ejecutivo que conoce tu operación.',
   },
 ];
 
@@ -63,7 +63,7 @@ export const steps: Step[] = [
   {
     n: 2,
     title: 'Continúas por WhatsApp',
-    body: 'El botón abre el chat con tu operación ya escrita. Una persona te confirma el precio final y coordina el destino.',
+    body: 'El botón abre el chat con tu operación ya escrita. Una persona te confirma el precio final y te indica cómo seguir.',
     time: 'minutos',
   },
   {
@@ -74,9 +74,10 @@ export const steps: Step[] = [
   },
   {
     n: 4,
-    title: 'Tu dinero llega',
-    // REQUIERE VALIDACIÓN DE COMPLIANCE — el tiempo de ~5 minutos
-    body: 'Ejecutamos la operación y te confirmamos por el mismo chat, con el comprobante.',
+    title: 'Recibes tus dólares',
+    // El tiempo corresponde a NUESTRA operación: la entrega del dólar digital.
+    // No a una liquidación bancaria en destino, que DLPay no realiza.
+    body: 'Te enviamos el dólar digital a tu billetera y te confirmamos por el mismo chat. Desde ahí decides: lo mantienes, lo mueves o lo conviertes.',
     time: '~5 min desde el pago',
   },
 ];
@@ -103,15 +104,19 @@ export const trust: TrustBlock[] = [
 export const faq: FaqItem[] = [
   {
     q: '¿Por qué es más rápido que un banco?',
-    a: 'Porque no dependemos de la cadena de bancos corresponsales ni de sus horarios. Movemos tu dinero con dólar digital, que se transfiere en minutos y a cualquier hora. Lo que sí depende de tu banco es el momento en que tu transferencia en pesos llega a nosotros.',
+    a: 'Porque el dólar digital se transfiere en minutos y a cualquier hora, sin pasar por la cadena de bancos corresponsales. Lo que sí depende de tu banco es el momento en que tu transferencia en pesos nos llega. Y si después conviertes ese dólar digital a moneda local en otro país, ese último paso es un proceso aparte.',
+  },
+  {
+    q: '¿DLPay deposita el dinero en una cuenta bancaria en el extranjero?',
+    a: 'No. Lo que hacemos es el cambio de divisas: recibes dólar digital en tu billetera. Desde ahí puedes mantenerlo, enviarlo a otra persona o convertirlo a moneda local en destino, que es un servicio distinto y lo resuelves tú. Preferimos ser exactos en esto.',
   },
   {
     q: '¿El precio de la web es el precio final?',
     a: 'No. Es un precio referencial de mercado. Tu ejecutivo te confirma el precio final al momento de cerrar, porque el mercado se mueve. Preferimos decírtelo antes que después.',
   },
   {
-    q: '¿Qué es el "dólar digital" que usan?',
-    a: 'Son stablecoins, USDT o USDC: monedas digitales que siguen el valor del dólar. Es la infraestructura que hace rápida la operación. No necesitas saber de esto para operar; tu ejecutivo te guía.',
+    q: '¿Qué es el "dólar digital" que recibo?',
+    a: 'Es una stablecoin, USDT: una moneda digital diseñada para mantener una equivalencia 1:1 con el dólar y que puede transferirse por distintas redes. Es lo que permite que el movimiento no dependa de horarios bancarios. No necesitas saber de esto para operar; tu ejecutivo te guía.',
   },
   {
     q: '¿Necesito registrarme?',
