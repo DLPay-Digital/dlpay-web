@@ -173,6 +173,10 @@ const intents = [
     display: grid;
     gap: var(--s-1);
   }
+  /* La etiqueta es el elemento de la rejilla y se estira sola; el recuadro
+     visible va dentro, así que hay que decirle que llene su celda. Sin esto,
+     una opción que envuelve a dos líneas queda más alta que las demás. */
+  .intent-option { display: flex; position: relative; }
   .intent-option input {
     position: absolute;
     opacity: 0;
@@ -181,7 +185,9 @@ const intents = [
     min-height: 0;
   }
   .intent-option span {
-    display: block;
+    flex: 1;
+    display: flex;
+    align-items: center;
     padding: var(--s-3);
     border: 1px solid var(--line);
     border-radius: var(--r-2);
@@ -331,21 +337,26 @@ const intents = [
   .cta:hover { background: var(--verde-hi); }
 
   .secondary {
-    display: block;
-    text-align: center;
-    margin-top: var(--s-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: var(--s-2);
+    min-height: 44px;
     font-size: var(--t-body-sm);
     font-weight: 500;
     color: var(--verde-deep);
     text-decoration: none;
-    padding: var(--s-2);
   }
   .secondary:hover { text-decoration: underline; }
 
   @media (min-width: 900px) {
     .price-value { font-size: var(--t-dato); }
     .intent-options { grid-template-columns: repeat(3, 1fr); }
-    .intent-option span { text-align: center; padding: var(--s-3) var(--s-2); }
+    .intent-option span {
+      justify-content: center;
+      text-align: center;
+      padding: var(--s-3) var(--s-2);
+    }
   }
 </style>
 

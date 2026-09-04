@@ -179,6 +179,22 @@ mide lo mismo en ambas.
 
 Intro de sección (`h2` + una línea): medida única de **46ch**.
 
+### 4.3.2 Trampas de composición (encontradas revisando, 2026-09-04)
+
+Tres errores que se ven iguales en el código y distintos en pantalla. Conviene
+reconocerlos antes de repetirlos.
+
+1. **El recuadro visible tiene que llenar su celda.** Si el elemento de la rejilla es
+   una etiqueta o un envoltorio y quien pinta el borde va dentro, el envoltorio se
+   estira y el recuadro no: dos opciones con texto de distinto largo quedan de distinta
+   altura. El hijo necesita `flex: 1` o `height: 100%`.
+2. **Una rejilla por fila no alinea columnas entre filas.** Si cada `li` declara su
+   propio `display: grid`, las pistas `auto` se dimensionan con el contenido de esa fila
+   y las cifras no quedan en columna. Para que aliñen, las pistas van con **ancho fijo**.
+3. **Una regla de acento sobre `inline-block` mide lo que el texto.** En una rejilla de
+   tarjetas con titulares de distinto largo, cada raya sale de un ancho distinto. La
+   regla va con **ancho fijo** (28px), en un pseudo-elemento.
+
 ### 4.4 Radios (discretos — nada de "pill")
 
 | Token | Valor | Uso |
@@ -302,7 +318,9 @@ Cada uno se construye sólo cuando una página real lo necesita (Principio 5, CL
   `--verde` sobre tinta. El verde de marca sobre papel da **2.02:1**, insuficiente
   incluso para un elemento gráfico. Las superficies oscuras declaran la clase
   `.on-tinta-surface`, que redefine el token.
-- Objetivos táctiles ≥ **44px**.
+- Objetivos táctiles ≥ **44px**. Un enlace de 14px sin relleno vertical mide ~20px: los
+  enlaces de navegación —los del pie incluidos— necesitan `min-height` explícito. Los
+  enlaces dentro de un párrafo quedan exentos.
 - HTML semántico, jerarquía de headings correcta, labels en formularios, `alt` en imágenes.
 - `prefers-reduced-motion` respetado.
 - El cotizador operable por teclado; mensajes de error comprensibles y accionables.

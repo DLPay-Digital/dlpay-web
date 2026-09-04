@@ -86,9 +86,20 @@ const year = new Date().getFullYear();
   .brand-mark { width: 20px; height: 20px; color: var(--verde); display: block; }
   .tagline { color: var(--on-tinta-mute); font-size: var(--t-body-sm); margin-top: var(--s-3); max-width: 34ch; }
 
-  h2 { font-size: var(--t-label); font-weight: 600; letter-spacing: var(--ls-label); color: var(--on-tinta-mute); margin-bottom: var(--s-3); }
-  .col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s-2); }
-  .col a { color: var(--on-tinta); text-decoration: none; font-size: var(--t-body-sm); display: inline-flex; align-items: center; gap: var(--s-2); }
+  h2 { font-size: var(--t-label); font-weight: 600; letter-spacing: var(--ls-label); color: var(--on-tinta-mute); margin-bottom: var(--s-2); }
+  /* Sin relleno vertical el enlace medía ~20px de alto. El relleno lo lleva a
+     44px (Design System §10) y absorbe la separación, así que la lista ya no
+     necesita gap propio. */
+  .col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .col a {
+    color: var(--on-tinta);
+    text-decoration: none;
+    font-size: var(--t-body-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 44px;
+  }
   .col a:hover { color: var(--verde); }
   .wa-icon { width: 15px; height: 15px; }
 
@@ -104,8 +115,14 @@ const year = new Date().getFullYear();
     color: var(--on-tinta-mute);
   }
 
+  /* A 760px las cuatro columnas dejaban ~125px por columna y "Términos y
+     condiciones" partía en tres líneas. Peor aún a 900, donde el padding de
+     sección sube a 64px. Se abre en dos etapas. */
   @media (min-width: 760px) {
-    .cols { grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: var(--s-7); }
+    .cols { grid-template-columns: repeat(2, 1fr); gap: var(--s-7) var(--s-8); }
+  }
+  @media (min-width: 1000px) {
+    .cols { grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: var(--s-6); }
   }
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }

@@ -40,9 +40,17 @@ import { useCases } from '../content/home.ts';
     font-weight: 600;
     line-height: var(--lh-h3);
     margin-bottom: var(--s-2);
-    padding-top: var(--s-3);
-    border-top: 2px solid var(--verde);
-    display: inline-block;
+  }
+  /* Regla de acento de ancho fijo. Antes era un border-top sobre un
+     inline-block, así que medía lo que el titular más largo de esa tarjeta:
+     cada tarjeta tenía una raya distinta. */
+  .use h3::before {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 2px;
+    background: var(--verde);
+    margin-bottom: var(--s-3);
   }
   .use p { color: var(--ink-mute); max-width: 42ch; }
 

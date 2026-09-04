@@ -87,9 +87,13 @@ const showSampleMark = !source.isReal && !preview;
   }
 
   .events { list-style: none; margin: 0; padding: 0; }
+  /* Cada fila es su propia rejilla, así que columnas `auto` NO alinean entre
+     filas: cada una se dimensiona con su contenido. Con pistas fijas, los
+     montos y los tiempos quedan en columna, que es lo que pide una mesa de
+     operaciones. */
   .event {
     display: grid;
-    grid-template-columns: 7px 1fr auto;
+    grid-template-columns: 7px 1fr 90px;
     align-items: baseline;
     gap: var(--s-2) var(--s-3);
     padding: var(--s-3) 0;
@@ -136,8 +140,8 @@ const showSampleMark = !source.isReal && !preview;
   }
 
   @media (min-width: 900px) {
-    .event { grid-template-columns: 7px 1fr auto auto; gap: var(--s-4); }
-    .when { grid-column: auto; text-align: right; min-width: 12ch; }
+    .event { grid-template-columns: 7px 1fr 90px 130px; gap: var(--s-4); }
+    .when { grid-column: auto; text-align: right; }
   }
 </style>
 
