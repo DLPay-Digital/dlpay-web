@@ -131,9 +131,39 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
   .head p { color: var(--ink-mute); }
 
   .mech { background: var(--papel); padding: var(--s-9) 0; }
-  .list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
-  .item { display: flex; gap: var(--s-4); align-items: flex-start; }
-  .icon { width: 22px; height: 22px; color: var(--verde-deep); flex: none; margin-top: 3px; }
+
+  /* El bloque tiene medida propia: sin ella la composición flota perdida en un
+     contenedor de 1112px y el icono queda huérfano a la izquierda. */
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-7);
+    max-width: 66ch;
+  }
+
+  /* Columna fija para el icono: proximidad de 12px con SU mensaje frente a 48px
+     entre mensajes. Esa proporción 1:4 es lo que hace que el icono se lea como
+     parte de su bloque y no como un elemento suelto entre dos. */
+  .item {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    column-gap: var(--s-3);
+    align-items: start;
+  }
+
+  /* 16px es la grilla del Design System (§7). El trazo adelgaza solo: 1.6 en un
+     viewBox de 24 rinde ~1.07px aquí, frente a ~1.47px cuando medía 22px. Baja
+     el peso visual sin tocar el set de iconos ni volverlos adorno.
+     El margen superior lo alinea con la altura de mayúscula del titular, no con
+     el borde de la caja de línea. */
+  .icon {
+    width: 16px;
+    height: 16px;
+    color: var(--verde-deep);
+    margin-top: 3px;
+  }
   .item h3 {
     font-size: var(--t-h3-m);
     font-weight: 600;
@@ -141,7 +171,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
     margin-bottom: var(--s-2);
     max-width: 34ch;
   }
-  .item p { color: var(--ink-mute); max-width: 62ch; }
+  .item p { color: var(--ink-mute); }
 
   .req { background: var(--papel-2); padding: var(--s-9) 0; }
   .req-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-5); }
@@ -214,5 +244,8 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
     .inner { padding-inline: var(--pad-section); }
     h2 { font-size: var(--t-h2); }
     .item h3, .req-list h3, .honesty-list h3, .contact-card h3 { font-size: var(--t-h3); }
+    /* El titular pasa a 20px: el icono baja 1px para seguir alineado a su
+       altura de mayúscula. */
+    .icon { margin-top: 4px; }
   }
 </style>
