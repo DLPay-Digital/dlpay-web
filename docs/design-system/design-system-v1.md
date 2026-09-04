@@ -64,24 +64,47 @@ planos, sin antialias intermedio. Son los oficiales (ver ADR-0001 §2, enmienda 
 
 ---
 
-## 3. Tipografía — escala y roles (familia PENDIENTE)
+## 3. Tipografía — **T-C, cerrada**
 
-La **familia se elige visualmente** (hero + cotizador) entre 3 candidatas. **No bloquea Fase 3**
-(ADR-0001 §4, enmienda 2026-09-03): el board comparativo se produce en paralelo a la arquitectura.
-Candidatas:
+Elegida por Sebastián el 2026-09-04 tras revisar los tres sets sobre el héroe y el cotizador
+reales (ADR-0001 §4, enmienda). **Set T-C — geométrica disciplinada:** moderna y seria sin volverse
+corporativa ni intimidante, con las cifras leyéndose mejor y la escala sintiéndose más ordenada.
+Es la que rima con el corte diagonal del isotipo.
 
-| Set | Display | Texto | Cifras | Carácter |
-|---|---|---|---|---|
-| **T-A** | Bricolage Grotesque | Hanken Grotesk | Spline Sans Mono | Grotesca humanista con carácter — cálida, equilibrio persona/empresa |
-| **T-B** | Archivo | Archivo | IBM Plex Mono | Industrial / instrumento — más fría, "trading desk", eco del wordmark |
-| **T-C** | Familjen Grotesk (una sola familia) | Familjen Grotesk | Spline Sans Mono | Geométrica disciplinada — moderna, neutra-distintiva |
+| Rol | Familia | Pesos | Fallback |
+|---|---|---|---|
+| **Display, títulos y texto** | **Familjen Grotesk** | 400 · 500 · 600 · 700 | `'Helvetica Neue', Helvetica, Arial, sans-serif` |
+| **Cifras y datos** | **Spline Sans Mono** | 400 · 500 · 600 | `ui-monospace, 'SF Mono', Menlo, monospace` |
 
-Reglas comunes a cualquier set:
-- **Máximo 3 familias** (o 2 + mono).
-- **Cifras siempre tabulares** (`font-variant-numeric: tabular-nums`) en todo lo monetario.
-- Cada familia con **stack de fallback** de métricas cercanas.
+**Dos familias, una sola para todo el texto.** No se añade una tercera sin una necesidad concreta
+y una enmienda a este documento.
+
+**Licencias:** ambas **SIL Open Font License 1.1** — verificado. Se pueden auto-hospedar,
+modificar y usar comercialmente. Conservar el archivo de licencia junto a las fuentes.
+
+**Implementación (ADR-0004):**
+- Ambas son **variables**: un archivo `woff2` por familia cubre todos los pesos.
+- **Auto-hospedadas** en `public/fonts/`. Nunca desde un CDN de terceros en producción.
+- Subset **latin + latin-ext** (el español necesita `á é í ó ú ñ ü ¿ ¡`).
+- `font-display: swap` y `size-adjust` en el `@font-face` de fallback, para que el intercambio no
+  mueva el layout (CLS).
+- Precarga sólo de la variante que aparece en el primer viewport.
+
+### 3.0 Reglas de uso (vinculantes)
+
+1. **La cifra manda, siempre.** El precio referencial y el "recibes aprox." son los elementos más
+   fuertes de su pantalla. Ningún titular debe ganarles el pulso visual.
+2. **La escala es un techo, no un objetivo.** Si un titular compite con la cifra, se **reduce el
+   titular** — nunca se agranda la cifra para compensar. La tipografía no debe volverse
+   excesivamente grande: la jerarquía la dan el contraste y el espacio, no el tamaño bruto.
+3. **Cifras siempre tabulares** (`font-variant-numeric: tabular-nums`) en todo lo monetario.
+4. Familjen Grotesk se usa en **un solo eje de peso** por nivel; nada de mezclar pesos dentro de
+   un mismo titular.
 
 ### 3.1 Escala tipográfica (ratio ~1.25, base 16px)
+
+> Los tamaños de abajo se verificaron con T-C en el board. Al construir se permite un ajuste
+> óptico de ±1–2 px si la altura de x de Familjen Grotesk lo pide, **sin subir el techo**.
 
 | Rol | Tamaño (desktop / móvil) | Peso | Line-height | Tracking |
 |---|---|---|---|---|
@@ -102,7 +125,8 @@ Reglas comunes a cualquier set:
 Eyebrow en MAYÚSCULAS sobre cada título · acentuar una sola palabra del titular en color/itálica ·
 labels tipográficos innecesarios sobre el contenido · "→" pegado al texto de botones/enlaces ·
 cadenas unidas con "·" como metadato decorativo · tipografías genéricas por defecto
-(Inter/Roboto/Arial/Space Grotesk/Fraunces).
+(Inter/Roboto/Arial/Space Grotesk/Fraunces) · agrandar un titular para darle jerarquía en vez de
+resolverla con contraste y espacio.
 
 ---
 
@@ -235,17 +259,18 @@ Cada uno se construye sólo cuando una página real lo necesita (Principio 5, CL
 
 ---
 
-## 11. Qué falta para congelar la tipografía
+## 11. Tipografía — historial de la decisión
 
-**No bloquea la arquitectura ni la construcción del esqueleto.** Ruta:
+Cerrada el **2026-09-04**: set **T-C** (Familjen Grotesk + Spline Sans Mono), elegido por Sebastián
+sobre T-A y T-B. Registrada como enmienda a **ADR-0001 §4**; el pendiente **D2** de `CLAUDE.md`
+queda cerrado.
 
-1. Se produce el board comparativo: los tres sets en contexto real (hero + cotizador), con las
-   mismas cifras, en desktop y móvil.
-2. Sebastián elige T-A / T-B / T-C (o pide un ajuste).
-3. Se fija el token de familia aquí y se registra como enmienda a ADR-0001.
-4. Hasta entonces, cualquier maqueta usa **T-A** como provisional y lo marca
-   `PENDIENTE DE ASSET — familia tipográfica`.
+El board comparativo que sustentó la decisión se conserva como registro:
+`docs/design-system/board-tipografia.html` — los tres sets sobre el héroe y el cotizador reales,
+en desktop y móvil, con tamaños idénticos entre sets (sin ajuste óptico) para que la única
+variable fuera la letra.
 
-**Requisito técnico al elegir:** las fuentes se auto-hospedan (no se cargan desde Google Fonts en
-producción) y se verifica la licencia de cada familia. Cada una con `size-adjust` / stack de
-fallback de métricas cercanas para evitar CLS.
+**Descartadas y por qué:** *T-A* (Bricolage + Hanken) aportaba más calidez, pero exigía tres
+familias y el carácter del display cansaba en titulares largos. *T-B* (Archivo + IBM Plex Mono)
+era la que mejor conversaba con el wordmark y la más "instrumento", pero también la más fría para
+una persona que compra dólares por primera vez.

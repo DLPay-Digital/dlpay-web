@@ -34,23 +34,40 @@ La Fase 2.5 congeló las decisiones de experiencia. Se dispone de los **logos of
    flujo de valor o un paso de un proceso**. Nunca decoración. Se deriva del corte diagonal del
    isotipo (~30–35°). Prohibido: papel tapiz, "red de nodos" genérica, competir con el cotizador.
 
-4. **Tipografía: NO se decide aisladamente.** Se define la *escala* y los *roles* (ver
-   `design-system/design-system-v1.md`) pero la *familia* se elige **evaluando 2–3 candidatas
-   dentro de la experiencia real** (hero + cotizador). → `PENDIENTE` hasta la elección visual de
-   Sebastián.
-   - **Enmienda 2026-09-03: la tipografía NO bloquea Fase 3.** El board comparativo de candidatas
-     en contexto se produce **en paralelo** a la arquitectura. (El Artifact de Fase 2 usa el set
-     T-A —Bricolage Grotesque / Hanken Grotesk / Spline Sans Mono— como exploración; **no** contiene
-     el board comparativo que este ADR daba por existente.)
+4. **Tipografía: set T-C** — **Familjen Grotesk** (display, títulos y texto) +
+   **Spline Sans Mono** (cifras y datos). Ambas SIL OFL 1.1, variables, auto-hospedadas.
+   - *Enmienda 2026-09-03:* la tipografía **no bloquea Fase 3**; el board comparativo se produce
+     en paralelo a la arquitectura.
+   - **Enmienda 2026-09-04 — decisión cerrada.** Se produjo el board comparativo
+     (`docs/design-system/board-tipografia.html`): los tres sets sobre el héroe y el cotizador
+     reales, desktop y móvil, con tamaños idénticos entre sets para aislar la variable.
+     Sebastián eligió **T-C**: las cifras se leen mejor, la escala se siente más ordenada y seria,
+     y tiene personalidad propia sin volverse corporativa ni intimidante — que es exactamente el
+     equilibrio que pide A×C (mesa de operaciones seria, accesible para quien sólo quiere cambiar
+     dólares rápido). Es además la que rima con el corte diagonal del isotipo.
+     Descartadas: **T-A** (más cálida, pero tres familias y un display que cansa en titulares
+     largos) y **T-B** (mejor eco del wordmark y la más "instrumento", pero la más fría para una
+     persona primeriza).
+   - **Criterio permanente que acompaña la elección:** las cifras siguen siendo las protagonistas
+     y la tipografía **no debe volverse excesivamente grande**. La escala del Design System es un
+     techo, no un objetivo: si un titular compite con la cifra, se reduce el titular.
+     Ver `design-system-v1.md` §3.0.
 
 5. **Modo:** el sitio es de **superficie clara** con **héroes y bandas en tinta profunda**. No es
    un dark-mode con toggle; es un look comprometido (claro + zonas oscuras deliberadas).
 
 ## Qué queda `PENDIENTE` (no bloquea el Design System V1)
 
-- Familia tipográfica (elección visual).
 - Si el cotizador muestra la lógica de tramos de spread o sólo un precio referencial (Fase 0 I10/I11).
 - Fotografía / ilustración (si se usa) — se decide al construir las páginas.
+
+## Enmiendas
+
+| Fecha | Qué cambió |
+|---|---|
+| 2026-09-03 | Verde y tinta verificados por muestreo de píxeles: `#16C784` y `#0B1320`. Se cierra el `PENDIENTE` del vectorial (§2). |
+| 2026-09-03 | La tipografía deja de bloquear Fase 3 (§4). |
+| 2026-09-04 | **Tipografía cerrada: set T-C** — Familjen Grotesk + Spline Sans Mono (§4). |
 
 ## Consecuencias
 

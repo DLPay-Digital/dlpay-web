@@ -15,6 +15,8 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   `docs/research/`.
 - **ADRs de Fase 3 cerrados** (0002–0005): Astro + TypeScript · repositorio y convenciones ·
   CSS nativo con tokens, sin Tailwind · despliegue portable con proveedor diferido.
+- **Identidad visual completa**: dirección A×C, verde `#16C784`, tinta `#0B1320` y tipografía
+  **T-C** cerradas. No queda ninguna decisión visual abierta para la V1.
 - **La aplicación todavía no existe.** No hay `package.json` ni `src/`.
   **Bloqueo activo: la máquina no tiene Node.js instalado** — ver `docs/development.md`. Es el
   único prerrequisito para crear el esqueleto (y también la causa de que el MCP de Playwright no
@@ -48,6 +50,7 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
 | `docs/research/phase-2.5-definicion-experiencia.md` | Experiencia, arquitectura de información, estructura de la Home, principios UX. **El documento operativo más útil para construir.** |
 | Este archivo | Principios, límites, Definition of Done. |
 | `docs/development.md` | Cómo levantar el proyecto y qué falta para hacerlo. |
+| `docs/design-system/board-tipografia.html` | Board que sustentó la elección de tipografía. Se abre en el navegador. |
 
 **De consulta (no rehacer, sí citar):** `docs/research/phase-0-findings.md` (hechos técnicos,
 riesgos, pendientes I1–I19) · `phase-1-visual-ux.md` (§6, §17 y §18 son el filtro para decidir
@@ -173,8 +176,11 @@ del sitio de Guita o de documentos anteriores. La paleta completa, neutros y sem
 **Nomenclatura:** **DLPay** es la marca y protagoniza toda la comunicación comercial.
 **DLPZ INCZ SpA** es la razón social: va en footer y páginas legales, no es protagonista.
 
-**Tipografía:** `PENDIENTE DE DECISIÓN` — **no bloquea Fase 3**. Roles y escala están definidos en
-el Design System §3; la familia se elige en paralelo con un board comparativo en contexto.
+**Tipografía (cerrada 2026-09-04): set T-C** — **Familjen Grotesk** (display, títulos y texto) +
+**Spline Sans Mono** (cifras). Ambas SIL OFL, variables, **auto-hospedadas** (nunca desde un CDN
+de terceros). Criterio permanente: **las cifras son las protagonistas y la tipografía no debe
+volverse excesivamente grande** — la escala es un techo, no un objetivo; si un titular compite con
+la cifra, se reduce el titular. Ver Design System §3 y §3.0.
 
 Referencias (Global66, Buda, Wise, DolarApp, Fintual, Bithonor como contra-ejemplo): analizar
 **principios** de UX, jerarquía, conversión, densidad, navegación y comunicación de confianza. No
@@ -317,7 +323,7 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | ~~D1~~ | ~~Stack, estilos y repositorio~~ | ✅ Cerrado | ADR-0002, 0003, 0004 |
 | D1b | **Proveedor de hosting** (candidatos: Cloudflare, Vercel). Desarrollo en local mientras tanto | No — portabilidad protegida por ADR-0005 | Sebastián, cuando haya qué publicar |
 | D1c | **Instalar Node.js** en la máquina de desarrollo | **Sí — bloquea el esqueleto y el MCP de Playwright** | Sebastián (`docs/development.md`) |
-| D2 | **Familia tipográfica** (roles y escala ya definidos) | No — board comparativo en paralelo | Sebastián |
+| ~~D2~~ | ~~Familia tipográfica~~ | ✅ Cerrado 2026-09-04: **T-C** (Familjen Grotesk + Spline Sans Mono) | ADR-0001 §4 |
 | D3 | **Titularidad de la organización GitHub** de DLPay | No — el repo es local por ahora (ADR-0003) | Sebastián |
 | ~~D4~~ | ~~Idioma de código y commits~~ | ✅ Cerrado: código en inglés, commits/docs/contenido en español | ADR-0003 |
 | D5 | **Transparencia del spread**: ¿la web muestra la lógica de tramos o solo un referencial? Define el contenido de `/tarifas` | No para Fase 3; sí para Fase 5 | DLPay (I10/I11) |

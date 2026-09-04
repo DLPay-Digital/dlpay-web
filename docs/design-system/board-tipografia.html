@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tipografía DLPay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Familjen+Grotesk:wght@400;500;600;700&display=swap">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   CHROME — el instrumento de comparación. Neutro a propósito:
+   no debe competir con lo que se está evaluando.
+   ═══════════════════════════════════════════════════════════════════ */
+:root{
+  --canvas:#E7E6E2; --panel:#FFFFFF; --panel-2:#F2F1ED;
+  --c-line:#D5D4CE; --c-line-soft:#E2E1DC;
+  --c-ink:#1C1E22; --c-mute:#63656B; --c-faint:#8C8E94;
+  --c-accent:#0F5B44; --c-accent-soft:#DCE9E3;
+  --c-shadow:rgba(28,30,34,.10);
+  --f-chrome:'Public Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --f-tech:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --canvas:#101215; --panel:#191C21; --panel-2:#14171B;
+    --c-line:#2E323A; --c-line-soft:#23262C;
+    --c-ink:#E7E6E2; --c-mute:#969AA3; --c-faint:#71757D;
+    --c-accent:#3FBF95; --c-accent-soft:#17322A;
+    --c-shadow:rgba(0,0,0,.4);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --canvas:#101215; --panel:#191C21; --panel-2:#14171B;
+  --c-line:#2E323A; --c-line-soft:#23262C;
+  --c-ink:#E7E6E2; --c-mute:#969AA3; --c-faint:#71757D;
+  --c-accent:#3FBF95; --c-accent-soft:#17322A;
+  --c-shadow:rgba(0,0,0,.4);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--canvas); color:var(--c-ink);
+  font-family:var(--f-chrome); font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1240px; margin:0 auto; padding:0 24px}
+
+/* ── Cabecera ─────────────────────────────────────────────────── */
+.masthead{padding:56px 0 36px; border-bottom:1px solid var(--c-line)}
+.kicker{
+  font-family:var(--f-tech); font-size:11.5px; letter-spacing:.08em;
+  color:var(--c-accent); margin:0 0 14px;
+}
+.masthead h1{
+  font-size:clamp(30px,4.2vw,44px); font-weight:700; line-height:1.06;
+  letter-spacing:-.02em; margin:0 0 16px; max-width:20ch; text-wrap:balance;
+}
+.lede{font-size:17px; line-height:1.6; color:var(--c-mute); max-width:64ch; margin:0; text-wrap:pretty}
+.lede strong{color:var(--c-ink); font-weight:600}
+
+.notes{
+  display:flex; flex-wrap:wrap; gap:10px; margin-top:26px;
+}
+.note{
+  display:flex; gap:9px; align-items:flex-start;
+  font-size:13px; line-height:1.45; color:var(--c-mute);
+  background:var(--panel); border:1px solid var(--c-line-soft);
+  padding:11px 14px; border-radius:6px; flex:1 1 300px; max-width:420px;
+}
+.note b{color:var(--c-ink); font-weight:600}
+.note .dot{
+  width:6px; height:6px; border-radius:50%; background:var(--c-accent);
+  flex:none; margin-top:7px;
+}
+
+/* ── Barra de control fija ────────────────────────────────────── */
+.rail{
+  position:sticky; top:0; z-index:40;
+  background:color-mix(in srgb, var(--canvas) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--c-line);
+  margin-top:40px;
+}
+.rail-in{
+  max-width:1240px; margin:0 auto; padding:12px 24px;
+  display:flex; align-items:center; gap:20px; flex-wrap:wrap;
+}
+.rail-label{
+  font-family:var(--f-tech); font-size:11px; letter-spacing:.07em;
+  color:var(--c-faint); flex:none;
+}
+.seg{display:flex; gap:0; border:1px solid var(--c-line); border-radius:7px; overflow:hidden; background:var(--panel)}
+.seg button{
+  font-family:var(--f-chrome); font-size:13.5px; font-weight:600;
+  color:var(--c-mute); background:transparent; border:0;
+  border-right:1px solid var(--c-line); padding:9px 18px; cursor:pointer;
+  transition:background .12s ease, color .12s ease;
+}
+.seg button:last-child{border-right:0}
+.seg button:hover{background:var(--panel-2); color:var(--c-ink)}
+.seg button[aria-pressed="true"]{background:var(--c-accent); color:#fff}
+.seg button:focus-visible{outline:2px solid var(--c-accent); outline-offset:-2px}
+.rail-now{
+  font-family:var(--f-tech); font-size:11.5px; color:var(--c-mute);
+  margin-left:auto; text-align:right; line-height:1.5;
+}
+.rail-now b{color:var(--c-ink); font-weight:500}
+
+/* ── Secciones ────────────────────────────────────────────────── */
+section{padding:52px 0}
+.sec-head{margin-bottom:28px; max-width:70ch}
+.sec-head h2{
+  font-size:22px; font-weight:700; letter-spacing:-.01em;
+  margin:0 0 8px; line-height:1.25;
+}
+.sec-head p{margin:0; color:var(--c-mute); font-size:15px; text-wrap:pretty}
+
+/* ── Marcos de dispositivo ────────────────────────────────────── */
+.stage{display:grid; grid-template-columns:minmax(0,1fr) 390px; gap:24px; align-items:start}
+@media (max-width:1080px){ .stage{grid-template-columns:minmax(0,1fr)} }
+
+.frame{background:var(--panel); border:1px solid var(--c-line); border-radius:10px; overflow:hidden}
+.frame-bar{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 13px; border-bottom:1px solid var(--c-line-soft);
+  font-family:var(--f-tech); font-size:11px; color:var(--c-faint);
+  background:var(--panel-2);
+}
+.frame-bar .url{
+  color:var(--c-mute); background:var(--canvas);
+  padding:3px 9px; border-radius:4px; flex:1; min-width:0;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.frame-bar .dim{flex:none}
+.scroller{overflow-x:auto}
+.scroller::-webkit-scrollbar{height:9px}
+.scroller::-webkit-scrollbar-thumb{background:var(--c-line); border-radius:5px}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PREVIEW — Design System V1 de DLPay, tokens literales.
+   NO reacciona al tema del visor: es el producto real, no el board.
+   ═══════════════════════════════════════════════════════════════════ */
+.p{
+  --verde:#16C784; --verde-hi:#3DD69A; --verde-deep:#0B7A54;
+  --tinta:#0B1320; --tinta-2:#101A2B;
+  --papel:#F6F5F1; --papel-2:#ECEAE3;
+  --ink:#131A26; --ink-mute:#5A6472;
+  --line:rgba(11,19,32,.14);
+  --on-tinta:#EDF2EF; --on-tinta-mute:#9DB0AA;
+  --aviso:#B5852A;
+  --r-2:6px; --r-3:10px; --r-card:14px;
+  --elev-card:0 24px 60px -24px rgba(11,19,32,.45);
+  color-scheme:light;
+}
+/* Sets tipográficos — lo único que cambia entre variantes */
+[data-set="a"]{
+  --f-display:'Bricolage Grotesque',Georgia,serif;
+  --f-text:'Hanken Grotesk','Helvetica Neue',Arial,sans-serif;
+  --f-num:'Spline Sans Mono',ui-monospace,Menlo,monospace;
+}
+[data-set="b"]{
+  --f-display:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --f-text:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --f-num:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+[data-set="c"]{
+  --f-display:'Familjen Grotesk','Helvetica Neue',Arial,sans-serif;
+  --f-text:'Familjen Grotesk','Helvetica Neue',Arial,sans-serif;
+  --f-num:'Spline Sans Mono',ui-monospace,Menlo,monospace;
+}
+
+/* ── Héroe en tinta ───────────────────────────────────────────── */
+.hero{
+  background:var(--tinta); color:var(--on-tinta);
+  font-family:var(--f-text); position:relative; overflow:hidden;
+}
+/* Cuña del sistema geométrico: dirección/avance, ≤.12 de opacidad (DS §6) */
+.hero::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:var(--verde); opacity:.06;
+  clip-path:polygon(0 100%, 46% 0, 61% 0, 15% 100%);
+}
+.hero::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:var(--verde); opacity:.04;
+  clip-path:polygon(20% 100%, 66% 0, 72% 0, 26% 100%);
+}
+.hero-in{position:relative; z-index:1}
+
+.h-desk .hero-in{
+  min-width:980px; padding:64px 64px 56px;
+  display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center;
+}
+.h-mob .hero-in{padding:28px 20px 32px}
+
+/* Barra de navegación */
+.nav{
+  display:flex; align-items:center; gap:28px;
+  min-width:980px; padding:18px 64px;
+  border-bottom:1px solid rgba(237,242,239,.10);
+  position:relative; z-index:1;
+}
+.h-mob .nav{min-width:0; padding:14px 20px; gap:0; justify-content:space-between}
+.brand{display:flex; align-items:center; gap:9px; font-family:var(--f-display); font-weight:700; font-size:19px; letter-spacing:-.01em}
+.mark{width:19px; height:19px; flex:none; display:block}
+.nav ul{display:flex; gap:24px; list-style:none; margin:0; padding:0}
+.nav a{color:var(--on-tinta-mute); text-decoration:none; font-size:14px; font-weight:500}
+.nav a:hover{color:var(--on-tinta)}
+.nav .right{margin-left:auto; display:flex; align-items:center; gap:18px}
+.wa{
+  color:var(--on-tinta); font-size:14px; font-weight:600; text-decoration:none;
+  display:flex; align-items:center; gap:7px;
+}
+.wa svg{width:15px; height:15px}
+.burger{display:flex; flex-direction:column; gap:4px}
+.burger i{display:block; width:19px; height:1.5px; background:var(--on-tinta-mute)}
+
+/* Copy del héroe */
+.eh1{
+  font-family:var(--f-display); font-weight:700;
+  font-size:52px; line-height:1.04; letter-spacing:-.015em;
+  margin:0 0 18px; text-wrap:balance;
+}
+.h-mob .eh1{font-size:30px; margin-bottom:14px}
+.esub{
+  font-size:17px; line-height:1.55; color:var(--on-tinta-mute);
+  margin:0 0 32px; max-width:44ch;
+}
+.h-mob .esub{font-size:15px; margin-bottom:22px}
+
+.trust{display:flex; flex-wrap:wrap; gap:0; list-style:none; margin:0; padding:0}
+.trust li{
+  font-size:13px; font-weight:500; color:var(--on-tinta-mute);
+  padding-right:18px; margin-right:18px; border-right:1px solid rgba(237,242,239,.14);
+  display:flex; align-items:center; gap:8px;
+}
+.trust li:last-child{border-right:0; padding-right:0; margin-right:0}
+.h-mob .trust li{font-size:12px; padding-right:12px; margin-right:12px; gap:6px}
+.trust svg{width:14px; height:14px; flex:none; color:var(--verde)}
+
+/* ── Cotizador ────────────────────────────────────────────────── */
+.quoter{
+  background:var(--papel); color:var(--ink); font-family:var(--f-text);
+  border-radius:var(--r-card); box-shadow:var(--elev-card); padding:22px;
+}
+.h-mob .quoter{padding:18px; border-radius:var(--r-3)}
+
+.toggle{display:flex; gap:0; border:1px solid var(--line); border-radius:var(--r-2); overflow:hidden; margin-bottom:20px}
+.toggle span{
+  flex:1; text-align:center; padding:9px 8px; font-size:13.5px; font-weight:600;
+  color:var(--ink-mute); border-right:1px solid var(--line);
+}
+.toggle span:last-child{border-right:0}
+.toggle span.on{background:var(--ink); color:var(--papel)}
+
+.field{margin-bottom:12px}
+.flabel{
+  display:block; font-family:var(--f-text); font-size:12.5px; font-weight:600;
+  letter-spacing:.01em; color:var(--ink-mute); margin-bottom:6px;
+}
+.fbox{
+  display:flex; align-items:center; gap:10px;
+  border:1px solid var(--line); border-radius:var(--r-2);
+  padding:11px 13px; background:#fff;
+}
+.fbox.focus{border-color:var(--verde); box-shadow:0 0 0 3px rgba(22,199,132,.16)}
+.fval{
+  flex:1; min-width:0; font-family:var(--f-num); font-variant-numeric:tabular-nums;
+  font-size:24px; font-weight:500; letter-spacing:-.01em; line-height:1.1; color:var(--ink);
+}
+.h-mob .fval{font-size:22px}
+.fcur{
+  font-family:var(--f-text); font-size:13px; font-weight:600; color:var(--ink-mute);
+  flex:none; display:flex; align-items:center; gap:5px;
+}
+.fcur svg{width:9px; height:9px; opacity:.65}
+
+.price{
+  border-top:1px solid var(--line); margin-top:18px; padding-top:16px;
+  display:flex; align-items:flex-end; justify-content:space-between; gap:14px;
+}
+.price-l{font-size:12.5px; font-weight:600; color:var(--ink-mute); line-height:1.35}
+.price-l em{display:block; font-style:normal; font-weight:400; color:var(--ink-mute); opacity:.8; font-size:12px}
+.price-v{
+  font-family:var(--f-num); font-variant-numeric:tabular-nums;
+  font-size:30px; font-weight:500; letter-spacing:-.01em; line-height:1;
+  color:var(--ink); white-space:nowrap;
+}
+.h-mob .price-v{font-size:26px}
+.price-v small{font-family:var(--f-text); font-size:12px; font-weight:600; color:var(--ink-mute); margin-left:5px; letter-spacing:0}
+
+.disc{font-size:12.5px; line-height:1.45; color:var(--ink-mute); margin:14px 0 18px}
+.disc b{color:var(--ink); font-weight:600}
+.disc .src{font-family:var(--f-num); font-size:11.5px; color:var(--ink-mute); opacity:.85}
+
+.cta{
+  display:block; width:100%; text-align:center; text-decoration:none;
+  background:var(--verde); color:#04140E;
+  font-family:var(--f-text); font-size:15px; font-weight:700;
+  padding:14px 16px; border-radius:var(--r-2); border:0; cursor:pointer;
+}
+.cta:hover{background:var(--verde-hi)}
+.sec-link{
+  display:block; text-align:center; margin-top:12px;
+  font-size:13px; color:var(--verde-deep); text-decoration:none; font-weight:500;
+}
+.sec-link:hover{text-decoration:underline}
+
+/* ── Comparación simultánea ───────────────────────────────────── */
+.tri{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+@media (max-width:900px){ .tri{grid-template-columns:1fr} }
+.tri-card{
+  background:var(--panel); border:1px solid var(--c-line); border-radius:10px;
+  overflow:hidden; display:flex; flex-direction:column;
+}
+.tri-top{
+  padding:10px 16px; border-bottom:1px solid var(--c-line-soft); background:var(--panel-2);
+  display:flex; align-items:baseline; gap:9px;
+}
+.tri-top b{font-size:13px; font-weight:700}
+.tri-top span{font-family:var(--f-tech); font-size:10.5px; color:var(--c-faint)}
+.tri-body{padding:22px 20px; flex:1}
+
+.spec-num{
+  font-variant-numeric:tabular-nums; color:#131A26;
+  font-size:34px; font-weight:500; letter-spacing:-.01em; line-height:1.15;
+}
+.spec-num .u{font-size:13px; font-weight:600; margin-left:6px; color:#5A6472}
+.spec-row{
+  display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+  padding:9px 0; border-bottom:1px solid rgba(11,19,32,.10);
+  font-variant-numeric:tabular-nums; color:#131A26;
+}
+.spec-row:last-child{border-bottom:0}
+.spec-row .k{font-size:12.5px; font-weight:600; color:#5A6472}
+.spec-row .v{font-size:17px; font-weight:500}
+.tri-body.on-paper{background:#F6F5F1}
+
+.spec-head{
+  font-weight:700; font-size:30px; line-height:1.06; letter-spacing:-.015em;
+  color:#131A26; margin:0; text-wrap:balance;
+}
+.spec-body{font-size:15px; line-height:1.55; color:#5A6472; margin:14px 0 0}
+.spec-lab{
+  font-size:12.5px; font-weight:600; letter-spacing:.01em; color:#5A6472;
+  margin:16px 0 0; padding-top:12px; border-top:1px solid rgba(11,19,32,.10);
+}
+
+/* ── Fichas ───────────────────────────────────────────────────── */
+.sheets{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+@media (max-width:900px){ .sheets{grid-template-columns:1fr} }
+.sheet{
+  background:var(--panel); border:1px solid var(--c-line); border-radius:10px;
+  padding:24px 22px; display:flex; flex-direction:column; gap:0;
+}
+.sheet-id{
+  font-family:var(--f-tech); font-size:11px; letter-spacing:.07em;
+  color:var(--c-accent); margin:0 0 6px;
+}
+.sheet h3{font-size:19px; font-weight:700; letter-spacing:-.01em; margin:0 0 10px; line-height:1.25}
+.sheet .char{font-size:14.5px; line-height:1.55; color:var(--c-mute); margin:0 0 20px; text-wrap:pretty}
+.fam{list-style:none; margin:0 0 20px; padding:0; display:flex; flex-direction:column; gap:0}
+.fam li{
+  display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+  padding:8px 0; border-bottom:1px solid var(--c-line-soft); font-size:13px;
+}
+.fam li:last-child{border-bottom:0}
+.fam .role{font-family:var(--f-tech); font-size:10.5px; letter-spacing:.06em; color:var(--c-faint); flex:none}
+.fam .name{font-weight:600; text-align:right}
+.pros{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px; font-size:13.5px; line-height:1.5}
+.pros li{display:flex; gap:9px; align-items:flex-start; color:var(--c-mute)}
+.pros .sign{
+  font-family:var(--f-tech); font-size:11px; font-weight:500; flex:none;
+  width:15px; margin-top:2px;
+}
+.pros .up{color:var(--c-accent)}
+.pros .down{color:#B0603F}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .pros .down{color:#D08A6A} }
+:root[data-theme="dark"] .pros .down{color:#D08A6A}
+
+/* ── Cierre ───────────────────────────────────────────────────── */
+.decide{
+  background:var(--panel); border:1px solid var(--c-line); border-radius:10px;
+  padding:32px; margin-bottom:56px;
+}
+.decide h2{font-size:21px; font-weight:700; letter-spacing:-.01em; margin:0 0 10px}
+.decide > p{color:var(--c-mute); margin:0 0 26px; max-width:68ch; text-wrap:pretty}
+.crit{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(2,1fr); gap:0 32px}
+@media (max-width:760px){ .crit{grid-template-columns:1fr} }
+.crit li{
+  padding:14px 0; border-bottom:1px solid var(--c-line-soft);
+  font-size:14px; line-height:1.55; color:var(--c-mute);
+}
+.crit b{display:block; color:var(--c-ink); font-weight:600; font-size:14.5px; margin-bottom:3px}
+.after{
+  margin-top:26px; padding-top:22px; border-top:1px solid var(--c-line);
+  font-size:14px; line-height:1.6; color:var(--c-mute); max-width:72ch;
+}
+.after b{color:var(--c-ink); font-weight:600}
+
+:focus-visible{outline:2px solid var(--c-accent); outline-offset:2px}
+@media (prefers-reduced-motion:reduce){ *{transition:none!important; animation:none!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <p class="kicker">DLPay · Design System V1 · decisión abierta D2</p>
+    <h1>Tres tipografías sobre el mismo cotizador</h1>
+    <p class="lede">Los roles y la escala ya están fijados en el Design System V1. Lo único que falta es la <strong>familia</strong>. Aquí los tres sets candidatos se aplican al héroe y al cotizador reales —mismo copy, mismas cifras, mismos tamaños— para que la diferencia que veas sea únicamente la letra.</p>
+    <div class="notes">
+      <div class="note"><span class="dot"></span><div>Los tamaños son <b>idénticos</b> en los tres sets, sin ajuste óptico. Cada familia tiene otra altura de x, así que una puede parecer mayor: eso es parte de lo que estás juzgando.</div></div>
+      <div class="note"><span class="dot"></span><div>Las seis familias son <b>SIL Open Font License</b>: se pueden auto-hospedar, que es lo que exige el ADR-0004. Aquí se cargan desde Google Fonts solo para esta comparación.</div></div>
+      <div class="note"><span class="dot"></span><div>El copy y las cifras son de trabajo. El precio <b>919,70</b> es un valor de muestra y la fuente sigue pendiente, igual que en el cotizador real.</div></div>
+    </div>
+  </header>
+</div>
+
+<div class="rail">
+  <div class="rail-in">
+    <span class="rail-label">SET</span>
+    <div class="seg" role="group" aria-label="Elegir set tipográfico">
+      <button type="button" data-pick="a" aria-pressed="true">T-A</button>
+      <button type="button" data-pick="b" aria-pressed="false">T-B</button>
+      <button type="button" data-pick="c" aria-pressed="false">T-C</button>
+    </div>
+    <p class="rail-now" id="now"><b>Bricolage Grotesque</b> títulos · <b>Hanken Grotesk</b> texto · <b>Spline Sans Mono</b> cifras</p>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section>
+    <div class="sec-head">
+      <h2>Héroe y cotizador</h2>
+      <p>Desktop a 1112 px de contenido y móvil a 390 px. Cambia el set en la barra de arriba y observa el mismo punto de la pantalla: la cifra del precio es donde más se nota.</p>
+    </div>
+
+    <div class="stage p" id="stage" data-set="a">
+
+      <!-- Desktop -->
+      <div class="frame h-desk">
+        <div class="frame-bar"><span class="url">dlpay.cl</span><span class="dim">Desktop · 1112 px</span></div>
+        <div class="scroller">
+          <div class="hero">
+            <nav class="nav">
+              <span class="brand">
+                <svg class="mark" viewBox="0 0 26 20" aria-hidden="true"><path d="M2 0h11.5C20.4 0 26 4.5 26 10s-5.6 10-12.5 10H0l9.2-11.2h6.4c1.6 0 2.9-1.1 2.9-2.4S17.2 4 15.6 4H5.2z" fill="#16C784"/></svg>
+                DLPay
+              </span>
+              <ul>
+                <li><a href="#">Cotizar</a></li>
+                <li><a href="#">Cómo funciona</a></li>
+                <li><a href="#">Empresas</a></li>
+                <li><a href="#">Confianza</a></li>
+              </ul>
+              <span class="right">
+                <a class="wa" href="#"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1112 20z"/></svg>WhatsApp</a>
+                <a href="#" style="color:var(--on-tinta-mute);font-size:14px;font-weight:500;text-decoration:none">Iniciar sesión</a>
+              </span>
+            </nav>
+            <div class="hero-in">
+              <div>
+                <h1 class="eh1">El dólar digital, al precio real del mercado.</h1>
+                <p class="esub">Una persona cierra tu operación en minutos. Para personas y para empresas que mueven volumen.</p>
+                <ul class="trust">
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M4 21V10l8-6 8 6v11M9 21v-6h6v6"/></svg>Fondos verificados en el banco</li>
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Operación en ~5 minutos</li>
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Equipo en Chile</li>
+                </ul>
+              </div>
+
+              <div class="quoter">
+                <div class="toggle"><span class="on">Quiero comprar</span><span>Quiero vender</span></div>
+                <div class="field">
+                  <span class="flabel">Pago</span>
+                  <div class="fbox focus"><span class="fval">2.000.000</span><span class="fcur">CLP<svg viewBox="0 0 10 6" fill="currentColor" aria-hidden="true"><path d="M0 0h10L5 6z"/></svg></span></div>
+                </div>
+                <div class="field">
+                  <span class="flabel">Recibo aprox.</span>
+                  <div class="fbox"><span class="fval">2.174,80</span><span class="fcur">USDT<svg viewBox="0 0 10 6" fill="currentColor" aria-hidden="true"><path d="M0 0h10L5 6z"/></svg></span></div>
+                </div>
+                <div class="price">
+                  <span class="price-l">Precio referencial<em>hace un momento</em></span>
+                  <span class="price-v">919,70<small>CLP/USDT</small></span>
+                </div>
+                <p class="disc"><b>Sin comisiones ocultas:</b> el precio ya incluye el spread. <span class="src">Referencia: [fuente]</span></p>
+                <a class="cta" href="#">Cotizar este monto por WhatsApp</a>
+                <a class="sec-link" href="#">o crea tu cuenta para operar en línea</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Móvil -->
+      <div class="frame h-mob">
+        <div class="frame-bar"><span class="url">dlpay.cl</span><span class="dim">Móvil · 390 px</span></div>
+        <div class="hero">
+          <nav class="nav">
+            <span class="brand">
+              <svg class="mark" viewBox="0 0 26 20" aria-hidden="true"><path d="M2 0h11.5C20.4 0 26 4.5 26 10s-5.6 10-12.5 10H0l9.2-11.2h6.4c1.6 0 2.9-1.1 2.9-2.4S17.2 4 15.6 4H5.2z" fill="#16C784"/></svg>
+              DLPay
+            </span>
+            <span class="right">
+              <a class="wa" href="#"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1112 20z"/></svg></a>
+              <span class="burger" aria-hidden="true"><i></i><i></i><i></i></span>
+            </span>
+          </nav>
+          <div class="hero-in">
+            <h1 class="eh1">El dólar digital, al precio real del mercado.</h1>
+            <p class="esub">Una persona cierra tu operación en minutos.</p>
+            <div class="quoter">
+              <div class="toggle"><span class="on">Comprar</span><span>Vender</span></div>
+              <div class="field">
+                <span class="flabel">Pago</span>
+                <div class="fbox focus"><span class="fval">2.000.000</span><span class="fcur">CLP<svg viewBox="0 0 10 6" fill="currentColor" aria-hidden="true"><path d="M0 0h10L5 6z"/></svg></span></div>
+              </div>
+              <div class="field">
+                <span class="flabel">Recibo aprox.</span>
+                <div class="fbox"><span class="fval">2.174,80</span><span class="fcur">USDT<svg viewBox="0 0 10 6" fill="currentColor" aria-hidden="true"><path d="M0 0h10L5 6z"/></svg></span></div>
+              </div>
+              <div class="price">
+                <span class="price-l">Precio referencial<em>hace un momento</em></span>
+                <span class="price-v">919,70<small>CLP/USDT</small></span>
+              </div>
+              <p class="disc"><b>Sin comisiones ocultas:</b> el precio ya incluye el spread.</p>
+              <a class="cta" href="#">Cotizar por WhatsApp</a>
+              <a class="sec-link" href="#">o crea tu cuenta</a>
+            </div>
+            <ul class="trust" style="margin-top:22px">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M4 21V10l8-6 8 6v11M9 21v-6h6v6"/></svg>Banco</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>~5 min</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Chile</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Las cifras, los tres a la vez</h2>
+      <p>Es donde se juega la decisión: el Design System dice que los números son el héroe. Mira el cero, el uno, la coma decimal y si las tres columnas de la derecha quedan realmente alineadas.</p>
+    </div>
+    <div class="tri p">
+      <div class="tri-card" data-set="a">
+        <div class="tri-top"><b>T-A</b><span>Spline Sans Mono</span></div>
+        <div class="tri-body on-paper" style="font-family:var(--f-num)">
+          <div class="spec-num">919,70<span class="u" style="font-family:var(--f-text)">CLP/USDT</span></div>
+          <div style="margin-top:18px">
+            <div class="spec-row"><span class="k" style="font-family:var(--f-text)">Pago</span><span class="v">2.000.000</span></div>
+            <div class="spec-row"><span class="k" style="font-family:var(--f-text)">Recibo aprox.</span><span class="v">2.174,80</span></div>
+            <div class="spec-row"><span class="k" style="font-family:var(--f-text)">Monto mínimo</span><span class="v">50.000</span></div>
+            <div class="spec-row"><span class="k" style="font-family:var(--f-text)">Operación grande</span><span class="v">18.500.000</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="tri-card" data-set="b">
+        <div class="tri-top"><b>T-B</b><span>IBM Plex Mono</span></div>
+        <div class="tri-body on-paper" style="font-family:var(--f-num)">
+          <div class="spec-num">919,70<span class="u" style="font-family:var(--f-text)">CLP/USDT</span></div>
+          <div style="margin-top:18px">
+            <div class="spec-row"><span class="k" style="font-family:var(--f-text)">Pago</span><span class="v">2.000.000</span></div>
+            <div class="spec-row"><span class="k" style="font-family:var(--f-text)">Recibo aprox.</span><span class="v">2.174,80</span></div>
+            <div class="spec-row"><span class="k" style="font-family:var(--f-text)">Monto mínimo</span><span class="v">50.000</span></div>
+            <div class="spec-row"><span class="k" style="font-family:var(--f-text)">Operación grande</span><span class="v">18.500.000</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="tri-card" data-set="c">
+        <div class="tri-top"><b>T-C</b><span>Spline Sans Mono</span></div>
+        <div class="tri-body on-paper" style="font-family:var(--f-num)">
+          <div class="spec-num">919,70<span class="u" style="font-family:var(--f-text)">CLP/USDT</span></div>
+          <div style="margin-top:18px">
+            <div class="spec-row"><span class="k" style="font-family:var(--f-text)">Pago</span><span class="v">2.000.000</span></div>
+            <div class="spec-row"><span class="k" style="font-family:var(--f-text)">Recibo aprox.</span><span class="v">2.174,80</span></div>
+            <div class="spec-row"><span class="k" style="font-family:var(--f-text)">Monto mínimo</span><span class="v">50.000</span></div>
+            <div class="spec-row"><span class="k" style="font-family:var(--f-text)">Operación grande</span><span class="v">18.500.000</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:13.5px;color:var(--c-mute);margin:16px 0 0;max-width:70ch">T-A y T-C comparten <b>Spline Sans Mono</b>: en las cifras son idénticos y la diferencia entre ambos está solo en títulos y texto. T-B es el único que cambia también los números.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>El titular y el texto</h2>
+      <p>La otra mitad de la decisión: cuánto carácter tiene el título sin volverse decorativo, y si el texto corrido aguanta un párrafo entero sin cansar.</p>
+    </div>
+    <div class="tri p">
+      <div class="tri-card" data-set="a">
+        <div class="tri-top"><b>T-A</b><span>Bricolage · Hanken</span></div>
+        <div class="tri-body on-paper" style="font-family:var(--f-text)">
+          <h3 class="spec-head" style="font-family:var(--f-display)">El dólar digital, al precio real del mercado.</h3>
+          <p class="spec-body">Recibimos y verificamos tu transferencia en el banco antes de entregarte el dólar digital. El precio que ves es referencial: tu ejecutivo confirma el precio final al cerrar.</p>
+          <p class="spec-lab">Precio referencial · hace un momento</p>
+        </div>
+      </div>
+      <div class="tri-card" data-set="b">
+        <div class="tri-top"><b>T-B</b><span>Archivo</span></div>
+        <div class="tri-body on-paper" style="font-family:var(--f-text)">
+          <h3 class="spec-head" style="font-family:var(--f-display)">El dólar digital, al precio real del mercado.</h3>
+          <p class="spec-body">Recibimos y verificamos tu transferencia en el banco antes de entregarte el dólar digital. El precio que ves es referencial: tu ejecutivo confirma el precio final al cerrar.</p>
+          <p class="spec-lab">Precio referencial · hace un momento</p>
+        </div>
+      </div>
+      <div class="tri-card" data-set="c">
+        <div class="tri-top"><b>T-C</b><span>Familjen Grotesk</span></div>
+        <div class="tri-body on-paper" style="font-family:var(--f-text)">
+          <h3 class="spec-head" style="font-family:var(--f-display)">El dólar digital, al precio real del mercado.</h3>
+          <p class="spec-body">Recibimos y verificamos tu transferencia en el banco antes de entregarte el dólar digital. El precio que ves es referencial: tu ejecutivo confirma el precio final al cerrar.</p>
+          <p class="spec-lab">Precio referencial · hace un momento</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Qué te llevas con cada uno</h2>
+      <p>El riesgo no es elegir mal: es elegir sin saber qué se gana y qué se pierde.</p>
+    </div>
+    <div class="sheets">
+
+      <div class="sheet">
+        <p class="sheet-id">SET T-A</p>
+        <h3>Grotesca humanista con carácter</h3>
+        <p class="char">La más cálida de las tres. Bricolage tiene terminaciones y detalles con personalidad en los títulos; Hanken es plano y muy legible debajo. Equilibra el público persona y el público empresa.</p>
+        <ul class="fam">
+          <li><span class="role">TÍTULOS</span><span class="name">Bricolage Grotesque</span></li>
+          <li><span class="role">TEXTO</span><span class="name">Hanken Grotesk</span></li>
+          <li><span class="role">CIFRAS</span><span class="name">Spline Sans Mono</span></li>
+        </ul>
+        <ul class="pros">
+          <li><span class="sign up">+</span>El titular tiene voz propia sin gritar; se aleja del default fintech.</li>
+          <li><span class="sign up">+</span>Baja la frialdad que el propio ADR marcó como riesgo de la dirección A.</li>
+          <li><span class="sign down">−</span>Tres familias: el máximo que el Design System permite.</li>
+          <li><span class="sign down">−</span>El carácter de Bricolage puede cansar en titulares largos.</li>
+        </ul>
+      </div>
+
+      <div class="sheet">
+        <p class="sheet-id">SET T-B</p>
+        <h3>Industrial, de instrumento</h3>
+        <p class="char">La más cercana al wordmark del logo: Archivo es una grotesca de origen editorial, densa y algo condensada, que recuerda las terminaciones cortadas de "LPAY". IBM Plex Mono en las cifras empuja hacia la mesa de operaciones.</p>
+        <ul class="fam">
+          <li><span class="role">TÍT. Y TEXTO</span><span class="name">Archivo</span></li>
+          <li><span class="role">CIFRAS</span><span class="name">IBM Plex Mono</span></li>
+        </ul>
+        <ul class="pros">
+          <li><span class="sign up">+</span>Una sola familia más mono: el sistema más simple de mantener.</li>
+          <li><span class="sign up">+</span>Es el que mejor conversa con el logotipo existente.</li>
+          <li><span class="sign up">+</span>Máxima percepción de instrumento financiero.</li>
+          <li><span class="sign down">−</span>El más frío: puede intimidar a quien compra dólares por primera vez.</li>
+        </ul>
+      </div>
+
+      <div class="sheet">
+        <p class="sheet-id">SET T-C</p>
+        <h3>Geométrica disciplinada</h3>
+        <p class="char">Una sola familia para todo, con formas geométricas limpias que riman con el corte diagonal del isotipo. Moderna y neutra, pero con detalles propios que la separan de las grotescas genéricas.</p>
+        <ul class="fam">
+          <li><span class="role">TÍT. Y TEXTO</span><span class="name">Familjen Grotesk</span></li>
+          <li><span class="role">CIFRAS</span><span class="name">Spline Sans Mono</span></li>
+        </ul>
+        <ul class="pros">
+          <li><span class="sign up">+</span>La más coherente con el sistema geométrico derivado del isotipo.</li>
+          <li><span class="sign up">+</span>Una familia: menos peso de carga y menos decisiones futuras.</li>
+          <li><span class="sign up">+</span>Terreno intermedio entre la calidez de T-A y la frialdad de T-B.</li>
+          <li><span class="sign down">−</span>El menos distintivo: es el que más riesgo tiene de leerse neutro.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="decide">
+    <h2>Cómo decidir</h2>
+    <p>No hay una respuesta correcta, pero sí criterios que ya están escritos en el proyecto. Aplícalos en este orden.</p>
+    <ul class="crit">
+      <li><b>¿La cifra manda?</b> El precio y el "recibes" deben ser lo más fuerte de la pantalla. Si en algún set el titular le gana el pulso al número, ese set contradice el Design System.</li>
+      <li><b>¿Se parece a otra fintech?</b> Si al mirarlo piensas en una app que ya conoces, es la señal de alarma del Principio 3. La identidad tiene que ser de DLPay.</li>
+      <li><b>¿Conversa con el logo?</b> El wordmark "LPAY" es pesado y con terminaciones cortadas. El titular no tiene que imitarlo, pero tampoco pelearse con él.</li>
+      <li><b>¿Sirve a los dos públicos?</b> Una persona que compra dólares por primera vez y una tesorería que mueve volumen ven la misma pantalla.</li>
+      <li><b>¿Aguanta el móvil?</b> Ahí el titular baja a 30 px y el precio a 26 px. Un carácter que funciona grande puede ensuciarse en pequeño.</li>
+      <li><b>¿Menos familias es mejor?</b> T-B y T-C usan dos; T-A usa tres. Menos familias es menos peso, menos licencias que verificar y menos decisiones futuras.</li>
+    </ul>
+    <p class="after">Cuando elijas, fijo el token de familia en el Design System §3, lo registro como enmienda al <b>ADR-0001</b> y cierro el pendiente <b>D2</b> de CLAUDE.md. Si ninguno convence, dilo y ajusto: puedo mezclar sets —por ejemplo los títulos de T-A con las cifras de T-B— o traer una cuarta candidata. Nada de esto bloquea la arquitectura, que ya está cerrada.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var stage = document.getElementById('stage');
+  var now = document.getElementById('now');
+  var btns = Array.prototype.slice.call(document.querySelectorAll('[data-pick]'));
+  var labels = {
+    a:'<b>Bricolage Grotesque</b> títulos · <b>Hanken Grotesk</b> texto · <b>Spline Sans Mono</b> cifras',
+    b:'<b>Archivo</b> títulos y texto · <b>IBM Plex Mono</b> cifras',
+    c:'<b>Familjen Grotesk</b> títulos y texto · <b>Spline Sans Mono</b> cifras'
+  };
+  function pick(k){
+    stage.setAttribute('data-set', k);
+    now.innerHTML = labels[k];
+    btns.forEach(function(b){
+      b.setAttribute('aria-pressed', b.getAttribute('data-pick') === k ? 'true' : 'false');
+    });
+  }
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){ pick(b.getAttribute('data-pick')); });
+  });
+})();
+</script>
+</body>
+</html>
