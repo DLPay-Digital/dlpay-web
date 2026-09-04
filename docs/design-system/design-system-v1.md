@@ -226,12 +226,14 @@ tarjeta": borde/fill/radio/sombra se gastan por rol, para levantar **una** cosa.
 - **Line icons**, trazo `1.6`, grilla 16 / 20 / 24, `stroke-linejoin: round`, **un solo estilo**.
 - El trazo se declara una sola vez, en unidades del `viewBox` de 24: al reducir el tamaño de
   render el grosor adelgaza solo, que es como se baja el peso visual de un icono sin tocar el set.
-- **Un icono junto a un titular nunca debe igualar su cuerpo.** Se busca ~90% como techo.
-  Cuando la grilla no da el punto justo se permite un tamaño intermedio, documentándolo:
-  la lista de mecanismos de `/confianza` usa **18px** contra titulares de 17/20px.
-- La **proximidad manda sobre el tamaño**: la distancia entre icono y su texto debe ser muy
-  menor que la distancia al bloque siguiente (relación ~1:4). Un icono correcto de tamaño pero
-  mal agrupado se percibe igual de invasivo.
+- **La proximidad manda sobre el tamaño.** La distancia entre un icono y su texto debe ser muy
+  menor que la distancia al bloque siguiente (relación ~1:4). Un icono del tamaño correcto pero
+  mal agrupado se percibe igual de invasivo — fue el hallazgo real al ajustar `/confianza`, donde
+  reducir la escala sin corregir la agrupación no habría bastado.
+- El tamaño se decide **mirándolo**, no por proporción calculada. En la lista de mecanismos de
+  `/confianza` un icono de 20px convive con titulares de 17/20px: iguala el cuerpo del titular en
+  escritorio y aun así funciona, porque la agrupación y la medida del bloque ya resolvieron la
+  jerarquía. Fuera de la grilla 16/20/24 no se baja sin una razón anotada.
 - Set pequeño y funcional: banco, reloj, chat/WhatsApp, chevron/paso, documento, empresa, wallet,
   candado. Nada más hasta que una necesidad lo pida.
 - Sin emoji como iconos.
