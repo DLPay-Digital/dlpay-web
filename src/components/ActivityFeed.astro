@@ -1,0 +1,117 @@
+---
+/**
+ * Actividad reciente de la mesa.
+ *
+ * Transmite que DLPay está operando. Registro sobrio, coherente con A×C: una
+ * lista de datos, no un ticker de casa de apuestas.
+ *
+ * SALVAGUARDA: si la fuente no es real, se muestra un distintivo visible de
+ * datos de ejemplo. La condición la comprueba el componente, no la memoria de
+ * quien despliegue, así que no hay forma de publicar datos inventados como si
+ * fueran operaciones reales.
+ */
+import { MockActivitySource } from '../lib/activity/mock-activity-source.ts';
+import { KIND_LABEL } from '../lib/activity/types.ts';
+import { relativeTime, formatUsd } from '../lib/activity/format.ts';
+
+// PENDIENTE DE DECISIÓN — fuente real de operaciones confirmadas y anonimizadas.
+// Al existir, se cambia esta línea y nada más.
+const source = new MockActivitySource();
+const events = await source.list(4);
+const now = new Date();
+---
+<section class="activity" aria-labelledby="activity-title">
+  <div class="head">
+    <h2 id="activity-title">Actividad reciente</h2>
+    {!source.isReal && <span class="sample">{source.label}</span>}
+  </div>
+
+  <ol class="events">
+    {events.map((event) => (
+      <li class="event">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="kind">{KIND_LABEL[event.kind]}</span>
+        <span class="amount num">{formatUsd(event.amountUsd)}</span>
+        <span class="when num">{relativeTime(event.at, now)}</span>
+      </li>
+    ))}
+  </ol>
+
+  {!source.isReal && (
+    <p class="disclaimer">
+      Estas operaciones son un ejemplo para mostrar cómo se verá esta sección. No
+      corresponden a operaciones reales de DLPay.
+    </p>
+  )}
+</section>
+
+<style>
+  .activity { border-top: 1px solid var(--line); padding-top: var(--s-5); }
+
+  .head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--s-4);
+  }
+  h2 {
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: var(--ls-label);
+    color: var(--ink-mute);
+  }
+  /* Imposible de pasar por alto, y sale del propio estado de la fuente */
+  .sample {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    font-weight: 500;
+    color: var(--aviso);
+    border: 1px solid currentColor;
+    border-radius: var(--r-1);
+    padding: 1px var(--s-2);
+  }
+
+  .events { list-style: none; margin: 0; padding: 0; }
+  .event {
+    display: grid;
+    grid-template-columns: 7px 1fr auto;
+    align-items: baseline;
+    gap: var(--s-2) var(--s-3);
+    padding: var(--s-3) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .event:last-child { border-bottom: 0; }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--verde-deep);
+    align-self: center;
+  }
+  .kind { font-size: var(--t-body-sm); color: var(--ink); }
+  .amount {
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    color: var(--ink);
+    text-align: right;
+  }
+  .when {
+    grid-column: 2 / -1;
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+  }
+
+  .disclaimer {
+    margin-top: var(--s-4);
+    font-size: var(--t-dato-sm);
+    line-height: 1.45;
+    color: var(--ink-mute);
+  }
+
+  @media (min-width: 900px) {
+    .event { grid-template-columns: 7px 1fr auto auto; gap: var(--s-4); }
+    .when { grid-column: auto; text-align: right; min-width: 12ch; }
+  }
+</style>

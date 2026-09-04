@@ -13,7 +13,24 @@ El cotizador es **el elemento central de la web**. Su trabajo:
 1. Responder al instante la pregunta #1 del cliente: **"¿cuánto recibo / cuánto pago?"**
 2. Llevar a la acción: **WhatsApp con el monto prellenado** (primaria) o crear cuenta (secundaria).
 
-**Modelo:** `monto → precio referencial → WhatsApp → un ejecutivo confirma el precio final`.
+**Modelo (actualizado 2026-09-04, evolución a remesas):**
+`qué quieres hacer → monto → cuánto recibes → precio referencial → WhatsApp → un ejecutivo
+confirma el precio final y coordina el destino`.
+
+**La intención es el primer paso**, no la moneda. Tres opciones:
+
+| Intención | Entregas | Recibes | Por qué existe |
+|---|---|---|---|
+| `send_abroad` — Enviar al extranjero | CLP | USD | El caso principal del nuevo posicionamiento |
+| `to_usd` — Convertir a dólares | CLP | USD | Misma aritmética que enviar, **otra conversación** |
+| `to_clp` — Convertir a pesos | USD | CLP | La vuelta |
+
+`send_abroad` y `to_usd` calculan igual pero generan mensajes de WhatsApp distintos: para quien
+pide y para el ejecutivo que cierra son operaciones diferentes.
+
+**Vocabulario:** la UI habla de **USD / dólares**, no de USDT. El dólar digital es el riel y se
+explica en una nota permanente dentro del propio cotizador, sin ser el titular.
+`REQUIERE VALIDACIÓN DE COMPLIANCE` — mostrar "USD" cuando lo que se entrega es dólar digital.
 
 **Lo que el cotizador NO hace (V1):**
 - No ejecuta una compra/venta.

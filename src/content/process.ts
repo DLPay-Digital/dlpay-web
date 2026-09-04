@@ -23,30 +23,30 @@ export interface DetailedStep {
 export const flow: FlowNode[] = [
   { label: 'Tú', detail: 'Transfieres en pesos desde tu banco' },
   { label: 'El banco', detail: 'Confirmamos que el dinero llegó' },
-  { label: 'DLPay', detail: 'Compramos al precio acordado' },
-  { label: 'Tu wallet', detail: 'Recibes el dólar digital' },
+  { label: 'DLPay', detail: 'Cambiamos al precio acordado' },
+  { label: 'El destino', detail: 'Tu dinero llega adonde lo necesitas' },
 ];
 
 export const detailedSteps: DetailedStep[] = [
   {
     n: 1,
     who: 'tú',
-    title: 'Cotizas el monto',
-    body: 'Escribes cuánto quieres cambiar en el cotizador. Ves al instante el precio referencial y cuánto recibes. No necesitas cuenta para esto.',
+    title: 'Dices qué necesitas',
+    body: 'Enviar al extranjero, pasar pesos a dólares o volver a pesos. Escribes el monto y ves al instante el precio referencial y cuánto recibes. No necesitas cuenta para esto.',
     time: 'ahora mismo',
   },
   {
     n: 2,
     who: 'tú',
     title: 'Escribes por WhatsApp',
-    body: 'El botón abre el chat con tu monto y la dirección de la operación ya escritos. No tienes que repetir nada: el ejecutivo ve el contexto de entrada.',
+    body: 'El botón abre el chat con tu operación ya escrita. No tienes que repetir nada: el ejecutivo ve el contexto de entrada.',
     time: 'un toque',
   },
   {
     n: 3,
     who: 'DLPay',
-    title: 'Un ejecutivo confirma el precio',
-    body: 'El precio de la web es referencial porque el mercado se mueve. Una persona te confirma el precio final y los datos para transferir.',
+    title: 'Un ejecutivo confirma y coordina',
+    body: 'El precio de la web es referencial porque el mercado se mueve. Una persona te confirma el precio final, coordina contigo adónde va el dinero y te da los datos para transferir.',
     time: 'minutos',
   },
   {
@@ -60,15 +60,19 @@ export const detailedSteps: DetailedStep[] = [
     n: 5,
     who: 'DLPay',
     title: 'Verificamos la transferencia',
-    body: 'Confirmamos que el dinero está acreditado antes de entregar nada. Es el paso que no se salta nunca.',
+    body: 'Confirmamos que el dinero está acreditado antes de ejecutar nada. Es el paso que no se salta nunca.',
     time: 'al acreditarse',
   },
   {
     n: 6,
     who: 'DLPay',
     // REQUIERE VALIDACIÓN DE COMPLIANCE — el tiempo de ~5 minutos
-    title: 'Recibes tu dólar digital',
-    body: 'Enviamos los USDT a la wallet que nos indicaste y te confirmamos la operación por el mismo chat.',
+    title: 'Tu dinero llega a destino',
+    // REQUIERE VALIDACIÓN DE COMPLIANCE — cómo llega el dinero al destinatario
+    // final (entrega en cuenta local en el extranjero vs. entrega de dólar
+    // digital). El copy describe el resultado sin comprometer un mecanismo
+    // concreto hasta que DLPay lo confirme.
+    body: 'Ejecutamos la operación y te confirmamos por el mismo chat, con el comprobante de que el dinero salió.',
     time: '~5 min desde el pago',
   },
 ];
@@ -77,5 +81,5 @@ export const detailedSteps: DetailedStep[] = [
 export const checklist: string[] = [
   'Tu cédula de identidad vigente',
   'Una cuenta bancaria a tu nombre',
-  'La dirección de la wallet donde quieres recibir el dólar digital',
+  'Los datos de destino: a quién le llega el dinero y dónde',
 ];

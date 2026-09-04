@@ -18,12 +18,12 @@ export const mechanisms: Mechanism[] = [
     icon: 'bank',
     // REQUIERE VALIDACIÓN DE COMPLIANCE — mención del banco por nombre
     title: 'El dinero pasa por un banco, no por un intermediario opaco',
-    body: 'Tu transferencia llega a la cuenta de DLPay en BCI y confirmamos que está acreditada antes de entregarte nada. No hay pasos a ciegas ni depósitos a cuentas de terceros.',
+    body: 'Tu transferencia llega a la cuenta de DLPay en BCI y confirmamos que está acreditada antes de mover nada. No hay pasos a ciegas ni depósitos a cuentas de terceros.',
   },
   {
     icon: 'people',
     title: 'Una persona identificable cierra tu operación',
-    body: 'No cierras contra un sistema automático. Un ejecutivo del equipo te confirma el precio final, te da los datos para transferir y te avisa cuando la operación está lista.',
+    body: 'No cierras contra un sistema automático. Un ejecutivo del equipo te confirma el precio final, coordina el destino del dinero y te avisa cuando la operación está lista.',
   },
   {
     icon: 'clock',
@@ -51,7 +51,7 @@ export const honesty: { claim: string; reality: string }[] = [
   },
   {
     claim: 'No prometemos rentabilidad ni protección del capital',
-    reality: 'El dólar digital tiene riesgos: el valor del dólar se mueve y las operaciones en blockchain son irreversibles.',
+    reality: 'El valor del dólar se mueve, y las operaciones que usan dólar digital son irreversibles una vez ejecutadas. Por eso confirmamos cada paso contigo antes de darlo.',
   },
 ];
 

@@ -13,8 +13,8 @@ export function formatCLP(value: number): string {
   return new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 0 }).format(value);
 }
 
-/** USDT con 2 decimales: 2.174,80 */
-export function formatUSDT(value: number): string {
+/** Dólares con 2 decimales: 2.174,80 */
+export function formatUSD(value: number): string {
   return new Intl.NumberFormat(LOCALE, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,

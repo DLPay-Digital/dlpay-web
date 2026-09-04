@@ -20,19 +20,19 @@ export interface Difference {
 export const useCases: UseCase[] = [
   {
     title: 'Pagos a proveedores en el exterior',
-    body: 'Conviertes pesos a dólar digital y pagas sin depender de los horarios de la banca corresponsal ni de los días hábiles.',
+    body: 'Pagas sin depender de la cadena de bancos corresponsales, de sus horarios ni de los días hábiles. El proveedor cobra antes y tú dejas de perseguir la transferencia.',
   },
   {
     title: 'Tesorería en dólares',
-    body: 'Mantienes parte de la caja en dólar digital y la conviertes de vuelta cuando la necesitas, sin abrir una cuenta en el extranjero.',
+    body: 'Mantienes parte de la caja en dólares y la conviertes de vuelta cuando la necesitas, sin abrir una cuenta en el extranjero.',
   },
   {
-    title: 'Conversión recurrente',
-    body: 'Si cambias montos parecidos cada mes, tu ejecutivo ya conoce la operación y el ida y vuelta se acorta.',
+    title: 'Pagos recurrentes al exterior',
+    body: 'Remuneraciones, servicios o proveedores fijos. Tu ejecutivo ya conoce la operación y el ida y vuelta se acorta cada mes.',
   },
   {
-    title: 'Operaciones de mayor volumen',
-    body: 'Montos donde el spread de un banco pesa de verdad y donde una app retail no alcanza.',
+    title: 'Cambio de divisas por volumen',
+    body: 'CLP y USD como operación independiente, en montos donde el spread de un banco pesa de verdad y una app retail no alcanza.',
   },
 ];
 
@@ -61,7 +61,7 @@ export const differences: Difference[] = [
 
 /** Pasos de incorporación de una empresa. Secuencia real. */
 export const onboarding: string[] = [
-  'Nos escribes y conversamos qué necesita tu empresa',
+  'Nos escribes y conversamos qué necesita tu empresa: a dónde paga, con qué frecuencia y en qué montos',
   'Nos envías los documentos de la sociedad y de quienes la representan',
   'Revisamos y habilitamos la cuenta',
   'Operas con tu ejecutivo asignado',

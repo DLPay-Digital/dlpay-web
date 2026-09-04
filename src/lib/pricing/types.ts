@@ -9,6 +9,19 @@
 
 export type Direction = 'buy' | 'sell';
 
+/**
+ * Qué quiere hacer la persona. Es el PRIMER paso del cotizador: la conversación
+ * empieza por la intención, no por la moneda.
+ *
+ * `send_abroad` y `to_usd` hacen la misma aritmética pero son operaciones
+ * distintas para quien las pide y para el ejecutivo que las cierra, así que
+ * producen mensajes de WhatsApp distintos.
+ */
+export type Intent = 'send_abroad' | 'to_usd' | 'to_clp';
+
+/** La moneda que ve el usuario. El dólar se entrega como dólar digital. */
+export type Currency = 'CLP' | 'USD';
+
 export type QuoteState =
   | 'ok'
   | 'below_min'
@@ -17,21 +30,22 @@ export type QuoteState =
   | 'unavailable';
 
 export interface PriceReference {
-  /** CLP por 1 USDT. */
+  /** CLP por 1 dólar. */
   rate: number;
-  pair: 'USDT/CLP';
+  pair: 'USD/CLP';
   /** Etiqueta legible para mostrar junto al dato. */
   source: string;
   asOf: Date;
 }
 
 export interface Quote {
+  intent: Intent;
   direction: Direction;
   payAmount: number;
   payCurrency: 'CLP';
   /** Estimado, nunca comprometido. */
   getAmount: number;
-  getCurrency: 'USDT';
+  getCurrency: Currency;
   price: PriceReference;
   /** El precio mostrado ya incluye el spread. */
   spreadIncluded: true;

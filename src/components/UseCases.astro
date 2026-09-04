@@ -1,0 +1,57 @@
+---
+/**
+ * Para qué sirve DLPay. Va inmediatamente después del héroe porque responde la
+ * pregunta que el titular abre: "¿esto me sirve a mí?".
+ *
+ * Tres usos, no un catálogo de servicios. El alcance completo (persona a
+ * persona, cuenta propia, empresa a proveedor, tesorería) se reconoce dentro de
+ * estos tres sin convertir la Home en una lista.
+ */
+import { useCases } from '../content/home.ts';
+---
+<section class="uses" aria-labelledby="uses-title">
+  <div class="inner">
+    <h2 id="uses-title">Tres formas de usarlo</h2>
+    <ul class="grid">
+      {useCases.map((item) => (
+        <li class="use">
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .uses { background: var(--papel); padding: var(--s-9) 0; }
+  .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
+  h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: var(--s-7);
+    max-width: 46ch;
+  }
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
+  .use h3 {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    margin-bottom: var(--s-2);
+    padding-top: var(--s-3);
+    border-top: 2px solid var(--verde);
+    display: inline-block;
+  }
+  .use p { color: var(--ink-mute); max-width: 42ch; }
+
+  @media (min-width: 760px) {
+    .grid { grid-template-columns: repeat(3, 1fr); gap: var(--s-7); }
+  }
+  @media (min-width: 900px) {
+    .inner { padding-inline: var(--pad-section); }
+    h2 { font-size: var(--t-h2); }
+    .use h3 { font-size: var(--t-h3); }
+  }
+</style>

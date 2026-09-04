@@ -14,19 +14,19 @@ import { useCases, differences, onboarding } from '../content/business.ts';
 import { contact } from '../lib/config/site.ts';
 
 const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
-  'Hola, escribo por DLPay Empresas. Quiero conocer las condiciones para operar con mi empresa.'
+  'Hola, escribo por DLPay Empresas. Quiero conocer las condiciones para pagos al exterior y cambio de divisas.'
 )}`;
 ---
 <Base
   title="DLPay Empresas"
-  description="Cambio de divisas y tesorería en dólar digital para empresas en Chile: ejecutivo asignado, condiciones conversadas según volumen y verificación de la sociedad."
+  description="Pagos internacionales, tesorería en dólares y cambio de divisas para empresas en Chile: ejecutivo asignado, condiciones conversadas según volumen y verificación de la sociedad."
   path="/empresas"
 >
   <Header />
   <main id="main">
     <PageHero
       title="La misma mesa, otro tamaño de operación"
-      lead="Para tesorerías y empresas que cambian montos grandes o de forma recurrente, donde un banco es lento y una app retail no alcanza."
+      lead="Pagos al exterior, tesorería en dólares y cambio de divisas. Para empresas que mueven montos grandes o de forma recurrente, donde un banco es lento y una app retail no alcanza."
     />
 
     <section class="cases" aria-labelledby="cases-title">
@@ -101,8 +101,8 @@ const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
       <div class="inner">
         <h2 id="contact-title">Hablemos de tu operación</h2>
         <p>
-          Cuéntanos qué montos manejas y con qué frecuencia. Te responde una persona del
-          equipo, no un formulario.
+          Cuéntanos a dónde pagas, qué montos manejas y con qué frecuencia. Te responde una
+          persona del equipo, no un formulario.
         </p>
         <div class="actions">
           <a class="cta" href={wa} target="_blank" rel="noopener">

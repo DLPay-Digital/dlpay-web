@@ -86,10 +86,31 @@ público y se trata como público. Hoy el proyecto **no tiene ningún secreto** 
 las variables son configuración pública (número de WhatsApp, precio de muestra,
 enlaces a la plataforma de Guita).
 
+## Actividad reciente
+
+`src/lib/activity/` sigue el mismo patrón de desacople que el precio: la UI consume eventos y no
+sabe de dónde vienen.
+
+Hoy la única implementación es **`MockActivitySource`**, que declara `isReal = false`. Esa bandera
+no es documentación: **el componente comprueba la condición y muestra un distintivo visible de
+"Datos de ejemplo" más una nota aclaratoria**. No hay forma de publicar datos inventados haciéndolos
+pasar por operaciones reales, aunque alguien lo olvide.
+
+El tipo `ActivityEvent` sólo admite tipo de operación, monto redondeado y momento. **No hay dónde
+poner un nombre, un RUT ni un dato personal**, aunque se quisiera.
+
+Cuando exista la fuente real: se agrega `DLPayActivitySource` con `isReal = true` sobre operaciones
+confirmadas y anonimizadas, y se cambia una línea en `ActivityFeed.astro`.
+
 ## El cotizador
 
 La UI consumirá **sólo** un objeto `Quote` (`src/lib/pricing/types.ts`). No conoce la
 fuente del precio ni la fórmula del spread.
+
+El primer paso del cotizador es la **intención** (enviar al extranjero, convertir a dólares,
+convertir a pesos), no la moneda. `send_abroad` y `to_usd` hacen la misma aritmética pero producen
+mensajes de WhatsApp distintos, porque para quien pide y para el ejecutivo son operaciones
+diferentes.
 
 Hoy existe una sola implementación de `PriceSource`: **`ConfigPriceSource`**, que
 devuelve un valor de muestra configurable por `PUBLIC_QUOTE_SAMPLE_RATE`. **No es un
@@ -109,7 +130,7 @@ cualquier servidor estático.** Lo que rompa esa afirmación necesita una enmien
 | Ruta | Qué es | JS |
 |---|---|---|
 | `/` | Home: héroe con cotizador, cómo funciona, confianza, empresas, FAQ | 3,2 KB |
-| `/cotizar` | Acceso rápido al cotizador, para recurrentes y enlaces de WhatsApp | 3,2 KB |
+| `/cotizar` | La herramienta sola: cotizador centrado + actividad reciente | 3,2 KB |
 | `/como-funciona` | El recorrido completo con el diagrama de flujo y los tiempos | 0 |
 | `/empresas` | Carril B2B: casos de uso, diferencias, incorporación | 0 |
 | `/confianza` | El mecanismo, los requisitos y lo que no afirmamos | 0 |

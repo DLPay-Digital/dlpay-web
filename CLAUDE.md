@@ -78,12 +78,26 @@ patrones) · `phase-2-visual-directions.md` + su Artifact de mockups.
 
 ## 1. Qué es este proyecto
 
-DLPay (marca de **DLPZ INCZ SpA**), fintech chilena, mesa OTC de dólar digital (USDT/USDC ↔ CLP).
-Este repo es la **web propia** de DLPay: recuperar el control tecnológico de una presencia digital
-que hoy depende de un proveedor externo (Guita).
+DLPay (marca de **DLPZ INCZ SpA**), fintech chilena. Este repo es la **web propia** de DLPay:
+recuperar el control tecnológico de una presencia digital que hoy depende de un proveedor
+externo (Guita).
 
-**El negocio, en una línea:** compra y venta de dólar digital al precio de mercado, con una
-persona que cierra la operación por WhatsApp en minutos. Personas y empresas.
+**El negocio, en una línea (posicionamiento definido por el equipo el 2026-09-04):** DLPay
+**mueve dinero entre monedas y entre países**, rápido y sin depender de días hábiles, con una
+persona que cierra la operación por WhatsApp. Personas y empresas.
+
+**Alcance que la web comunica:** envío de dinero al extranjero (persona a persona, a cuenta
+propia, empresa a persona, empresa a empresa) · pagos internacionales y a proveedores ·
+tesorería en dólares · cambio de divisas CLP ↔ USD como operación independiente.
+
+**El dólar digital (USDT/USDC) es la infraestructura, no el mensaje comercial.** Se explica
+donde aporta —una nota en el cotizador, una respuesta en la FAQ— y nunca protagoniza un titular.
+La web **no** debe leerse como un sitio de criptomonedas.
+
+Este posicionamiento **coincide con los servicios que los T&C publicados ya declaran**
+(tesorería transfronteriza, pagos B2B, liquidaciones internacionales), y con ello cierra el
+pendiente I10/D8 que venía abierto desde Fase 0: la web comunicaba menos de lo que el propio
+contrato declara.
 
 **El contexto técnico (Fase 0):** `dlpay.cl` es hoy un sitio-inquilino dentro de la plataforma
 multi-tenant de Guita — dominio registrado por Guita SpA, DNS en DigitalOcean de Guita, hosting en
@@ -207,8 +221,9 @@ vuelve corporativa · español chileno plano · identidad propia.
 `/` (Home con el cotizador en el hero) · `/cotizar` · `/como-funciona` · `/empresas` ·
 `/confianza` · `/faq` · legales (`/terminos`, `/privacidad`, `/tarifas`, canal de denuncias).
 
-**El cotizador:** modelo `monto → precio referencial → WhatsApp prellenado → el ejecutivo confirma
-el precio final`. Especificación completa en `docs/design-system/cotizador-spec.md`. No ejecuta
+**El cotizador:** modelo `qué quieres hacer → monto → cuánto recibes → precio referencial →
+WhatsApp prellenado → el ejecutivo confirma el precio final y coordina el destino`. La intención
+—enviar al extranjero, convertir a dólares, convertir a pesos— es el primer paso. Especificación completa en `docs/design-system/cotizador-spec.md`. No ejecuta
 operaciones, no bloquea precios, no promete cotizaciones cerradas.
 
 **Nunca afirmar** que DLPay está regulado por la CMF ni ningún claim regulatorio equivalente.
@@ -333,7 +348,10 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | D5 | **Transparencia del spread**: ¿la web muestra la lógica de tramos o solo un referencial? Define el contenido de `/tarifas` | No para Fase 3; sí para Fase 5 | DLPay (I10/I11) |
 | D6 | **Monto mínimo/máximo reales** y precio de muestra del cotizador | No — hoy son placeholders | DLPay |
 | D7 | **Fuente oficial de market price** | No — `ConfigPriceSource` cubre v1 | DLPay |
-| D8 | **Alcance de servicios a comunicar**: los T&C describen intermediación, custodia, tesorería transfronteriza y pagos B2B; los apuntes internos dicen "OTC USDT" | No para Fase 3; sí para Fase 5 | DLPay (I10) |
+| ~~D8~~ | ~~Alcance de servicios a comunicar~~ | ✅ Cerrado 2026-09-04: el amplio, alineado con los T&C publicados | Equipo DLPay |
+| **D16** | **Cómo llega el dinero al destinatario final**: ¿moneda local en su cuenta en el extranjero, o entrega de dólar digital y el destino lo resuelve el cliente? El copy hoy describe el resultado sin comprometer el mecanismo | **Sí para Fase 5** — condiciona el claim central de la web | **REQUIERE VALIDACIÓN DE COMPLIANCE** |
+| D17 | **"Sin esperar días"** es una comparación contra la banca. Los ~5 min documentados son de la ejecución, no de un giro puerta a puerta | No para Fase 4; sí antes de publicar | DLPay |
+| D18 | **Fuente real de actividad reciente** (operaciones confirmadas y anonimizadas). Hoy hay datos de ejemplo, marcados como tales por el propio componente | No | DLPay |
 | D9 | **Razón social**: se usa **DLPZ INCZ SpA**. Los T&C publicados dicen "DLPZ PRO SpA" (RUT 78.378.714-8) | No | `REQUIERE VALIDACIÓN DE COMPLIANCE` — Joaquín. **No reinvestigar.** |
 | D10 | **Testimonios, cifras de clientes/volumen, logos de empresas** | No — no se publican hasta verificar | DLPay (I15) |
 | D11 | **Equipo con nombre y foto** en `/confianza` | No | Sebastián |

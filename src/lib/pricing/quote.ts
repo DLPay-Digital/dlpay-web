@@ -1,37 +1,34 @@
 /**
- * Lógica del cotizador: estado, armado del Quote y mensaje de WhatsApp.
+ * Lógica del cotizador: intención, estado, armado del Quote y mensaje de
+ * WhatsApp.
  *
  * Vive aquí y no dentro del componente porque es lógica crítica y
  * determinística: el mensaje que llega al ejecutivo debe ser correcto, y eso
  * se comprueba con tests (CLAUDE.md §7).
  */
 
-import type { Direction, PriceReference, Quote, QuoteState } from './types.ts';
-import { formatCLP, formatUSDT } from './format.ts';
+import type { Currency, Direction, Intent, PriceReference, Quote, QuoteState } from './types.ts';
+import { formatCLP, formatUSD } from './format.ts';
 
-/**
- * Quién da qué según la dirección.
- * - comprar: entregas CLP, recibes USDT
- * - vender:  entregas USDT, recibes CLP
- */
-export function currenciesFor(direction: Direction): {
-  give: 'CLP' | 'USDT';
-  get: 'CLP' | 'USDT';
-} {
-  return direction === 'buy'
-    ? { give: 'CLP', get: 'USDT' }
-    : { give: 'USDT', get: 'CLP' };
+/** Qué se entrega y qué se recibe, según lo que la persona quiere hacer. */
+export function currenciesFor(intent: Intent): { give: Currency; get: Currency } {
+  return intent === 'to_clp'
+    ? { give: 'USD', get: 'CLP' }
+    : { give: 'CLP', get: 'USD' };
 }
 
-/** Convierte el monto entregado al monto recibido. */
-export function convert(direction: Direction, giveAmount: number, rate: number): number {
+export function directionFor(intent: Intent): Direction {
+  return intent === 'to_clp' ? 'sell' : 'buy';
+}
+
+export function convert(intent: Intent, giveAmount: number, rate: number): number {
   if (rate <= 0) return 0;
-  return direction === 'buy' ? giveAmount / rate : giveAmount * rate;
+  return directionFor(intent) === 'buy' ? giveAmount / rate : giveAmount * rate;
 }
 
 /** El monto en pesos de la operación, sea el que se entrega o el que se recibe. */
-export function clpAmount(direction: Direction, giveAmount: number, rate: number): number {
-  return direction === 'buy' ? giveAmount : convert(direction, giveAmount, rate);
+export function clpAmount(intent: Intent, giveAmount: number, rate: number): number {
+  return directionFor(intent) === 'buy' ? giveAmount : convert(intent, giveAmount, rate);
 }
 
 export function resolveState(clp: number, minPay: number, maxPay?: number): QuoteState {
@@ -41,22 +38,22 @@ export function resolveState(clp: number, minPay: number, maxPay?: number): Quot
 }
 
 export function buildQuote(input: {
-  direction: Direction;
+  intent: Intent;
   giveAmount: number;
   price: PriceReference;
   minPay: number;
   maxPay?: number;
 }): Quote {
-  const { direction, giveAmount, price, minPay, maxPay } = input;
-  const clp = clpAmount(direction, giveAmount, price.rate);
-  const getAmount = convert(direction, giveAmount, price.rate);
+  const { intent, giveAmount, price, minPay, maxPay } = input;
+  const clp = clpAmount(intent, giveAmount, price.rate);
 
   return {
-    direction,
+    intent,
+    direction: directionFor(intent),
     payAmount: clp,
     payCurrency: 'CLP',
-    getAmount,
-    getCurrency: 'USDT',
+    getAmount: convert(intent, giveAmount, price.rate),
+    getCurrency: currenciesFor(intent).get,
     price,
     spreadIncluded: true,
     isReferential: true,
@@ -66,34 +63,38 @@ export function buildQuote(input: {
   };
 }
 
-function amount(value: number, currency: 'CLP' | 'USDT'): string {
-  return currency === 'CLP' ? `CLP ${formatCLP(value)}` : `${formatUSDT(value)} USDT`;
+export function formatAmount(value: number, currency: Currency): string {
+  return currency === 'CLP' ? `CLP ${formatCLP(value)}` : `US$ ${formatUSD(value)}`;
 }
 
 /**
  * Mensaje prellenado de WhatsApp (cotizador-spec §5).
  *
- * Siempre incluye el monto y la dirección. El vocabulario y los decimales
- * coinciden con los que usa el equipo en el chat: la web y WhatsApp deben decir
- * el mismo número de la misma forma (principio UX 3).
+ * Siempre incluye el monto y qué quiere hacer la persona. El vocabulario y los
+ * decimales coinciden con los que usa el equipo en el chat: la web y WhatsApp
+ * deben decir el mismo número de la misma forma (principio UX 3).
  */
 export function whatsappMessage(quote: Quote, giveAmount: number): string {
-  const { direction, state, price } = quote;
-  const { give, get } = currenciesFor(direction);
-  const verb = direction === 'buy' ? 'comprar' : 'vender';
+  const { intent, state, price } = quote;
+  const { give, get } = currenciesFor(intent);
 
   if (state === 'unavailable' || state === 'market_moving') {
-    return 'Hola, quiero cotizar una operación de USDT. El cotizador no me está mostrando precio ahora.';
+    return 'Hola, quiero cotizar una operación. El cotizador no me está mostrando precio ahora.';
   }
 
+  const what: Record<Intent, string> = {
+    send_abroad: `enviar ${formatAmount(giveAmount, give)} al extranjero`,
+    to_usd: `convertir ${formatAmount(giveAmount, give)} a dólares`,
+    to_clp: `convertir ${formatAmount(giveAmount, give)} a pesos`,
+  };
+
   if (state === 'below_min' || state === 'above_max') {
-    return `Hola, quiero ${verb} USDT por ${amount(giveAmount, give)}. ¿Pueden operar ese monto?`;
+    return `Hola, quiero ${what[intent]}. ¿Pueden operar ese monto?`;
   }
 
   return (
-    `Hola, quiero cotizar la ${direction === 'buy' ? 'compra' : 'venta'} de USDT ` +
-    `por ${amount(giveAmount, give)} (recibo aprox. ${amount(quote.getAmount, get)} ` +
-    `al precio referencial ${formatUSDT(price.rate)}). ¿Me confirman el precio final?`
+    `Hola, quiero ${what[intent]} (recibo aprox. ${formatAmount(quote.getAmount, get)} ` +
+    `al precio referencial ${formatUSD(price.rate)}). ¿Me confirman el precio final?`
   );
 }
 

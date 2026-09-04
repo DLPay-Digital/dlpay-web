@@ -12,7 +12,7 @@ import Icon from './Icon.astro';
 
 const trustStrip = [
   { icon: 'bank' as const, label: 'Verificamos en el banco' },
-  { icon: 'clock' as const, label: 'Operación en ~5 minutos' },
+  { icon: 'clock' as const, label: 'Sin días hábiles de por medio' },
   { icon: 'people' as const, label: 'Equipo en Chile' },
 ];
 ---
@@ -21,10 +21,10 @@ const trustStrip = [
 
   <div class="inner">
     <div class="copy">
-      <h1>El dólar digital, al precio real del mercado.</h1>
+      <h1>Envía dinero al extranjero. Sin esperar días.</h1>
       <p class="sub">
-        Una persona cierra tu operación en minutos. Para quien compra sus primeros
-        dólares y para empresas que mueven volumen.
+        Y convierte tus pesos a dólares cuando quieras. Al precio real del mercado, con
+        una persona que cierra tu operación en minutos.
       </p>
       <ul class="strip">
         {trustStrip.map((item) => (

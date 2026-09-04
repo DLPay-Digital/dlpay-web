@@ -26,33 +26,57 @@ export interface FaqItem {
 }
 
 /**
- * El recorrido completo: web + WhatsApp + KYC como UNA sola secuencia
+ * Para qué sirve DLPay. Tres usos, no una lista de servicios: la persona tiene
+ * que reconocerse en uno en segundos, no leer un catálogo.
+ */
+export interface UseCase {
+  title: string;
+  body: string;
+}
+
+export const useCases: UseCase[] = [
+  {
+    title: 'Enviar dinero fuera de Chile',
+    body: 'A una persona, o a tu propia cuenta en el extranjero. Sin depender de días hábiles ni de la cadena de bancos corresponsales.',
+  },
+  {
+    title: 'Tener tus pesos en dólares',
+    body: 'Conviertes cuando el precio te acomoda y vuelves a pesos cuando lo necesitas. No hace falta abrir una cuenta afuera.',
+  },
+  {
+    title: 'Pagar desde tu empresa',
+    body: 'Proveedores en el exterior, remuneraciones, tesorería. Con un ejecutivo que conoce tu operación.',
+  },
+];
+
+/**
+ * El recorrido completo: web + WhatsApp + verificación como UNA sola secuencia
  * (principio UX 3). Numerado porque es una secuencia real (Fase 1, patrón 11).
  */
 export const steps: Step[] = [
   {
     n: 1,
-    title: 'Cotizas el monto',
-    body: 'Escribes cuánto quieres cambiar y ves al instante el precio referencial y cuánto recibes.',
+    title: 'Dices qué necesitas',
+    body: 'Enviar al extranjero, pasar tus pesos a dólares o volver a pesos. Escribes el monto y ves al instante cuánto recibes.',
     time: 'ahora mismo',
   },
   {
     n: 2,
-    title: 'Confirmas con un ejecutivo',
-    body: 'El botón abre WhatsApp con tu monto ya escrito. Una persona te confirma el precio final del momento.',
+    title: 'Continúas por WhatsApp',
+    body: 'El botón abre el chat con tu operación ya escrita. Una persona te confirma el precio final y coordina el destino.',
     time: 'minutos',
   },
   {
     n: 3,
     title: 'Transfieres y verificamos',
-    body: 'Transfieres en pesos y confirmamos la recepción en la cuenta bancaria de DLPay antes de entregar nada.',
+    body: 'Transfieres desde tu banco y confirmamos la recepción en la cuenta de DLPay antes de mover nada.',
     time: 'según tu banco',
   },
   {
     n: 4,
-    title: 'Recibes tu dólar digital',
+    title: 'Tu dinero llega',
     // REQUIERE VALIDACIÓN DE COMPLIANCE — el tiempo de ~5 minutos
-    body: 'Te enviamos los USDT a tu wallet y te confirmamos la operación.',
+    body: 'Ejecutamos la operación y te confirmamos por el mismo chat, con el comprobante.',
     time: '~5 min desde el pago',
   },
 ];
@@ -62,7 +86,7 @@ export const trust: TrustBlock[] = [
     icon: 'bank',
     // REQUIERE VALIDACIÓN DE COMPLIANCE — mención del banco por nombre
     title: 'Un banco de por medio',
-    body: 'Recibimos y verificamos tu transferencia en la cuenta de DLPay en BCI antes de entregarte el dólar digital. No hay pasos a ciegas.',
+    body: 'Recibimos y verificamos tu transferencia en la cuenta de DLPay en BCI antes de ejecutar la operación. No hay pasos a ciegas.',
   },
   {
     icon: 'clock',
@@ -78,19 +102,19 @@ export const trust: TrustBlock[] = [
 
 export const faq: FaqItem[] = [
   {
+    q: '¿Por qué es más rápido que un banco?',
+    a: 'Porque no dependemos de la cadena de bancos corresponsales ni de sus horarios. Movemos tu dinero con dólar digital, que se transfiere en minutos y a cualquier hora. Lo que sí depende de tu banco es el momento en que tu transferencia en pesos llega a nosotros.',
+  },
+  {
     q: '¿El precio de la web es el precio final?',
     a: 'No. Es un precio referencial de mercado. Tu ejecutivo te confirma el precio final al momento de cerrar, porque el mercado se mueve. Preferimos decírtelo antes que después.',
   },
   {
-    q: '¿Qué es el "dólar digital"?',
-    a: 'Es una stablecoin: USDT o USDC, monedas digitales que siguen el valor del dólar. Puedes guardarlas, moverlas a cualquier hora y convertirlas de vuelta a pesos cuando quieras.',
+    q: '¿Qué es el "dólar digital" que usan?',
+    a: 'Son stablecoins, USDT o USDC: monedas digitales que siguen el valor del dólar. Es la infraestructura que hace rápida la operación. No necesitas saber de esto para operar; tu ejecutivo te guía.',
   },
   {
-    q: '¿Necesito registrarme para operar?',
-    a: 'Sí. Pedimos registro y verificación de identidad antes de la primera operación, para personas y para empresas. Es un requisito de seguridad y cumplimiento, no un trámite opcional.',
-  },
-  {
-    q: '¿Puedo operar fuera del horario bancario?',
-    a: 'Puedes cotizar y escribirnos a cualquier hora. La entrega del dólar digital no depende de días hábiles, pero sí necesitamos ver tu transferencia acreditada.',
+    q: '¿Necesito registrarme?',
+    a: 'Sí. Pedimos registro y verificación de identidad antes de la primera operación, a personas y a empresas. Es un requisito de seguridad y cumplimiento, no un trámite opcional.',
   },
 ];

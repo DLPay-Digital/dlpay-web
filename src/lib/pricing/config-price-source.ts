@@ -33,7 +33,7 @@ export class ConfigPriceSource implements PriceSource {
   async getPrice(): Promise<PriceReference> {
     return {
       rate: this.#rate,
-      pair: 'USDT/CLP',
+      pair: 'USD/CLP',
       source: this.label,
       asOf: new Date(),
     };
