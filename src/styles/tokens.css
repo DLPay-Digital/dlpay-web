@@ -1,0 +1,114 @@
+/* ---------------------------------------------------------------------------
+   DLPay — tokens del Design System V1
+   Espejo exacto de docs/design-system/design-system-v1.md. Mismo vocabulario:
+   cambiar un token aquí y en el documento debe ser el mismo cambio (ADR-0004 §2).
+
+   REGLA: ningún componente escribe un color, espaciado, radio o tamaño literal.
+   Todo sale de un token. Un valor mágico es un error de revisión.
+   --------------------------------------------------------------------------- */
+
+:root{
+  /* ── Marca (verificados por muestreo de logos/ · ADR-0001 §2) ───────────── */
+  --verde:#16C784;        /* acción primaria, dato vivo. NUNCA como wash */
+  --verde-hi:#3DD69A;     /* hover; líneas del motivo geométrico sobre tinta */
+  --verde-deep:#0B7A54;   /* verde sobre superficie clara donde --verde no da AA */
+  --tinta:#0B1320;        /* héroes, footer, bandas */
+  --tinta-2:#101A2B;      /* banda secundaria, capas sobre tinta */
+
+  /* ── Neutros (tintados hacia la tinta, H≈216 — no gris puro) ───────────── */
+  --papel:#F6F5F1;
+  --papel-2:#ECEAE3;
+  --ink:#131A26;
+  --ink-mute:#5A6472;
+  --line:rgba(11,19,32,.14);
+  --on-tinta:#EDF2EF;
+  --on-tinta-mute:#9DB0AA;
+
+  /* ── Semánticos (separados del acento) ─────────────────────────────────── */
+  --sube:#16C784;         /* coincide con el verde de marca, a propósito */
+  --baja:#C7593B;         /* rojo-arcilla apagado, no rojo puro */
+  --aviso:#B5852A;
+  --error-bg:#FBF1EC;
+  --error-line:#E7C3B4;
+
+  /* ── Tipografía (set T-C · ADR-0001 §4) ────────────────────────────────── */
+  --f-text:'Familjen Grotesk','Familjen Fallback','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --f-display:var(--f-text);          /* T-C usa una sola familia para todo el texto */
+  --f-num:'Spline Sans Mono','Spline Fallback',ui-monospace,'SF Mono',Menlo,monospace;
+
+  /* Escala: es un TECHO, no un objetivo (Design System §3.0).
+     Si un titular compite con la cifra, se reduce el titular. */
+  --t-display:52px;  --t-display-m:30px;
+  --t-h2:32px;       --t-h2-m:23px;
+  --t-h3:20px;       --t-h3-m:17px;
+  --t-body:16px;
+  --t-body-sm:14px;
+  --t-label:13px;
+  --t-dato:32px;     --t-dato-m:26px;   /* precio, "recibes" — la cifra manda */
+  --t-dato-sm:13px;
+
+  --lh-display:1.04; --lh-h2:1.1; --lh-h3:1.2; --lh-body:1.55; --lh-dato:1;
+  --ls-display:-.015em; --ls-h2:-.01em; --ls-dato:-.01em; --ls-label:.01em;
+
+  /* ── Espaciado (base 4) ────────────────────────────────────────────────── */
+  --s-1:4px;  --s-2:8px;  --s-3:12px; --s-4:16px; --s-5:24px;
+  --s-6:32px; --s-7:48px; --s-8:64px; --s-9:96px; --s-10:128px;
+
+  /* ── Layout ────────────────────────────────────────────────────────────── */
+  --container:1112px;
+  --pad-section:64px;
+  --pad-section-m:20px;
+
+  /* ── Radios (discretos — nunca píldora) ────────────────────────────────── */
+  --r-0:0;
+  --r-1:3px;
+  --r-2:6px;
+  --r-3:10px;
+  --r-card:14px;          /* sólo la tarjeta del cotizador flotando sobre tinta */
+
+  /* ── Elevación (mínima, por rol) ───────────────────────────────────────── */
+  --elev-card:0 24px 60px -24px rgba(11,19,32,.45);
+  --elev-pop:0 8px 24px -12px rgba(11,19,32,.25);
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box}
+
+html{-webkit-text-size-adjust:100%}
+
+body{
+  margin:0;
+  background:var(--papel);
+  color:var(--ink);
+  font-family:var(--f-text);
+  font-size:var(--t-body);
+  line-height:var(--lh-body);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Toda cifra monetaria es tabular, sin excepción (Design System §5) */
+.num{
+  font-family:var(--f-num);
+  font-variant-numeric:tabular-nums;
+  letter-spacing:var(--ls-dato);
+}
+
+h1,h2,h3{margin:0; text-wrap:balance}
+p{margin:0; text-wrap:pretty}
+img{max-width:100%; height:auto}
+
+a{color:var(--verde-deep)}
+
+/* Foco visible en todo lo interactivo (Design System §10) */
+:focus-visible{outline:2px solid var(--verde); outline-offset:2px}
+
+/* Objetivos táctiles ≥44px */
+button,a[role="button"],input,select{min-height:44px}
+
+/* Por defecto nada se mueve (Design System §9) */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important; animation-iteration-count:1!important;
+    transition-duration:.01ms!important; scroll-behavior:auto!important;
+  }
+}

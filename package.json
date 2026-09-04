@@ -1,0 +1,23 @@
+{
+  "name": "dlpay-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Web pública de DLPay — mesa de cambio de dólar digital.",
+  "engines": {
+    "node": ">=20.3.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "astro": "^7.3.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.3"
+  }
+}

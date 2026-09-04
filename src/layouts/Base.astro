@@ -1,0 +1,50 @@
+---
+/**
+ * Layout base. Deliberadamente mínimo: sólo el documento, los tokens y el SEO
+ * que toda página necesita. Cabecera, pie y navegación se construyen en Fase 4,
+ * cuando una página real los pida (Principio 5).
+ */
+import '../styles/fonts.css';
+import '../styles/tokens.css';
+import { site } from '../lib/config/site';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Ruta canónica relativa, con barra inicial. */
+  path?: string;
+}
+
+const { title, description, path = Astro.url.pathname } = Astro.props;
+const canonical = new URL(path, site.url).href;
+const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
+---
+<!doctype html>
+<html lang="es-CL">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Sólo la variante del primer viewport se precarga (Design System §3) -->
+    <link
+      rel="preload"
+      href="/fonts/familjen-grotesk-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="es_CL" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

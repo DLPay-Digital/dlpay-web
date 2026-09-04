@@ -10,17 +10,18 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
 
 ### 0.1 Estado actual  ·  *(actualizar al cerrar cada fase)*
 
-- **Fase actual: 3 — Arquitectura.** Autorizada por Sebastián el 2026-09-03.
+- **Fase actual: 4 — Construcción del sitio público.** Fase 3 cerrada el 2026-09-04.
 - **Fases 0, 1, 2 y 2.5: cerradas.** No se rehacen, no se reinvestigan. Su resultado está en
   `docs/research/`.
 - **ADRs de Fase 3 cerrados** (0002–0005): Astro + TypeScript · repositorio y convenciones ·
   CSS nativo con tokens, sin Tailwind · despliegue portable con proveedor diferido.
 - **Identidad visual completa**: dirección A×C, verde `#16C784`, tinta `#0B1320` y tipografía
   **T-C** cerradas. No queda ninguna decisión visual abierta para la V1.
-- **La aplicación todavía no existe.** No hay `package.json` ni `src/`.
-  **Bloqueo activo: la máquina no tiene Node.js instalado** — ver `docs/development.md`. Es el
-  único prerrequisito para crear el esqueleto (y también la causa de que el MCP de Playwright no
-  conecte).
+- **Esqueleto creado y verificado.** Astro 7 + TypeScript strict, `npm run check` y
+  `npm run build` en verde, **0 JS enviado al cliente**, fuentes T-C auto-hospedadas, tokens del
+  Design System en código, y la cadena `PriceSource → Quote` en pie. Ver `docs/development.md`.
+- **Fase 3 cerrada.** Lo siguiente es **Fase 4: construir el sitio público**, empezando por la
+  Home con el cotizador (`phase-2.5-definicion-experiencia.md` §2).
 - **Numeración de fases (única y definitiva — la del repositorio):**
 
   | Fase | Qué es | Estado |
@@ -49,7 +50,7 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
 | `docs/design-system/cotizador-spec.md` | El elemento central de la web. |
 | `docs/research/phase-2.5-definicion-experiencia.md` | Experiencia, arquitectura de información, estructura de la Home, principios UX. **El documento operativo más útil para construir.** |
 | Este archivo | Principios, límites, Definition of Done. |
-| `docs/development.md` | Cómo levantar el proyecto y qué falta para hacerlo. |
+| `docs/development.md` | Cómo levantar el proyecto, estructura, dependencias y verificaciones. |
 | `docs/design-system/board-tipografia.html` | Board que sustentó la elección de tipografía. Se abre en el navegador. |
 
 **De consulta (no rehacer, sí citar):** `docs/research/phase-0-findings.md` (hechos técnicos,
@@ -58,8 +59,11 @@ patrones) · `phase-2-visual-directions.md` + su Artifact de mockups.
 
 ### 0.3 Límites duros de la fase actual
 
-- **No escribir código de producción** hasta cerrar los ADRs de arquitectura de Fase 3.
-- **No instalar dependencias** sin el análisis escrito del §8.
+- **No instalar dependencias** sin el análisis escrito del §8. Hoy el proyecto declara **tres
+  paquetes**: `astro`, `@astrojs/check` y `typescript`. Cero dependencias de estilo, cero
+  framework de UI.
+- **No crear un componente ni una carpeta** que ninguna página real necesite todavía
+  (Principio 5).
 - **No tocar producción.** Dominio, DNS, correo, el Firebase de Guita, cuentas de terceros: nada.
   La web nueva se construye aparte y solo se conecta por DNS en Fase 6.
 - **No construir infraestructura de usuarios, auth, KYC/KYB ni datos de clientes.** Sigue en la
@@ -322,7 +326,7 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 |---|---|---|---|
 | ~~D1~~ | ~~Stack, estilos y repositorio~~ | ✅ Cerrado | ADR-0002, 0003, 0004 |
 | D1b | **Proveedor de hosting** (candidatos: Cloudflare, Vercel). Desarrollo en local mientras tanto | No — portabilidad protegida por ADR-0005 | Sebastián, cuando haya qué publicar |
-| D1c | **Instalar Node.js** en la máquina de desarrollo | **Sí — bloquea el esqueleto y el MCP de Playwright** | Sebastián (`docs/development.md`) |
+| ~~D1c~~ | ~~Instalar Node.js~~ | ✅ Resuelto: v24.20.0 / npm 11.19.0 | — |
 | ~~D2~~ | ~~Familia tipográfica~~ | ✅ Cerrado 2026-09-04: **T-C** (Familjen Grotesk + Spline Sans Mono) | ADR-0001 §4 |
 | D3 | **Titularidad de la organización GitHub** de DLPay | No — el repo es local por ahora (ADR-0003) | Sebastián |
 | ~~D4~~ | ~~Idioma de código y commits~~ | ✅ Cerrado: código en inglés, commits/docs/contenido en español | ADR-0003 |
