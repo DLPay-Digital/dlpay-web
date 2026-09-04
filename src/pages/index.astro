@@ -1,203 +1,30 @@
 ---
 /**
- * PROVISIONAL — página de verificación del esqueleto, no es la Home.
+ * Home. Estructura definida en phase-2.5-definicion-experiencia.md §2.
  *
- * Existe para comprobar que el sistema está en pie: los tokens se aplican, las
- * fuentes auto-hospedadas cargan, las cifras salen tabulares y en formato
- * chileno, y la cadena PriceSource -> Quote funciona de punta a punta.
- *
- * La Home real (héroe + cotizador) se construye en Fase 4 según
- * docs/research/phase-2.5-definicion-experiencia.md §2.
+ * Una sola acción primaria: cotizar. Todo lo demás la sostiene.
  */
 import Base from '../layouts/Base.astro';
-import { ConfigPriceSource } from '../lib/pricing/config-price-source';
-import { formatCLP, formatRate, formatUSDT } from '../lib/pricing/format';
-import { site, contact, platform } from '../lib/config/site';
-import type { Quote } from '../lib/pricing/types';
-
-const priceSource = new ConfigPriceSource();
-const price = await priceSource.getPrice();
-
-const payAmount = 2_000_000;
-const quote: Quote = {
-  direction: 'buy',
-  payAmount,
-  payCurrency: 'CLP',
-  getAmount: payAmount / price.rate,
-  getCurrency: 'USDT',
-  price,
-  spreadIncluded: true,
-  isReferential: true,
-  state: 'ok',
-};
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Steps from '../components/Steps.astro';
+import Trust from '../components/Trust.astro';
+import Business from '../components/Business.astro';
+import Faq from '../components/Faq.astro';
+import Footer from '../components/Footer.astro';
 ---
-
 <Base
-  title="Esqueleto en pie"
-  description="Página de verificación del esqueleto técnico de la web de DLPay. Provisional: la Home real se construye en Fase 4."
+  title="DLPay"
+  description="Compra y vende dólar digital al precio real del mercado, con una persona que cierra tu operación en minutos. Para personas y empresas en Chile."
+  path="/"
 >
-  <main class="page">
-    <p class="tag">Fase 3 · verificación del esqueleto</p>
-    <h1>El sistema está en pie.</h1>
-    <p class="lede">
-      Esta página no es la Home. Existe para comprobar que los tokens del Design System
-      se aplican, que las fuentes auto-hospedadas cargan y que la cadena
-      <code>PriceSource → Quote</code> funciona. Se reemplaza en Fase 4.
-    </p>
-
-    <section class="block">
-      <h2>Tipografía — set T-C</h2>
-      <p class="spec">Familjen Grotesk en títulos y texto · Spline Sans Mono en cifras.</p>
-      <p class="sample-h">El dólar digital, al precio real del mercado.</p>
-      <p class="sample-b">
-        Recibimos y verificamos tu transferencia en el banco antes de entregarte el dólar
-        digital. El precio que ves es referencial: tu ejecutivo confirma el precio final.
-      </p>
-    </section>
-
-    <section class="block">
-      <h2>Cifras — tabulares y en formato chileno</h2>
-      <p class="spec">
-        La cifra manda. Fuente: {quote.price.source} · valor de muestra, no es un precio real.
-      </p>
-      <dl class="rows">
-        <div><dt>Pago</dt><dd class="num">{formatCLP(quote.payAmount)} CLP</dd></div>
-        <div><dt>Recibo aprox.</dt><dd class="num">{formatUSDT(quote.getAmount)} USDT</dd></div>
-        <div><dt>Precio referencial</dt><dd class="num strong">{formatRate(quote.price.rate)} CLP/USDT</dd></div>
-        <div><dt>Alineación tabular</dt><dd class="num">18.500.000</dd></div>
-      </dl>
-    </section>
-
-    <section class="block">
-      <h2>Configuración</h2>
-      <p class="spec">Punto único de acoplamiento con la plataforma de Guita.</p>
-      <dl class="rows">
-        <div><dt>Marca</dt><dd>{site.name}</dd></div>
-        <div><dt>Razón social</dt><dd>{site.legalName}</dd></div>
-        <div><dt>WhatsApp</dt><dd class="num">+{contact.whatsappNumber}</dd></div>
-        <div><dt>Registro</dt><dd class="trunc">{platform.registerUrl}</dd></div>
-      </dl>
-    </section>
-
-    <section class="block swatches">
-      <h2>Color</h2>
-      <div class="chips">
-        <span class="chip" style="background:var(--verde)"></span>
-        <span class="chip" style="background:var(--verde-deep)"></span>
-        <span class="chip" style="background:var(--tinta)"></span>
-        <span class="chip" style="background:var(--tinta-2)"></span>
-        <span class="chip" style="background:var(--papel-2)"></span>
-        <span class="chip" style="background:var(--baja)"></span>
-        <span class="chip" style="background:var(--aviso)"></span>
-      </div>
-    </section>
+  <Header />
+  <main id="main">
+    <Hero />
+    <Steps />
+    <Trust />
+    <Business />
+    <Faq />
   </main>
+  <Footer />
 </Base>
-
-<style>
-  .page {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: var(--s-8) var(--pad-section-m) var(--s-9);
-  }
-  .tag {
-    font-family: var(--f-num);
-    font-size: var(--t-dato-sm);
-    color: var(--verde-deep);
-    letter-spacing: var(--ls-label);
-    margin-bottom: var(--s-4);
-  }
-  h1 {
-    font-size: var(--t-display-m);
-    font-weight: 700;
-    line-height: var(--lh-display);
-    letter-spacing: var(--ls-display);
-    margin-bottom: var(--s-4);
-  }
-  .lede {
-    color: var(--ink-mute);
-    margin-bottom: var(--s-8);
-  }
-  .lede code {
-    font-family: var(--f-num);
-    font-size: var(--t-body-sm);
-  }
-
-  .block {
-    padding-top: var(--s-6);
-    margin-top: var(--s-6);
-    border-top: 1px solid var(--line);
-  }
-  h2 {
-    font-size: var(--t-h3);
-    font-weight: 600;
-    line-height: var(--lh-h3);
-    margin-bottom: var(--s-1);
-  }
-  .spec {
-    font-size: var(--t-body-sm);
-    color: var(--ink-mute);
-    margin-bottom: var(--s-5);
-  }
-
-  .sample-h {
-    font-size: var(--t-h2-m);
-    font-weight: 700;
-    line-height: var(--lh-h2);
-    letter-spacing: var(--ls-h2);
-    margin-bottom: var(--s-3);
-  }
-  .sample-b {
-    color: var(--ink-mute);
-  }
-
-  .rows {
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  .rows > div {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: var(--s-4);
-    padding: var(--s-3) 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .rows > div:last-child {
-    border-bottom: 0;
-  }
-  dt {
-    font-size: var(--t-label);
-    font-weight: 600;
-    color: var(--ink-mute);
-    flex: none;
-  }
-  dd {
-    margin: 0;
-    font-size: var(--t-h3);
-    text-align: right;
-    min-width: 0;
-  }
-  dd.strong {
-    font-size: var(--t-dato-m);
-    line-height: var(--lh-dato);
-  }
-  dd.trunc {
-    font-size: var(--t-body-sm);
-    overflow-wrap: anywhere;
-  }
-
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-2);
-  }
-  .chip {
-    width: 56px;
-    height: 40px;
-    border-radius: var(--r-2);
-    border: 1px solid var(--line);
-    display: block;
-  }
-</style>

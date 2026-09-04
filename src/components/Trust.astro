@@ -1,0 +1,54 @@
+---
+/**
+ * "Por qué DLPay" — sólo señales que DLPay puede respaldar hoy
+ * (phase-2.5 §5). Sin cifras de vanidad, sin sellos, sin claims regulatorios.
+ */
+import Icon from './Icon.astro';
+import { trust } from '../content/home.ts';
+---
+<section class="trust" id="confianza" aria-labelledby="trust-title">
+  <div class="inner">
+    <header class="head">
+      <h2 id="trust-title">Confianza que se comprueba</h2>
+      <p>Nada de sellos. Esto es lo que efectivamente pasa con tu plata.</p>
+    </header>
+
+    <ul class="grid">
+      {trust.map((block) => (
+        <li class="block">
+          <Icon name={block.icon} class="icon" />
+          <h3>{block.title}</h3>
+          <p>{block.body}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .trust { background: var(--papel-2); padding: var(--s-9) 0; }
+  .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
+  .head { max-width: 40ch; margin-bottom: var(--s-7); }
+  h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: var(--s-3);
+  }
+  .head p { color: var(--ink-mute); }
+
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
+  .icon { width: 24px; height: 24px; color: var(--verde-deep); display: block; margin-bottom: var(--s-3); }
+  h3 { font-size: var(--t-h3-m); font-weight: 600; line-height: var(--lh-h3); margin-bottom: var(--s-2); }
+  .block p { color: var(--ink-mute); max-width: 46ch; }
+
+  @media (min-width: 760px) {
+    .grid { grid-template-columns: repeat(3, 1fr); gap: var(--s-7); }
+  }
+  @media (min-width: 900px) {
+    .inner { padding-inline: var(--pad-section); }
+    h2 { font-size: var(--t-h2); }
+    h3 { font-size: var(--t-h3); }
+  }
+</style>

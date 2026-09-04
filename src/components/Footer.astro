@@ -1,0 +1,98 @@
+---
+/**
+ * Pie. Incluye la razón social donde corresponde legalmente.
+ *
+ * Las páginas legales todavía no existen: sus textos requieren revisión de
+ * Compliance (Fase 5). Se listan como pendientes en vez de crear enlaces
+ * muertos o publicar documentos sin validar.
+ * PENDIENTE DE DECISIÓN — páginas legales (términos, privacidad, tarifas,
+ * canal de denuncias). REQUIERE VALIDACIÓN DE COMPLIANCE.
+ */
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { site, contact } from '../lib/config/site.ts';
+
+const wa = `https://wa.me/${contact.whatsappNumber}`;
+const legal = ['Términos y condiciones', 'Política de privacidad', 'Tarifas', 'Canal de denuncias'];
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="inner">
+    <div class="cols">
+      <div class="col brand-col">
+        <a class="brand" href="/">
+          <Logo class="brand-mark" />
+          <span>DLPay</span>
+        </a>
+        <p class="tagline">
+          Mesa de cambio de dólar digital. Para personas y para empresas.
+        </p>
+      </div>
+
+      <div class="col">
+        <h2>Contacto</h2>
+        <ul>
+          <li>
+            <a class="wa" href={wa} target="_blank" rel="noopener">
+              <Icon name="whatsapp" class="wa-icon" />
+              WhatsApp
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col">
+        <h2>Legal</h2>
+        <ul>
+          {legal.map((item) => (
+            <li><span class="pending">{item}</span></li>
+          ))}
+        </ul>
+        <p class="pending-note">En preparación.</p>
+      </div>
+    </div>
+
+    <div class="base">
+      <p>{site.legalName} · opera bajo la marca {site.name}</p>
+      <p>© {year}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background: var(--tinta); color: var(--on-tinta); padding: var(--s-8) 0 var(--s-6); }
+  .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
+
+  .cols { display: grid; gap: var(--s-7); }
+  .brand { display: flex; align-items: center; gap: var(--s-2); color: var(--on-tinta); text-decoration: none; font-weight: 700; font-size: var(--t-h3); }
+  .brand-mark { width: 20px; height: 20px; color: var(--verde); display: block; }
+  .tagline { color: var(--on-tinta-mute); font-size: var(--t-body-sm); margin-top: var(--s-3); max-width: 34ch; }
+
+  h2 { font-size: var(--t-label); font-weight: 600; letter-spacing: var(--ls-label); color: var(--on-tinta-mute); margin-bottom: var(--s-3); }
+  .col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s-2); }
+  .col a { color: var(--on-tinta); text-decoration: none; font-size: var(--t-body-sm); display: inline-flex; align-items: center; gap: var(--s-2); }
+  .col a:hover { color: var(--verde); }
+  .wa-icon { width: 15px; height: 15px; }
+
+  .pending { color: var(--on-tinta-mute); font-size: var(--t-body-sm); opacity: 0.65; }
+  .pending-note { font-size: var(--t-dato-sm); color: var(--on-tinta-mute); opacity: 0.65; margin-top: var(--s-3); }
+
+  .base {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-5);
+    justify-content: space-between;
+    margin-top: var(--s-8);
+    padding-top: var(--s-5);
+    border-top: 1px solid rgba(237, 242, 239, 0.1);
+    font-size: var(--t-dato-sm);
+    color: var(--on-tinta-mute);
+  }
+
+  @media (min-width: 760px) {
+    .cols { grid-template-columns: 2fr 1fr 1fr; gap: var(--s-8); }
+  }
+  @media (min-width: 900px) {
+    .inner { padding-inline: var(--pad-section); }
+  }
+</style>

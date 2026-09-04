@@ -19,6 +19,7 @@ npm run dev        # http://localhost:4321
 | `npm run build` | Genera el sitio estático en `dist/` |
 | `npm run preview` | Sirve `dist/` localmente, como en producción |
 | `npm run check` | Verificación de tipos (`astro check`) |
+| `npm test` | Tests de la lógica del cotizador (runner nativo de Node) |
 
 `build` verde **no** equivale a "terminado" (`CLAUDE.md` §9).
 
@@ -55,6 +56,10 @@ Exactamente tres paquetes declarados, con la justificación que exige `CLAUDE.md
 | `astro` | dependencia | El framework (ADR-0002). Nada más lo reemplaza. |
 | `@astrojs/check` | desarrollo | Verificación de tipos en archivos `.astro`; sin ella `tsconfig` strict no cubre las páginas. |
 | `typescript` | desarrollo | Requerido por `@astrojs/check`. |
+| `@types/node` | desarrollo | Tipos de los módulos `node:` que usan los tests. Sin ellos `astro check` no puede verificarlos. |
+
+**Tests sin dependencias:** se usa el runner nativo `node --test`, que además ejecuta
+TypeScript directamente. No hay Vitest, Jest ni ningún framework de test instalado.
 
 **Cero dependencias de estilo** (ADR-0004) y **cero framework de UI** (ADR-0002 §3).
 Antes de añadir cualquier paquete, responder por escrito el cuestionario de `CLAUDE.md` §8.
@@ -99,11 +104,20 @@ El desarrollo avanza en local durante toda la Fase 4.
 Regla de portabilidad vinculante: **el sitio debe poder publicarse copiando `dist/` a
 cualquier servidor estático.** Lo que rompa esa afirmación necesita una enmienda de ADR.
 
-## Verificaciones del esqueleto (2026-09-04)
+## Estado de la Home (2026-09-04)
 
-- `npm run check` → 0 errores en 9 archivos.
-- `npm run build` → verde.
-- **0 archivos JavaScript y 0 etiquetas `<script>`** en la salida — el sitio de
-  contenido no envía JS, como promete ADR-0002. El cotizador será la única isla.
-- Página completa: ~4,4 KB de HTML + ~5,6 KB de CSS, más las fuentes.
-- Cifras tabulares y en formato chileno: `2.000.000` · `2.174,62` · `919,70`.
+- `npm run check` → 0 errores en 22 archivos · `npm test` → 22 tests en verde · `build` verde.
+- **JS enviado al cliente: ~3,2 KB**, y es sólo el cotizador. Astro lo inlinea por
+  pequeño, así que no aparece como archivo `.js` suelto en `dist/`. El resto de la
+  página es HTML y CSS: cero JavaScript, como promete ADR-0002.
+- HTML ~21 KB + CSS ~20 KB, más las fuentes.
+- Jerarquía de headings correcta (un `h1`, sin saltos de nivel), `lang="es-CL"`,
+  cero enlaces muertos.
+- El CTA de WhatsApp se arma **también en el servidor** con la misma función que usa
+  el cliente: sin JavaScript el botón ya lleva el monto de ejemplo escrito.
+
+**Sobre el estado "calculando" del cotizador:** la especificación describe un shimmer
+mientras se recalcula. Hoy el precio es un valor de configuración y el cálculo es
+instantáneo, así que simular una espera sería teatro. La máquina de estados está
+escrita completa (`resolveState`, `QuoteState`); los estados `market_moving` y
+`unavailable` no son alcanzables hasta que exista una fuente de precio real.

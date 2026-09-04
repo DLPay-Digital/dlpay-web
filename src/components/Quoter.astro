@@ -1,0 +1,427 @@
+---
+/**
+ * COTIZADOR — el elemento central de la web.
+ * Especificación: docs/design-system/cotizador-spec.md
+ *
+ * Modelo: monto -> precio referencial -> WhatsApp con el monto prellenado ->
+ * un ejecutivo confirma el precio final.
+ *
+ * Lo que NO hace: ejecutar una operación, bloquear un precio, prometer un
+ * precio final. El tipo `Quote` lo impide (`isReferential: true` es literal).
+ *
+ * Es la ÚNICA isla interactiva del sitio (ADR-0002 §2). El precio se resuelve
+ * en build desde ConfigPriceSource y viaja al cliente en data-attributes.
+ */
+import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
+import { formatCLP, formatRate, formatUSDT } from '../lib/pricing/format.ts';
+import { buildQuote, whatsappUrl } from '../lib/pricing/quote.ts';
+import { contact, platform } from '../lib/config/site.ts';
+
+interface Props {
+  /** Sobre tinta flota con sombra; sobre papel va plano (spec §2). */
+  variant?: 'floating' | 'flat';
+}
+const { variant = 'floating' } = Astro.props;
+
+const price = await new ConfigPriceSource().getPrice();
+
+// PENDIENTE DE DECISIÓN — monto mínimo real (CLAUDE.md §13, D6)
+const minPay = Number(import.meta.env.PUBLIC_QUOTE_MIN_CLP ?? '50000') || 50000;
+
+const initialPay = 2_000_000;
+const initialGet = initialPay / price.rate;
+
+/**
+ * El enlace se arma también en el servidor, con la MISMA función que usa el
+ * cliente. Sin JavaScript el CTA sigue llevando a WhatsApp con el monto de
+ * ejemplo escrito; con JavaScript se actualiza a medida que el usuario tipea.
+ */
+const initialQuote = buildQuote({
+  direction: 'buy',
+  giveAmount: initialPay,
+  price,
+  minPay,
+});
+const wa = whatsappUrl(contact.whatsappNumber, initialQuote, initialPay);
+---
+
+<section
+  class:list={['quoter', variant]}
+  id="cotizador"
+  data-rate={price.rate}
+  data-min={minPay}
+  data-wa={contact.whatsappNumber}
+  data-source={price.source}
+  aria-labelledby="quoter-title"
+>
+  <h2 class="sr-only" id="quoter-title">Cotizador de dólar digital</h2>
+
+  <fieldset class="direction">
+    <legend class="sr-only">¿Qué quieres hacer?</legend>
+    <label class="dir-option">
+      <input type="radio" name="direction" value="buy" checked />
+      <span>Quiero comprar</span>
+    </label>
+    <label class="dir-option">
+      <input type="radio" name="direction" value="sell" />
+      <span>Quiero vender</span>
+    </label>
+  </fieldset>
+
+  <div class="field">
+    <label class="label" for="give-input" data-label-give>Pago</label>
+    <div class="input-box">
+      <input
+        id="give-input"
+        class="amount num"
+        type="text"
+        inputmode="numeric"
+        autocomplete="off"
+        value={formatCLP(initialPay)}
+        aria-describedby="quoter-note"
+      />
+      <span class="currency" data-cur-give>CLP</span>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label" for="get-input" data-label-get>Recibo aprox.</label>
+    <div class="input-box">
+      <input
+        id="get-input"
+        class="amount num"
+        type="text"
+        inputmode="decimal"
+        autocomplete="off"
+        value={formatUSDT(initialGet)}
+      />
+      <span class="currency" data-cur-get>USDT</span>
+    </div>
+  </div>
+
+  <p class="alert" data-alert hidden aria-live="polite"></p>
+
+  <div class="price-row">
+    <span class="price-label">
+      Precio referencial
+      <em>hace un momento</em>
+    </span>
+    <span class="price-value num" data-rate-display>
+      {formatRate(price.rate)}<small>CLP/USDT</small>
+    </span>
+  </div>
+
+  <p class="note" id="quoter-note">
+    <strong>Sin comisiones ocultas:</strong> el precio ya incluye el spread.
+    <span class="source">Referencia: {price.source}</span>
+  </p>
+
+  <a class="cta" href={wa} target="_blank" rel="noopener" data-cta>
+    Cotizar este monto por WhatsApp
+  </a>
+  <a class="secondary" href={platform.registerUrl}>
+    o crea tu cuenta para operar en línea
+  </a>
+</section>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .quoter {
+    background: var(--papel);
+    color: var(--ink);
+    padding: var(--s-5);
+    border-radius: var(--r-card);
+  }
+  .quoter.floating { box-shadow: var(--elev-card); }
+  .quoter.flat {
+    border-radius: var(--r-3);
+    border: 1px solid var(--line);
+  }
+
+  /* Toggle de dirección: radios reales, accesibles por teclado */
+  .direction {
+    display: flex;
+    border: 1px solid var(--line);
+    border-radius: var(--r-2);
+    overflow: hidden;
+    margin: 0 0 var(--s-5);
+    padding: 0;
+  }
+  .dir-option { flex: 1; }
+  .dir-option input {
+    position: absolute;
+    opacity: 0;
+    width: 1px; height: 1px;
+    min-height: 0;
+  }
+  .dir-option span {
+    display: block;
+    text-align: center;
+    padding: var(--s-3) var(--s-2);
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    color: var(--ink-mute);
+    cursor: pointer;
+    min-height: 44px;
+    line-height: 1.5;
+  }
+  .dir-option:first-child span { border-right: 1px solid var(--line); }
+  .dir-option input:checked + span { background: var(--ink); color: var(--papel); }
+  .dir-option input:focus-visible + span { outline: 2px solid var(--verde); outline-offset: -2px; }
+
+  .field { margin-bottom: var(--s-3); }
+  .label {
+    display: block;
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: var(--ls-label);
+    color: var(--ink-mute);
+    margin-bottom: var(--s-2);
+  }
+  .input-box {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    border: 1px solid var(--line);
+    border-radius: var(--r-2);
+    padding: 0 var(--s-3);
+    background: #fff;
+  }
+  .input-box:focus-within {
+    border-color: var(--verde);
+    box-shadow: 0 0 0 3px rgba(22, 199, 132, 0.16);
+  }
+  .input-box.invalid { border-color: var(--baja); }
+
+  .amount {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    padding: var(--s-3) 0;
+    font-size: var(--t-dato-m);
+    font-weight: 500;
+    line-height: 1.1;
+    color: var(--ink);
+    width: 100%;
+  }
+  .amount:focus { outline: none; }
+  .currency {
+    flex: none;
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    color: var(--ink-mute);
+  }
+
+  .alert {
+    font-size: var(--t-body-sm);
+    line-height: 1.45;
+    color: var(--ink);
+    background: var(--error-bg);
+    border: 1px solid var(--error-line);
+    border-radius: var(--r-2);
+    padding: var(--s-3);
+    margin: var(--s-3) 0 0;
+  }
+
+  .price-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--s-4);
+    border-top: 1px solid var(--line);
+    margin-top: var(--s-5);
+    padding-top: var(--s-4);
+  }
+  .price-label {
+    font-size: var(--t-label);
+    font-weight: 600;
+    color: var(--ink-mute);
+    line-height: 1.35;
+  }
+  .price-label em {
+    display: block;
+    font-style: normal;
+    font-weight: 400;
+    opacity: 0.8;
+  }
+  .price-value {
+    font-size: var(--t-dato-m);
+    font-weight: 500;
+    line-height: var(--lh-dato);
+    white-space: nowrap;
+  }
+  .price-value small {
+    font-family: var(--f-text);
+    font-size: var(--t-dato-sm);
+    font-weight: 600;
+    color: var(--ink-mute);
+    margin-left: var(--s-1);
+    letter-spacing: 0;
+  }
+
+  .note {
+    font-size: var(--t-body-sm);
+    line-height: 1.45;
+    color: var(--ink-mute);
+    margin: var(--s-4) 0 var(--s-5);
+  }
+  .note strong { color: var(--ink); font-weight: 600; }
+  .source { font-family: var(--f-num); font-size: var(--t-dato-sm); }
+
+  .cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: var(--verde);
+    color: #04140e;
+    font-size: var(--t-body);
+    font-weight: 700;
+    padding: var(--s-4);
+    border-radius: var(--r-2);
+    text-decoration: none;
+  }
+  .cta:hover { background: var(--verde-hi); }
+
+  .secondary {
+    display: block;
+    text-align: center;
+    margin-top: var(--s-3);
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    color: var(--verde-deep);
+    text-decoration: none;
+    padding: var(--s-2);
+  }
+  .secondary:hover { text-decoration: underline; }
+
+  @media (min-width: 900px) {
+    .price-value { font-size: var(--t-dato); }
+  }
+</style>
+
+<script>
+  import { formatCLP, formatUSDT } from '../lib/pricing/format.ts';
+  import { buildQuote, currenciesFor, whatsappUrl } from '../lib/pricing/quote.ts';
+  import type { Direction } from '../lib/pricing/types.ts';
+
+  const root = document.querySelector<HTMLElement>('#cotizador');
+  if (root) {
+    const rate = Number(root.dataset.rate);
+    const minPay = Number(root.dataset.min);
+    const source = root.dataset.source ?? '';
+    const waNumber = root.dataset.wa!;
+
+    const giveInput = root.querySelector<HTMLInputElement>('#give-input')!;
+    const getInput = root.querySelector<HTMLInputElement>('#get-input')!;
+    const giveLabel = root.querySelector<HTMLElement>('[data-label-give]')!;
+    const getLabel = root.querySelector<HTMLElement>('[data-label-get]')!;
+    const giveCur = root.querySelector<HTMLElement>('[data-cur-give]')!;
+    const getCur = root.querySelector<HTMLElement>('[data-cur-get]')!;
+    const alertEl = root.querySelector<HTMLElement>('[data-alert]')!;
+    const cta = root.querySelector<HTMLAnchorElement>('[data-cta]')!;
+    const boxes = root.querySelectorAll<HTMLElement>('.input-box');
+    const dirInputs = root.querySelectorAll<HTMLInputElement>('input[name="direction"]');
+
+    /** Interpreta el formato chileno: 2.000.000 y 2.174,62 */
+    const parse = (raw: string): number => {
+      const cleaned = raw.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
+      const n = Number.parseFloat(cleaned);
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    const fmt = (value: number, currency: 'CLP' | 'USDT'): string =>
+      currency === 'CLP' ? formatCLP(value) : formatUSDT(value);
+
+    const price = { rate, pair: 'USDT/CLP' as const, source, asOf: new Date() };
+
+    let direction: Direction = 'buy';
+    let giveAmount = parse(giveInput.value);
+
+    const render = (): void => {
+      const { give, get } = currenciesFor(direction);
+      const quote = buildQuote({ direction, giveAmount, price, minPay });
+
+      giveLabel.textContent = direction === 'buy' ? 'Pago' : 'Entrego';
+      getLabel.textContent = 'Recibo aprox.';
+      giveCur.textContent = give;
+      getCur.textContent = get;
+      giveInput.inputMode = give === 'CLP' ? 'numeric' : 'decimal';
+      getInput.inputMode = get === 'CLP' ? 'numeric' : 'decimal';
+
+      const belowMin = quote.state === 'below_min';
+      boxes.forEach((b) => b.classList.toggle('invalid', belowMin));
+      if (belowMin) {
+        alertEl.textContent =
+          `Monto mínimo: ${formatCLP(minPay)} CLP. Puedes escribirnos igual y te orientamos.`;
+        alertEl.hidden = false;
+      } else {
+        alertEl.hidden = true;
+      }
+
+      // El fallback de cualquier problema es WhatsApp, nunca un error seco
+      cta.href = whatsappUrl(waNumber, quote, giveAmount);
+      cta.textContent = belowMin
+        ? 'Escríbenos por WhatsApp'
+        : 'Cotizar este monto por WhatsApp';
+    };
+
+    // El campo que se edita NO se reformatea bajo el cursor (spec §3): se
+    // actualiza el otro, y el propio se formatea recién al salir.
+    giveInput.addEventListener('input', () => {
+      const { get } = currenciesFor(direction);
+      giveAmount = parse(giveInput.value);
+      getInput.value = fmt(
+        direction === 'buy' ? giveAmount / rate : giveAmount * rate,
+        get
+      );
+      render();
+    });
+    giveInput.addEventListener('blur', () => {
+      giveInput.value = fmt(giveAmount, currenciesFor(direction).give);
+    });
+
+    getInput.addEventListener('input', () => {
+      const { give } = currenciesFor(direction);
+      const received = parse(getInput.value);
+      giveAmount = direction === 'buy' ? received * rate : received / rate;
+      giveInput.value = fmt(giveAmount, give);
+      render();
+    });
+    getInput.addEventListener('blur', () => {
+      const { get } = currenciesFor(direction);
+      getInput.value = fmt(
+        direction === 'buy' ? giveAmount / rate : giveAmount * rate,
+        get
+      );
+    });
+
+    // Al cambiar de dirección se conserva el monto en PESOS, que es como el
+    // cliente piensa la operación.
+    dirInputs.forEach((input) =>
+      input.addEventListener('change', () => {
+        const clpBefore = direction === 'buy' ? giveAmount : giveAmount * rate;
+        direction = input.value as Direction;
+        giveAmount = direction === 'buy' ? clpBefore : clpBefore / rate;
+        const { give, get } = currenciesFor(direction);
+        giveInput.value = fmt(giveAmount, give);
+        getInput.value = fmt(
+          direction === 'buy' ? giveAmount / rate : giveAmount * rate,
+          get
+        );
+        render();
+      })
+    );
+
+    render();
+  }
+</script>

@@ -1,0 +1,66 @@
+---
+/**
+ * FAQ — sólo objeciones reales previas a la primera operación (phase-2.5 §2).
+ * Acordeón con <details>: sin JavaScript, accesible por teclado de fábrica.
+ */
+import { faq } from '../content/home.ts';
+---
+<section class="faq" aria-labelledby="faq-title">
+  <div class="inner">
+    <h2 id="faq-title">Antes de tu primera operación</h2>
+    <div class="items">
+      {faq.map((item) => (
+        <details class="item">
+          <summary>
+            <span>{item.q}</span>
+            <svg class="mark" viewBox="0 0 14 14" aria-hidden="true">
+              <path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+          </summary>
+          <p>{item.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq { background: var(--papel); padding: var(--s-9) 0; }
+  .inner { max-width: 760px; margin: 0 auto; padding: 0 var(--pad-section-m); }
+  h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: var(--s-6);
+  }
+
+  .items { border-top: 1px solid var(--line); }
+  .item { border-bottom: 1px solid var(--line); }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding: var(--s-4) 0;
+    cursor: pointer;
+    list-style: none;
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    min-height: 44px;
+  }
+  summary::-webkit-details-marker { display: none; }
+  .mark { width: 14px; height: 14px; flex: none; color: var(--verde-deep); }
+  .item[open] .mark { transform: rotate(45deg); }
+  .item p {
+    color: var(--ink-mute);
+    padding-bottom: var(--s-4);
+    max-width: 62ch;
+  }
+
+  @media (min-width: 900px) {
+    h2 { font-size: var(--t-h2); }
+    summary { font-size: var(--t-h3); }
+  }
+</style>

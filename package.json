@@ -11,13 +11,15 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "test": "node --test 'tests/**/*.test.ts'"
   },
   "dependencies": {
     "astro": "^7.3.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@types/node": "^26.4.1",
     "typescript": "^6.0.3"
   }
 }

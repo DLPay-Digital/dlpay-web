@@ -1,0 +1,66 @@
+---
+/**
+ * Bifurcación Personas / Empresas (phase-2.5 §2 secciones 4 y 5, fusionadas).
+ *
+ * Tardía y clara: la Home no se vuelve corporativa, pero reconoce a la empresa
+ * y la lleva a su experiencia (principio UX 8).
+ *
+ * Enlaza a WhatsApp mientras /empresas no exista como página propia.
+ */
+import Icon from './Icon.astro';
+import { contact } from '../lib/config/site.ts';
+
+const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
+  'Hola, escribo por DLPay Empresas. Operamos volumen y quiero conocer las condiciones.'
+)}`;
+---
+<section class="business" id="empresas" aria-labelledby="business-title">
+  <div class="inner">
+    <div class="copy">
+      <h2 id="business-title">¿Tu empresa mueve volumen?</h2>
+      <p>
+        Tesorerías y empresas que cambian montos grandes o de forma recurrente operan con
+        un ejecutivo asignado, condiciones conversadas y verificación de la empresa.
+        La misma mesa, otro tamaño de operación.
+      </p>
+      <a class="cta" href={wa} target="_blank" rel="noopener">
+        Hablar con un ejecutivo
+        <Icon name="chevron" class="chev" />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .business { background: var(--tinta-2); color: var(--on-tinta); padding: var(--s-9) 0; }
+  .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
+  .copy { max-width: 56ch; }
+  h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: var(--s-3);
+  }
+  .copy p { color: var(--on-tinta-mute); margin-bottom: var(--s-5); }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    border: 1px solid var(--verde);
+    color: var(--verde);
+    text-decoration: none;
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    padding: var(--s-3) var(--s-4);
+    border-radius: var(--r-2);
+  }
+  .cta:hover { background: var(--verde); color: #04140e; }
+  .chev { width: 15px; height: 15px; }
+
+  @media (min-width: 900px) {
+    .inner { padding-inline: var(--pad-section); }
+    h2 { font-size: var(--t-h2); }
+  }
+</style>

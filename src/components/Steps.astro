@@ -1,0 +1,129 @@
+---
+/**
+ * "Cómo funciona" — web + WhatsApp + verificación como UN solo recorrido
+ * (Fase 1 §5.5, principio UX 3). Numerado porque es una secuencia real.
+ *
+ * El marcador de paso es la CUÑA del sistema geométrico, derivada del corte
+ * diagonal del isotipo: apunta al paso siguiente. Representa avance, no
+ * decoración (ADR-0001 §3, Design System §6).
+ */
+import { steps } from '../content/home.ts';
+---
+<section class="steps" id="como-funciona" aria-labelledby="steps-title">
+  <div class="inner">
+    <header class="head">
+      <h2 id="steps-title">De la cotización a tu wallet</h2>
+      <p>Cuatro pasos. La web te deja listo; una persona cierra la operación.</p>
+    </header>
+
+    <ol class="list">
+      {steps.map((step, i) => (
+        <li class="step">
+          <div class="marker">
+            <span class="n num">{step.n}</span>
+            {i < steps.length - 1 && (
+              <svg class="wedge" viewBox="0 0 12 34" aria-hidden="true">
+                <path d="M1 1L11 17L1 33" fill="none" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+            )}
+          </div>
+          <div class="body">
+            <h3>{step.title}</h3>
+            <p>{step.body}</p>
+            {step.time && <span class="time num">{step.time}</span>}
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <p class="foot">
+      Antes de tu primera operación te pedimos registro y verificación de identidad.
+      Es obligatorio para todos, personas y empresas.
+    </p>
+  </div>
+</section>
+
+<style>
+  .steps { background: var(--papel); padding: var(--s-9) 0; }
+  .inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 var(--pad-section-m);
+  }
+  .head { max-width: 34ch; margin-bottom: var(--s-7); }
+  h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: var(--s-3);
+  }
+  .head p { color: var(--ink-mute); }
+
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-5);
+  }
+  .step { display: flex; gap: var(--s-4); align-items: flex-start; }
+
+  .marker {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-2);
+    padding-top: 2px;
+  }
+  .n {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-2);
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  /* La cuña apunta al paso siguiente: representa avance */
+  .wedge { width: 12px; height: 30px; color: var(--verde); flex: none; }
+
+  .body { padding-bottom: var(--s-2); }
+  h3 {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    margin-bottom: var(--s-2);
+  }
+  .body p { color: var(--ink-mute); max-width: 52ch; }
+  .time {
+    display: inline-block;
+    margin-top: var(--s-3);
+    font-size: var(--t-dato-sm);
+    font-weight: 500;
+    color: var(--ink-mute);
+  }
+
+  .foot {
+    margin-top: var(--s-7);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--line);
+    font-size: var(--t-body-sm);
+    color: var(--ink-mute);
+    max-width: 60ch;
+  }
+
+  @media (min-width: 900px) {
+    .inner { padding-inline: var(--pad-section); }
+    h2 { font-size: var(--t-h2); }
+    h3 { font-size: var(--t-h3); }
+    .list { grid-template-columns: repeat(2, 1fr); gap: var(--s-6) var(--s-8); }
+    /* En dos columnas la cuña vertical ya no describe el flujo: se retira */
+    .wedge { display: none; }
+    .marker { padding-top: 0; }
+  }
+</style>

@@ -7,7 +7,7 @@
  * (CLAUDE.md §13, D7).
  */
 
-import type { PriceReference, PriceSource } from './types';
+import type { PriceReference, PriceSource } from './types.ts';
 
 const env = import.meta.env;
 

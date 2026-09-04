@@ -1,0 +1,121 @@
+---
+/**
+ * Héroe. El cotizador ocupa el primer viewport (Fase 1 §12, phase-2.5 §2).
+ * Móvil: titular corto arriba, cotizador inmediatamente debajo.
+ *
+ * Fondo en tinta con la CUÑA del sistema geométrico a muy baja opacidad
+ * (≤0.12, Design System §6): representa dirección y avance, nunca es tapiz, y
+ * jamás pasa por encima del cotizador.
+ */
+import Quoter from './Quoter.astro';
+import Icon from './Icon.astro';
+
+const trustStrip = [
+  { icon: 'bank' as const, label: 'Verificamos en el banco' },
+  { icon: 'clock' as const, label: 'Operación en ~5 minutos' },
+  { icon: 'people' as const, label: 'Equipo en Chile' },
+];
+---
+<section class="hero">
+  <div class="wedges" aria-hidden="true"></div>
+
+  <div class="inner">
+    <div class="copy">
+      <h1>El dólar digital, al precio real del mercado.</h1>
+      <p class="sub">
+        Una persona cierra tu operación en minutos. Para quien compra sus primeros
+        dólares y para empresas que mueven volumen.
+      </p>
+      <ul class="strip">
+        {trustStrip.map((item) => (
+          <li>
+            <Icon name={item.icon} class="strip-icon" />
+            {item.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="instrument">
+      <Quoter />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    background: var(--tinta);
+    color: var(--on-tinta);
+    position: relative;
+    overflow: hidden;
+    padding: var(--s-7) 0 var(--s-8);
+  }
+
+  /* Cuñas del sistema geométrico. Opacidad baja, nunca sobre el cotizador. */
+  .wedges {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--verde);
+    opacity: 0.07;
+    clip-path: polygon(0 100%, 46% 0, 60% 0, 15% 100%, 20% 100%, 66% 0, 71% 0, 26% 100%);
+  }
+
+  .inner {
+    position: relative;
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 var(--pad-section-m);
+    display: grid;
+    gap: var(--s-6);
+  }
+
+  h1 {
+    font-size: var(--t-display-m);
+    font-weight: 700;
+    line-height: var(--lh-display);
+    letter-spacing: var(--ls-display);
+    margin-bottom: var(--s-4);
+    max-width: 18ch;
+  }
+  .sub {
+    font-size: var(--t-body);
+    line-height: 1.55;
+    color: var(--on-tinta-mute);
+    max-width: 46ch;
+  }
+
+  .strip {
+    list-style: none;
+    margin: var(--s-5) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3) var(--s-4);
+  }
+  .strip li {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    color: var(--on-tinta-mute);
+  }
+  .strip-icon { width: 16px; height: 16px; color: var(--verde); flex: none; }
+
+  /* Móvil: el cotizador va primero, el resto del copy después del titular */
+  .copy { order: 1; }
+  .instrument { order: 2; }
+
+  @media (min-width: 900px) {
+    .hero { padding: var(--s-8) 0 var(--s-9); }
+    .inner {
+      padding-inline: var(--pad-section);
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: var(--s-8);
+      align-items: center;
+    }
+    h1 { font-size: var(--t-display); }
+    .sub { font-size: var(--t-h3-m); }
+  }
+</style>
