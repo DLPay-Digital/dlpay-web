@@ -82,6 +82,13 @@ export function whatsappMessage(quote: Quote, giveAmount: number): string {
     return 'Hola, quiero cotizar una operación. El cotizador no me está mostrando precio ahora.';
   }
 
+  // Sin monto no se manda una cifra vacía al ejecutivo: llegaba "CLP 0" y el
+  // mensaje no decía nada. El botón sigue llevando a WhatsApp — el fallback
+  // nunca es un error seco.
+  if (!(giveAmount > 0)) {
+    return 'Hola, quiero cotizar una operación de cambio de divisas.';
+  }
+
   const what: Record<Intent, string> = {
     send_abroad: `enviar ${formatAmount(giveAmount, give)} al extranjero`,
     to_usd: `convertir ${formatAmount(giveAmount, give)} a dólares`,

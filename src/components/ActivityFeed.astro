@@ -164,6 +164,8 @@ const showSampleMark = !source.isReal && !preview;
      * también con datos reales: el dato no cambia, sólo su antigüedad.
      */
     const refreshTimes = (): void => {
+      // Sin trabajo mientras nadie mira.
+      if (document.hidden) return;
       const now = new Date();
       list.querySelectorAll<HTMLTimeElement>('time[datetime]').forEach((el) => {
         el.textContent = relativeTime(new Date(el.dateTime), now);

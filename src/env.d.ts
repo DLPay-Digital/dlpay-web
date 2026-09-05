@@ -10,6 +10,7 @@ interface ImportMetaEnv {
   readonly PUBLIC_QUOTE_SAMPLE_RATE?: string;
   readonly PUBLIC_QUOTE_SOURCE_LABEL?: string;
   readonly PUBLIC_QUOTE_MIN_CLP?: string;
+  readonly PUBLIC_QUOTE_MAX_CLP?: string;
   /** Sólo desarrollo: oculta el distintivo de datos de ejemplo para previsualizar. */
   readonly PUBLIC_ACTIVITY_PREVIEW?: string;
   readonly PUBLIC_PLATFORM_LOGIN_URL?: string;

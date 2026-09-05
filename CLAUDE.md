@@ -53,6 +53,7 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
 | `docs/development.md` | Cómo levantar el proyecto, estructura, dependencias y verificaciones. |
 | `docs/legal-brief.md` | Qué falta en las páginas legales y qué decisiones lo bloquean. Para Compliance. |
 | `docs/migracion-urls.md` | Qué pasa con cada URL del sitio actual en el cutover. Para Fase 6. |
+| `docs/hardening-2026-09-04.md` | Hallazgos de la revisión de endurecimiento, clasificados. |
 | `docs/design-system/board-tipografia.html` | Board que sustentó la elección de tipografía. Se abre en el navegador. |
 
 **De consulta (no rehacer, sí citar):** `docs/research/phase-0-findings.md` (hechos técnicos,
@@ -375,7 +376,9 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | D3 | **Titularidad de la organización GitHub** de DLPay | No — el repo es local por ahora (ADR-0003) | Sebastián |
 | ~~D4~~ | ~~Idioma de código y commits~~ | ✅ Cerrado: código en inglés, commits/docs/contenido en español | ADR-0003 |
 | D5 | **Transparencia del spread**: ¿la web muestra la lógica de tramos o solo un referencial? Define la tabla de `/tarifas` | **Sí — es lo único que falta para completar `/tarifas`** | DLPay (I10/I11) |
-| D6 | **Monto mínimo/máximo reales** y precio de muestra del cotizador | No — hoy son placeholders | DLPay |
+| D6 | **Monto mínimo real** y precio de muestra del cotizador | No — hoy son placeholders | DLPay |
+| D21 | **Monto máximo.** El estado `above_max` está cableado y probado, pero sin `PUBLIC_QUOTE_MAX_CLP` no se activa: hoy se acepta cualquier monto | No bloquea, pero un monto absurdo llega tal cual al ejecutivo | DLPay |
+| D22 | **Mensaje prellenado en tres enlaces a WhatsApp** de `/tarifas`, `/como-funciona` y `/confianza`, que hoy abren el chat en blanco (hallazgo M4) | No | Sebastián |
 | D7 | **Fuente oficial de market price** | No — `ConfigPriceSource` cubre v1 | DLPay |
 | ~~D8~~ | ~~Alcance de servicios a comunicar~~ | ✅ Cerrado 2026-09-04: el amplio, alineado con los T&C publicados | Equipo DLPay |
 | ~~D16~~ | ~~Cómo llega el dinero al destinatario final~~ | ✅ Cerrado 2026-09-04: DLPay entrega **dólar digital en la billetera**; no deposita en cuentas bancarias en el extranjero. Ver §1 | Equipo DLPay |

@@ -13,9 +13,15 @@ interface Props {
   description: string;
   /** Ruta canónica relativa, con barra inicial. */
   path?: string;
+  /**
+   * Precarga también la tipografía de cifras. Sólo en las páginas con cotizador:
+   * ahí Spline Sans Mono pinta el precio, que es el elemento protagonista del
+   * primer viewport. En el resto sería peso desperdiciado.
+   */
+  hasQuoter?: boolean;
 }
 
-const { title, description, path = Astro.url.pathname } = Astro.props;
+const { title, description, path = Astro.url.pathname, hasQuoter = false } = Astro.props;
 const canonical = new URL(path, site.url).href;
 const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
 const ogImage = new URL('/og-image.png', site.url).href;
@@ -55,6 +61,15 @@ const organization = {
       type="font/woff2"
       crossorigin
     />
+    {hasQuoter && (
+      <link
+        rel="preload"
+        href="/fonts/spline-sans-mono-latin.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin
+      />
+    )}
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
@@ -72,7 +87,10 @@ const organization = {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <script type="application/ld+json" set:html={JSON.stringify(organization)} />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(organization).replace(/</g, '\\u003c')}
+    />
   </head>
   <body>
     <slot />

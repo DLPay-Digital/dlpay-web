@@ -8,7 +8,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { formatCLP, formatUSD, formatRate } from '../src/lib/pricing/format.ts';
+import { formatCLP, formatUSD, formatRate, parseAmount } from '../src/lib/pricing/format.ts';
 import {
   buildQuote,
   clpAmount,
@@ -48,6 +48,48 @@ describe('formato de cifras chileno', () => {
   test('el monto se escribe con su moneda como la dice el equipo', () => {
     assert.equal(formatAmount(2_000_000, 'CLP'), 'CLP 2.000.000');
     assert.equal(formatAmount(2174.62, 'USD'), 'US$ 2.174,62');
+  });
+});
+
+describe('parseo de montos escritos por una persona', () => {
+  test('formato chileno', () => {
+    assert.equal(parseAmount('2.000.000'), 2_000_000);
+    assert.equal(parseAmount('2.174,62'), 2174.62);
+    assert.equal(parseAmount('50.000'), 50_000);
+  });
+
+  test('formato inglés pegado desde un correo o una factura', () => {
+    // Antes daba 217462: un error de 100x que viajaba al mensaje del ejecutivo.
+    assert.equal(parseAmount('2174.62'), 2174.62);
+    assert.equal(parseAmount('2,000,000'), 2_000_000);
+  });
+
+  test('el separador se decide por posición, no por el carácter', () => {
+    assert.equal(parseAmount('1.500'), 1500, 'tres dígitos agrupan miles');
+    assert.equal(parseAmount('1.50'), 1.5, 'dos dígitos son decimales');
+    assert.equal(parseAmount('1.5'), 1.5, 'uno también');
+  });
+
+  test('la basura no produce un monto', () => {
+    for (const raw of ['', '   ', 'abc', '½', '$', '-', '.', ',']) {
+      assert.equal(parseAmount(raw), 0, `entrada: ${JSON.stringify(raw)}`);
+    }
+  });
+
+  test('los símbolos de moneda y los espacios no estorban', () => {
+    assert.equal(parseAmount('$ 2.000.000'), 2_000_000);
+    assert.equal(parseAmount('CLP 2.000.000'), 2_000_000);
+  });
+
+  test('un monto negativo no representa ninguna operación', () => {
+    assert.equal(parseAmount('-5000'), 0);
+  });
+
+  test('nunca devuelve NaN ni Infinity', () => {
+    for (const raw of ['1e999', 'Infinity', 'NaN', '.....', ',,,,']) {
+      const v = parseAmount(raw);
+      assert.ok(Number.isFinite(v), `entrada: ${raw} -> ${v}`);
+    }
   });
 });
 
@@ -180,6 +222,26 @@ describe('mensaje de WhatsApp', () => {
     const msg = whatsappMessage({ ...quote, state: 'market_moving' }, 2_000_000);
     assert.match(msg, /no me está mostrando precio/);
     assert.doesNotMatch(msg, /919,70/);
+  });
+
+  test('sin monto NO se manda una cifra vacía al ejecutivo', () => {
+    // Antes llegaba "quiero enviar CLP 0 al extranjero (recibo aprox. US$ 0,00)".
+    const quote = buildQuote({ intent: 'send_abroad', giveAmount: 0, price, minPay: MIN });
+    const msg = whatsappMessage(quote, 0);
+    assert.doesNotMatch(msg, /CLP 0|US\$ 0,00/);
+    assert.match(msg, /quiero cotizar una operación/);
+  });
+
+  test('sobre el máximo pregunta, cuando hay un máximo definido', () => {
+    const quote = buildQuote({
+      intent: 'send_abroad',
+      giveAmount: 90_000_000,
+      price,
+      minPay: MIN,
+      maxPay: 50_000_000,
+    });
+    assert.equal(quote.state, 'above_max');
+    assert.match(whatsappMessage(quote, 90_000_000), /¿Pueden operar ese monto\?/);
   });
 
   test('la URL queda codificada y apunta al número configurado', () => {

@@ -28,6 +28,11 @@ const price = await new ConfigPriceSource().getPrice();
 // PENDIENTE DE DECISIÓN — monto mínimo real (CLAUDE.md §13, D6)
 const minPay = Number(import.meta.env.PUBLIC_QUOTE_MIN_CLP ?? '50000') || 50000;
 
+// PENDIENTE DE DECISIÓN — monto máximo (CLAUDE.md §13, D21). Sin definir, el
+// estado `above_max` no se activa: es una regla de negocio y no se inventa acá.
+const maxRaw = Number(import.meta.env.PUBLIC_QUOTE_MAX_CLP ?? '');
+const maxPay = Number.isFinite(maxRaw) && maxRaw > 0 ? maxRaw : undefined;
+
 const initialPay = 2_000_000;
 const initialGet = initialPay / price.rate;
 
@@ -41,6 +46,7 @@ const initialQuote = buildQuote({
   giveAmount: initialPay,
   price,
   minPay,
+  ...(maxPay !== undefined ? { maxPay } : {}),
 });
 const wa = whatsappUrl(contact.whatsappNumber, initialQuote, initialPay);
 
@@ -56,6 +62,7 @@ const intents = [
   id="cotizador"
   data-rate={price.rate}
   data-min={minPay}
+  data-max={maxPay ?? ''}
   data-wa={contact.whatsappNumber}
   data-source={price.source}
   aria-labelledby="quoter-title"
@@ -361,7 +368,7 @@ const intents = [
 </style>
 
 <script>
-  import { formatCLP, formatUSD } from '../lib/pricing/format.ts';
+  import { formatCLP, formatUSD, parseAmount } from '../lib/pricing/format.ts';
   import { buildQuote, currenciesFor, whatsappUrl } from '../lib/pricing/quote.ts';
   import type { Currency, Intent } from '../lib/pricing/types.ts';
 
@@ -369,6 +376,8 @@ const intents = [
   if (root) {
     const rate = Number(root.dataset.rate);
     const minPay = Number(root.dataset.min);
+    const maxRaw = Number(root.dataset.max);
+    const maxPay = Number.isFinite(maxRaw) && maxRaw > 0 ? maxRaw : undefined;
     const source = root.dataset.source ?? '';
     const waNumber = root.dataset.wa!;
 
@@ -382,27 +391,26 @@ const intents = [
     const boxes = root.querySelectorAll<HTMLElement>('.input-box');
     const intentInputs = root.querySelectorAll<HTMLInputElement>('input[name="intent"]');
 
-    /** Interpreta el formato chileno: 2.000.000 y 2.174,62 */
-    const parse = (raw: string): number => {
-      const cleaned = raw.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
-      const n = Number.parseFloat(cleaned);
-      return Number.isFinite(n) ? n : 0;
-    };
-
     const fmt = (value: number, currency: Currency): string =>
       currency === 'CLP' ? formatCLP(value) : formatUSD(value);
 
     const price = { rate, pair: 'USD/CLP' as const, source, asOf: new Date() };
 
     let intent: Intent = 'send_abroad';
-    let giveAmount = parse(giveInput.value);
+    let giveAmount = parseAmount(giveInput.value);
 
     const received = (): number =>
       currenciesFor(intent).give === 'CLP' ? giveAmount / rate : giveAmount * rate;
 
     const render = (): void => {
       const { give, get } = currenciesFor(intent);
-      const quote = buildQuote({ intent, giveAmount, price, minPay });
+      const quote = buildQuote({
+        intent,
+        giveAmount,
+        price,
+        minPay,
+        ...(maxPay !== undefined ? { maxPay } : {}),
+      });
 
       giveLabel.textContent = intent === 'send_abroad' ? 'Envías' : 'Conviertes';
       giveCur.textContent = give;
@@ -410,11 +418,15 @@ const intents = [
       giveInput.inputMode = give === 'CLP' ? 'numeric' : 'decimal';
       getInput.inputMode = get === 'CLP' ? 'numeric' : 'decimal';
 
-      const belowMin = quote.state === 'below_min';
-      boxes.forEach((b) => b.classList.toggle('invalid', belowMin));
-      if (belowMin) {
+      const fuera = quote.state === 'below_min' || quote.state === 'above_max';
+      boxes.forEach((b) => b.classList.toggle('invalid', fuera));
+      if (quote.state === 'below_min') {
         alertEl.textContent =
           `Monto mínimo: ${formatCLP(minPay)} CLP. Puedes escribirnos igual y te orientamos.`;
+        alertEl.hidden = false;
+      } else if (quote.state === 'above_max' && maxPay !== undefined) {
+        alertEl.textContent =
+          `Para montos sobre CLP ${formatCLP(maxPay)} te atiende un ejecutivo. Escríbenos.`;
         alertEl.hidden = false;
       } else {
         alertEl.hidden = true;
@@ -422,15 +434,13 @@ const intents = [
 
       // El fallback de cualquier problema es WhatsApp, nunca un error seco
       cta.href = whatsappUrl(waNumber, quote, giveAmount);
-      cta.textContent = belowMin
-        ? 'Escríbenos por WhatsApp'
-        : 'Continuar por WhatsApp';
+      cta.textContent = fuera ? 'Escríbenos por WhatsApp' : 'Continuar por WhatsApp';
     };
 
     // El campo que se edita NO se reformatea bajo el cursor (spec §3): se
     // actualiza el otro, y el propio se formatea recién al salir.
     giveInput.addEventListener('input', () => {
-      giveAmount = parse(giveInput.value);
+      giveAmount = parseAmount(giveInput.value);
       getInput.value = fmt(received(), currenciesFor(intent).get);
       render();
     });
@@ -440,7 +450,7 @@ const intents = [
 
     getInput.addEventListener('input', () => {
       const { give } = currenciesFor(intent);
-      const target = parse(getInput.value);
+      const target = parseAmount(getInput.value);
       giveAmount = give === 'CLP' ? target * rate : target / rate;
       giveInput.value = fmt(giveAmount, give);
       render();

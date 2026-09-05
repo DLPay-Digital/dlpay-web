@@ -15,8 +15,31 @@ import { loadEnv } from 'vite';
  */
 const env = loadEnv('', '.', 'PUBLIC_');
 
+const DEV_SITE = 'http://localhost:4321';
+
+/**
+ * `site` alimenta canonical, og:url, twitter:image y todas las URL del sitemap.
+ *
+ * Un build sin esta variable publicaría localhost en todos ellos, y lo haría en
+ * silencio: build verde, páginas correctas, enlaces internos funcionando. El
+ * daño sólo aparece cuando un buscador indexa canonicals inválidos o alguien
+ * comparte el enlace y la previsualización no carga. Por eso falla aquí, fuerte
+ * y temprano, en vez de dejarlo pasar.
+ */
+function resolveSite() {
+  if (env.PUBLIC_SITE_URL) return env.PUBLIC_SITE_URL;
+  if (process.env.npm_lifecycle_event === 'build') {
+    throw new Error(
+      '\n\n  Falta PUBLIC_SITE_URL.\n\n' +
+        '  Sin ella, canonical, Open Graph y el sitemap apuntarían a localhost.\n' +
+        '  Defínela en .env o en el entorno de despliegue:\n\n' +
+        '      PUBLIC_SITE_URL=https://dlpay.cl\n'
+    );
+  }
+  return DEV_SITE;
+}
+
 export default defineConfig({
-  /** Necesario para canonical, sitemap y Open Graph. Se fija al decidir hosting. */
-  site: env.PUBLIC_SITE_URL || 'http://localhost:4321',
+  site: resolveSite(),
   output: 'static',
 });
