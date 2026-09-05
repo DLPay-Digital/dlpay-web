@@ -42,4 +42,13 @@ function resolveSite() {
 export default defineConfig({
   site: resolveSite(),
   output: 'static',
+  /**
+   * Declarado a propósito. El build genera `dist/cotizar/index.html`, así que la
+   * URL canónica lleva barra final. Sin declararlo, los enlaces internos
+   * apuntaban a `/cotizar` y el sitemap a `/cotizar/`: Cloudflare y Vercel no
+   * resuelven igual esa diferencia — en el mejor caso una redirección por
+   * navegación, en el peor un 404, y para un buscador dos URL para el mismo
+   * contenido. Es un fallo que no se ve en localhost.
+   */
+  trailingSlash: 'always',
 });

@@ -36,13 +36,21 @@ export function formatRate(value: number): string {
  * el dinero que el usuario escribe**, y una equivocación acá viaja al mensaje
  * que recibe el ejecutivo. Necesita tests.
  *
- * El separador decimal se decide por posición, no por el carácter: en Chile el
+ * El separador decimal se decide por su forma, no por el carácter: en Chile el
  * punto es de miles, pero la gente pega montos copiados de correos, facturas o
- * webs en inglés. Un separador seguido de tres dígitos agrupa miles; seguido de
- * uno o dos al final de la cadena es decimal.
+ * webs en inglés.
  *
- *   "2.000.000" -> 2000000     "2.174,62" -> 2174.62
- *   "2174.62"   -> 2174.62     "2,000,000" -> 2000000
+ * Dos reglas, en este orden:
+ *
+ * 1. Si aparecen **ambos** separadores, el último es el decimal. No se cuentan
+ *    dígitos: en "2.174,626" la coma es decimal por definición del formato, y
+ *    contarlos daba 2.174.626 — un error de mil veces.
+ * 2. Si sólo hay un tipo, se mira la posición: seguido de tres dígitos agrupa
+ *    miles; seguido de uno o dos al final de la cadena es decimal.
+ *
+ *   "2.000.000" -> 2000000     "2.174,62"   -> 2174.62
+ *   "2174.62"   -> 2174.62     "2.174,626"  -> 2174.626
+ *   "2,000,000" -> 2000000     "1,234.56"   -> 1234.56
  */
 export function parseAmount(raw: string): number {
   // El signo se detecta ANTES de filtrar: si se filtrara primero, un "-5000"
@@ -52,9 +60,18 @@ export function parseAmount(raw: string): number {
   const cleaned = raw.replace(/[^\d.,]/g, '');
   if (cleaned === '') return 0;
 
-  const lastSeparator = Math.max(cleaned.lastIndexOf('.'), cleaned.lastIndexOf(','));
+  const lastDot = cleaned.lastIndexOf('.');
+  const lastComma = cleaned.lastIndexOf(',');
+  const lastSeparator = Math.max(lastDot, lastComma);
   const decimals = lastSeparator === -1 ? 0 : cleaned.length - lastSeparator - 1;
-  const isDecimal = lastSeparator !== -1 && decimals >= 1 && decimals <= 2;
+
+  const isDecimal =
+    lastSeparator !== -1 &&
+    (lastDot !== -1 && lastComma !== -1
+      ? // Ambos tipos: el último es el decimal, sin contar dígitos.
+        true
+      : // Un solo tipo: decide la posición.
+        decimals >= 1 && decimals <= 2);
 
   const digitsOnly = (part: string): string => part.replace(/[.,]/g, '');
   const value = isDecimal

@@ -16,7 +16,9 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
 - **ADRs de Fase 3 cerrados** (0002–0005): Astro + TypeScript · repositorio y convenciones ·
   CSS nativo con tokens, sin Tailwind · despliegue portable con proveedor diferido.
 - **Identidad visual completa**: dirección A×C, verde `#16C784`, tinta `#0B1320` y tipografía
-  **T-C** cerradas. No queda ninguna decisión visual abierta para la V1.
+  **T-C** cerradas. **Diseño congelado desde el 2026-09-04:** no se toca sin una razón crítica.
+- **Auditoría previa a producción hecha.** Lo que queda para desplegar es configuración y
+  decisiones de negocio o Compliance, no ingeniería. Ver `docs/auditoria-preproduccion.md`.
 - **Esqueleto creado y verificado.** Astro 7 + TypeScript strict, `npm run check` y
   `npm run build` en verde, **0 JS enviado al cliente**, fuentes T-C auto-hospedadas, tokens del
   Design System en código, y la cadena `PriceSource → Quote` en pie. Ver `docs/development.md`.
@@ -54,6 +56,7 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
 | `docs/legal-brief.md` | Qué falta en las páginas legales y qué decisiones lo bloquean. Para Compliance. |
 | `docs/migracion-urls.md` | Qué pasa con cada URL del sitio actual en el cutover. Para Fase 6. |
 | `docs/hardening-2026-09-04.md` | Hallazgos de la revisión de endurecimiento, clasificados. |
+| `docs/auditoria-preproduccion.md` | Auditoría técnica previa a producción y qué falta para desplegar. |
 | `docs/design-system/board-tipografia.html` | Board que sustentó la elección de tipografía. Se abre en el navegador. |
 
 **De consulta (no rehacer, sí citar):** `docs/research/phase-0-findings.md` (hechos técnicos,

@@ -13,13 +13,11 @@
  * de desarrollo: `import.meta.env.DEV` es false en cualquier build, así que un
  * sitio publicado SIEMPRE muestra el distintivo, exista o no la variable.
  */
-import { MockActivitySource } from '../lib/activity/mock-activity-source.ts';
+import { createActivitySource } from '../lib/activity/source.ts';
 import { KIND_LABEL } from '../lib/activity/types.ts';
 import { relativeTime, formatUsd } from '../lib/activity/format.ts';
 
-// PENDIENTE DE DECISIÓN — fuente real de operaciones confirmadas y anonimizadas
-// (CLAUDE.md §13, D18). Al existir, se cambia esta línea y nada más.
-const source = new MockActivitySource();
+const source = createActivitySource();
 const VISIBLE = 4;
 const events = await source.list(VISIBLE);
 const now = new Date();
@@ -38,7 +36,10 @@ const showSampleMark = !source.isReal && !preview;
     {showSampleMark && <span class="sample">{source.label}</span>}
   </div>
 
-  <ol class="events" data-events aria-live="polite" aria-relevant="additions">
+  <!-- Sin `aria-live`: la lista emite una operación cada 14-46 s y anunciarlas
+       todas interrumpe la lectura de lo que sí importa. Es contenido ambiental;
+       sigue siendo legible y navegable cuando alguien decide leerlo. -->
+  <ol class="events" data-events>
     {events.map((event) => (
       <li class="event">
         <span class="dot" aria-hidden="true"></span>
@@ -148,7 +149,7 @@ const showSampleMark = !source.isReal && !preview;
 </style>
 
 <script>
-  import { MockActivitySource } from '../lib/activity/mock-activity-source.ts';
+  import { createActivitySource } from '../lib/activity/source.ts';
   import { KIND_LABEL } from '../lib/activity/types.ts';
   import { relativeTime, formatUsd } from '../lib/activity/format.ts';
   import type { ActivityEvent } from '../lib/activity/types.ts';
@@ -198,9 +199,7 @@ const showSampleMark = !source.isReal && !preview;
       return li;
     };
 
-    // PENDIENTE — al existir la fuente real, se cambia esta línea por su
-    // implementación de StreamingActivitySource y el resto no se toca.
-    const source = new MockActivitySource(Date.now() % 100000);
+    const source = createActivitySource(Date.now() % 100000);
 
     const stop = source.subscribe((event) => {
       // Sin trabajo mientras nadie mira: ni animación ni temporizadores en vano.

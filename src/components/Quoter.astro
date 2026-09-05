@@ -369,7 +369,13 @@ const intents = [
 
 <script>
   import { formatCLP, formatUSD, parseAmount } from '../lib/pricing/format.ts';
-  import { buildQuote, currenciesFor, whatsappUrl } from '../lib/pricing/quote.ts';
+  import {
+    buildQuote,
+    clpAmount,
+    convert,
+    currenciesFor,
+    whatsappUrl,
+  } from '../lib/pricing/quote.ts';
   import type { Currency, Intent } from '../lib/pricing/types.ts';
 
   const root = document.querySelector<HTMLElement>('#cotizador');
@@ -399,8 +405,10 @@ const intents = [
     let intent: Intent = 'send_abroad';
     let giveAmount = parseAmount(giveInput.value);
 
-    const received = (): number =>
-      currenciesFor(intent).give === 'CLP' ? giveAmount / rate : giveAmount * rate;
+    // La pantalla y el mensaje calculan con la MISMA función. Antes el
+    // componente tenía su propia aritmética, sin la guarda de tasa del módulo:
+    // con una tasa corrupta la pantalla habría mostrado Infinity y el mensaje 0.
+    const received = (): number => convert(intent, giveAmount, rate);
 
     const render = (): void => {
       const { give, get } = currenciesFor(intent);
@@ -420,15 +428,20 @@ const intents = [
 
       const fuera = quote.state === 'below_min' || quote.state === 'above_max';
       boxes.forEach((b) => b.classList.toggle('invalid', fuera));
-      if (quote.state === 'below_min') {
-        alertEl.textContent =
-          `Monto mínimo: ${formatCLP(minPay)} CLP. Puedes escribirnos igual y te orientamos.`;
+      // Se muestra la región ANTES de escribirle. Un lector de pantalla no
+      // vigila regiones ocultas: escribiendo primero, el aviso no se anunciaba.
+      const aviso =
+        quote.state === 'below_min'
+          ? `Monto mínimo: ${formatCLP(minPay)} CLP. Puedes escribirnos igual y te orientamos.`
+          : quote.state === 'above_max' && maxPay !== undefined
+            ? `Para montos sobre CLP ${formatCLP(maxPay)} te atiende un ejecutivo. Escríbenos.`
+            : '';
+
+      if (aviso) {
         alertEl.hidden = false;
-      } else if (quote.state === 'above_max' && maxPay !== undefined) {
-        alertEl.textContent =
-          `Para montos sobre CLP ${formatCLP(maxPay)} te atiende un ejecutivo. Escríbenos.`;
-        alertEl.hidden = false;
+        alertEl.textContent = aviso;
       } else {
+        alertEl.textContent = '';
         alertEl.hidden = true;
       }
 
@@ -451,7 +464,8 @@ const intents = [
     getInput.addEventListener('input', () => {
       const { give } = currenciesFor(intent);
       const target = parseAmount(getInput.value);
-      giveAmount = give === 'CLP' ? target * rate : target / rate;
+      // La inversa de `convert`, con la misma guarda de tasa.
+      giveAmount = rate > 0 ? (give === 'CLP' ? target * rate : target / rate) : 0;
       giveInput.value = fmt(giveAmount, give);
       render();
     });
@@ -463,10 +477,10 @@ const intents = [
     // cliente piensa la operación.
     intentInputs.forEach((input) =>
       input.addEventListener('change', () => {
-        const clpBefore = currenciesFor(intent).give === 'CLP' ? giveAmount : giveAmount * rate;
+        const clpBefore = clpAmount(intent, giveAmount, rate);
         intent = input.value as Intent;
         const { give, get } = currenciesFor(intent);
-        giveAmount = give === 'CLP' ? clpBefore : clpBefore / rate;
+        giveAmount = give === 'CLP' ? clpBefore : rate > 0 ? clpBefore / rate : 0;
         giveInput.value = fmt(giveAmount, give);
         getInput.value = fmt(received(), get);
         render();

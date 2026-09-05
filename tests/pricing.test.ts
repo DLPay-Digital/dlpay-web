@@ -64,7 +64,16 @@ describe('parseo de montos escritos por una persona', () => {
     assert.equal(parseAmount('2,000,000'), 2_000_000);
   });
 
-  test('el separador se decide por posición, no por el carácter', () => {
+  test('con ambos separadores manda el último, sin contar dígitos', () => {
+    // Antes se contaban los dígitos y "2.174,626" daba 2.174.626: error de x1000
+    // en el formato chileno de alta precisión.
+    assert.equal(parseAmount('2.174,626'), 2174.626);
+    assert.equal(parseAmount('1.234,5678'), 1234.5678);
+    assert.equal(parseAmount('1,234.56'), 1234.56);
+    assert.equal(parseAmount('1.234,56'), 1234.56);
+  });
+
+  test('el separador se decide por posición cuando hay un solo tipo', () => {
     assert.equal(parseAmount('1.500'), 1500, 'tres dígitos agrupan miles');
     assert.equal(parseAmount('1.50'), 1.5, 'dos dígitos son decimales');
     assert.equal(parseAmount('1.5'), 1.5, 'uno también');
