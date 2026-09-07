@@ -51,4 +51,18 @@ export default defineConfig({
    * contenido. Es un fallo que no se ve en localhost.
    */
   trailingSlash: 'always',
+  /**
+   * El ámbito de los estilos viaja como CLASE, no como atributo.
+   *
+   * Con la estrategia por atributo (la de fábrica), un `<svg>` que vive dentro
+   * de un componente hijo NO recibe `data-astro-cid-*` del padre, así que
+   * reglas como `.brand-mark { height: 18px }` nunca llegaban a aplicarse: el
+   * isotipo, los iconos de WhatsApp y los de las secciones quedaban sin tamaño
+   * ni color. Como clase, el ámbito viaja dentro del `class` que el padre pasa
+   * al hijo y que el hijo escribe en el `<svg>`.
+   *
+   * La especificidad es idéntica entre ambas estrategias, así que el cambio no
+   * altera ninguna cascada existente.
+   */
+  scopedStyleStrategy: 'class',
 });

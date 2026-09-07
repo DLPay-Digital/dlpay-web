@@ -277,6 +277,10 @@ tarjeta": borde/fill/radio/sombra se gastan por rol, para levantar **una** cosa.
 - Set pequeño y funcional: banco, reloj, chat/WhatsApp, chevron/paso, documento, empresa, wallet,
   candado. Nada más hasta que una necesidad lo pida.
 - Sin emoji como iconos.
+- **Los iconos viven en el componente `Icon`, y el padre los dimensiona por CSS.** Para que eso
+  funcione, el proyecto usa `scopedStyleStrategy: 'class'`: con la estrategia por atributo, las
+  reglas del padre no alcanzan a un `<svg>` que está dentro de un componente hijo. Ver
+  `docs/development.md`.
 
 ---
 

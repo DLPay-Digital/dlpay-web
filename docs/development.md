@@ -139,6 +139,21 @@ devuelve un valor de muestra configurable por `PUBLIC_QUOTE_SAMPLE_RATE`. **No e
 precio real.** Cuando DLPay defina la fuente oficial (pendiente D7) se agrega
 `DLPayApiPriceSource` y se cambia por variable de entorno, **sin tocar la UI**.
 
+## Una trampa de Astro que ya nos costó una vez
+
+`astro.config.mjs` declara **`scopedStyleStrategy: 'class'`**, y no es cosmético.
+
+Con la estrategia de fábrica (por atributo), un `<svg>` que vive dentro de un componente hijo
+—`Logo`, `Icon`— **no recibe** el `data-astro-cid-*` del padre. Las reglas del padre compilan a
+`.brand-mark[data-astro-cid-X]` y no encuentran nada: el isotipo, los iconos de WhatsApp y los de
+las secciones quedaban **sin tamaño ni color**, y su tamaño real venía por accidente de la rejilla
+del contenedor.
+
+Como clase, el ámbito viaja dentro del `class` que el padre pasa al hijo y que el hijo escribe en
+el `<svg>`. La especificidad es idéntica, así que no altera ninguna cascada.
+
+**Si algún día un icono no responde a su CSS, mirar esto primero.**
+
 ## SEO y metadatos
 
 Generados, no escritos a mano:
