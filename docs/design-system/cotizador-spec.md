@@ -169,11 +169,28 @@ de tipos. No hay servicio, ni caché distribuida, ni cola. Un módulo, una inter
 | | Móvil (base) | Desktop |
 |---|---|---|
 | Ubicación | El cotizador **es** el héroe; primer viewport, una columna. | Columna derecha del héroe; copy a la izquierda. |
-| CTA | Barra inferior fija ("Cotizar por WhatsApp") una vez pasado el héroe. | En la tarjeta. |
+| CTA | **Barra inferior fija con la cifra viva**, una vez que la tarjeta queda arriba del viewport. Implementada el 2026-09-07. | En la tarjeta. La barra no aplica: el cotizador no se pierde de vista. |
 | Campos | Grandes, teclado numérico, toggle alcanzable con el pulgar. | Tamaño normal. |
 | Resultado | Visible sin scroll. | Visible sin scroll. |
 
 ---
+
+### 7.1 La barra fija móvil
+
+Viene de Fase 1, patrón 13 (**Global66**), marcada `Adoptar (P1)`. Estaba especificada aquí y no
+se había construido: en móvil, al bajar a leer "cómo funciona", el CTA desaparecía de la pantalla.
+
+- **Lleva la cifra viva.** Muestra `Recibes · US$ 2.174,62` mientras acompañas el scroll. Así el
+  movimiento es información, no adorno: el número te sigue.
+- **Una sola verdad.** El enlace, la cifra y el estado salen de la misma llamada a `whatsappUrl`
+  que alimenta el botón de la tarjeta. No hay dos cálculos que puedan divergir.
+- **Refleja el estado.** Bajo el mínimo o sobre el máximo muestra `Fuera de rango · —` y el botón
+  pasa a `Escríbenos`, igual que la tarjeta.
+- **Sólo si la tarjeta quedó arriba.** Si el usuario sube y el cotizador viene en camino, la barra
+  no aparece: duplicarlo sería ruido.
+- **Sólo bajo 900 px.** En escritorio el cotizador no se pierde de vista.
+- Arranca con el atributo `hidden`, así que no existe para un lector de pantalla mientras la
+  tarjeta está a la vista y no duplica el CTA.
 
 ## 8. Métricas a instrumentar (después, no ahora)
 

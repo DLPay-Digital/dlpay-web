@@ -142,6 +142,26 @@ const intents = [
   </a>
 </section>
 
+<!--
+  Barra fija móvil (Fase 1, patrón 13 · cotizador-spec §7). Estaba especificada
+  y no se había construido: en móvil, al bajar a leer, el CTA desaparecía.
+
+  Lleva la cifra viva porque así el movimiento es información: el número te
+  acompaña. Arranca `hidden`, así que no existe para un lector de pantalla
+  mientras la tarjeta está a la vista y no duplica el CTA.
+-->
+<div class="dock" data-dock hidden>
+  <div class="dock-in">
+    <span class="dock-fig">
+      <span class="dock-label" data-dock-label>Recibes</span>
+      <span class="dock-amount num" data-dock-amount>{formatUSD(initialGet)}</span>
+    </span>
+    <a class="dock-cta" href={wa} target="_blank" rel="noopener" data-dock-cta>
+      Continuar
+    </a>
+  </div>
+</div>
+
 <style>
   .sr-only {
     position: absolute;
@@ -375,7 +395,73 @@ const intents = [
   }
   .secondary:hover { text-decoration: underline; }
 
+  /* La barra se ancla al borde inferior. Su eje de entrada es ese borde, no la
+     diagonal de la marca: no es contenido que entra en la página, es un
+     elemento acoplado que asoma desde donde vive. Misma duración y curva. */
+  .dock {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    background: var(--tinta);
+    border-top: 1px solid rgba(237, 242, 239, 0.14);
+    padding: var(--s-3) var(--pad-section-m);
+    padding-bottom: max(var(--s-3), env(safe-area-inset-bottom));
+    transform: translateY(100%);
+    transition: transform var(--m-base) var(--m-ease);
+  }
+  .dock.is-up { transform: none; }
+
+  .dock-in {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    max-width: var(--container);
+    margin: 0 auto;
+  }
+  .dock-fig { display: flex; flex-direction: column; min-width: 0; }
+  .dock-label {
+    font-size: var(--t-dato-sm);
+    font-weight: 600;
+    letter-spacing: var(--ls-label);
+    color: var(--on-tinta-mute);
+  }
+  .dock-amount {
+    font-size: var(--t-h3-m);
+    font-weight: 500;
+    color: var(--on-tinta);
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  /* M2 también acá: la cifra acusa que cambió mientras te acompaña. */
+  .dock-amount.is-set { animation: settle 160ms var(--m-ease) both; }
+
+  .dock-cta {
+    flex: none;
+    display: flex;
+    align-items: center;
+    background: var(--verde);
+    color: #04140e;
+    font-size: var(--t-body-sm);
+    font-weight: 700;
+    padding: 0 var(--s-5);
+    min-height: 44px;
+    border-radius: var(--r-2);
+    text-decoration: none;
+    transition: background-color var(--m-fast) var(--m-ease);
+  }
+  .dock-cta:hover { background: var(--verde-hi); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dock { transition: none; }
+    .dock-amount.is-set { animation: none; }
+  }
+
   @media (min-width: 900px) {
+    /* En escritorio el cotizador nunca se pierde de vista: la barra no aplica. */
+    .dock { display: none; }
     .price-value { font-size: var(--t-dato); }
     .intent-options { grid-template-columns: repeat(3, 1fr); }
     .intent-option span {
@@ -393,6 +479,7 @@ const intents = [
     clpAmount,
     convert,
     currenciesFor,
+    formatAmount,
     whatsappUrl,
   } from '../lib/pricing/quote.ts';
   import type { Currency, Intent } from '../lib/pricing/types.ts';
@@ -415,6 +502,10 @@ const intents = [
     const cta = root.querySelector<HTMLAnchorElement>('[data-cta]')!;
     const boxes = root.querySelectorAll<HTMLElement>('.input-box');
     const priceEl = root.querySelector<HTMLElement>('.price-value');
+    const dock = document.querySelector<HTMLElement>('[data-dock]');
+    const dockLabel = dock?.querySelector<HTMLElement>('[data-dock-label]');
+    const dockAmount = dock?.querySelector<HTMLElement>('[data-dock-amount]');
+    const dockCta = dock?.querySelector<HTMLAnchorElement>('[data-dock-cta]');
     const intentInputs = root.querySelectorAll<HTMLInputElement>('input[name="intent"]');
 
     const fmt = (value: number, currency: Currency): string =>
@@ -468,7 +559,7 @@ const intents = [
 
       // M2 · el dato acusa el cambio. Sólo cuando el valor recibido cambia de
       // verdad: si se reanimara en cada tecleo sería ruido, no información.
-      const shown = fmt(received(), get);
+      const shown = formatAmount(received(), get);
       if (priceEl && shown !== lastShown) {
         lastShown = shown;
         priceEl.classList.remove('is-set');
@@ -477,8 +568,24 @@ const intents = [
       }
 
       // El fallback de cualquier problema es WhatsApp, nunca un error seco
-      cta.href = whatsappUrl(waNumber, quote, giveAmount);
+      const href = whatsappUrl(waNumber, quote, giveAmount);
+      cta.href = href;
       cta.textContent = fuera ? 'Escríbenos por WhatsApp' : 'Continuar por WhatsApp';
+
+      // La barra refleja exactamente la tarjeta: mismo enlace, misma cifra,
+      // mismo estado. Una sola verdad, dos lugares donde se ve.
+      if (dock && dockLabel && dockAmount && dockCta) {
+        dockCta.href = href;
+        dockCta.textContent = fuera ? 'Escríbenos' : 'Continuar';
+        dockLabel.textContent = fuera ? 'Fuera de rango' : 'Recibes';
+        const dockShown = fuera ? '—' : shown;
+        if (dockAmount.textContent !== dockShown) {
+          dockAmount.textContent = dockShown;
+          dockAmount.classList.remove('is-set');
+          void dockAmount.offsetWidth;
+          dockAmount.classList.add('is-set');
+        }
+      }
     };
 
     // El campo que se edita NO se reformatea bajo el cursor (spec §3): se
@@ -519,5 +626,26 @@ const intents = [
     );
 
     render();
+
+    /**
+     * La barra asoma sólo cuando la tarjeta quedó ARRIBA del viewport. Si la
+     * tarjeta está más abajo —porque el usuario subió— no aparece: el
+     * instrumento viene en camino y duplicarlo sería ruido.
+     */
+    if (dock && 'IntersectionObserver' in window) {
+      const dockObserver = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry) return;
+          const passed = !entry.isIntersecting && entry.boundingClientRect.bottom < 0;
+          dock.hidden = !passed;
+          // Se separa de `hidden` para que la transición tenga un fotograma.
+          requestAnimationFrame(() => dock.classList.toggle('is-up', passed));
+          // Evita que la barra tape la última línea de la página.
+          document.documentElement.classList.toggle('has-dock', passed);
+        },
+        { threshold: 0 }
+      );
+      dockObserver.observe(root);
+    }
   }
 </script>

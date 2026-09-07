@@ -96,6 +96,11 @@ Seis, numerados y contables. Si algo no está acá, no se mueve.
 | **M5** | `stagger` | Desfase de 60 ms entre hermanos, **máximo 4** | — | Ver §5. **Requiere enmienda.** |
 | **M6** | `sequence` | Secuencia de carga del héroe, una sola vez | 320 ms total | Home. **Ya permitido por DS §9.** |
 
+**Aclaración sobre el eje (2026-09-07).** M4 entra sobre la diagonal de la marca porque es
+contenido que llega a la página. La **barra fija móvil** es la excepción razonada: no entra en la
+página, se acopla al borde inferior donde vive, así que asoma desde ese borde. Misma duración y
+misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo movimiento.
+
 ### Reglas duras del catálogo
 
 1. **Una sola vez.** Nada se re-anima al volver a hacer scroll. Un elemento que reaparece cada vez

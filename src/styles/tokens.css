@@ -127,6 +127,11 @@ a{color:var(--verde-deep)}
 /* Objetivos táctiles ≥44px */
 button,a[role="button"],input,select{min-height:44px}
 
+/* La barra fija del cotizador no debe tapar el final de la página. */
+@media (max-width:899px){
+  .has-dock body{padding-bottom:76px}
+}
+
 /* ── Entrada sobre el eje diagonal (M4) ─────────────────────────────────────
    El estado oculto se aplica SÓLO si `.js-motion` confirma que el observador
    está activo. Sin JavaScript la página se ve completa e inmóvil: no es una
