@@ -71,6 +71,18 @@
   --elev-card:0 24px 60px -24px rgba(11,19,32,.45);
   --elev-pop:0 8px 24px -12px rgba(11,19,32,.25);
 
+  /* ── Movimiento (Motion System V1) ─────────────────────────────────────── */
+  /* El movimiento es información, no adorno. Techo absoluto: 280ms. */
+  --m-fast:120ms;      /* microinteracciones: hover, foco, toggle        */
+  --m-base:200ms;      /* entradas y cambios de estado                   */
+  --m-slow:280ms;      /* revelados de superficie mayor                  */
+  --m-ease:cubic-bezier(.2,0,0,1);      /* desaceleración, sin rebote    */
+  --m-stagger:60ms;    /* desfase entre hermanos. Máximo 4.             */
+  /* El eje diagonal del isotipo (~34°): la dirección propia de la marca.
+     Todo lo que entra, entra sobre este vector — nunca sobre un translateY. */
+  --m-shift-x:-6px;
+  --m-shift-y:9px;
+
   /* ── Foco ──────────────────────────────────────────────────────────────── */
   /* El verde de marca sobre papel da 2.02:1 — insuficiente incluso para un
      elemento gráfico (WCAG pide 3:1). Sobre tinta da 8.45:1 y sí sirve.
@@ -115,7 +127,44 @@ a{color:var(--verde-deep)}
 /* Objetivos táctiles ≥44px */
 button,a[role="button"],input,select{min-height:44px}
 
-/* Por defecto nada se mueve (Design System §9) */
+/* ── Entrada sobre el eje diagonal (M4) ─────────────────────────────────────
+   El estado oculto se aplica SÓLO si `.js-motion` confirma que el observador
+   está activo. Sin JavaScript la página se ve completa e inmóvil: no es una
+   degradación, es el estado base. */
+.js-motion [data-enter]{
+  opacity:0;
+  transform:translate(var(--m-shift-x),var(--m-shift-y));
+}
+.js-motion [data-enter].is-in{
+  opacity:1;
+  transform:none;
+  transition:opacity var(--m-base) var(--m-ease),
+             transform var(--m-base) var(--m-ease);
+}
+/* Escalonado (M5): máximo 4 hermanos. El quinto y siguientes no esperan. */
+.js-motion [data-enter].is-in:nth-child(2){transition-delay:var(--m-stagger)}
+.js-motion [data-enter].is-in:nth-child(3){transition-delay:calc(var(--m-stagger)*2)}
+.js-motion [data-enter].is-in:nth-child(4){transition-delay:calc(var(--m-stagger)*3)}
+
+/* Dibujo de la geometría (M3): se traza en la dirección que apunta. */
+.js-motion [data-draw]{
+  stroke-dasharray:var(--draw-len,120);
+  stroke-dashoffset:var(--draw-len,120);
+}
+.js-motion [data-draw].is-in{
+  stroke-dashoffset:0;
+  transition:stroke-dashoffset var(--m-slow) var(--m-ease);
+}
+
+/* prefers-reduced-motion apaga todo salvo el color. El sitio queda exactamente
+   como antes de la enmienda del 2026-09-07: legible, completo e inmóvil. */
+@media (prefers-reduced-motion:reduce){
+  .js-motion [data-enter],
+  .js-motion [data-enter].is-in{opacity:1;transform:none;transition:none}
+  .js-motion [data-draw],
+  .js-motion [data-draw].is-in{stroke-dasharray:none;stroke-dashoffset:0;transition:none}
+}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{
     animation-duration:.01ms!important; animation-iteration-count:1!important;

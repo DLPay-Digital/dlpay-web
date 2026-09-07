@@ -10,6 +10,7 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
+import Motion from '../components/Motion.astro';
 import FlowDiagram from '../components/FlowDiagram.astro';
 import Icon from '../components/Icon.astro';
 import { detailedSteps, checklist } from '../content/process.ts';
@@ -22,6 +23,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
   description="El recorrido completo de una operación en DLPay: cotizas en la web, confirmas con un ejecutivo por WhatsApp, transfieres, verificamos y recibes dólar digital en tu billetera."
   path="/como-funciona/"
 >
+  <Motion />
   <Header />
   <main id="main">
     <PageHero
@@ -39,7 +41,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
     <section class="detail" aria-labelledby="detail-title">
       <div class="inner">
         <header class="head">
-          <h2 id="detail-title">Paso a paso</h2>
+          <h2 id="detail-title" data-enter>Paso a paso</h2>
           <p>Marcamos quién hace qué, para que no quede ninguna zona gris.</p>
         </header>
 
@@ -69,7 +71,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
       <div class="inner">
         <div class="prep-grid">
           <div>
-            <h2 id="prep-title">Ten esto a mano</h2>
+            <h2 id="prep-title" data-enter>Ten esto a mano</h2>
             <ul class="check">
               {checklist.map((item) => (
                 <li>
@@ -229,6 +231,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
     font-size: var(--t-body-sm);
     font-weight: 600;
   }
+  .ghost { transition: border-color var(--m-fast) var(--m-ease); }
   .ghost:hover { border-color: var(--ink); }
   .wa-icon { width: 15px; height: 15px; }
 
@@ -258,6 +261,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
     border-radius: var(--r-2);
     text-decoration: none;
   }
+  .cta { transition: background-color var(--m-fast) var(--m-ease); }
   .cta:hover { background: var(--verde-hi); }
 
   @media (min-width: 760px) {

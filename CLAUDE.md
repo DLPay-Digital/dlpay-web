@@ -17,6 +17,9 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   CSS nativo con tokens, sin Tailwind · despliegue portable con proveedor diferido.
 - **Identidad visual completa**: dirección A×C, verde `#16C784`, tinta `#0B1320` y tipografía
   **T-C** cerradas. **Diseño congelado desde el 2026-09-04:** no se toca sin una razón crítica.
+- **Motion System V1** aprobado e implementado el 2026-09-07. Enmienda el Design System §9: se
+  permiten entradas al hacer scroll y escalonado, en forma acotada. Seis movimientos, ni uno más,
+  techo de 280 ms. Ver `docs/design-system/motion-system-v1.md`.
 - **Auditoría previa a producción hecha.** Lo que queda para desplegar es configuración y
   decisiones de negocio o Compliance, no ingeniería. Ver `docs/auditoria-preproduccion.md`.
 - **Esqueleto creado y verificado.** Astro 7 + TypeScript strict, `npm run check` y
@@ -50,6 +53,7 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
 | `docs/decisions/` (ADRs) | Las decisiones formales. `ADR-0001` = dirección visual V1. |
 | `docs/design-system/design-system-v1.md` | Tokens, escala, componentes, accesibilidad. |
 | `docs/design-system/cotizador-spec.md` | El elemento central de la web. |
+| `docs/design-system/motion-system-v1.md` | Los seis movimientos permitidos y dónde va cada uno. |
 | `docs/research/phase-2.5-definicion-experiencia.md` | Experiencia, arquitectura de información, estructura de la Home, principios UX. **El documento operativo más útil para construir.** |
 | Este archivo | Principios, límites, Definition of Done. |
 | `docs/development.md` | Cómo levantar el proyecto, estructura, dependencias y verificaciones. |

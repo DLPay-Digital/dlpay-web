@@ -21,13 +21,13 @@ const trustStrip = [
 
   <div class="inner">
     <div class="copy">
-      <h1>Cambia pesos por dólares. Muévelos donde necesites.</h1>
-      <p class="sub">
+      <h1 class="seq" style="--seq:0">Cambia pesos por dólares. Muévelos donde necesites.</h1>
+      <p class="sub seq" style="--seq:1">
         Recibes dólar digital: se transfiere en minutos, a cualquier hora, sin los tiempos
         de una transferencia bancaria tradicional. Al precio real del mercado y con una
         persona que cierra tu operación.
       </p>
-      <ul class="strip">
+      <ul class="strip seq" style="--seq:2">
         {trustStrip.map((item) => (
           <li>
             <Icon name={item.icon} class="strip-icon" />
@@ -50,6 +50,34 @@ const trustStrip = [
     position: relative;
     overflow: hidden;
     padding: var(--s-7) 0 var(--s-8);
+  }
+
+  /**
+   * M6 · secuencia de carga. El cotizador NO entra: es el instrumento y tiene
+   * que estar encendido cuando llegas. Lo que entra es el texto, sobre el eje
+   * diagonal de la marca. Al revés de lo habitual, y coherente con que la cifra
+   * manda. No depende de JavaScript: es una animación de carga.
+   */
+  .seq {
+    animation: heroIn var(--m-base) var(--m-ease) both;
+    animation-delay: calc(var(--seq) * var(--m-stagger));
+  }
+  @keyframes heroIn {
+    from { opacity: 0; transform: translate(var(--m-shift-x), var(--m-shift-y)); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* M3 · las cuñas se dibujan al cargar, en la dirección que apuntan. */
+  .wedges {
+    animation: wedgeIn var(--m-slow) var(--m-ease) both;
+  }
+  @keyframes wedgeIn {
+    from { opacity: 0; }
+    to   { opacity: 0.07; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .seq, .wedges { animation: none; }
   }
 
   /* Cuñas del sistema geométrico. Opacidad baja, nunca sobre el cotizador. */

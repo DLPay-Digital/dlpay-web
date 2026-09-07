@@ -1,0 +1,51 @@
+---
+/**
+ * Motor del Motion System V1 (`docs/design-system/motion-system-v1.md`).
+ *
+ * Se incluye SÓLO en las páginas con movimiento de entrada. Las páginas legales
+ * no lo llevan y siguen en cero JavaScript.
+ *
+ * El interruptor `.js-motion` se pone de forma síncrona en el `<head>` — antes
+ * de pintar — para que no haya un parpadeo de contenido visible que luego se
+ * oculta. Si el script no corre, la clase nunca se añade y la página se ve
+ * completa e inmóvil.
+ */
+---
+<script is:inline>
+  document.documentElement.classList.add('js-motion');
+</script>
+
+<script>
+  const items = document.querySelectorAll<HTMLElement>('[data-enter], [data-draw]');
+
+  if (items.length > 0) {
+    // Los trazos necesitan su longitud real para dibujarse; se mide una vez.
+    document.querySelectorAll<SVGPathElement>('path[data-draw]').forEach((path) => {
+      try {
+        path.style.setProperty('--draw-len', String(Math.ceil(path.getTotalLength())));
+      } catch {
+        // Un navegador sin getTotalLength deja el valor por defecto: se ve igual.
+      }
+    });
+
+    const reveal = (el: Element): void => el.classList.add('is-in');
+
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(reveal);
+    } else {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            reveal(entry.target);
+            // Una sola vez: un elemento que se re-anima al volver a pasar es el
+            // sello del movimiento decorativo.
+            observer.unobserve(entry.target);
+          }
+        },
+        { rootMargin: '0px 0px -12% 0px', threshold: 0.01 }
+      );
+      items.forEach((el) => observer.observe(el));
+    }
+  }
+</script>

@@ -13,7 +13,7 @@ import Icon from './Icon.astro';
 <section class="business on-tinta-surface" id="empresas" aria-labelledby="business-title">
   <div class="inner">
     <div class="copy">
-      <h2 id="business-title">¿Tu empresa paga al exterior?</h2>
+      <h2 id="business-title" data-enter>¿Tu empresa paga al exterior?</h2>
       <p>
         Pagos a proveedores, tesorería en dólares y operaciones recurrentes, con un
         ejecutivo asignado, condiciones conversadas y verificación de la empresa.
@@ -52,6 +52,7 @@ import Icon from './Icon.astro';
     padding: var(--s-4) var(--s-5);
     border-radius: var(--r-2);
   }
+  .ghost { transition: background-color var(--m-fast) var(--m-ease), color var(--m-fast) var(--m-ease); }
   .ghost:hover { background: var(--verde); color: #04140e; }
   .chev { width: 15px; height: 15px; }
 

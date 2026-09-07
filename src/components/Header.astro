@@ -118,6 +118,7 @@ const isCurrent = (href: string) => href === current;
     font-size: var(--t-body-sm);
     font-weight: 500;
   }
+  .desktop-nav a { transition: color var(--m-fast) var(--m-ease); }
   .desktop-nav a:hover { color: var(--on-tinta); }
   .desktop-nav a[aria-current='page'] { color: var(--on-tinta); }
   .desktop-nav a[aria-current='page']::after {
@@ -159,7 +160,7 @@ const isCurrent = (href: string) => href === current;
   }
   .menu summary::-webkit-details-marker { display: none; }
   .burger { display: flex; flex-direction: column; gap: var(--s-1); }
-  .burger i { display: block; width: 20px; height: 1.5px; background: var(--on-tinta-mute); }
+  .burger i { display: block; width: 20px; height: 1.5px; background: var(--on-tinta-mute); transition: background-color var(--m-fast) var(--m-ease); }
   .menu[open] .burger i { background: var(--on-tinta); }
 
   .drawer {
@@ -183,6 +184,7 @@ const isCurrent = (href: string) => href === current;
     font-weight: 500;
     border-radius: var(--r-2);
   }
+  .drawer a { transition: background-color var(--m-fast) var(--m-ease); }
   .drawer a:hover { background: rgba(237, 242, 239, 0.06); }
   .drawer a[aria-current='page'] { color: var(--verde); }
 
@@ -197,7 +199,8 @@ const isCurrent = (href: string) => href === current;
       font-size: var(--t-body-sm);
       font-weight: 500;
     }
-    .login:hover { color: var(--on-tinta); }
+    .login { transition: color var(--m-fast) var(--m-ease); }
+  .login:hover { color: var(--on-tinta); }
     .menu { display: none; }
   }
 </style>

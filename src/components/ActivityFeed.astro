@@ -126,7 +126,8 @@ const showSampleMark = !source.isReal && !preview;
 
   /* La operación nueva aparece, no se desliza ni parpadea. Es una mesa
      operando, no un marcador. */
-  .event.is-new { animation: appear 420ms ease-out both; }
+  /* Alineado al Motion System V1: era 420ms, sobre el techo de 280. */
+  .event.is-new { animation: appear var(--m-base) var(--m-ease) both; }
   @keyframes appear {
     from { opacity: 0; }
     to { opacity: 1; }

@@ -12,7 +12,7 @@ import { steps } from '../content/home.ts';
 <section class="steps" id="como-funciona" aria-labelledby="steps-title">
   <div class="inner">
     <header class="head">
-      <h2 id="steps-title">De la cotización al dinero movido</h2>
+      <h2 id="steps-title" data-enter>De la cotización al dinero movido</h2>
       <p>Cuatro pasos. La web te deja listo; una persona cierra la operación.</p>
     </header>
 
@@ -23,7 +23,13 @@ import { steps } from '../content/home.ts';
             <span class="n num">{step.n}</span>
             {i < steps.length - 1 && (
               <svg class="wedge" viewBox="0 0 12 34" aria-hidden="true">
-                <path d="M1 1L11 17L1 33" fill="none" stroke="currentColor" stroke-width="1.5" />
+                <path
+                  d="M1 1L11 17L1 33"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  data-draw
+                />
               </svg>
             )}
           </div>

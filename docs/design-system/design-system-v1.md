@@ -303,14 +303,27 @@ Cada uno se construye sólo cuando una página real lo necesita (Principio 5, CL
 
 ---
 
-## 9. Movimiento
+## 9. Movimiento  ·  *enmendado el 2026-09-07*
 
-- Por defecto **nada** se mueve.
-- Permitido: el **tick del precio** cuando cambia; **un** shimmer sobre el número mientras calcula;
-  una secuencia de carga del héroe (opcional, sutil).
-- Prohibido: entradas fade-and-slide por sección al hacer scroll; hover-transitions en cada tarjeta;
-  animación decorativa.
-- Respetar `prefers-reduced-motion`.
+**El sistema completo está en `motion-system-v1.md`.** Seis movimientos, ni uno más.
+
+- **El movimiento es información, no adorno.** Si algo se mueve, es porque cambió un dato o un
+  estado. Es la regla de ADR-0001 §3 aplicada al tiempo.
+- **Tiene una dirección propia: la diagonal del isotipo** (~34°). Todo lo que entra, entra sobre
+  ese eje — nunca sobre el `translateY` vertical genérico.
+- **Velocidad de instrumento:** techo absoluto de **280 ms**.
+- Permitido: microinteracciones en **controles** · el dato que cambia · el dibujo de la geometría ·
+  la entrada al hacer scroll de **un** elemento por sección · escalonado de **máximo 4** hermanos
+  donde hay secuencia real · una secuencia de carga del héroe.
+- Prohibido: hover-transitions en **tarjetas** · conteo de cifras desde cero · parallax · movimiento
+  continuo · transiciones de página · movimiento sobre datos (tablas, actividad).
+- **Sin JavaScript la página se ve completa e inmóvil.** No es degradación: es el estado base.
+- `prefers-reduced-motion` apaga todo salvo el cambio de color instantáneo.
+
+> *Enmienda:* este apartado prohibía las entradas al hacer scroll y el escalonado. La prohibición
+> existía cuando la identidad visual aún no estaba construida y el riesgo era parecer una plantilla.
+> Cerradas la dirección A×C, la tipografía y el sistema geométrico, ese riesgo se evaluó y se
+> levantó la restricción en la forma acotada que define `motion-system-v1.md`.
 
 ---
 

@@ -11,10 +11,10 @@ import { useCases } from '../content/home.ts';
 ---
 <section class="uses" aria-labelledby="uses-title">
   <div class="inner">
-    <h2 id="uses-title">Tres formas de usarlo</h2>
+    <h2 id="uses-title" data-enter>Tres formas de usarlo</h2>
     <ul class="grid">
       {useCases.map((item) => (
-        <li class="use">
+        <li class="use" data-enter>
           <h3>{item.title}</h3>
           <p>{item.body}</p>
         </li>

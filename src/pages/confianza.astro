@@ -10,6 +10,7 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
+import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
 import { mechanisms, honesty, requirements } from '../content/trust.ts';
 import { site, contact } from '../lib/config/site.ts';
@@ -21,6 +22,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
   description="Cómo cuidamos tu dinero en DLPay: pasa por un banco, una persona identificable cierra cada operación y el precio es referencial. Sin sellos ni cifras sin respaldo."
   path="/confianza/"
 >
+  <Motion />
   <Header />
   <main id="main">
     <PageHero
@@ -31,7 +33,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
     <section class="mech" aria-labelledby="mech-title">
       <div class="inner">
         <header class="head">
-          <h2 id="mech-title">Qué pasa con tu plata</h2>
+          <h2 id="mech-title" data-enter>Qué pasa con tu plata</h2>
           <p>Tres cosas que puedes verificar tú mismo en tu próxima operación.</p>
         </header>
         <ul class="list">
@@ -51,7 +53,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
     <section class="req" aria-labelledby="req-title">
       <div class="inner">
         <header class="head">
-          <h2 id="req-title">Qué te pedimos, y por qué</h2>
+          <h2 id="req-title" data-enter>Qué te pedimos, y por qué</h2>
           <p>Los requisitos no son burocracia: son lo que permite operar con un banco de por medio.</p>
         </header>
         <ul class="req-list">
@@ -233,6 +235,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
     border-radius: var(--r-2);
     text-decoration: none;
   }
+  .cta { transition: background-color var(--m-fast) var(--m-ease); }
   .cta:hover { background: var(--verde-hi); }
   .wa-icon { width: 16px; height: 16px; }
 

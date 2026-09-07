@@ -192,6 +192,9 @@ const intents = [
     min-height: 0;
   }
   .intent-option span {
+    transition: background-color var(--m-fast) var(--m-ease),
+                border-color var(--m-fast) var(--m-ease),
+                color var(--m-fast) var(--m-ease);
     flex: 1;
     display: flex;
     align-items: center;
@@ -235,6 +238,10 @@ const intents = [
   }
   /* El borde de foco es un indicador de interfaz: necesita 3:1 contra el blanco
      del campo. verde-deep da 4.9:1; el verde de marca sólo 1.9:1. */
+  .input-box {
+    transition: border-color var(--m-fast) var(--m-ease),
+                box-shadow var(--m-fast) var(--m-ease);
+  }
   .input-box:focus-within {
     border-color: var(--verde-deep);
     box-shadow: 0 0 0 3px rgba(11, 122, 84, 0.18);
@@ -299,6 +306,17 @@ const intents = [
     line-height: var(--lh-dato);
     white-space: nowrap;
   }
+  /* M2 · el precio acusa que cambió. 160ms, sólo sobre el valor nuevo.
+     No es un conteo desde cero: eso mostraría precios falsos. */
+  .price-value.is-set { animation: settle 160ms var(--m-ease) both; }
+  @keyframes settle {
+    from { opacity: 0; transform: translateY(2px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .price-value.is-set { animation: none; }
+  }
+
   .price-value small {
     font-family: var(--f-text);
     font-size: var(--t-dato-sm);
@@ -341,6 +359,7 @@ const intents = [
     border-radius: var(--r-2);
     text-decoration: none;
   }
+  .cta { transition: background-color var(--m-fast) var(--m-ease); }
   .cta:hover { background: var(--verde-hi); }
 
   .secondary {
@@ -395,6 +414,7 @@ const intents = [
     const alertEl = root.querySelector<HTMLElement>('[data-alert]')!;
     const cta = root.querySelector<HTMLAnchorElement>('[data-cta]')!;
     const boxes = root.querySelectorAll<HTMLElement>('.input-box');
+    const priceEl = root.querySelector<HTMLElement>('.price-value');
     const intentInputs = root.querySelectorAll<HTMLInputElement>('input[name="intent"]');
 
     const fmt = (value: number, currency: Currency): string =>
@@ -404,6 +424,7 @@ const intents = [
 
     let intent: Intent = 'send_abroad';
     let giveAmount = parseAmount(giveInput.value);
+    let lastShown = '';
 
     // La pantalla y el mensaje calculan con la MISMA función. Antes el
     // componente tenía su propia aritmética, sin la guarda de tasa del módulo:
@@ -443,6 +464,16 @@ const intents = [
       } else {
         alertEl.textContent = '';
         alertEl.hidden = true;
+      }
+
+      // M2 · el dato acusa el cambio. Sólo cuando el valor recibido cambia de
+      // verdad: si se reanimara en cada tecleo sería ruido, no información.
+      const shown = fmt(received(), get);
+      if (priceEl && shown !== lastShown) {
+        lastShown = shown;
+        priceEl.classList.remove('is-set');
+        void priceEl.offsetWidth;
+        priceEl.classList.add('is-set');
       }
 
       // El fallback de cualquier problema es WhatsApp, nunca un error seco

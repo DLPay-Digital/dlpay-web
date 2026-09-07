@@ -68,6 +68,7 @@ La Fase 2.5 congeló las decisiones de experiencia. Se dispone de los **logos of
 | 2026-09-03 | Verde y tinta verificados por muestreo de píxeles: `#16C784` y `#0B1320`. Se cierra el `PENDIENTE` del vectorial (§2). |
 | 2026-09-03 | La tipografía deja de bloquear Fase 3 (§4). |
 | 2026-09-04 | **Tipografía cerrada: set T-C** — Familjen Grotesk + Spline Sans Mono (§4). |
+| 2026-09-07 | **Motion System V1.** Se levanta la prohibición de entradas al hacer scroll y escalonado del Design System §9, en la forma acotada de `design-system/motion-system-v1.md`. La regla §3 —el movimiento representa movimiento, flujo o un paso, nunca decoración— se extiende al tiempo y sigue rigiendo. |
 
 ## Consecuencias
 

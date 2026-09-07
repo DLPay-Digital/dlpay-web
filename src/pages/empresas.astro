@@ -9,6 +9,7 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
+import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
 import { useCases, differences, onboarding } from '../content/business.ts';
 import { contact } from '../lib/config/site.ts';
@@ -22,6 +23,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
   description="Cambio de divisas y tesorería en dólar digital para empresas en Chile: ejecutivo asignado, condiciones conversadas según volumen y verificación de la sociedad."
   path="/empresas/"
 >
+  <Motion />
   <Header />
   <main id="main">
     <PageHero
@@ -32,7 +34,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
     <section class="cases" aria-labelledby="cases-title">
       <div class="inner">
         <header class="head">
-          <h2 id="cases-title">Para qué lo usan</h2>
+          <h2 id="cases-title" data-enter>Para qué lo usan</h2>
           <p>
             Cuatro situaciones concretas. Todas parten del mismo servicio: cambiamos tus
             pesos y te entregamos dólar digital. Si la tuya no está acá, conversémosla.
@@ -40,7 +42,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
         </header>
         <ul class="grid">
           {useCases.map((item) => (
-            <li class="case">
+            <li class="case" data-enter>
               <h3>{item.title}</h3>
               <p>{item.body}</p>
             </li>
@@ -52,7 +54,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
     <section class="diff" aria-labelledby="diff-title">
       <div class="inner">
         <header class="head">
-          <h2 id="diff-title">Qué cambia respecto de una persona</h2>
+          <h2 id="diff-title" data-enter>Qué cambia respecto de una persona</h2>
           <p>El producto es el mismo. Lo que cambia es el acompañamiento y la verificación.</p>
         </header>
 
@@ -83,7 +85,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
       <div class="inner">
         <div class="split">
           <div>
-            <h2 id="onboarding-title">Cómo empezamos</h2>
+            <h2 id="onboarding-title" data-enter>Cómo empezamos</h2>
             <p class="lead">
               No hay formulario que llenar a ciegas. Se parte conversando y seguimos desde ahí.
             </p>
@@ -233,6 +235,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
     border-radius: var(--r-2);
     text-decoration: none;
   }
+  .cta { transition: background-color var(--m-fast) var(--m-ease); }
   .cta:hover { background: var(--verde-hi); }
   .ghost {
     display: inline-flex;
@@ -245,6 +248,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
     border-radius: var(--r-2);
     text-decoration: none;
   }
+  .ghost { transition: border-color var(--m-fast) var(--m-ease); }
   .ghost:hover { border-color: var(--on-tinta); }
   .wa-icon { width: 16px; height: 16px; }
 

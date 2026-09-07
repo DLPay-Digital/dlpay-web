@@ -7,7 +7,7 @@ import { faq } from '../content/home.ts';
 ---
 <section class="faq" aria-labelledby="faq-title">
   <div class="inner">
-    <h2 id="faq-title">Antes de tu primera operación</h2>
+    <h2 id="faq-title" data-enter>Antes de tu primera operación</h2>
     <div class="items">
       {faq.map((item) => (
         <details class="item">
@@ -51,7 +51,13 @@ import { faq } from '../content/home.ts';
     min-height: 44px;
   }
   summary::-webkit-details-marker { display: none; }
-  .mark { width: 14px; height: 14px; flex: none; color: var(--verde-deep); }
+  .mark {
+    width: 14px;
+    height: 14px;
+    flex: none;
+    color: var(--verde-deep);
+    transition: transform var(--m-fast) var(--m-ease);
+  }
   .item[open] .mark { transform: rotate(45deg); }
   .item p {
     color: var(--ink-mute);
