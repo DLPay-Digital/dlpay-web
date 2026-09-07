@@ -68,6 +68,7 @@ La Fase 2.5 congeló las decisiones de experiencia. Se dispone de los **logos of
 | 2026-09-03 | Verde y tinta verificados por muestreo de píxeles: `#16C784` y `#0B1320`. Se cierra el `PENDIENTE` del vectorial (§2). |
 | 2026-09-03 | La tipografía deja de bloquear Fase 3 (§4). |
 | 2026-09-04 | **Tipografía cerrada: set T-C** — Familjen Grotesk + Spline Sans Mono (§4). |
+| 2026-09-07 | **Isotipo trazado del asset real.** El SVG del componente `Logo` era un dibujo aproximado que había perdido el corte diagonal y la cola en punta — es decir, justo lo que §2 define como identidad y de donde §3 deriva el sistema geométrico. Se reemplazó por un trazado fiel de `logos/logo 1.png`. Aplica a cabecera, pie, favicon, icono de iOS y la imagen de previsualización. |
 | 2026-09-07 | **Motion System V1.** Se levanta la prohibición de entradas al hacer scroll y escalonado del Design System §9, en la forma acotada de `design-system/motion-system-v1.md`. La regla §3 —el movimiento representa movimiento, flujo o un paso, nunca decoración— se extiende al tiempo y sigue rigiendo. |
 
 ## Consecuencias

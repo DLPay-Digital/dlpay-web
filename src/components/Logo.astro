@@ -1,17 +1,25 @@
 ---
-/** Isotipo DLPay: monograma D+P con la cola diagonal en punta (ADR-0001 §2). */
+/**
+ * Isotipo DLPay: monograma D+P con el corte diagonal y la cola en punta hacia
+ * abajo-izquierda — el vector de movimiento del que sale todo el sistema
+ * geométrico (ADR-0001 §2 y §3).
+ *
+ * Trazado del asset real `logos/logo 1.png` el 2026-09-07. Antes había aquí un
+ * dibujo aproximado que había perdido justamente el corte diagonal, es decir,
+ * lo que define la marca. Los assets reales mandan (ADR-0001).
+ *
+ * `fill-rule="evenodd"` es necesario: el contrapunzón y el corte son huecos.
+ */
 interface Props { class?: string }
 const { class: className } = Astro.props;
 ---
 <svg
   class={className}
-  viewBox="0 0 26 20"
+  viewBox="0 0 100.0 75.11"
   role="img"
   aria-label="DLPay"
-  fill="none"
+  fill="currentColor"
+  fill-rule="evenodd"
 >
-  <path
-    d="M2 0h11.5C20.4 0 26 4.5 26 10s-5.6 10-12.5 10H0l9.2-11.2h6.4c1.6 0 2.9-1.1 2.9-2.4S17.2 4 15.6 4H5.2z"
-    fill="currentColor"
-  />
+  <path d="M9.33 0 L72.89 0.44 L80.89 2.67 L87.11 5.78 L90.67 8.44 L95.56 14.22 L98.22 19.56 L100 26.67 L99.11 40 L95.11 48.44 L91.11 54.22 L84 60.44 L76.44 65.33 L69.33 68.44 L58.22 71.56 L45.78 73.33 L7.56 74.22 L36 56.89 L46.67 49.33 L54.22 49.33 L63.56 45.78 L69.78 40.44 L72.44 34.67 L72.44 29.78 L71.11 26.67 L68 24 L64 22.67 L17.78 22.22 L8.89 0.44 Z M19.56 35.11 L50.67 35.56 L0 75.11 L19.11 35.56 Z" />
 </svg>
