@@ -12,6 +12,8 @@ export interface Step {
   body: string;
   /** Tiempo concreto. Reduce la ansiedad del proceso (Fase 1, patrón 7). */
   time?: string;
+  /** Abstracción del paso. Ver StepFigure.astro. */
+  figure: 'cotiza' | 'chat' | 'custodia' | 'entrega';
 }
 
 export interface TrustBlock {
@@ -32,18 +34,23 @@ export interface FaqItem {
 export interface UseCase {
   title: string;
   body: string;
+  /** Topología de la operación. Ver UseCaseFigure.astro: es el dato, no un adorno. */
+  figure: 'cruza' | 'convierte' | 'reparte';
 }
 
 export const useCases: UseCase[] = [
   {
+    figure: 'cruza',
     title: 'Mover dinero fuera de Chile',
     body: 'Recibes dólar digital y desde ahí lo envías a quien necesites, en otro país o a tu propia billetera. Se mueve en minutos, sin cadena de bancos corresponsales.',
   },
   {
+    figure: 'convierte',
     title: 'Tener tus pesos en dólares',
     body: 'Conviertes cuando el precio te acomoda y vuelves a pesos cuando lo necesitas. No hace falta abrir una cuenta afuera.',
   },
   {
+    figure: 'reparte',
     title: 'Pagar desde tu empresa',
     body: 'A proveedores, servicios o equipos en el exterior que operan con dólar digital. Con un ejecutivo que conoce tu operación.',
   },
@@ -56,24 +63,28 @@ export const useCases: UseCase[] = [
 export const steps: Step[] = [
   {
     n: 1,
+    figure: 'cotiza',
     title: 'Dices qué necesitas',
     body: 'Enviar al extranjero, pasar tus pesos a dólares o volver a pesos. Escribes el monto y ves al instante cuánto recibes.',
     time: 'ahora mismo',
   },
   {
     n: 2,
+    figure: 'chat',
     title: 'Continúas por WhatsApp',
     body: 'El botón abre el chat con tu operación ya escrita. Una persona te confirma el precio final y te indica cómo seguir.',
     time: 'minutos',
   },
   {
     n: 3,
+    figure: 'custodia',
     title: 'Transfieres y verificamos',
     body: 'Transfieres desde tu banco y confirmamos la recepción en la cuenta de DLPay antes de mover nada.',
     time: 'según tu banco',
   },
   {
     n: 4,
+    figure: 'entrega',
     title: 'Recibes tus dólares',
     // El tiempo corresponde a NUESTRA operación: la entrega del dólar digital.
     // No a una liquidación bancaria en destino, que DLPay no realiza.

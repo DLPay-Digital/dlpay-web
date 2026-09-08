@@ -8,6 +8,7 @@
  * estos tres sin convertir la Home en una lista.
  */
 import { useCases } from '../content/home.ts';
+import UseCaseFigure from './UseCaseFigure.astro';
 ---
 <section class="uses" aria-labelledby="uses-title">
   <div class="inner">
@@ -15,6 +16,7 @@ import { useCases } from '../content/home.ts';
     <ul class="grid">
       {useCases.map((item) => (
         <li class="use" data-enter>
+          <UseCaseFigure kind={item.figure} />
           <h3>{item.title}</h3>
           <p>{item.body}</p>
         </li>
@@ -41,17 +43,11 @@ import { useCases } from '../content/home.ts';
     line-height: var(--lh-h3);
     margin-bottom: var(--s-2);
   }
-  /* Regla de acento de ancho fijo. Antes era un border-top sobre un
-     inline-block, así que medía lo que el titular más largo de esa tarjeta:
-     cada tarjeta tenía una raya distinta. */
-  .use h3::before {
-    content: '';
-    display: block;
-    width: 28px;
-    height: 2px;
-    background: var(--verde);
-    margin-bottom: var(--s-3);
-  }
+  /* La figura sustituye a la regla de acento verde que estaba aquí: encima de
+     un título, con la abstracción ya presente, eran tres elementos apilados y
+     dos de ellos verdes. La regla sigue vigente en /empresas, donde no hay
+     figura. Reponerla es descomentar seis líneas. */
+  .use .fig { margin-bottom: var(--s-4); }
   .use p { color: var(--ink-mute); max-width: 42ch; }
 
   @media (min-width: 760px) {

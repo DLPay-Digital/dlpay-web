@@ -9,8 +9,45 @@
  */
 import Icon from './Icon.astro';
 
+interface Props {
+  /**
+   * Foto de fondo, cuando exista. Sin ella el fondo es la geometría de abajo,
+   * que NO es un relleno provisional: dice lo mismo que la sección.
+   * Ver el comentario del velo en el CSS antes de activarla.
+   */
+  photo?: string;
+}
+const { photo } = Astro.props;
 ---
-<section class="business on-tinta-surface" id="empresas" aria-labelledby="business-title">
+<section
+  class:list={['business', 'on-tinta-surface', photo && 'has-photo']}
+  style={photo ? `--bg-photo: url('${photo}')` : undefined}
+  id="empresas"
+  aria-labelledby="business-title"
+>
+  {/* La operación de una empresa dibujada a gran escala: una tesorería paga a
+      muchas contrapartes. Es la MISMA topología de la tarjeta "Pagar desde tu
+      empresa", ampliada y sangrada por el borde.
+
+      No es papel tapiz ni una "red de nodos" —ambas prohibidas por ADR-0001 §3—
+      porque tiene origen único, dirección y significado: es esta sección
+      dibujada. Se sangra por la derecha para que se lea como sistema y no como
+      ilustración, y desaparece en móvil, donde el texto necesita el ancho. */}
+  <svg class="mesh" width="420" height="340" viewBox="0 0 420 340" fill="none" aria-hidden="true">
+    <path class="branch" d="M212 170h24l130-130h14" />
+    <path class="branch" d="M212 170h24l65-65h79" />
+    <path class="branch" d="M212 170h168" />
+    <path class="branch" d="M212 170h24l65 65h79" />
+    <path class="branch" d="M212 170h24l130 130h14" />
+    <path class="trunk" d="M46 170h96l12-10 12 20 12-10h34" />
+    <circle class="src" cx="30" cy="170" r="8" />
+    <circle class="dst" cx="380" cy="40" r="5" />
+    <circle class="dst" cx="380" cy="105" r="5" />
+    <circle class="dst" cx="380" cy="170" r="5" />
+    <circle class="dst" cx="380" cy="235" r="5" />
+    <circle class="dst" cx="380" cy="300" r="5" />
+  </svg>
+
   <div class="inner">
     <div class="copy">
       <h2 id="business-title" data-enter>¿Tu empresa paga al exterior?</h2>
@@ -28,8 +65,72 @@ import Icon from './Icon.astro';
 </section>
 
 <style>
-  .business { background: var(--tinta-2); color: var(--on-tinta); padding: var(--s-9) 0; }
-  .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
+  .business {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--tinta-2);
+    color: var(--on-tinta);
+    padding: var(--s-9) 0;
+  }
+
+  /* ── Capa de foto ────────────────────────────────────────────────────────
+     Sólo existe cuando se pasa `photo`. Hasta entonces no se emite ningún
+     marcado extra ni se pide ningún archivo. */
+  .has-photo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background: var(--bg-photo) center / cover no-repeat;
+  }
+
+  /* ── Velo de tinta ───────────────────────────────────────────────────────
+     0.85, no 0.80. Verificado sobre el PEOR caso —un píxel blanco de la foto—:
+       0.80 → párrafo a 4.44:1  ✗ (AA pide 4.5)
+       0.85 → párrafo a 5.33:1  ✓  · titular 10.72:1 · botón 5.51:1
+     Y opacidad, no `mix-blend-mode: multiply`: multiplicar por una tinta casi
+     negra aplasta la foto a negro y se pagaría una imagen para no verla. */
+  .has-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--tinta);
+    opacity: .85;
+  }
+
+  /* ── Geometría de fondo ──────────────────────────────────────────────────
+     Sangrada por la derecha. Contraste bajo a propósito: acompaña, no compite.
+     Con foto no se dibuja: dos fondos serían ruido. */
+  .mesh {
+    position: absolute;
+    z-index: -1;
+    top: 50%;
+    /* Sangra por ARRIBA y ABAJO, no por la derecha: recortando el costado se
+       perdían los puntos de destino, y sin ellos la figura deja de decir "una
+       tesorería paga a muchos" y queda en líneas que se van del borde. */
+    right: -24px;
+    width: 520px;
+    height: 421px;
+    transform: translateY(-50%);
+    /* Nunca captura el puntero: está detrás y no es interactiva. */
+    pointer-events: none;
+    display: none;
+  }
+  .has-photo .mesh { display: none; }
+  .trunk, .branch {
+    stroke: var(--verde);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .trunk { stroke-opacity: .30; }
+  .branch { stroke-opacity: .16; }
+  .src { fill: var(--verde); fill-opacity: .38; }
+  .dst { fill: var(--verde); fill-opacity: .22; }
+
+  .inner { position: relative; max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
   .copy { max-width: 56ch; }
   h2 {
     font-size: var(--t-h2-m);
@@ -59,5 +160,12 @@ import Icon from './Icon.astro';
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
     h2 { font-size: var(--t-h2); }
+  }
+
+  /* 1140px, no 900: por debajo el punto de origen de la figura se metía dentro
+     del párrafo. Con el texto a 56ch (~476px) y la figura de 520px sangrada 24,
+     la holgura recién aparece aquí — 40px a 1140, 100px a 1200. */
+  @media (min-width: 1140px) {
+    .business:not(.has-photo) .mesh { display: block; }
   }
 </style>

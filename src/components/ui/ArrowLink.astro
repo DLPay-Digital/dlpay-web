@@ -1,0 +1,54 @@
+---
+/**
+ * Acción secundaria: enlace con flecha que avanza al pasar el puntero o al
+ * recibir el foco.
+ *
+ * Es M1 del Motion System, no un movimiento nuevo: la flecha se mueve en la
+ * dirección que apunta, igual que el marcador de la FAQ ya rota al abrirse.
+ * Movimiento con sentido, no adorno (ADR-0001 §3).
+ *
+ * NO es un botón fantasma a propósito. Ese tratamiento está reservado a la
+ * acción más fuerte de la página; dos botones iguales seguidos aplanan la
+ * jerarquía. Ver la banda de Empresas, que sí lo usa.
+ */
+import Icon from '../Icon.astro';
+
+interface Props {
+  href: string;
+  /** Sobre tinta el verde de marca contrasta; sobre claro hace falta el profundo. */
+  tone?: 'light' | 'tinta';
+  class?: string;
+}
+const { href, tone = 'light', class: className } = Astro.props;
+---
+<a class:list={['arrow', tone, className]} href={href}>
+  <slot />
+  <Icon name="chevron" size={15} class="chev" />
+</a>
+
+<style>
+  .arrow {
+    /* max-content: sin esto el enlace ocupa todo el ancho del bloque y la
+       flecha se va al otro extremo de la línea. */
+    width: max-content;
+    max-width: 100%;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    /* Objetivo táctil de 44px (Design System §10) sin agrandar el texto. */
+    min-height: 44px;
+    font-weight: 600;
+    font-size: var(--t-body-sm);
+    text-decoration: none;
+  }
+  .light { color: var(--verde-deep); }
+  .tinta { color: var(--verde); }
+  .arrow:hover { text-decoration: underline; }
+
+  .chev {
+    flex: none;
+    transition: transform var(--m-fast) var(--m-ease);
+  }
+  .arrow:hover .chev,
+  .arrow:focus-visible .chev { transform: translateX(2px); }
+</style>

@@ -11,6 +11,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
 import Motion from '../components/Motion.astro';
+import IconBadge from '../components/ui/IconBadge.astro';
 import Icon from '../components/Icon.astro';
 import { mechanisms, honesty, requirements } from '../content/trust.ts';
 import { site, contact } from '../lib/config/site.ts';
@@ -39,7 +40,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
         <ul class="list">
           {mechanisms.map((item) => (
             <li class="item">
-              <Icon name={item.icon} class="icon" />
+              <IconBadge name={item.icon} size="sm" />
               <div>
                 <h3>{item.title}</h3>
                 <p>{item.body}</p>
@@ -150,7 +151,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
      parte de su bloque y no como un elemento suelto entre dos. */
   .item {
     display: grid;
-    grid-template-columns: 20px 1fr;
+    grid-template-columns: 36px 1fr;
     column-gap: var(--s-3);
     align-items: start;
   }
@@ -161,12 +162,10 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
      texto contra 48px al bloque siguiente), no la escala.
      El margen superior lo alinea con la altura de mayúscula del titular, no con
      el borde de la caja de línea. */
-  .icon {
-    width: 20px;
-    height: 20px;
-    color: var(--verde-deep);
-    margin-top: 1px;
-  }
+  /* La insignia ya no se alinea a la altura de mayúscula del titular: al tener
+     cuerpo propio, se alinea por su centro con la primera línea. El icono sigue
+     en 20px, el escalón que fijamos. */
+  .item :global(.badge) { margin-top: -6px; }
   .item h3 {
     font-size: var(--t-h3-m);
     font-weight: 600;
@@ -248,8 +247,6 @@ const wa = `https://wa.me/${contact.whatsappNumber}`;
     .inner { padding-inline: var(--pad-section); }
     h2 { font-size: var(--t-h2); }
     .item h3, .req-list h3, .honesty-list h3, .contact-card h3 { font-size: var(--t-h3); }
-    /* El titular pasa a 20px: el icono baja 1px para seguir alineado a su
-       altura de mayúscula. */
-    .icon { margin-top: 2px; }
+    .item :global(.badge) { margin-top: -5px; }
   }
 </style>

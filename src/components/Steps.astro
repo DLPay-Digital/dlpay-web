@@ -3,11 +3,23 @@
  * "Cómo funciona" — web + WhatsApp + verificación como UN solo recorrido
  * (Fase 1 §5.5, principio UX 3). Numerado porque es una secuencia real.
  *
- * El marcador de paso es la CUÑA del sistema geométrico, derivada del corte
- * diagonal del isotipo: apunta al paso siguiente. Representa avance, no
- * decoración (ADR-0001 §3, Design System §6).
+ * Zig-zag en escritorio, apilado en móvil. El DOM va SIEMPRE figura → texto,
+ * que es el orden correcto en móvil; en escritorio se invierten sólo las filas
+ * impares con `order`. Una regla, sin duplicar marcado.
+ *
+ * `order` no altera el orden del DOM ni el de lectura, y las figuras van
+ * aria-hidden sin nada enfocable dentro: no hay desajuste entre orden visual y
+ * orden de tabulación.
+ *
+ * El número dejó de ser un marcador de 32px y pasó a etiqueta ("Paso 1"): la
+ * secuencia sigue siendo información, pero el protagonismo visual es de la
+ * figura. Dos anclas por paso competían.
+ *
+ * Las cuñas entre pasos se retiraron: vivían en una columna-marcador que ya no
+ * existe, y ahora cada figura muestra movimiento por su cuenta.
  */
 import { steps } from '../content/home.ts';
+import StepFigure from './StepFigure.astro';
 ---
 <section class="steps" id="como-funciona" aria-labelledby="steps-title">
   <div class="inner">
@@ -17,23 +29,11 @@ import { steps } from '../content/home.ts';
     </header>
 
     <ol class="list">
-      {steps.map((step, i) => (
-        <li class="step">
-          <div class="marker">
-            <span class="n num">{step.n}</span>
-            {i < steps.length - 1 && (
-              <svg class="wedge" viewBox="0 0 12 34" aria-hidden="true">
-                <path
-                  d="M1 1L11 17L1 33"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  data-draw
-                />
-              </svg>
-            )}
-          </div>
+      {steps.map((step) => (
+        <li class="step" data-enter>
+          <StepFigure kind={step.figure} />
           <div class="body">
+            <p class="paso num">Paso {step.n}</p>
             <h3>{step.title}</h3>
             <p>{step.body}</p>
             {step.time && <span class="time num">{step.time}</span>}
@@ -72,33 +72,19 @@ import { steps } from '../content/home.ts';
     margin: 0;
     padding: 0;
     display: grid;
-    gap: var(--s-5);
+    gap: var(--s-8);
   }
-  .step { display: flex; gap: var(--s-4); align-items: flex-start; }
+  /* Móvil: una columna, figura arriba y texto abajo en los cuatro pasos.
+     Como el DOM ya va en ese orden, aquí no hace falta ninguna regla. */
+  .step { display: grid; gap: var(--s-4); justify-items: start; }
 
-  .marker {
-    flex: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--s-2);
-    padding-top: 2px;
-  }
-  .n {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border: 1px solid var(--line);
-    border-radius: var(--r-2);
-    font-size: var(--t-body-sm);
+  .paso {
+    font-size: var(--t-label);
+    letter-spacing: var(--ls-label);
     font-weight: 600;
-    color: var(--ink);
+    color: var(--verde-deep);
+    margin-bottom: var(--s-2);
   }
-  /* La cuña apunta al paso siguiente: representa avance, así que es un elemento
-     gráfico con significado y necesita 3:1. Sobre papel, verde-deep. */
-  .wedge { width: 12px; height: 30px; color: var(--verde-deep); flex: none; }
 
   .body { padding-bottom: var(--s-2); }
   h3 {
@@ -107,7 +93,9 @@ import { steps } from '../content/home.ts';
     line-height: var(--lh-h3);
     margin-bottom: var(--s-2);
   }
-  .body p { color: var(--ink-mute); max-width: 52ch; }
+  /* :not(.paso) — sin esto, `.body p` (0,3,1) pisa a `.paso` (0,2,0) y además
+     va después en la hoja: la etiqueta del paso salía gris en vez de verde. */
+  .body p:not(.paso) { color: var(--ink-mute); max-width: 52ch; }
   .time {
     display: inline-block;
     margin-top: var(--s-3);
@@ -131,9 +119,15 @@ import { steps } from '../content/home.ts';
     .inner { padding-inline: var(--pad-section); }
     h2 { font-size: var(--t-h2); }
     h3 { font-size: var(--t-h3); }
-    .list { grid-template-columns: repeat(2, 1fr); gap: var(--s-6) var(--s-8); }
-    /* En dos columnas la cuña vertical ya no describe el flujo: se retira */
-    .wedge { display: none; }
-    .marker { padding-top: 0; }
+    .list { gap: var(--s-9); }
+    .step {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: var(--s-8);
+    }
+    .fig { justify-self: center; }
+    /* Única regla del zig-zag: las impares invierten, las pares se quedan en el
+       orden del DOM. Da texto│figura · figura│texto · texto│figura · figura│texto. */
+    .step:nth-child(odd) .fig { order: 2; }
   }
 </style>

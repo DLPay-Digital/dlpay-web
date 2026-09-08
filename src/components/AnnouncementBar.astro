@@ -1,0 +1,217 @@
+---
+/**
+ * Franja de notificación del sitio. Va dentro de `<header>`, bajo la barra de
+ * menú, a todo el ancho. Rota entre dos mensajes cada 5 s, **sin una línea de
+ * JavaScript**.
+ *
+ * ── Dos decisiones heredadas (ADR-0006) ─────────────────────────────────────
+ *
+ * · **No lleva botón de cerrar.** Ninguna forma de cerrarla funciona en un
+ *   sitio multipágina estático sin pagar JS + almacenamiento.
+ * · **No se muestra el mensaje que apunta a la página actual.** Anunciar la
+ *   página que ya estás leyendo es ruido. Se filtra en el build. Si sólo queda
+ *   un mensaje, la franja **no rota**: se muestra fijo.
+ *
+ * ── La rotación (ADR-0006, enmienda 2026-09-08) ─────────────────────────────
+ *
+ * Los dos mensajes se apilan en la MISMA celda de una rejilla de una sola
+ * celda, así que la altura de la franja es la del mensaje más alto y **no hay
+ * salto de layout** al cambiar. Un único `@keyframes` de 10 s los gobierna: el
+ * segundo lleva `animation-delay: -5s`, que lo coloca a mitad de ciclo ya en el
+ * primer fotograma. Sin ese negativo, la franja pasaría sus primeros 5 s con un
+ * hueco vacío.
+ *
+ * El keyframe anima `opacity` **y `visibility`**. Lo segundo no es cosmético y
+ * es el detalle que hace correcto el componente: cada mensaje lleva su propio
+ * enlace, a páginas distintas. Un elemento con `opacity: 0` sigue recibiendo
+ * clics y sigue en el orden de tabulación — sin `visibility: hidden`, alguien
+ * podría pulsar «Ver más» y aterrizar en `/empresas/`, o tabular hasta un
+ * enlace que no ve. Con `visibility: hidden` el mensaje oculto sale del árbol
+ * de accesibilidad, del orden de tabulación y de la detección de clics.
+ *
+ * LAS PROPORCIONES DEL KEYFRAME SON PARA DOS MENSAJES EXACTAMENTE. Con tres
+ * habría que reescribir los porcentajes, así que el componente sólo rota cuando
+ * hay dos y en cualquier otro caso muestra el primero fijo. Es deliberado: no
+ * se generaliza un `@keyframes` que nadie necesita todavía (CLAUDE.md §5).
+ */
+import ArrowLink from './ui/ArrowLink.astro';
+
+interface Message {
+  /** El aviso. Una línea, en español chileno plano. */
+  readonly text: string;
+  /** Destino del enlace. */
+  readonly href: string;
+  /** Texto del enlace, sin la flecha: la pone `ArrowLink`. */
+  readonly cta: string;
+}
+
+interface Props {
+  /** Los dos copies oficiales. Rota sólo si quedan exactamente dos. */
+  messages?: readonly Message[];
+}
+
+const OFFICIAL: readonly Message[] = [
+  {
+    text: 'Convierte tus pesos en dólares en minutos.',
+    href: '/como-funciona/',
+    cta: 'Ver más',
+  },
+  {
+    text: '¿Tienes una empresa? Agiliza tus pagos internacionales.',
+    href: '/empresas/',
+    cta: 'Conoce DLPay Empresas',
+  },
+];
+
+const { messages = OFFICIAL } = Astro.props;
+
+/** Compara rutas sin que la barra final decida el resultado. */
+const normalize = (path: string): string => path.replace(/\/+$/, '') || '/';
+const here = normalize(Astro.url.pathname);
+
+/** Fuera el mensaje que anuncia la página que se está leyendo. */
+const visible = messages.filter((m) => normalize(m.href) !== here);
+
+/** El keyframe está calculado para dos. Con uno no hay nada que rotar. */
+const rotates = visible.length === 2;
+---
+{visible.length > 0 && (
+  <div class="announce">
+    <div class="rotator" data-rotate={rotates ? '' : undefined}>
+      {visible.map((m) => (
+        <p class="item">
+          <span>{m.text}</span>
+          <ArrowLink href={m.href} class="cta">{m.cta}</ArrowLink>
+        </p>
+      ))}
+    </div>
+  </div>
+)}
+
+<style>
+  .announce {
+    /*
+      `--papel`, no `--papel-2`: sobre papel-2 el verde profundo del enlace da
+      4.44:1 y AA pide 4.5 para texto normal. Sobre papel da 4.90:1.
+    */
+    background: var(--papel);
+    color: var(--ink);
+
+    /*
+      OBLIGATORIO. Esta franja vive dentro de `.site-header`, que lleva
+      `.on-tinta-surface` y por tanto redefine `--focus: var(--verde)`. Ese
+      verde sobre papel da 2.02:1 — por debajo del 3:1 que WCAG pide a un
+      indicador de foco. Sin esta línea el anillo del enlace sería invisible.
+    */
+    --focus: var(--verde-deep);
+
+    /* Duración de un ciclo completo: 5 s por mensaje. */
+    --cycle: 10s;
+  }
+
+  /*
+    Rejilla de UNA celda. Los dos mensajes ocupan la misma, así que la altura de
+    la franja es la del más alto y no cambia al rotar. Con posicionamiento
+    absoluto el contenedor habría quedado sin altura; con hermanos normales,
+    saltaría cada 5 s.
+  */
+  .rotator {
+    display: grid;
+    padding: var(--s-1) var(--pad-section-m);
+  }
+
+  .item {
+    /*
+      La superposición se declara AQUÍ, con coordenadas explícitas, y no con un
+      área con nombre desde `.rotator`. Con `grid-template-areas` la regla vive
+      en el padre y `grid-area: msg` en el hijo depende de que ese nombre siga
+      existiendo: si el día que alguien reordene el CSS desaparece la plantilla,
+      el nombre no resuelve, la rejilla cae en colocación automática y los dos
+      mensajes se apilan en filas separadas, sin ningún error. `1 / 1` no
+      depende de nada más que de sí mismo.
+    */
+    grid-area: 1 / 1;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    /* Sin hueco entre filas: el enlace ya aporta su propio alto. */
+    gap: 0 var(--s-3);
+    font-size: var(--t-body-sm);
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  /*
+    Compacta en escritorio. `ArrowLink` fija 44px de alto por el objetivo táctil
+    del Design System §10, que es lo correcto con el dedo y de más con el
+    puntero: en escritorio baja a 32px y la franja queda fina.
+
+    Hace falta más especificidad que `.arrow` de ArrowLink, que empata con una
+    clase + su clase de ámbito; anidando aquí, esta regla gana sin `!important`.
+  */
+  .announce .cta { min-height: 44px; }
+
+  /* ── Rotación ──────────────────────────────────────────────────────────────
+     Un solo keyframe para los dos. El segundo va medio ciclo por delante.
+
+     Cada mensaje está visible 5 s, con 600 ms de fundido cruzado. El salto de
+     `visibility` ocurre en un 0,01% del ciclo (1 ms) para que sea inequívoco:
+     `visible` mientras se funde, `hidden` en cuanto termina de irse.
+  */
+  .rotator[data-rotate] .item {
+    animation: announce-cycle var(--cycle) var(--m-ease) infinite;
+  }
+  /* Medio ciclo en negativo: arranca ya a mitad, sin 5 s de franja vacía. */
+  .rotator[data-rotate] .item:nth-child(2) {
+    animation-delay: calc(var(--cycle) / -2);
+  }
+
+  @keyframes announce-cycle {
+    /* Visible y quieto */
+    0%,
+    44% { opacity: 1; visibility: visible; }
+    /* Se va (4,4 s → 5 s) */
+    50% { opacity: 0; visibility: visible; }
+    /* Fuera del todo: sin clics, sin tabulación, sin lectores de pantalla */
+    50.01%,
+    93.99% { opacity: 0; visibility: hidden; }
+    /* Vuelve a entrar (9,4 s → 10 s) */
+    94% { opacity: 0; visibility: visible; }
+    100% { opacity: 1; visibility: visible; }
+  }
+
+  /*
+    Pausa al pasar el puntero y al recibir el foco.
+
+    Doble función. Es la única forma sin JavaScript de dar el mecanismo de
+    pausa que pide WCAG 2.2.2 (ver la nota de ADR-0006): con el puntero
+    encima, o con el foco del teclado en el enlace, la rotación se detiene.
+    Y resuelve el fundido cruzado: durante esos 600 ms los dos mensajes están
+    `visible` y superpuestos, así que un clic podría acertarle al equivocado —
+    pero acercar el puntero para pulsar congela la franja antes de llegar.
+  */
+  .rotator:hover .item,
+  .rotator:focus-within .item { animation-play-state: paused; }
+
+  /*
+    Salida limpia, no versión degradada (Motion System V1, regla dura 6).
+    Se cancela la animación, queda fijo el primer mensaje y el segundo
+    desaparece del documento — con `display: none` su enlace sale también del
+    orden de tabulación, en vez de quedar acechando invisible.
+  */
+  @media (prefers-reduced-motion: reduce) {
+    .rotator[data-rotate] .item {
+      animation: none;
+      opacity: 1;
+      visibility: visible;
+    }
+    .rotator[data-rotate] .item:nth-child(n + 2) { display: none; }
+  }
+
+  @media (min-width: 900px) {
+    .rotator { padding: 0 var(--pad-section); }
+    .announce .cta { min-height: 32px; }
+  }
+</style>

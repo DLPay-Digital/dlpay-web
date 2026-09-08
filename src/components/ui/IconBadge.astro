@@ -1,0 +1,50 @@
+---
+/**
+ * Icono dentro de una píldora tenue: convierte un icono suelto en una insignia.
+ *
+ * El fondo es --verde-deep al 12%. Se eligió midiendo, no a ojo: el icono
+ * encima queda en 3.82:1 sobre el 3:1 que WCAG pide a un gráfico con
+ * significado, y es la opacidad más alta que aún deja legible el trazo.
+ * Subirla hace la píldora más visible y el icono peor. No cambiar sin recalcular.
+ *
+ * `tone` existe porque sobre tinta el verde de marca sí contrasta (8.45:1) y el
+ * verde profundo no. Ver Design System §2.4.
+ */
+import Icon from '../Icon.astro';
+
+interface Props {
+  name: 'bank' | 'clock' | 'people' | 'whatsapp' | 'chevron';
+  /** Superficie donde vive. Decide el verde y la opacidad del fondo. */
+  tone?: 'light' | 'tinta';
+  /**
+   * `md` (48px) para bloques apilados: la insignia encabeza su columna.
+   * `sm` (36px) para listas en línea, donde el icono va al lado del texto y una
+   * píldora de 48px rompería la alineación con la altura de mayúscula del
+   * titular. Conserva el icono en 20px, que es el escalón del Design System §7.
+   */
+  size?: 'sm' | 'md';
+  class?: string;
+}
+const { name, tone = 'light', size = 'md', class: className } = Astro.props;
+const px = size === 'sm' ? 20 : 22;
+---
+<span class:list={['badge', tone, size, className]}>
+  <Icon name={name} size={px} class="icon" />
+</span>
+
+<style>
+  .badge {
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    flex: none;
+  }
+  .md { width: 48px; height: 48px; }
+  .sm { width: 36px; height: 36px; }
+  .light { background: rgba(11, 122, 84, .12); }
+  .tinta { background: rgba(22, 199, 132, .14); }
+
+  .icon { display: block; }
+  .light .icon { color: var(--verde-deep); }
+  .tinta .icon { color: var(--verde); }
+</style>

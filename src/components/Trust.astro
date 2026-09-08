@@ -3,7 +3,8 @@
  * "Por qué DLPay" — sólo señales que DLPay puede respaldar hoy
  * (phase-2.5 §5). Sin cifras de vanidad, sin sellos, sin claims regulatorios.
  */
-import Icon from './Icon.astro';
+import IconBadge from './ui/IconBadge.astro';
+import ArrowLink from './ui/ArrowLink.astro';
 import { trust } from '../content/home.ts';
 ---
 <section class="trust" id="confianza" aria-labelledby="trust-title">
@@ -16,18 +17,25 @@ import { trust } from '../content/home.ts';
     <ul class="grid">
       {trust.map((block) => (
         <li class="block">
-          <Icon name={block.icon} class="icon" />
+          <IconBadge name={block.icon} />
           <h3>{block.title}</h3>
           <p>{block.body}</p>
         </li>
       ))}
     </ul>
-    <p class="more"><a href="/confianza/">Cómo cuidamos tu operación</a></p>
+    <p class="more"><ArrowLink href="/confianza/">Cómo cuidamos tu operación</ArrowLink></p>
   </div>
 </section>
 
 <style>
-  .trust { background: var(--papel-2); padding: var(--s-9) 0; }
+  /* El fondo ya era --papel-2, pero contra --papel da 1.10:1: se distingue en
+     una pantalla buena y desaparece en una mala. El filete lo hace inequívoco.
+     Sólo arriba: abajo viene la banda en tinta de Empresas, que ya corta sola. */
+  .trust {
+    background: var(--papel-2);
+    border-top: 1px solid var(--line);
+    padding: var(--s-9) 0;
+  }
   .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
   .head { max-width: 46ch; margin-bottom: var(--s-7); }
   h2 {
@@ -40,12 +48,11 @@ import { trust } from '../content/home.ts';
   .head p { color: var(--ink-mute); }
 
   .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
-  .icon { width: 24px; height: 24px; color: var(--verde-deep); display: block; margin-bottom: var(--s-3); }
+  /* La insignia no trae margen propio: el espaciado lo pone quien la coloca. */
+  .block :global(.badge) { margin-bottom: var(--s-4); }
   h3 { font-size: var(--t-h3-m); font-weight: 600; line-height: var(--lh-h3); margin-bottom: var(--s-2); }
   .block p { color: var(--ink-mute); max-width: 46ch; }
   .more { margin-top: var(--s-6); }
-  .more a { color: var(--verde-deep); font-weight: 600; text-decoration: none; font-size: var(--t-body-sm); }
-  .more a:hover { text-decoration: underline; }
 
   @media (min-width: 760px) {
     .grid { grid-template-columns: repeat(3, 1fr); gap: var(--s-7); }

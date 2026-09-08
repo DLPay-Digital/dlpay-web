@@ -1,0 +1,108 @@
+---
+/**
+ * Fila de participación institucional del pie.
+ *
+ * Se renderiza SÓLO con entradas aprobadas (lib/config/alliances.ts). Sin
+ * ninguna, no emite marcado: el pie queda idéntico a como está hoy.
+ *
+ * Tratamiento: silueta blanca atenuada sobre la tinta. Los logos ajenos no
+ * entran a la paleta de DLPay ni compiten con los enlaces — son una nota al
+ * pie, no una pegatina.
+ */
+import { publishedAlliances, alliancesHeading, institutionalStatement } from '../lib/config/alliances.ts';
+import { site } from '../lib/config/site.ts';
+---
+{publishedAlliances.length > 0 && (
+  <section class="alliances" aria-labelledby="alianzas-titulo">
+    <h2 id="alianzas-titulo">{alliancesHeading}</h2>
+    <ul class="row">
+      {/* Enlazado: el propósito del enlace ES la relación, va en aria-label y
+          la imagen queda decorativa. Sin enlace: el alt identifica el logo y la
+          relación la dice la frase de abajo — repetirla sería oírla dos veces. */}
+      {publishedAlliances.map((a) => {
+        const mark = (
+          <img
+            class="mark"
+            src={a.file}
+            alt={a.href ? '' : a.name}
+            style={`height:${a.height}px${a.ratio ? `;aspect-ratio:${a.ratio}` : ''}`}
+            loading="lazy"
+            decoding="async"
+          />
+        );
+        return (
+          <li>
+            {a.href ? (
+              <a href={a.href} target="_blank" rel="noopener" aria-label={a.relationship}>
+                {mark}
+              </a>
+            ) : (
+              <span class="static">{mark}</span>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+    <p class="statement">{site.legalName} {institutionalStatement}</p>
+  </section>
+)}
+
+<style>
+  h2 {
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: var(--ls-label);
+    color: var(--on-tinta-mute);
+    margin-bottom: var(--s-2);
+  }
+
+  /* Horizontal en escritorio; en móvil los logos bajan solos por wrap. No
+     hace falta un breakpoint: el número de marcas es de un dígito. */
+  .row {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2) var(--s-6);
+  }
+
+  /* El alto de 44px (Design System §10) lo pone el contenedor, no el logo:
+     así el objetivo táctil crece sin agrandar la marca. */
+  .row a,
+  .row .static {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* brightness(0) aplasta cualquier color a negro; invert(1) lo levanta a
+     blanco puro. Es lo que convierte un logo a color en una silueta, sea cual
+     sea su paleta de origen.
+     (grayscale + brightness NO sirve aquí: multiplica, así que un logo oscuro
+     sobre la tinta sigue siendo invisible.)
+     Blanco al 65% sobre --tinta compone ~6,5:1 — holgado sobre el 3:1 que
+     WCAG pide a un gráfico con significado. */
+  .mark {
+    display: block;
+    width: auto;
+    max-width: 200px;
+    filter: brightness(0) invert(1);
+    opacity: .65;
+    transition: opacity var(--m-fast) var(--m-ease);
+  }
+
+  .row a:hover .mark,
+  .row a:focus-visible .mark { opacity: 1; }
+
+  /* El alcance del claim se lee aquí, no en el emblema. Va en el cuerpo de
+     texto del pie, no atenuado como una nota al margen. */
+  .statement {
+    margin-top: var(--s-3);
+    max-width: 62ch;
+    font-size: var(--t-dato-sm);
+    line-height: var(--lh-body);
+    color: var(--on-tinta-mute);
+  }
+</style>

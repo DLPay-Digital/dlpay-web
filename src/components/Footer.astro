@@ -9,6 +9,7 @@
  */
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
+import Alliances from './Alliances.astro';
 import { site, contact } from '../lib/config/site.ts';
 
 const wa = `https://wa.me/${contact.whatsappNumber}`;
@@ -70,9 +71,12 @@ const year = new Date().getFullYear();
       </div>
     </div>
 
-    <div class="base">
-      <p>{site.legalName} · opera bajo la marca {site.name}</p>
-      <p>© {year}</p>
+    <div class="foot">
+      <Alliances />
+      <div class="base">
+        <p>{site.legalName} · opera bajo la marca {site.name}</p>
+        <p>© {year}</p>
+      </div>
     </div>
   </div>
 </footer>
@@ -104,14 +108,23 @@ const year = new Date().getFullYear();
   .col a:hover { color: var(--verde); }
   .wa-icon { width: 15px; height: 15px; }
 
+  /* Un solo filete para todo el cierre del pie. Envuelve la fila
+     institucional y la línea legal, así el separador es el mismo haya o no
+     alianzas publicadas — y el espacio entre ambas lo pone el gap, no un
+     margen que se quede colgando cuando la fila no existe. */
+  .foot {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-6);
+    margin-top: var(--s-8);
+    padding-top: var(--s-5);
+    border-top: 1px solid rgba(237, 242, 239, 0.1);
+  }
   .base {
     display: flex;
     flex-wrap: wrap;
     gap: var(--s-2) var(--s-5);
     justify-content: space-between;
-    margin-top: var(--s-8);
-    padding-top: var(--s-5);
-    border-top: 1px solid rgba(237, 242, 239, 0.1);
     font-size: var(--t-dato-sm);
     color: var(--on-tinta-mute);
   }

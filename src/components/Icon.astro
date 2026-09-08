@@ -6,8 +6,19 @@
 interface Props {
   name: 'bank' | 'clock' | 'people' | 'whatsapp' | 'chevron';
   class?: string;
+  /**
+   * Tamaño intrínseco en px. Se emite como atributos `width`/`height` en el
+   * SVG, no sólo como CSS.
+   *
+   * POR QUÉ IMPORTA: un <svg> con viewBox y sin width/height se dibuja al ancho
+   * de su contenedor. Mientras el CSS no ha aplicado —en desarrollo los estilos
+   * entran por JavaScript— el icono aparece a pantalla completa. Con los
+   * atributos puestos nunca hay un tamaño incorrecto, ni siquiera durante un
+   * instante. El CSS sigue pudiendo ajustarlo.
+   */
+  size?: number;
 }
-const { name, class: className } = Astro.props;
+const { name, class: className, size = 24 } = Astro.props;
 
 const paths: Record<Props['name'], string> = {
   bank: '<path d="M3 21h18M4 21V10l8-6 8 6v11M9 21v-6h6v6"/>',
@@ -19,6 +30,8 @@ const paths: Record<Props['name'], string> = {
 ---
 <svg
   class={className}
+  width={size}
+  height={size}
   viewBox="0 0 24 24"
   fill="none"
   stroke="currentColor"

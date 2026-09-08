@@ -2,9 +2,14 @@
 /**
  * Cabecera. Navegación corta (Fase 1 §5.2) y WhatsApp siempre visible.
  * El menú móvil usa <details>: sin JavaScript (ADR-0004 §6).
+ *
+ * La franja de notificación va aquí, dentro del `<header>`, y no en cada
+ * página: las nueve la reciben sin tocar ni una. Para cambiar el copy se editan
+ * las props de esta única etiqueta (ver `AnnouncementBar.astro`).
  */
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
+import AnnouncementBar from './AnnouncementBar.astro';
 import { contact, platform } from '../lib/config/site.ts';
 
 const nav = [
@@ -66,6 +71,8 @@ const isCurrent = (href: string) => href === current;
       </details>
     </div>
   </div>
+
+  <AnnouncementBar />
 </header>
 
 <style>
