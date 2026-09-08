@@ -7,6 +7,8 @@
  */
 import type { APIRoute } from 'astro';
 
+import { site } from '../lib/config/site.ts';
+
 const pages = import.meta.glob('./**/*.astro');
 
 /** `./index.astro` -> `/` · `./como-funciona.astro` -> `/como-funciona/` */
@@ -15,8 +17,9 @@ function routeOf(file: string): string {
   return path === 'index' ? '/' : `/${path}/`;
 }
 
-export const GET: APIRoute = ({ site }) => {
-  const base = site?.href.replace(/\/$/, '') ?? '';
+export const GET: APIRoute = () => {
+  // `site.url` ya viene normalizado sin barra final (lib/config/environment.ts).
+  const base = site.url;
 
   // La Home y el cotizador son las entradas del sitio; el resto las sostiene.
   const priority = (route: string): string =>

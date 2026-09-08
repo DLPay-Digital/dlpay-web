@@ -6,7 +6,7 @@
  */
 import '../styles/fonts.css';
 import '../styles/tokens.css';
-import { site } from '../lib/config/site.ts';
+import { indexing, site } from '../lib/config/site.ts';
 
 interface Props {
   title: string;
@@ -48,6 +48,18 @@ const organization = {
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+
+    {/*
+      Escudo de indexación. Este layout es el único `<head>` del sitio —las
+      páginas legales pasan por `Legal.astro`, que envuelve a este—, así que
+      basta ponerlo aquí para cubrir las nueve rutas.
+
+      Va cerrado salvo que se abra explícitamente (PUBLIC_ALLOW_INDEXING=true).
+      Un Staging indexable publicaría bajo la marca DLPay `/terminos/` y
+      `/privacidad/`, que son páginas de estado pendientes de Compliance
+      (CLAUDE.md §13, D9/D19/D20), y duplicaría el contenido de dlpay.cl.
+    */}
+    {!indexing.allowed && <meta name="robots" content="noindex, nofollow" />}
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

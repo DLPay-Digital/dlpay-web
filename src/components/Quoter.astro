@@ -308,6 +308,16 @@ const intents = [
     margin-top: var(--s-5);
     padding-top: var(--s-4);
   }
+  /* Bajo ~430px la etiqueta y la cifra no caben en una fila: la etiqueta se
+     partía en cuatro líneas y "919,70 CLP por dólar" (nowrap) llegaba pegada
+     al borde de la tarjeta. Apiladas, cada una tiene el ancho completo. */
+  @media (max-width: 430px) {
+    .price-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--s-2);
+    }
+  }
   .price-label {
     font-size: var(--t-label);
     font-weight: 600;
@@ -333,8 +343,15 @@ const intents = [
     from { opacity: 0; transform: translateY(2px); }
     to   { opacity: 1; transform: none; }
   }
+  /* M2 también en los campos. NO al teclear: mientras escribes, la cifra tiene
+     que seguirte sin latencia — animar cada pulsación añadiría el retardo
+     percibido que este cotizador existe para no tener. Se aplica al cambiar de
+     intención, donde las dos cifras saltan sin que hayas tecleado nada. */
+  .amount.is-set { animation: settle 160ms var(--m-ease) both; }
+
   @media (prefers-reduced-motion: reduce) {
-    .price-value.is-set { animation: none; }
+    .price-value.is-set,
+    .amount.is-set { animation: none; }
   }
 
   .price-value small {
@@ -590,6 +607,19 @@ const intents = [
 
     // El campo que se edita NO se reformatea bajo el cursor (spec §3): se
     // actualiza el otro, y el propio se formatea recién al salir.
+    /**
+     * M2 sobre un campo: reinicia la animación leyendo offsetWidth.
+     *
+     * Nunca la aplica al campo enfocado. Animar lo que alguien está escribiendo
+     * es pelear con su cursor, y además el navegador ya reposiciona el caret.
+     */
+    const settle = (el: HTMLElement): void => {
+      if (document.activeElement === el) return;
+      el.classList.remove('is-set');
+      void el.offsetWidth;
+      el.classList.add('is-set');
+    };
+
     giveInput.addEventListener('input', () => {
       giveAmount = parseAmount(giveInput.value);
       getInput.value = fmt(received(), currenciesFor(intent).get);
@@ -621,6 +651,8 @@ const intents = [
         giveAmount = give === 'CLP' ? clpBefore : rate > 0 ? clpBefore / rate : 0;
         giveInput.value = fmt(giveAmount, give);
         getInput.value = fmt(received(), get);
+        settle(giveInput);
+        settle(getInput);
         render();
       })
     );

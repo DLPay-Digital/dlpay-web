@@ -5,9 +5,16 @@
  * infraestructura propia (etapa independiente, fuera del alcance de este
  * proyecto) se cambian estas constantes y nada más.
  *
+ * También el punto ÚNICO desde el que la aplicación lee la URL del sitio y la
+ * política de indexación. Páginas, layouts y endpoints consumen `site.url` y
+ * `indexing` de aquí — nadie vuelve a leer `import.meta.env` ni `Astro.site`
+ * por su cuenta. La resolución y la validación viven en `./environment.ts`, que
+ * es la misma implementación que usa `astro.config.mjs`.
+ *
  * Todos los valores vienen de variables PUBLIC_* y son configuración pública,
  * no secretos. Ver .env.example y ADR-0003 §4.
  */
+import { allowsIndexing, resolveSiteUrl } from './environment.ts';
 
 const env = import.meta.env;
 
@@ -21,8 +28,23 @@ export const site = {
   name: 'DLPay',
   /** Razón social. Sólo footer y páginas legales — nunca protagonista. */
   legalName: 'DLPZ INCZ SpA',
-  url: read(env.PUBLIC_SITE_URL, 'http://localhost:4321'),
+  /**
+   * Origen canónico, sin barra final. En un build está garantizado publicable:
+   * la guarda de `astro.config.mjs` detiene el build antes si no lo es.
+   */
+  url: resolveSiteUrl(env),
   locale: 'es-CL',
+} as const;
+
+/**
+ * Política de indexación de ESTE despliegue.
+ *
+ * Cerrada salvo que `PUBLIC_ALLOW_INDEXING` valga exactamente `'true'`. La
+ * consumen el `<head>` de `layouts/Base.astro` y `pages/robots.txt.ts`, que son
+ * las dos señales que un buscador puede leer.
+ */
+export const indexing = {
+  allowed: allowsIndexing(env),
 } as const;
 
 export const contact = {
