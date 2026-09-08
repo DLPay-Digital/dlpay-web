@@ -1,10 +1,20 @@
-# Auditoría técnica previa a producción — 2026-09-04
+# Auditoría técnica previa a producción
 
 > Diseño **congelado**. Sin funcionalidades nuevas, sin dependencias nuevas, sin cambios visuales.
 > Método: inspeccionar → clasificar → documentar → corregir sólo lo que corresponda.
 >
-> Continúa `hardening-2026-09-04.md`. Esta revisión busca lo que aquella no cubrió, e incluye una
-> regresión introducida por ella misma.
+> Continúa `hardening-2026-09-04.md`. Estas revisiones buscan lo que aquella no cubrió.
+>
+> **Dos revisiones acumuladas:**
+>
+> | Fecha | Alcance | Resultado |
+> |---|---|---|
+> | 2026-09-04 | Aritmética, accesibilidad, barra final, secretos, capas | 1 crítico y 3 importantes, corregidos |
+> | **2026-09-08** | **Guarda de despliegue, indexación, promesa de arquitectura** | **2 críticos, corregidos** |
+
+---
+
+# Revisión 2026-09-04
 
 ---
 
@@ -105,7 +115,7 @@ congelado. Queda registrado para la próxima ventana de cambios visuales.
 | Área | Resultado |
 |---|---|
 | Secretos | Nada en el historial ni en los archivos versionados. `.env` ignorado y fuera del índice. |
-| Dependencias | `npm audit` sin vulnerabilidades. Tres paquetes: `astro`, `@astrojs/check`, `typescript`. |
+| Dependencias | `npm audit` sin vulnerabilidades. ⚠️ *Decía «tres paquetes»; son **cuatro**. Ver B5 de la revisión 2026-09-08.* |
 | Peticiones a terceros | **Ninguna.** Fuentes auto-hospedadas, sin analítica, sin CDN, sin píxeles. |
 | Tipos | Ni un `any`, ni un `@ts-ignore`. `astro check` limpio en 45 archivos. |
 | Inyección | Los dos `set:html` reciben valores del build. El JSON-LD escapa `<`. El cotizador escribe con `textContent` y codifica la URL. |
@@ -116,7 +126,7 @@ congelado. Queda registrado para la próxima ventana de cambios visuales.
 | Separación de capas | Contenido, pricing, actividad y configuración, cada uno en su módulo. La estructura admite remesas sin rehacer nada. |
 | Contraste | Doce pares verificados por cálculo; el más ajustado, 1.09× su mínimo. |
 | Accesibilidad estructural | Idioma, un `h1` por página, landmarks, enlace de salto, navegación rotulada, campos con etiqueta, SVG decorativos ocultos. |
-| Peso | Home 26 KB HTML + 3,6 KB JS; CSS 36,6 KB; fuentes 89,5 KB. JS sólo en las dos páginas con cotizador. |
+| Peso | ⚠️ *Cifras superadas por la construcción de la Home y por `compressHTML: false`. Y el JS **no** está sólo en las dos páginas con cotizador. Medición vigente en B4 de la revisión 2026-09-08.* |
 
 ---
 
@@ -151,11 +161,277 @@ Ninguna es técnica. Ninguna bloquea preparar el despliegue.
 | Aritmética | una sola implementación: pantalla y mensaje no pueden divergir |
 | Cambios visuales | ninguno |
 
-## Qué falta para desplegar
+---
+---
 
-Todo lo que queda es **configuración y decisiones**, no trabajo de ingeniería:
+# Revisión 2026-09-08 — guarda de despliegue y escudo de indexación
 
-1. Definir `PUBLIC_SITE_URL` en el entorno de despliegue. Sin ella el build falla a propósito.
-2. Elegir proveedor (D1b) y crear la cuenta a nombre de DLPay.
-3. El resto de variables `PUBLIC_*` está documentado en `.env.example`; ninguna es un secreto.
-4. El plan de cutover, con lo que no debe capturarse, está en `docs/migracion-urls.md`.
+> Motivada por la preparación de Staging. Busca lo que **no se ve en localhost**: fallos que dejan
+> el build en verde y las páginas correctas, y cuyo daño sólo aparece publicado.
+>
+> Método: además de leer el código, **aislar el config en un directorio limpio y ejecutarlo** con
+> cada combinación de entorno. Las dos regresiones críticas de abajo no se habrían encontrado
+> leyendo: la guarda anterior *parecía* correcta.
+>
+> Sin cambios visuales. Sin dependencias nuevas.
+
+---
+
+## 🔴 CRÍTICOS
+
+### A1 · La guarda de `PUBLIC_SITE_URL` se saltaba invocando el build de otra forma
+
+`resolveSite()` sólo lanzaba si `process.env.npm_lifecycle_event === 'build'`. Eso es cierto con
+`npm run build` y **falso** con todo lo demás.
+
+| Invocación | Antes | Ahora |
+|---|---|---|
+| `npm run build` sin la variable | falla ✅ | falla ✅ |
+| **`astro build` / `npx astro build`** | **verde, publica localhost** 🔴 | **exit 1** ✅ |
+| **`astro build --outDir …`** | **verde, publica localhost** 🔴 | **exit 1** ✅ |
+| Script envoltorio o API programática | verde, publica localhost 🔴 | exit 1 ✅ |
+| `dev` · `check` · `sync` · `preview` | localhost (correcto) | localhost (correcto) ✅ |
+
+El detector era frágil por naturaleza: preguntaba **cómo me invocaron**, cuando lo que importa es
+**qué estoy haciendo**.
+
+**Corregido:** una integración mínima, `dlpay:deploy-guard`, valida en el hook
+`astro:config:setup`, que recibe de Astro el `command` real. Cubre todas las invocaciones, incluida
+la API programática, y aborta con **código de salida 1** — verificado — así que un CI lo nota.
+
+### A2 · Comprobaba presencia, no validez — y la plantilla fabricaba el fallo
+
+`.env.example` terminaba con `PUBLIC_SITE_URL=http://localhost:4321`. El paso documentado es
+«copiar a `.env` y completar»: **seguir la documentación producía un build verde que publicaba
+localhost** en canonical, `og:url`, `og:image`, `twitter:image`, el `url` y el `logo` del JSON-LD,
+las nueve URL del sitemap y la línea `Sitemap:` del robots.
+
+No era hipotético: el `dist/` que había en el repo **era ese fallo materializado** — 11 archivos,
+64 ocurrencias de `localhost`. Y ADR-0005 define publicar como «copiar la carpeta de build».
+
+**Corregido:** la guarda **valida** la URL y rechaza, con el motivo exacto:
+
+| Rechazo | Por qué |
+|---|---|
+| Ausente o vacía | No hay valor que publicar |
+| No parseable | `dlpay.cl` sin esquema, texto libre |
+| **Host local** — `localhost`, `127.0.0.1`, `0.0.0.0`, `::1`, `*.localhost`, `*.local`, `*.test`, `*.internal` | Sólo resuelve en la máquina de quien construye |
+| Protocolo distinto de `https` | Un canonical sobre `http` invita a indexar la versión insegura; en la práctica es un esquema mal escrito |
+| Ruta que no sea la raíz | `https://dlpay.cl/web` serviría igual y produciría enlaces internos rotos, sin error: haría falta configurar además `base` |
+| Parámetros o fragmento | No pertenecen a una URL canónica |
+
+`.env.example` deja `PUBLIC_SITE_URL=` **vacía**, con el porqué escrito. El `dist/` envenenado se
+eliminó (no versionado, ignorado, regenerable).
+
+### A3 · Staging sería indexado, y con él los textos que Compliance no ha aprobado
+
+`robots.txt` emitía `Allow: /` sin condición y `Base.astro` no tenía meta `robots` ni forma de
+ponerla. **No existía interruptor.**
+
+El riesgo no era abstracto. Staging sirve las nueve rutas, entre ellas `/terminos/` y
+`/privacidad/`, que hoy son **páginas de estado** bloqueadas por D9 (razón social), D19 (correo) y
+D20 (alcance de los T&C). Es decir: el escenario en que Compliance nos bloquea para producción era
+exactamente el escenario en que un Staging indexable publicaba bajo la marca DLPay lo que
+Compliance no había firmado. Más contenido duplicado contra `dlpay.cl`.
+
+**Corregido:** `PUBLIC_ALLOW_INDEXING`, **cerrado por omisión**. Sólo el literal `'true'` abre;
+ausente, vacía, `false`, `TRUE`, `1`, `yes` o ` true` dejan el despliegue cerrado. Cuando está
+cerrado:
+
+- `<meta name="robots" content="noindex, nofollow">` en el `<head>` — verificado en **las nueve
+  rutas**. `Base.astro` es el único `<head>` del sitio (las legales pasan por `Legal.astro`, que lo
+  envuelve), así que no hay hueco posible.
+- `robots.txt` emite `Disallow: /` con el motivo en comentarios.
+
+El modo seguro es el que se obtiene **sin hacer nada**, porque el riesgo no es simétrico.
+
+Y como fallar cerrado tiene su propio riesgo inverso —publicar el sitio real con `noindex` sin
+enterarse—, **cada build declara su política en voz alta**:
+
+```
+[dlpay:deploy-guard] URL canónica: https://dlpay.cl
+[dlpay:deploy-guard] Indexación PERMITIDA — este build es para el sitio público.
+```
+
+---
+
+## 🟠 IMPORTANTES
+
+### B1 · Dos lectores de `PUBLIC_SITE_URL`, cada uno con su propio respaldo a localhost
+
+La validación cubría **la mitad** de las URL publicadas:
+
+- `astro.config.mjs` → `loadEnv` → `Astro.site` → **sitemap y robots**. Aquí vivía la guarda.
+- `lib/config/site.ts` → `import.meta.env`, con su propio `'http://localhost:4321'` → **canonical,
+  Open Graph, Twitter y JSON-LD**. Aquí **no había guarda**.
+
+Coincidían porque leían la misma variable, pero nada lo garantizaba. Misma forma exacta que el
+hallazgo del monto mínimo (D24): dos lugares, dos valores por defecto, un dato.
+
+**Corregido:** la lógica vive en `src/lib/config/environment.ts`, **puro** — no lee
+`import.meta.env` ni `process.env`, recibe el entorno como argumento. Eso es lo que permite que lo
+consuman los dos runtimes que leen el entorno de forma distinta: el config vía `loadEnv` (se evalúa
+antes de que Vite inyecte `import.meta.env`) y `site.ts` vía `import.meta.env`. **Una
+implementación, una validación, un solo respaldo.**
+
+`site.ts` es ahora el punto único de lectura de la aplicación: `robots.txt.ts` y `sitemap.xml.ts`
+dejaron de usar `Astro.site` y consumen `site.url`, ya normalizado sin barra final — desaparecen
+los `.replace(/\/$/, '')` dispersos. Ser puro lo hace además testeable con el runner de Node, sin
+DOM y sin levantar un build: **20 tests nuevos**.
+
+### B2 · `ActivityFeed` es una tercera isla, y envía el generador de datos de ejemplo al cliente
+
+`arquitectura-produccion.md` describía el JS del cliente como «el cotizador… más el reloj del feed
+de actividad». Lo que viaja no es un reloj: el `<script>` de `ActivityFeed.astro` **arrastra
+`mock-activity-source.ts` completo** al navegador —su PRNG, sus rangos por tipo de operación y su
+`subscribe`— y dentro corre un `setInterval` de 5 s más un emisor cada 14–46 s mientras la pestaña
+viva. Son 2 336 B en línea en `/cotizar/`.
+
+**No es un incumplimiento de compliance:** el distintivo y el descargo dependen de `source.isReal`
+y de `import.meta.env.DEV`, y se verificó que `PUBLIC_ACTIVITY_PREVIEW` no tiene efecto en un
+build. La salvaguarda de D18 está bien construida y sigue en pie.
+
+**No corregido — es documentación, no defecto.** Queda registrado porque es el argumento para
+reemplazar el mock por la fuente real (D18): mientras siga siendo mock, el generador de operaciones
+ficticias es código que se descarga en el navegador de cada visitante.
+
+### B3 · El JS no está «sólo en las dos páginas con cotizador»
+
+Está en **cinco de nueve**, porque el Motion System viaja a toda página que lo importe. Inventario
+verificado sobre el build:
+
+| Página | `is:inline` | Motion | ActivityFeed | Quoter (chunk) | Total |
+|---|---|---|---|---|---|
+| `/` | 62 B | 489 B | — | 4 672 B | **5,1 KB** |
+| `/cotizar/` | — | — | **2 336 B** | 4 672 B | **6,8 KB** |
+| `/como-funciona/`, `/confianza/`, `/empresas/` | 62 B | 489 B | — | — | **0,5 KB** |
+| `/terminos/`, `/privacidad/`, `/tarifas/`, `/canal-de-denuncias/` | — | — | — | — | **0 B** ✅ |
+
+Las cuatro legales siguen en **cero JavaScript**, tal como promete `Motion.astro`. `/cotizar/` no
+importa Motion, y no tiene ni un `[data-enter]`: coherente, no hay contenido que quede oculto.
+
+El `is:inline` de 62 B es el que pone `.js-motion` de forma síncrona en el `<head>`. Verificado en
+la cascada (`tokens.css:139`): el estado oculto se aplica **sólo** bajo esa clase, así que si el
+script no corre la página se ve completa e inmóvil.
+
+Verificado también que `environment.ts` y `site.ts` **no se filtran al cliente**: tras el
+refactor, el chunk del Quoter conserva el mismo hash de contenido (`KqkP4Blf`).
+
+---
+
+## 🟡 MENORES
+
+### B4 · Peso real, medido
+
+La Home creció con su construcción y con `compressHTML: false`. Lo que viaja es el gzip:
+
+| Página | Crudo | **Gzip** |
+|---|---|---|
+| `/` | 37,5 KB | **8,5 KB** |
+| `/cotizar/` | 21,8 KB | 6,4 KB |
+| `/confianza/` | 23,8 KB | 5,9 KB |
+| `/empresas/` | 22,5 KB | 5,5 KB |
+| `/como-funciona/` | 23,9 KB | 5,4 KB |
+| Legales (4) | 14,9–15,3 KB | 4,2–4,3 KB |
+
+CSS 35,3 KB crudo / **8,7 KB gzip** en 4 hojas · JS 4,7 KB crudo / **2,1 KB gzip** en 1 chunk ·
+fuentes 96 KB (4 woff2) · **`dist/` completo: 680 KB**.
+
+Los 22,5 KB en crudo que cuesta `compressHTML: false` son **2,8 KB gzip** en total sobre las nueve
+páginas. El HTML viaja comprimido; la legibilidad de los textos legales vale más.
+
+### B5 · Son cuatro paquetes, no tres
+
+`@types/node@26.4.1` se sumó al declarar `"types": ["node"]` en `tsconfig.json`, que es lo que
+necesita `astro check` para verificar los tests (`node:test`, `node:assert/strict`). Es
+**dev-only, cero impacto en runtime** y está justificado — pero `CLAUDE.md` §0.3 y este documento
+decían «tres», y §0.3 es un límite duro de fase.
+
+**Corregido en la documentación** (`CLAUDE.md` §0.3, `docs/development.md`). Y el comentario de
+`astro.config.mjs` que justificaba `loadEnv` como forma de «evitar depender de `@types/node`» se
+reescribió: ya se depende, y la razón real por la que `loadEnv` sigue siendo correcto ahí es otra —
+el config se evalúa antes de que Vite inyecte `import.meta.env`.
+
+---
+
+## ✅ SIN PROBLEMAS — reverificado 2026-09-08
+
+| Área | Resultado |
+|---|---|
+| Cero red en runtime | **Confirmado literal.** Cero `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource`, `sendBeacon` e importaciones dinámicas en `src/` y `tests/`. El `connect-src 'none'` propuesto es cierto al pie de la letra. |
+| Cero terceros | Fuentes auto-hospedadas. Sin analítica, sin CDN, sin píxeles, sin chat. |
+| Cero almacenamiento | Sin `localStorage`, `sessionStorage` ni cookies. Los montos no salen del navegador. |
+| Salida estática | `output: 'static'`. Sin `dist/server/`, sin `_worker.js`, sin `functions/`, sin adaptador. 9 rutas. |
+| Barra final | Consistente de punta a punta: 0 enlaces internos sin barra (salvo `/`), sitemap alineado. B2 de 2026-09-04 cerrado. |
+| Guard de `activeElement` | En su sitio (`Quoter.astro`): el M2 no se aplica al campo enfocado, y la cifra sólo se reanima cuando el valor mostrado cambia. |
+| Degradación sin JS | El `noindex`, el CTA con mensaje armado en el servidor y el contenido completo no dependen de JavaScript. |
+| Dependencias | `npm audit`: **0 vulnerabilidades**. Cuatro paquetes, todos de build. |
+| Sitemap | Derivado de `src/pages/`: una página nueva entra sola. *Filo conocido:* cualquier `.astro` que no sea página y caiga en `src/pages/` entraría también. |
+
+---
+
+## Verificación posterior — 2026-09-08
+
+| Comprobación | Resultado |
+|---|---|
+| `npm run check` | **0 errores** en 56 archivos |
+| `npm test` | **68 tests** (48 + 20 de la guarda), 0 fallos |
+| `npm audit` | 0 vulnerabilidades |
+| Build sin variable · localhost · `http://` público | **exit 1** en los tres |
+| Build válido (`https://staging.dlpay.cl`) | verde, 9 rutas, sin una sola ocurrencia de `localhost` |
+| Escudo de indexación | `noindex` en 9/9 rutas + `Disallow: /`; con `PUBLIC_ALLOW_INDEXING=true`, ninguna meta y `Allow: /` |
+| `dev` / `check` / `sync` | sin afectar, respaldo a localhost correcto |
+| JS al cliente | **idéntico** — mismo hash de contenido en el chunk del Quoter |
+| Dependencias añadidas | **ninguna** |
+| Cambios visuales | **ninguno** |
+
+---
+
+## 🚦 Bloqueantes de producción
+
+**El proyecto técnico está terminado. No queda ingeniería pendiente para publicar.**
+
+Lo que sostiene esa afirmación es verificable, no de opinión: sin servidor, sin base de datos, sin
+secretos, sin dependencias en ejecución, sin peticiones a terceros, sin recogida de datos
+personales, capas limpias con el dominio testeado y aislado del navegador, degradación real sin
+JavaScript, salida estática portable, y un build que **se niega a publicar** una URL inválida o a
+indexar sin permiso explícito.
+
+### Lo único que falta es de negocio y de Compliance
+
+| # | Bloqueante | De quién | Qué desbloquea |
+|---|---|---|---|
+| **D9** | **Razón social.** Se usa DLPZ INCZ SpA; los T&C publicados dicen «DLPZ PRO SpA» (RUT 78.378.714-8). No se puede publicar bajo una entidad que contradiga el contrato vigente | **Compliance — Joaquín** | `/terminos/`, `/privacidad/`, footer |
+| **D19** | **Correo oficial.** Los T&C dicen `contacto@dlpay.cl`; la Política, `contacto@dlpzpro.cl`. La web no publica ninguno hasta confirmarlo | **Compliance** | `/canal-de-denuncias/` |
+| **D20** | **El alcance de los T&C ya no coincide con el servicio.** Hablan de custodia y liquidaciones internacionales; el servicio real es cambio de divisas con entrega de dólar digital | **Compliance** | Los textos legales |
+
+Mientras esos tres estén abiertos, **`/terminos/` y `/privacidad/` seguirán siendo páginas de
+estado**, y por eso el escudo de indexación de A3 no es una comodidad de Staging: es lo que impide
+que un buscador publique bajo la marca DLPay un texto que Compliance no ha firmado.
+
+### Configuración, no ingeniería
+
+| # | Qué | De quién |
+|---|---|---|
+| D1b | Elegir proveedor de hosting (Cloudflare o Vercel) y crear la cuenta **a nombre de DLPay** | Sebastián |
+| — | `PUBLIC_SITE_URL` en el entorno de despliegue. Sin ella, o con un valor inválido, el build falla a propósito | Quien despliegue |
+| — | `PUBLIC_ALLOW_INDEXING=true` **sólo** en el despliegue del sitio público | Quien despliegue |
+| — | Cabeceras de seguridad y política de caché: `arquitectura-produccion.md` §5.1 y §5.2 | Al elegir proveedor |
+| — | `X-Robots-Tag: noindex` en Staging, la defensa robusta que un sitio estático no puede fijar por sí mismo | Al elegir proveedor |
+| — | Redirecciones del cutover, con lo que **no** debe capturarse: `docs/migracion-urls.md` | Fase 6 |
+
+### Decisiones abiertas que no bloquean
+
+D5 (transparencia del spread → tabla de `/tarifas`), D6 (monto mínimo real), D21 (monto máximo — el
+estado está cableado y probado, inactivo sin el valor), D7 (fuente oficial de precio), D18 (fuente
+real de actividad — ver B2), D22 (mensaje prellenado en tres enlaces), D23 (canal de respaldo si
+WhatsApp no abre), D24 (consolidar el monto mínimo en `lib/config`), D10 (testimonios y cifras),
+D11 (equipo en `/confianza`).
+
+### Nota sobre el `Disallow: /` de Staging
+
+`Disallow` impide el rastreo, y un buscador que no rastrea **nunca lee el `noindex`**: podría
+indexar una URL descubierta por un enlace externo. Con cero enlaces entrantes a Staging el riesgo
+residual es mínimo, y la combinación sigue siendo muy superior al `Allow: /` anterior. La defensa
+completa es `X-Robots-Tag: noindex` como cabecera HTTP, que es configuración del host y queda
+anotada arriba.

@@ -16,40 +16,90 @@ npm run dev        # http://localhost:4321
 | Comando | Qué hace |
 |---|---|
 | `npm run dev` | Servidor de desarrollo con recarga en caliente |
-| `npm run build` | Genera el sitio estático en `dist/` |
+| `npm run build` | Genera el sitio estático en `dist/`. **Exige `PUBLIC_SITE_URL`** — ver abajo |
 | `npm run preview` | Sirve `dist/` localmente, como en producción |
 | `npm run check` | Verificación de tipos (`astro check`) |
-| `npm test` | Tests de la lógica del cotizador (runner nativo de Node) |
+| `npm test` | Tests de la lógica del cotizador y de la guarda de despliegue (runner nativo de Node) |
 
 `build` verde **no** equivale a "terminado" (`CLAUDE.md` §9).
+
+### El build exige una URL canónica publicable
+
+`npm run dev` no necesita nada: usa `http://localhost:4321`. **Un build sí**, y falla a propósito
+si la variable falta o no sirve para publicar:
+
+```
+PUBLIC_SITE_URL=https://dlpay.cl npm run build
+```
+
+Rechaza hosts locales (`localhost`, `127.0.0.1`, `*.local`…), lo que no sea `https`, rutas que no
+sean la raíz del dominio, y parámetros o fragmento. La razón: de esa variable salen canonical, Open
+Graph, el JSON-LD, el sitemap y el robots. Un valor inválido **no rompe nada visible** —el build
+sale verde y las páginas se ven bien—, y el daño aparece cuando un buscador indexa esas URL.
+
+**La indexación va cerrada por omisión.** Sin `PUBLIC_ALLOW_INDEXING=true`, todas las páginas
+llevan `noindex, nofollow` y el robots emite `Disallow: /`. Se abre **sólo** en el despliegue del
+sitio público. Cada build declara en su salida qué política aplicó, así que no hace falta
+adivinarlo:
+
+```
+[dlpay:deploy-guard] URL canónica: https://dlpay.cl
+[dlpay:deploy-guard] Indexación PERMITIDA — este build es para el sitio público.
+```
+
+Ambas variables las valida la integración `dlpay:deploy-guard` de `astro.config.mjs`, que pregunta
+a Astro **qué está haciendo** (`command === 'build'`) en vez de cómo lo invocaron. No se puede
+esquivar llamando a `astro build` directamente. Detalle en
+`docs/arquitectura-produccion.md` §5.3.
 
 ## Estructura
 
 ```
 src/
-├── pages/            # una ruta por página. Hoy sólo index.astro (provisional)
+├── pages/            # una ruta por página — las nueve de la AI v1
+│   ├── index.astro · cotizar · como-funciona · empresas · confianza
+│   ├── terminos · privacidad · tarifas · canal-de-denuncias
+│   └── sitemap.xml.ts · robots.txt.ts   # generados, no a mano
 ├── layouts/
-│   └── Base.astro    # documento, tokens y SEO base
-├── components/       # (vacío — se llena en Fase 4, sólo lo que una página pida)
+│   ├── Base.astro    # el ÚNICO <head> del sitio: SEO, tokens, escudo noindex
+│   └── Legal.astro   # envuelve a Base para los cuatro documentos legales
+├── components/
+│   ├── Quoter.astro       # la única isla interactiva
+│   ├── Motion.astro       # motor del Motion System V1 (IntersectionObserver)
+│   ├── ActivityFeed.astro # actividad reciente (hoy con fuente de ejemplo)
+│   ├── Header · Footer · Hero · PageHero · Steps · Trust · UseCases
+│   ├── Business · Faq · Alliances · FlowDiagram · WhatsAppMockup
+│   ├── Icon · Logo · StepFigure · UseCaseFigure · PendingNotice
+│   └── ui/                # IconBadge, ArrowLink — sólo donde corresponden
+├── content/          # dato tipado, separado de la presentación
+│   └── home.ts · process.ts · trust.ts · business.ts
 ├── styles/
 │   ├── fonts.css     # @font-face del set T-C, auto-hospedado
-│   └── tokens.css    # espejo del Design System V1
+│   └── tokens.css    # espejo del Design System V1 + gate del Motion System
 └── lib/
-    ├── config/site.ts            # marca, contacto y enlaces a Guita
-    └── pricing/
-        ├── types.ts              # PriceSource, PriceReference, Quote
-        ├── config-price-source.ts# única implementación en V1 (valor de muestra)
-        └── format.ts             # formato de cifras chileno
-public/fonts/         # woff2 variables + sus licencias OFL
+    ├── config/
+    │   ├── environment.ts   # resolución y validación del entorno — PURO
+    │   ├── site.ts          # marca, contacto, enlaces a Guita, URL, indexación
+    │   └── alliances.ts     # FinteChile y UAF, con el alcance de cada claim
+    ├── pricing/             # types · config-price-source · quote · format
+    └── activity/            # types · source · mock-activity-source · format
+public/
+├── fonts/            # woff2 variables + sus licencias OFL
+└── alianzas/         # emblemas de FinteChile y UAF
+tests/                # pricing · activity · config (runner nativo de Node)
 ```
 
-Las carpetas se crean **cuando una necesidad real las pide**, no antes
-(Principio 5). `src/content/` aún no existe: se creará si una página necesita
-datos estructurados (ADR-0002 §4).
+Las carpetas se crean **cuando una necesidad real las pide**, no antes (Principio 5).
+
+`lib/config/environment.ts` es puro a propósito: no lee `import.meta.env` ni `process.env`, recibe
+el entorno como argumento. Es lo que permite que lo consuman los dos runtimes que leen el entorno
+de forma distinta —`astro.config.mjs` con `loadEnv`, `site.ts` con `import.meta.env`— sin duplicar
+la lógica, y lo que lo hace testeable sin levantar un build.
 
 ## Dependencias instaladas
 
-Exactamente tres paquetes declarados, con la justificación que exige `CLAUDE.md` §8:
+**Cuatro** paquetes declarados, con la justificación que exige `CLAUDE.md` §8. Ninguno llega al
+navegador: los cuatro son de build.
 
 | Paquete | Tipo | Por qué |
 |---|---|---|
@@ -154,6 +204,135 @@ el `<svg>`. La especificidad es idéntica, así que no altera ninguna cascada.
 
 **Si algún día un icono no responde a su CSS, mirar esto primero.**
 
+## Verificación visual con Chrome headless
+
+El MCP de Playwright **no conecta** en este entorno (`npx` fuera del `$PATH`, `CLAUDE.md` §11), así
+que durante mucho tiempo no hubo forma de comprobar un render salvo mirarlo a ojo. Sí la hay:
+**Chrome ya está instalado y su modo headless basta** para capturar pantallas y, sobre todo, para
+leer **estilos computados** — que es lo que distingue «lo veo raro» de «sé por qué».
+
+Descubierto el 2026-09-08 diagnosticando la franja de notificación, donde el CSS del repositorio
+era correcto y lo que estaba mal era el servidor de desarrollo. Sin medir, se habría «arreglado»
+código que no tenía nada.
+
+```sh
+CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+```
+
+Escupe por `stderr` un par de `ERROR:base/process/process_mac.cc … task_policy_set`. Son inocuos
+en macOS: se descartan con `2>/dev/null`.
+
+### 1 · Captura de pantalla
+
+```sh
+"$CHROME" --headless --disable-gpu --hide-scrollbars \
+  --window-size=1280,400 --screenshot=shot.png \
+  http://localhost:4321/ 2>/dev/null
+```
+
+Para **animaciones**, `--virtual-time-budget` adelanta el reloj antes de disparar la captura. Así
+se comprobó que la franja rota de verdad y no sólo que se superpone:
+
+```sh
+# t ≈ 7 s: debe verse el SEGUNDO mensaje del carrusel
+"$CHROME" --headless --disable-gpu --hide-scrollbars --window-size=1280,190 \
+  --virtual-time-budget=7000 --screenshot=rot-t7.png http://localhost:8896/ 2>/dev/null
+```
+
+> ⚠️ **No medir geometría en una captura.** A anchos estrechos la imagen sale escalada o recortada
+> y aparenta desbordes que no existen. Casi se reportó un desborde horizontal en móvil que no
+> había. Las capturas sirven para *ver*; para *medir*, el paso 2.
+
+### 2 · Estilos computados — la parte que de verdad importa
+
+Hace falta una sonda con JavaScript en la página, y por tanto **mismo origen**. Dos rutas según el
+objetivo.
+
+**a) Auditar el build.** Se copia `dist/` a un directorio temporal, se inyecta la sonda y se sirve:
+
+```sh
+cp -R dist /tmp/probe
+# …añadir antes de </body> de /tmp/probe/index.html un <script> que escriba
+#   las medidas en un <pre id="out">…
+cd /tmp/probe && python3 -m http.server 8899 &
+"$CHROME" --headless --disable-gpu --window-size=1400,700 --virtual-time-budget=3000 \
+  --dump-dom http://localhost:8899/ 2>/dev/null \
+  | perl -0777 -ne 'if(/<pre id="out">(.*?)<\/pre>/s){print "$1\n"}'
+```
+
+**b) Auditar el servidor de desarrollo.** No se le puede inyectar nada, así que la sonda va
+**temporalmente** en `public/` —desde donde se sirve en la raíz, mismo origen— y carga la página
+real en un `<iframe>`, cuyo `contentDocument` sí es accesible:
+
+```html
+<!-- public/__probe.html — BORRAR después de usarla -->
+<iframe id="f" src="/" style="width:1280px;height:400px;border:0"></iframe>
+<pre id="out">…</pre>
+<script>
+  document.getElementById('f').addEventListener('load', () => {
+    const f = document.getElementById('f'), d = f.contentDocument, w = f.contentWindow;
+    const el = d.querySelector('.rotator');
+    const s  = w.getComputedStyle(el);
+    document.getElementById('out').textContent = [
+      'display = ' + s.display,
+      'height  = ' + el.getBoundingClientRect().height.toFixed(1),
+      'desborde = ' + (d.documentElement.scrollWidth - w.innerWidth),
+    ].join('\n');
+  });
+</script>
+```
+
+> ⚠️ **`public/` está versionado.** La sonda se borra en cuanto se termina (`rm -f
+> public/__probe.html`) y **nunca** se commitea.
+
+Cambiando el `src` del `iframe` en un bucle sobre varios anchos se obtiene la tabla responsive de
+una sola pasada — así se verificó la franja a 360, 390, 430, 768 y 1280 px, comprobando en cada uno
+la altura, el objetivo táctil, que los mensajes compartieran `top` y que no hubiera desborde.
+
+### 3 · El diagnóstico que más valor dio: HTML servido **vs** DOM final
+
+Esto es lo que resolvió el caso de la franja, y conviene tenerlo a mano porque el síntoma engaña:
+**el repositorio estaba bien y el navegador mostraba otra cosa.**
+
+```sh
+# lo que el servidor ENVÍA
+curl -s http://localhost:4321/ | grep -c "announce-cycle"        # → 2
+
+# lo que queda en el DOM DESPUÉS de ejecutar el JS de Vite
+"$CHROME" --headless --disable-gpu --virtual-time-budget=3000 \
+  --dump-dom http://localhost:4321/ 2>/dev/null | grep -c "announce-cycle"   # → 0
+```
+
+Si los dos números no coinciden, **el problema no está en el código**: el cliente HMR de Vite está
+reemplazando los `<style>` recién servidos por una copia obsoleta de su caché de módulos. Ocurre en
+servidores de desarrollo de larga vida —aquel llevaba unas 23 horas y dos reescrituras del mismo
+componente— y el resultado es **markup nuevo con CSS vieja**, que se ve como un bug de maquetación
+inexistente.
+
+Extraer el bloque sospechoso confirma de qué versión es:
+
+```sh
+perl -0777 -ne 'if(/<style[^>]*NombreComponente[^>]*>(.*?)<\/style>/s){print "$1\n"}' dom.html
+```
+
+**Cura:** reiniciar el servidor. No hay que tocar código.
+
+```sh
+npx astro dev stop && npx astro dev && npx astro dev status
+```
+
+**Regla que se deriva de esto:** ante una discrepancia visual, **comparar siempre contra un build
+limpio** (`PUBLIC_SITE_URL=https://dlpay.cl npx astro build --outDir /tmp/x`) antes de cambiar una
+línea. Si el build está bien y dev está mal, el sospechoso es dev.
+
+### Qué no cubre
+
+No reemplaza la revisión humana ni la prueba en dispositivo real (`CLAUDE.md` §7). No prueba
+gestos táctiles, ni lectores de pantalla, ni el comportamiento de fuentes bajo conexión lenta. Y
+`prefers-reduced-motion` en headless conviene comprobarlo explícitamente con
+`matchMedia('(prefers-reduced-motion: reduce)').matches` dentro de la sonda, en vez de suponer el
+valor por defecto.
+
 ## SEO y metadatos
 
 Generados, no escritos a mano:
@@ -200,14 +379,17 @@ revisión y ofrecen el documento vigente por WhatsApp, en vez de publicar un tex
 
 Lo que falta y qué decisiones lo bloquean está en **`docs/legal-brief.md`**.
 
-## Estado (2026-09-04)
+## Estado (2026-09-08)
 
-- `npm run check` → 0 errores en 31 archivos · `npm test` → 22 tests en verde · `build` verde.
-- **JS enviado al cliente: ~3,2 KB**, y es sólo el cotizador. Astro lo inlinea por
-  pequeño, así que no aparece como archivo `.js` suelto en `dist/`. El resto de la
-  página es HTML y CSS: cero JavaScript, como promete ADR-0002.
-- HTML entre 13 y 22 KB por página + 35 KB de CSS + 92 KB de fuentes.
-- Las cinco páginas: un solo `h1`, sin saltos de nivel, `lang="es-CL"`, cero enlaces
+- `npm run check` → **0 errores en 57 archivos** · `npm test` → **68 tests** en verde ·
+  `npm audit` → 0 vulnerabilidades · `build` verde.
+- **JS enviado al cliente: tres scripts, no uno.** Cotizador (4 672 B, chunk externo), Motion
+  System (489 B + 62 B síncronos) y actividad reciente (2 336 B, sólo en `/cotizar/`). Está en
+  **cinco de las nueve páginas**; las **cuatro legales siguen en cero bytes**. Inventario y
+  matices en `arquitectura-produccion.md` §1.1.
+- HTML de 14,9 a 37,5 KB en crudo, **4,2 a 8,5 KB gzip** · CSS 35,3 KB / 8,7 KB gzip ·
+  fuentes 96 KB · `dist/` completo **680 KB**.
+- Las nueve páginas: un solo `h1`, sin saltos de nivel, `lang="es-CL"`, cero enlaces
   muertos, todos los campos con etiqueta, enlace de salto al contenido y `aria-current`
   en la navegación.
 - Contraste verificado por cálculo, no a ojo: `--verde` sobre papel da **2.02:1**, así

@@ -18,10 +18,27 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
 - **Identidad visual completa**: dirección A×C, verde `#16C784`, tinta `#0B1320` y tipografía
   **T-C** cerradas. **Diseño congelado desde el 2026-09-04:** no se toca sin una razón crítica.
 - **Motion System V1** aprobado e implementado el 2026-09-07. Enmienda el Design System §9: se
-  permiten entradas al hacer scroll y escalonado, en forma acotada. Seis movimientos, ni uno más,
-  techo de 280 ms. Ver `docs/design-system/motion-system-v1.md`.
-- **Auditoría previa a producción hecha.** Lo que queda para desplegar es configuración y
-  decisiones de negocio o Compliance, no ingeniería. Ver `docs/auditoria-preproduccion.md`.
+  permiten entradas al hacer scroll y escalonado, en forma acotada. Seis movimientos, techo de
+  280 ms. Ver `docs/design-system/motion-system-v1.md`.
+  **Una excepción, del 2026-09-08:** la rotación de la franja de notificación es un séptimo
+  movimiento, infinito, y contradice la regla dura 1 («una sola vez») a petición explícita del
+  equipo. Acotada a esa pieza, sin sigla propia y sin abrir la puerta a más movimiento. Enmienda
+  registrada en `motion-system-v1.md` §0 y razonada en ADR-0006.
+- **Auditoría previa a producción hecha, en dos revisiones (2026-09-04 y 2026-09-08).** La segunda
+  cerró dos fallos críticos que no se veían en localhost: la guarda de `PUBLIC_SITE_URL` se
+  esquivaba con `astro build` directo y sólo comprobaba presencia —`.env.example` traía
+  `localhost`—, y no existía forma de evitar que Staging fuera indexado. Ver
+  `docs/auditoria-preproduccion.md`.
+- **El proyecto técnico está terminado. No queda ingeniería para publicar.** La salida a producción
+  depende **exclusivamente** de Compliance: D9 (razón social), D19 (correo oficial) y D20 (alcance
+  de los T&C). Todo lo demás es configuración del host. Ver *Bloqueantes de producción* en
+  `docs/auditoria-preproduccion.md`.
+- **Dos variables gobiernan el despliegue y el build las valida** (`dlpay:deploy-guard` en
+  `astro.config.mjs`): `PUBLIC_SITE_URL` es obligatoria y debe ser publicable —rechaza hosts
+  locales, lo que no sea `https` y rutas fuera de la raíz—, y `PUBLIC_ALLOW_INDEXING` va **cerrada
+  por omisión**: sin `true` explícito el sitio se publica con `noindex` y `Disallow: /`. Un build
+  en local necesita la URL en la misma línea:
+  `PUBLIC_SITE_URL=https://dlpay.cl npm run build`.
 - **Esqueleto creado y verificado.** Astro 7 + TypeScript strict, `npm run check` y
   `npm run build` en verde, **0 JS enviado al cliente**, fuentes T-C auto-hospedadas, tokens del
   Design System en código, y la cadena `PriceSource → Quote` en pie. Ver `docs/development.md`.
@@ -70,9 +87,11 @@ patrones) · `phase-2-visual-directions.md` + su Artifact de mockups.
 
 ### 0.3 Límites duros de la fase actual
 
-- **No instalar dependencias** sin el análisis escrito del §8. Hoy el proyecto declara **tres
-  paquetes**: `astro`, `@astrojs/check` y `typescript`. Cero dependencias de estilo, cero
-  framework de UI.
+- **No instalar dependencias** sin el análisis escrito del §8. Hoy el proyecto declara **cuatro
+  paquetes**, los cuatro de build y ninguno en el navegador: `astro`, `@astrojs/check`,
+  `typescript` y `@types/node` (tipos de los módulos `node:` que usan los tests; sin él
+  `astro check` no puede verificarlos). Cero dependencias de estilo, cero framework de UI, cero
+  dependencias en runtime.
 - **No crear un componente ni una carpeta** que ninguna página real necesite todavía
   (Principio 5).
 - **No tocar producción.** Dominio, DNS, correo, el Firebase de Guita, cuentas de terceros: nada.
@@ -393,11 +412,15 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | ~~D8~~ | ~~Alcance de servicios a comunicar~~ | ✅ Cerrado 2026-09-04: el amplio, alineado con los T&C publicados | Equipo DLPay |
 | ~~D16~~ | ~~Cómo llega el dinero al destinatario final~~ | ✅ Cerrado 2026-09-04: DLPay entrega **dólar digital en la billetera**; no deposita en cuentas bancarias en el extranjero. Ver §1 | Equipo DLPay |
 | ~~D17~~ | ~~"Sin esperar días"~~ | ✅ Reformulado 2026-09-04: la rapidez se predica de la conversión y del movimiento del dólar digital, nunca de una recepción bancaria en destino | Equipo DLPay |
-| D18 | **Fuente real de actividad reciente** (operaciones confirmadas y anonimizadas). Hoy hay datos de ejemplo, marcados como tales por el propio componente | No | DLPay |
+| D18 | **Fuente real de actividad reciente** (operaciones confirmadas y anonimizadas). Hoy hay datos de ejemplo, marcados como tales por el propio componente. Nota de la auditoría 2026-09-08: mientras siga siendo mock, el generador de operaciones ficticias **se descarga en el navegador** de cada visitante (2,3 KB en `/cotizar/`) | No | DLPay |
+| D28 | **¿Necesita la franja de notificación un botón de cerrar?** Hoy es estática y se oculta sola en la página que enlaza (ADR-0006). Cerrarla de verdad exige script síncrono en el `<head>` + `sessionStorage`, y con ello el fin de «cero almacenamiento» y de las cuatro legales en cero JS. Se reabre **con evidencia de que estorba**, no por incomodidad | No | Sebastián |
+| D27 | **Cabeceras del host**: `X-Robots-Tag: noindex` en Staging —la defensa robusta, porque `Disallow` impide leer el `noindex` del HTML— y evaluar un CSP por hash de los tres scripts en línea, que permitiría quitar `unsafe-inline`. Conjunto completo en `docs/arquitectura-produccion.md` §5.1 | No | Al cerrar D1b (proveedor) |
 | D9 | **Razón social**: se usa **DLPZ INCZ SpA**. Los T&C publicados dicen "DLPZ PRO SpA" (RUT 78.378.714-8) | **Sí — bloquea publicar los textos legales.** No se puede publicar bajo una entidad que contradiga el contrato vigente | `REQUIERE VALIDACIÓN DE COMPLIANCE` — Joaquín. **No reinvestigar.** |
 | D19 | **Correo oficial de contacto**: los T&C dicen `contacto@dlpay.cl`, la Política dice `contacto@dlpzpro.cl` | Sí, para el canal de denuncias. La web no publica ninguno hasta confirmarlo | Compliance |
 | D20 | **El alcance de los T&C ya no coincide con el servicio**: hablan de custodia y liquidaciones internacionales; el servicio real es cambio de divisas con entrega de dólar digital | Sí, antes de publicar los textos | Compliance |
 | D10 | **Testimonios, cifras de clientes/volumen, logos de empresas** | No — no se publican hasta verificar | DLPay (I15) |
+| ~~D25~~ | ~~Membresía en FinteChile~~ | ✅ Cerrada 2026-09-07: socio confirmado por Sebastián. Logo publicado en el pie | — |
+| ~~D26~~ | ~~Emblema de la UAF en el pie~~ | ✅ Cerrada 2026-09-07: Sebastián afirma registro y supervisión vigentes. Se publica el emblema **y** la frase que fija su alcance. La redacción exacta —"registrada y supervisada", nunca "autorizada" ni "avalada"— queda fijada en `lib/config/alliances.ts`; ampliarla es un claim nuevo | — |
 | D11 | **Equipo con nombre y foto** en `/confianza` | No | Sebastián |
 | D12 | **Quién redacta y aprueba el copy** | No para Fase 3 | DLPay |
 | D13 | **SPF y DMARC ausentes** en `dlpay.cl` (riesgo de suplantación) | No — es de quien administra el DNS hoy | Guita / DLPay |

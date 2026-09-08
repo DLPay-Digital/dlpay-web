@@ -119,7 +119,9 @@ paralelas y cacheables. Se registra como observación, no como problema.
 
 - **Secretos:** ni en el historial de git ni en los archivos versionados. `.env` correctamente
   ignorado y ausente del índice.
-- **Dependencias:** `npm audit` sin vulnerabilidades. Tres paquetes declarados.
+- **Dependencias:** `npm audit` sin vulnerabilidades. Tres paquetes declarados *(cierto en esta
+  fecha; hoy son cuatro — `@types/node` se sumó para que `astro check` verifique los tests. Ver
+  `auditoria-preproduccion.md`, revisión 2026-09-08, B5)*.
 - **Tabnabbing:** todos los enlaces externos llevan `rel="noopener"`.
 - **Inyección:** los dos usos de `set:html` reciben valores del build, no de usuarios. El script
   del cotizador escribe con `textContent` y codifica la URL con `encodeURIComponent`.

@@ -25,6 +25,19 @@
 | Fase 1 §18 — "animaciones de entrada en cada sección al hacer scroll" | **Superado** por M4 en su forma acotada. Fase 1 se conserva como registro histórico y no se reescribe |
 | CLAUDE.md Principio 3 — "animaciones decorativas" | **Intacto.** Ninguna pieza de este sistema es decorativa |
 
+### Enmienda externa — 2026-09-08
+
+| Regla de este documento | Estado |
+|---|---|
+| §4 — el catálogo son **seis movimientos, ni uno más** | **Enmendado por ADR-0006.** La rotación de la franja de notificación es un **séptimo** movimiento, fuera del catálogo y sin sigla. No se le asigna M7 a propósito: no es un movimiento del sistema, es una excepción de una pieza |
+| §4, regla dura 1 — **"Una sola vez.** Nada se re-anima… Un elemento que reaparece cada vez que pasas es el sello del movimiento decorativo" | **Enmendado, y sólo para la franja.** Su rotación es infinita: se re-anima cada 5 s indefinidamente. Es el caso que esta regla describe literalmente. Sigue vigente para todo lo demás |
+| §4, regla dura 6 — `prefers-reduced-motion` da una salida limpia | **Intacto y respetado.** Con la preferencia activa la rotación se cancela y queda fijo el primer mensaje |
+| §2 — techo de **280 ms** | **No aplica.** El techo gobierna la duración de una transición, no el intervalo entre dos estados. Los fundidos de la franja son de 600 ms, por encima del techo |
+
+Motivo de la enmienda: petición explícita del equipo (Sebastián, 2026-09-08). El análisis del
+conflicto y lo que se hizo para acotarlo están en
+[`../decisions/0006-franja-de-notificacion.md`](../decisions/0006-franja-de-notificacion.md).
+
 ---
 
 ## 1. Estado actual, verificado
