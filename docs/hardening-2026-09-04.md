@@ -1,6 +1,7 @@
 # Revisión de endurecimiento — 2026-09-04
 
-> Alcance: funnel Home → `/cotizar` → WhatsApp, comportamiento del cotizador, seguridad del
+> Alcance: funnel Home → `/cotizar` → WhatsApp *(`/cotizar` se eliminó el 2026-09-09; el
+> funnel es hoy Home → WhatsApp)*, comportamiento del cotizador, seguridad del
 > repositorio, performance, SEO y accesibilidad ya implementados.
 > **Sin cambios visuales.** Sin funcionalidades nuevas. Sin dependencias nuevas.
 >

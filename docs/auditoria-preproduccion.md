@@ -281,6 +281,10 @@ DOM y sin levantar un build: **20 tests nuevos**.
 
 ### B2 · `ActivityFeed` es una tercera isla, y envía el generador de datos de ejemplo al cliente
 
+> ✅ **Resuelto el 2026-09-09, de raíz.** Se eliminó `/cotizar`, que era su única página, así que
+> el componente quedó sin consumidores y el generador ficticio ya no llega a ningún navegador. No
+> se mitigó: desapareció. El componente y `lib/activity` se conservan como costura de D18.
+
 `arquitectura-produccion.md` describía el JS del cliente como «el cotizador… más el reloj del feed
 de actividad». Lo que viaja no es un reloj: el `<script>` de `ActivityFeed.astro` **arrastra
 `mock-activity-source.ts` completo** al navegador —su PRNG, sus rangos por tipo de operación y su
@@ -296,6 +300,10 @@ reemplazar el mock por la fuente real (D18): mientras siga siendo mock, el gener
 ficticias es código que se descarga en el navegador de cada visitante.
 
 ### B3 · El JS no está «sólo en las dos páginas con cotizador»
+
+> ⚠️ *Cifras de su fecha. Tras eliminar `/cotizar` (2026-09-09) el sitio tiene ocho rutas y dos
+> scripts: la Home con 5,1 KB, tres páginas con 0,5 KB y las cuatro legales en cero. Inventario
+> vigente en `arquitectura-produccion.md` §1.1.*
 
 Está en **cinco de nueve**, porque el Motion System viaja a toda página que lo importe. Inventario
 verificado sobre el build:
@@ -322,6 +330,9 @@ refactor, el chunk del Quoter conserva el mismo hash de contenido (`KqkP4Blf`).
 ## 🟡 MENORES
 
 ### B4 · Peso real, medido
+
+> ⚠️ *Medición de su fecha, con nueve rutas. Cifras vigentes en `docs/development.md`, sección
+> Estado.*
 
 La Home creció con su construcción y con `compressHTML: false`. Lo que viaja es el gzip:
 

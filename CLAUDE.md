@@ -268,10 +268,21 @@ son una sola conversación · móvil primero · confianza que se comprueba, no q
 geometría siempre tiene función · rápido de verdad · personas y empresas caben pero la Home no se
 vuelve corporativa · español chileno plano · identidad propia.
 
-**Arquitectura de información v1 (cerrada):**
-`/` (Home con el cotizador en el hero) · `/cotizar` · `/como-funciona` · `/empresas` ·
-`/confianza` · legales: `/terminos`, `/privacidad`, `/tarifas`, `/canal-de-denuncias`.
-Las nueve rutas existen y resuelven. La FAQ vive en la Home, no como página propia.
+**Arquitectura de información v1 — enmendada el 2026-09-09:**
+`/` (Home con el cotizador en el hero) · `/como-funciona` · `/empresas` · `/confianza` ·
+legales: `/terminos`, `/privacidad`, `/tarifas`, `/canal-de-denuncias`.
+Las **ocho** rutas existen y resuelven. La FAQ vive en la Home, no como página propia.
+
+**`/cotizar` se eliminó el 2026-09-09.** Duplicaba el cotizador que ya está en el héroe de la
+Home y no se ganaba el espacio. Con eso se **cierra la hipótesis H8** de Fase 1 —«`/cotizar` como
+página casi-solo-cotizador sirve al recurrente y a los links de WhatsApp»—, que estaba marcada
+`P1` y pendiente de «uso real / feedback del equipo»: el equipo dio ese feedback. No rompe nada
+externo, porque la ruta no existe en el sitio actual (no figura en `docs/migracion-urls.md`). Los
+CTA que apuntaban ahí van ahora al ancla `/#cotizador` del héroe.
+
+Lo que se pierde y conviene tener presente: ya no hay una URL limpia que pegar en WhatsApp para
+que alguien caiga directo en la herramienta. Si eso hace falta, la vía es un ancla —`/#cotizador`,
+que ya funciona— y no reponer la página.
 
 **Textos legales:** Claude Code **no los redacta**. `/tarifas` y `/canal-de-denuncias` tienen
 contenido real porque describen el servicio, no obligaciones contractuales. `/terminos` y
@@ -412,7 +423,7 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | ~~D8~~ | ~~Alcance de servicios a comunicar~~ | ✅ Cerrado 2026-09-04: el amplio, alineado con los T&C publicados | Equipo DLPay |
 | ~~D16~~ | ~~Cómo llega el dinero al destinatario final~~ | ✅ Cerrado 2026-09-04: DLPay entrega **dólar digital en la billetera**; no deposita en cuentas bancarias en el extranjero. Ver §1 | Equipo DLPay |
 | ~~D17~~ | ~~"Sin esperar días"~~ | ✅ Reformulado 2026-09-04: la rapidez se predica de la conversión y del movimiento del dólar digital, nunca de una recepción bancaria en destino | Equipo DLPay |
-| D18 | **Fuente real de actividad reciente** (operaciones confirmadas y anonimizadas). Hoy hay datos de ejemplo, marcados como tales por el propio componente. Nota de la auditoría 2026-09-08: mientras siga siendo mock, el generador de operaciones ficticias **se descarga en el navegador** de cada visitante (2,3 KB en `/cotizar/`) | No | DLPay |
+| D18 | **Fuente real de actividad reciente** (operaciones confirmadas y anonimizadas). Hoy hay datos de ejemplo, marcados como tales por el propio componente. Nota 2026-09-09: al eliminar `/cotizar` el componente quedó **sin consumidores**, así que el generador ficticio ya no llega a ningún navegador. `ActivityFeed.astro` y `lib/activity` se conservan como costura para la fuente real; si D18 se descarta, se borran | No | DLPay |
 | D28 | **¿Necesita la franja de notificación un botón de cerrar?** Hoy es estática y se oculta sola en la página que enlaza (ADR-0006). Cerrarla de verdad exige script síncrono en el `<head>` + `sessionStorage`, y con ello el fin de «cero almacenamiento» y de las cuatro legales en cero JS. Se reabre **con evidencia de que estorba**, no por incomodidad | No | Sebastián |
 | D27 | **Cabeceras del host**: `X-Robots-Tag: noindex` en Staging —la defensa robusta, porque `Disallow` impide leer el `noindex` del HTML— y evaluar un CSP por hash de los tres scripts en línea, que permitiría quitar `unsafe-inline`. Conjunto completo en `docs/arquitectura-produccion.md` §5.1 | No | Al cerrar D1b (proveedor) |
 | D9 | **Razón social**: se usa **DLPZ INCZ SpA**. Los T&C publicados dicen "DLPZ PRO SpA" (RUT 78.378.714-8) | **Sí — bloquea publicar los textos legales.** No se puede publicar bajo una entidad que contradiga el contrato vigente | `REQUIERE VALIDACIÓN DE COMPLIANCE` — Joaquín. **No reinvestigar.** |

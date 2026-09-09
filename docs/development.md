@@ -56,8 +56,8 @@ esquivar llamando a `astro build` directamente. Detalle en
 
 ```
 src/
-├── pages/            # una ruta por página — las nueve de la AI v1
-│   ├── index.astro · cotizar · como-funciona · empresas · confianza
+├── pages/            # una ruta por página — las ocho de la AI v1
+│   ├── index.astro · como-funciona · empresas · confianza
 │   ├── terminos · privacidad · tarifas · canal-de-denuncias
 │   └── sitemap.xml.ts · robots.txt.ts   # generados, no a mano
 ├── layouts/
@@ -66,7 +66,8 @@ src/
 ├── components/
 │   ├── Quoter.astro       # la única isla interactiva
 │   ├── Motion.astro       # motor del Motion System V1 (IntersectionObserver)
-│   ├── ActivityFeed.astro # actividad reciente (hoy con fuente de ejemplo)
+│   ├── ActivityFeed.astro # actividad reciente. SIN CONSUMIDORES desde que se
+│   │                      # eliminó /cotizar; se conserva como costura de D18
 │   ├── Steps.astro        # bloque contenido en tinta: argumento + tarjeta + chat
 │   ├── Process.astro      # los 4 pasos en zig-zag, con un teléfono cada uno
 │   ├── WhatsAppMockup.astro # el teléfono en CSS. Dos variantes: proof y bare
@@ -119,8 +120,8 @@ cuenta:
 - **`proof`** — teléfono con pie explicativo, oculto bajo 900px. **Hoy sin consumidores.** Se
   conserva porque es el modo que mantiene la regla dura: sin la prop `thread`, el texto de la
   burbuja sale de `whatsappMessage()`, la misma función que arma el enlace del botón, así que es
-  imposible que el mockup prometa un mensaje distinto del que se envía. Es lo que se querría si el
-  teléfono vuelve a `/cotizar/`.
+  imposible que el mockup prometa un mensaje distinto del que se envía. Es lo que se querría si
+  vuelve a hacer falta un bloque de prueba autónomo.
 - **`bare`** — sólo el dispositivo, visible en todos los anchos. Lo usa `Process.astro` cuatro
   veces, con hilos **narrativos** que quedan fuera de esa garantía a propósito.
 
@@ -484,7 +485,7 @@ valor por defecto.
 Generados, no escritos a mano:
 
 - **`/sitemap.xml`** se deriva de `src/pages/`. Una página nueva entra sola; no puede quedar fuera
-  por olvido. Cero dependencias: el paquete oficial no aporta nada sobre nueve rutas estáticas.
+  por olvido. Cero dependencias: el paquete oficial no aporta nada sobre ocho rutas estáticas.
 - **`/robots.txt`** toma la URL del sitemap del `site` configurado.
 - **`og:image`** (`public/og-image.png`, 1200×630) se compuso con la tipografía real del proyecto
   incrustada en un SVG y se rasterizó con el motor de macOS. Importa más de lo habitual: este
@@ -508,8 +509,7 @@ cualquier servidor estático.** Lo que rompa esa afirmación necesita una enmien
 
 | Ruta | Qué es | JS |
 |---|---|---|
-| `/` | Home: héroe con cotizador, cómo funciona, confianza, empresas, FAQ | 3,2 KB |
-| `/cotizar` | La herramienta sola: cotizador centrado + actividad reciente en vivo | 5,5 KB |
+| `/` | Home: héroe con cotizador, usos, los cuatro pasos, confianza, empresas, FAQ | 5,1 KB |
 | `/como-funciona` | El recorrido completo con el diagrama de flujo y los tiempos | 0 |
 | `/empresas` | Carril B2B: casos de uso, diferencias, incorporación | 0 |
 | `/confianza` | El mecanismo, los requisitos y lo que no afirmamos | 0 |
@@ -527,15 +527,15 @@ Lo que falta y qué decisiones lo bloquean está en **`docs/legal-brief.md`**.
 
 ## Estado (2026-09-08)
 
-- `npm run check` → **0 errores en 57 archivos** · `npm test` → **68 tests** en verde ·
+- `npm run check` → **0 errores en 56 archivos** · `npm test` → **68 tests** en verde ·
   `npm audit` → 0 vulnerabilidades · `build` verde.
-- **JS enviado al cliente: tres scripts, no uno.** Cotizador (4 672 B, chunk externo), Motion
-  System (489 B + 62 B síncronos) y actividad reciente (2 336 B, sólo en `/cotizar/`). Está en
-  **cinco de las nueve páginas**; las **cuatro legales siguen en cero bytes**. Inventario y
-  matices en `arquitectura-produccion.md` §1.1.
-- HTML de 14,9 a 37,5 KB en crudo, **4,2 a 8,5 KB gzip** · CSS 35,3 KB / 8,7 KB gzip ·
-  fuentes 96 KB · `dist/` completo **680 KB**.
-- Las nueve páginas: un solo `h1`, sin saltos de nivel, `lang="es-CL"`, cero enlaces
+- **JS enviado al cliente: dos scripts.** Cotizador (4 672 B / 2,1 KB gzip, chunk externo, sólo en
+  la Home) y Motion System (489 B en línea + 62 B síncronos). Está en **cuatro de las ocho
+  páginas**; las **cuatro legales siguen en cero bytes**. La actividad reciente era el tercero y
+  ya no envía nada: vivía sólo en `/cotizar/`.
+- HTML de 15,4 a 39,4 KB en crudo, **4,3 a 8,3 KB gzip** · CSS 41,5 KB / 9,0 KB gzip ·
+  fuentes 96 KB · `dist/` completo **660 KB**.
+- Las ocho páginas: un solo `h1`, sin saltos de nivel, `lang="es-CL"`, cero enlaces
   muertos, todos los campos con etiqueta, enlace de salto al contenido y `aria-current`
   en la navegación.
 - Contraste verificado por cálculo, no a ojo: `--verde` sobre papel da **2.02:1**, así

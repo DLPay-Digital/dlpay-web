@@ -1,8 +1,9 @@
 # Arquitectura de producción y mapa de integración
 
 > Revisión de análisis. **No modifica la UI ni agrega funcionalidades.**
-> Creado 2026-09-04 · **actualizado 2026-09-08** con la guarda de despliegue, el escudo de
-> indexación y la corrección de tres afirmaciones que se habían quedado atrás (§1, §5, §6).
+> Creado 2026-09-04 · actualizado 2026-09-08 con la guarda de despliegue y el escudo de
+> indexación · **actualizado 2026-09-09**: se eliminó la ruta `/cotizar` y con ella el tercer
+> script del cliente. El sitio pasa a **ocho rutas** (§1.1, §2.2).
 > Todo lo afirmado aquí está verificado contra el código y la salida del build, no descrito de
 > memoria.
 
@@ -16,8 +17,8 @@ Reverificado el 2026-09-08 — cero `fetch`, `XMLHttpRequest`, `WebSocket`, `Eve
 
 | Momento | Qué ocurre |
 |---|---|
-| **Build** | Se valida la configuración de despliegue (URL canónica y política de indexación), se resuelve el precio (`ConfigPriceSource`), se lee la configuración, se compone el HTML de las nueve páginas, se genera el sitemap y el robots. Todo queda escrito en `dist/`. |
-| **Cliente** | Entre **0 y 6,8 KB** de JavaScript según la página (tabla abajo). Tres scripts, no dos. |
+| **Build** | Se valida la configuración de despliegue (URL canónica y política de indexación), se resuelve el precio (`ConfigPriceSource`), se lee la configuración, se compone el HTML de las ocho páginas, se genera el sitemap y el robots. Todo queda escrito en `dist/`. |
+| **Cliente** | Entre **0 y 5,1 KB** de JavaScript según la página (tabla abajo). Dos scripts. |
 | **Fuera del sistema** | La conversación por WhatsApp, la verificación bancaria y la ejecución de la operación. Nada de eso pasa por la web. |
 
 ### 1.1 El JavaScript que se envía — inventario exacto
@@ -25,14 +26,19 @@ Reverificado el 2026-09-08 — cero `fetch`, `XMLHttpRequest`, `WebSocket`, `Eve
 Corrige una afirmación anterior de este documento («6 KB en las dos páginas con cotizador… más el
 reloj del feed»). Ni eran dos páginas ni es un reloj.
 
-| Página | `is:inline` | Motion | ActivityFeed | Quoter | Total |
-|---|---|---|---|---|---|
-| `/` | 62 B | 489 B | — | 4 672 B | **5,1 KB** |
-| `/cotizar/` | — | — | **2 336 B** | 4 672 B | **6,8 KB** |
-| `/como-funciona/`, `/confianza/`, `/empresas/` | 62 B | 489 B | — | — | **0,5 KB** |
-| `/terminos/`, `/privacidad/`, `/tarifas/`, `/canal-de-denuncias/` | — | — | — | — | **0 B** |
+| Página | `is:inline` | Motion | Quoter | Total |
+|---|---|---|---|---|
+| `/` | 62 B | 489 B | 4 672 B | **5,1 KB** |
+| `/como-funciona/`, `/confianza/`, `/empresas/` | 62 B | 489 B | — | **0,5 KB** |
+| `/terminos/`, `/privacidad/`, `/tarifas/`, `/canal-de-denuncias/` | — | — | — | **0 B** |
 
-Los tres scripts y qué hace cada uno:
+**Eran tres scripts hasta el 2026-09-09; hoy son dos.** El tercero era la actividad reciente
+(2 336 B), y vivía **sólo** en `/cotizar/`. Al eliminarse esa ruta —duplicaba el cotizador del
+héroe de la Home— el componente quedó sin consumidores y su generador de operaciones ficticias
+**ya no llega a ningún navegador**. Es la mejor resolución posible del punto 3 de más abajo: no se
+mitigó, desapareció.
+
+Los dos scripts y qué hace cada uno:
 
 1. **Cotizador** (`Quoter.astro`, chunk externo de 4 672 B / 2,1 KB gzip) — la única isla
    interactiva. Interpreta lo que el usuario escribe, convierte con la **misma** función que arma
@@ -42,16 +48,16 @@ Los tres scripts y qué hace cada uno:
    ponen `.js-motion` antes de pintar; el estado oculto de `[data-enter]` existe **sólo** bajo esa
    clase (`tokens.css:139`), así que si el script no corre la página se ve completa e inmóvil.
    Se incluye únicamente en las páginas con movimiento de entrada: las cuatro legales no lo llevan.
-3. **Actividad reciente** (`ActivityFeed.astro`, 2 336 B en línea en `/cotizar/`) — **arrastra
-   `mock-activity-source.ts` completo al navegador**: su PRNG, sus rangos por tipo de operación y
-   su `subscribe`. Dentro corre un `setInterval` de 5 s que refresca los tiempos relativos, más un
-   emisor cada 14–46 s. Ambos se detienen con `document.hidden` y con `pagehide`.
+3. ~~**Actividad reciente**~~ — *retirado del cliente el 2026-09-09.* `ActivityFeed.astro`
+   arrastraba `mock-activity-source.ts` completo al navegador (PRNG, rangos por tipo de operación,
+   `subscribe`, un `setInterval` de 5 s y un emisor cada 14–46 s) y vivía sólo en `/cotizar/`. Al
+   eliminarse esa ruta dejó de enviarse.
 
-Sobre el punto 3: el distintivo de «Datos de ejemplo» y el descargo dependen de `source.isReal` y
-de `import.meta.env.DEV`, y está verificado que `PUBLIC_ACTIVITY_PREVIEW` no tiene efecto en un
-build — la salvaguarda de D18 está bien construida. Pero **mientras la fuente siga siendo mock, el
-generador de operaciones ficticias es código que se descarga en el navegador de cada visitante.**
-Es el argumento para cerrar D18.
+   El componente y `lib/activity` **se conservan en el repositorio, sin consumidores**, porque son
+   la costura de D18 y están cubiertos por 20 tests. Su salvaguarda sigue bien construida —el
+   distintivo de «Datos de ejemplo» depende de `source.isReal` y de `import.meta.env.DEV`, y está
+   verificado que `PUBLIC_ACTIVITY_PREVIEW` no tiene efecto en un build—, así que reponerlo el día
+   que exista la fuente real es colocar el componente en una página. Si D18 se descarta, se borran.
 
 ### Lo que esto implica
 
@@ -85,7 +91,7 @@ de operación, sin rotación de credenciales y sin un incidente posible de fuga 
 | Sistema | Interfaz que lo espera | Implementación de hoy | Qué cuesta enchufarlo | Bloqueado por |
 |---|---|---|---|---|
 | **Fuente de precio real** | `PriceSource` | `ConfigPriceSource` (valor de muestra) | Una clase nueva + una línea. La UI consume `Quote` y no sabe de dónde viene. | D7 |
-| **Fuente de actividad real** | `StreamingActivitySource` | `MockActivitySource` | Una clase nueva + una línea en `lib/activity/source.ts`. | D18 |
+| **Fuente de actividad real** | `StreamingActivitySource` | `MockActivitySource` — **el componente no está colocado en ninguna página** desde que se eliminó `/cotizar` (2026-09-09) | Una clase nueva, una línea en `lib/activity/source.ts` y colocar `ActivityFeed` donde corresponda. | D18 |
 | **Auth / KYC propios** | — | Enlaces a Guita | Cambiar dos constantes. La web **no** reconstruye registro ni KYC: es etapa aparte. | Etapa independiente |
 
 ### 2.3 Sistemas que existen en la operación pero **no** tocan la web

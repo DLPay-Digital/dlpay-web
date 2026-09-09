@@ -4,7 +4,7 @@
  * El menú móvil usa <details>: sin JavaScript (ADR-0004 §6).
  *
  * La franja de notificación va aquí, dentro del `<header>`, y no en cada
- * página: las nueve la reciben sin tocar ni una. Para cambiar el copy se editan
+ * página: las ocho la reciben sin tocar ni una. Para cambiar el copy se editan
  * las props de esta única etiqueta (ver `AnnouncementBar.astro`).
  */
 import Logo from './Logo.astro';
@@ -12,7 +12,7 @@ import AnnouncementBar from './AnnouncementBar.astro';
 import { platform } from '../lib/config/site.ts';
 
 /**
- * Orden: primero a QUIÉN va dirigido, después el detalle, y la acción al final.
+ * Orden: primero a QUIÉN va dirigido y después el detalle.
  *
  * "Personas" apunta a la Home porque la Home está escrita para personas; es su
  * contrapartida de "Empresas", que sí tiene página propia. Sin ella, la Home no
@@ -29,7 +29,6 @@ const nav = [
   { label: 'Empresas', href: '/empresas/' },
   { label: 'Cómo funciona', href: '/como-funciona/' },
   { label: 'Confianza', href: '/confianza/' },
-  { label: 'Cotizar', href: '/cotizar/' },
 ];
 
 /**

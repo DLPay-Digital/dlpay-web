@@ -21,9 +21,9 @@ export const GET: APIRoute = () => {
   // `site.url` ya viene normalizado sin barra final (lib/config/environment.ts).
   const base = site.url;
 
-  // La Home y el cotizador son las entradas del sitio; el resto las sostiene.
-  const priority = (route: string): string =>
-    route === '/' ? '1.0' : route === '/cotizar/' ? '0.9' : '0.7';
+  // La Home es LA entrada del sitio; el resto la sostiene. `/cotizar/` tenía
+  // 0.9 hasta que se eliminó: duplicaba el cotizador del héroe de la Home.
+  const priority = (route: string): string => (route === '/' ? '1.0' : '0.7');
 
   const urls = Object.keys(pages)
     .map(routeOf)
