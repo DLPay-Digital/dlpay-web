@@ -11,7 +11,7 @@ import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
 import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
-import { useCases, differences, onboarding } from '../content/business.ts';
+import { businessUseCases, differences, onboarding } from '../content/business.ts';
 import { contact } from '../lib/config/site.ts';
 
 const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
@@ -41,7 +41,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
           </p>
         </header>
         <ul class="grid">
-          {useCases.map((item) => (
+          {businessUseCases.map((item) => (
             <li class="case" data-enter>
               <h3>{item.title}</h3>
               <p>{item.body}</p>

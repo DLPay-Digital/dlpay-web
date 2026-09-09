@@ -17,7 +17,7 @@ export interface Difference {
   company: string;
 }
 
-export const useCases: UseCase[] = [
+export const businessUseCases: UseCase[] = [
   {
     title: 'Pagos a proveedores en el exterior',
     body: 'Conviertes a dólar digital y pagas a proveedores que operan con él, sin la cadena de bancos corresponsales ni sus horarios. Si tu proveedor sólo recibe por banco, conversémoslo antes.',
