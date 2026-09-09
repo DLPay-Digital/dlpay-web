@@ -16,6 +16,7 @@ import {
   DEV_SITE_URL,
   allowsIndexing,
   assertPublishableSiteUrl,
+  resolveQuoteLimits,
   resolveSiteUrl,
   validateSiteUrl,
 } from '../src/lib/config/environment.ts';
@@ -147,5 +148,40 @@ describe('política de indexación', () => {
 
   test('la decide su propia variable, no la URL del sitio', () => {
     assert.equal(allowsIndexing({ PUBLIC_SITE_URL: 'https://dlpay.cl' }), false);
+  });
+});
+
+describe('límites del cotizador (D24)', () => {
+  // La garantía estructural es que existe UN resolutor y todos —el cotizador
+  // que aplica el mínimo, /tarifas que lo publica, las ilustraciones— consumen
+  // su resultado. Estos tests fijan que ese resolutor es determinista y que sus
+  // valores por defecto viven aquí y en ningún otro sitio.
+  test('sin variables, aplica los valores por defecto documentados', () => {
+    const q = resolveQuoteLimits({});
+    assert.equal(q.minPayClp, 50_000);
+    assert.equal(q.maxPayClp, undefined);
+    assert.equal(q.samplePayClp, 2_000_000);
+  });
+
+  test('lee el mínimo y el máximo cuando vienen bien', () => {
+    const q = resolveQuoteLimits({ PUBLIC_QUOTE_MIN_CLP: '100000', PUBLIC_QUOTE_MAX_CLP: '50000000' });
+    assert.equal(q.minPayClp, 100_000);
+    assert.equal(q.maxPayClp, 50_000_000);
+  });
+
+  test('basura, cero o negativo caen al valor por defecto, nunca a NaN', () => {
+    for (const raw of ['', 'abc', '0', '-5000', 'NaN']) {
+      const q = resolveQuoteLimits({ PUBLIC_QUOTE_MIN_CLP: raw, PUBLIC_QUOTE_MAX_CLP: raw });
+      assert.equal(q.minPayClp, 50_000, `mínimo con ${JSON.stringify(raw)}`);
+      assert.equal(q.maxPayClp, undefined, `máximo con ${JSON.stringify(raw)}`);
+    }
+  });
+
+  test('un monto con decimales se trunca: son pesos', () => {
+    assert.equal(resolveQuoteLimits({ PUBLIC_QUOTE_MIN_CLP: '50000.9' }).minPayClp, 50_000);
+  });
+
+  test('el monto de muestra es el mismo para toda la web y no depende del entorno', () => {
+    assert.equal(resolveQuoteLimits({}).samplePayClp, resolveQuoteLimits({ PUBLIC_QUOTE_MIN_CLP: '1' }).samplePayClp);
   });
 });

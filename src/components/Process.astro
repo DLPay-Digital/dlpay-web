@@ -30,6 +30,7 @@
 import WhatsAppMockup from './WhatsAppMockup.astro';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { formatCLP, formatRate } from '../lib/pricing/format.ts';
+import { quoteLimits } from '../lib/config/site.ts';
 
 interface ChatMessage {
   sender: 'user' | 'dlpay';
@@ -44,8 +45,8 @@ interface Step {
 
 const price = await new ConfigPriceSource().getPrice();
 
-/** Mismo monto de muestra que el cotizador, el mockup y el bloque anterior. */
-const SAMPLE_PAY = 2_000_000;
+/** El mismo monto que carga el cotizador: un solo origen (D24). */
+const SAMPLE_PAY = quoteLimits.samplePayClp;
 const monto = formatCLP(SAMPLE_PAY);
 const tasa = formatRate(price.rate);
 

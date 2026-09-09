@@ -26,6 +26,8 @@
 export interface SiteEnv {
   readonly PUBLIC_SITE_URL?: string | undefined;
   readonly PUBLIC_ALLOW_INDEXING?: string | undefined;
+  readonly PUBLIC_QUOTE_MIN_CLP?: string | undefined;
+  readonly PUBLIC_QUOTE_MAX_CLP?: string | undefined;
 }
 
 /**
@@ -159,4 +161,44 @@ export function assertPublishableSiteUrl(env: SiteEnv): string {
  */
 export function allowsIndexing(env: SiteEnv): boolean {
   return env.PUBLIC_ALLOW_INDEXING === 'true';
+}
+
+/** Límites y monto de muestra del cotizador, en pesos. */
+export interface QuoteLimits {
+  /** Bajo este monto el cotizador no opera y lo dice. */
+  readonly minPayClp: number;
+  /** Sin definir, el estado `above_max` no se activa. */
+  readonly maxPayClp: number | undefined;
+  /** El monto con el que se carga el cotizador y con el que se dibujan todas las ilustraciones. */
+  readonly samplePayClp: number;
+}
+
+/** Entero positivo o nada: una cifra de dinero no admite basura ni ceros. */
+function positiveInt(raw: string | undefined): number | undefined {
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : undefined;
+}
+
+/**
+ * Los límites del cotizador, resueltos UNA sola vez.
+ *
+ * Cierra D24. Antes `PUBLIC_QUOTE_MIN_CLP` se leía en tres archivos —el
+ * cotizador que lo APLICA, `/tarifas` que lo PUBLICA y el mockup— cada uno con
+ * su propio `50000` por defecto, y el monto de muestra `2_000_000` estaba
+ * copiado en cuatro componentes de la Home. Coincidían por disciplina, no por
+ * construcción: bastaba que alguien cambiara un valor por defecto para que la
+ * web publicara un mínimo y aplicara otro. Ahora hay un solo valor y un solo
+ * sitio donde cambiarlo.
+ *
+ * PENDIENTE DE DECISIÓN — monto mínimo real (CLAUDE.md §13, D6). 50 000 es un
+ * placeholder.
+ * PENDIENTE DE DECISIÓN — monto máximo (CLAUDE.md §13, D21). Sin variable, el
+ * estado `above_max` no se activa: es una regla de negocio y no se inventa acá.
+ */
+export function resolveQuoteLimits(env: SiteEnv): QuoteLimits {
+  return {
+    minPayClp: positiveInt(env.PUBLIC_QUOTE_MIN_CLP) ?? 50_000,
+    maxPayClp: positiveInt(env.PUBLIC_QUOTE_MAX_CLP),
+    samplePayClp: 2_000_000,
+  };
 }

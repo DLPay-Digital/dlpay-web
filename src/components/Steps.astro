@@ -27,11 +27,12 @@ import Icon from './Icon.astro';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { convert, formatAmount } from '../lib/pricing/quote.ts';
 import { formatCLP, formatRate } from '../lib/pricing/format.ts';
+import { quoteLimits } from '../lib/config/site.ts';
 
 const price = await new ConfigPriceSource().getPrice();
 
-/** Mismo monto de muestra que el cotizador y el mockup de WhatsApp. */
-const SAMPLE_PAY = 2_000_000;
+/** El mismo monto que carga el cotizador: un solo origen (D24). */
+const SAMPLE_PAY = quoteLimits.samplePayClp;
 const received = convert('send_abroad', SAMPLE_PAY, price.rate);
 ---
 <section class="feature" id="como-funciona" aria-labelledby="feature-title">

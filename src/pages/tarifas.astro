@@ -12,10 +12,12 @@
 import Legal from '../layouts/Legal.astro';
 import PendingNotice from '../components/PendingNotice.astro';
 import { formatCLP } from '../lib/pricing/format.ts';
-import { contact } from '../lib/config/site.ts';
+import { contact, quoteLimits } from '../lib/config/site.ts';
 
-// PENDIENTE DE DECISIÓN — monto mínimo real (CLAUDE.md §13, D6)
-const minPay = Number(import.meta.env.PUBLIC_QUOTE_MIN_CLP ?? '50000') || 50000;
+/* El mínimo que ESTA página publica es, por construcción, el mismo que el
+   cotizador aplica: ambos leen quoteLimits (D24). El pendiente D6 vive junto al
+   valor, en environment.ts. */
+const minPay = quoteLimits.minPayClp;
 const wa = `https://wa.me/${contact.whatsappNumber}`;
 ---
 <Legal

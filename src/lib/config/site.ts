@@ -14,7 +14,7 @@
  * Todos los valores vienen de variables PUBLIC_* y son configuración pública,
  * no secretos. Ver .env.example y ADR-0003 §4.
  */
-import { allowsIndexing, resolveSiteUrl } from './environment.ts';
+import { allowsIndexing, resolveQuoteLimits, resolveSiteUrl } from './environment.ts';
 
 const env = import.meta.env;
 
@@ -60,3 +60,11 @@ export const platform = {
   loginUrl: read(env.PUBLIC_PLATFORM_LOGIN_URL, 'https://dlpay.cl/auth/login'),
   registerUrl: read(env.PUBLIC_PLATFORM_REGISTER_URL, 'https://dlpay.cl/auth/register'),
 } as const;
+
+/**
+ * Límites y monto de muestra del cotizador. ÚNICO lector de
+ * `PUBLIC_QUOTE_MIN_CLP` y `PUBLIC_QUOTE_MAX_CLP` en toda la aplicación: el
+ * cotizador, `/tarifas` y las ilustraciones de la Home consumen esto y no el
+ * entorno. Resolución en `environment.ts`.
+ */
+export const quoteLimits = resolveQuoteLimits(env);

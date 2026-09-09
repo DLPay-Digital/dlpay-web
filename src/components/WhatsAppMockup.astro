@@ -34,6 +34,7 @@
 import Logo from './Logo.astro';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { buildQuote, whatsappMessage } from '../lib/pricing/quote.ts';
+import { quoteLimits } from '../lib/config/site.ts';
 
 interface ChatMessage {
   /** `user` sale por la derecha; `dlpay` entra por la izquierda. */
@@ -52,12 +53,8 @@ const { thread, variant = 'proof' } = Astro.props;
 /** El hilo por omisión se deriva; nunca se teclea. Ver la regla dura arriba. */
 async function defaultThread(): Promise<readonly ChatMessage[]> {
   const price = await new ConfigPriceSource().getPrice();
-  const minPay = Number(import.meta.env.PUBLIC_QUOTE_MIN_CLP ?? '50000') || 50000;
-  const maxRaw = Number(import.meta.env.PUBLIC_QUOTE_MAX_CLP ?? '');
-  const maxPay = Number.isFinite(maxRaw) && maxRaw > 0 ? maxRaw : undefined;
-
-  /** Mismos valores que Quoter.astro: el mockup y el botón dicen lo mismo. */
-  const samplePay = 2_000_000;
+  /* Mismo origen que el cotizador, por construcción y no por disciplina (D24). */
+  const { minPayClp: minPay, maxPayClp: maxPay, samplePayClp: samplePay } = quoteLimits;
   const quote = buildQuote({
     intent: 'send_abroad',
     giveAmount: samplePay,

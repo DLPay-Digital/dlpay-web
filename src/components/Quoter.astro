@@ -15,7 +15,7 @@
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { formatCLP, formatRate, formatUSD } from '../lib/pricing/format.ts';
 import { buildQuote, whatsappUrl } from '../lib/pricing/quote.ts';
-import { contact, platform } from '../lib/config/site.ts';
+import { contact, platform, quoteLimits } from '../lib/config/site.ts';
 
 interface Props {
   /** Sobre tinta flota con sombra; sobre papel va plano (spec §2). */
@@ -25,15 +25,9 @@ const { variant = 'floating' } = Astro.props;
 
 const price = await new ConfigPriceSource().getPrice();
 
-// PENDIENTE DE DECISIÓN — monto mínimo real (CLAUDE.md §13, D6)
-const minPay = Number(import.meta.env.PUBLIC_QUOTE_MIN_CLP ?? '50000') || 50000;
-
-// PENDIENTE DE DECISIÓN — monto máximo (CLAUDE.md §13, D21). Sin definir, el
-// estado `above_max` no se activa: es una regla de negocio y no se inventa acá.
-const maxRaw = Number(import.meta.env.PUBLIC_QUOTE_MAX_CLP ?? '');
-const maxPay = Number.isFinite(maxRaw) && maxRaw > 0 ? maxRaw : undefined;
-
-const initialPay = 2_000_000;
+/* Límites y monto inicial: UN solo origen para toda la web (D24). Los
+   pendientes D6 y D21 están anotados donde vive el valor, en environment.ts. */
+const { minPayClp: minPay, maxPayClp: maxPay, samplePayClp: initialPay } = quoteLimits;
 const initialGet = initialPay / price.rate;
 
 /**
