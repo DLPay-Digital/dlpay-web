@@ -15,13 +15,11 @@ import Icon from '../Icon.astro';
 
 interface Props {
   href: string;
-  /** Sobre tinta el verde de marca contrasta; sobre claro hace falta el profundo. */
-  tone?: 'light' | 'tinta';
   class?: string;
 }
-const { href, tone = 'light', class: className } = Astro.props;
+const { href, class: className } = Astro.props;
 ---
-<a class:list={['arrow', tone, className]} href={href}>
+<a class:list={['arrow', className]} href={href}>
   <slot />
   <Icon name="chevron" size={15} class="chev" />
 </a>
@@ -41,8 +39,7 @@ const { href, tone = 'light', class: className } = Astro.props;
     font-size: var(--t-body-sm);
     text-decoration: none;
   }
-  .light { color: var(--verde-deep); }
-  .tinta { color: var(--verde); }
+  .arrow { color: var(--verde-deep); }
   .arrow:hover { text-decoration: underline; }
 
   .chev {

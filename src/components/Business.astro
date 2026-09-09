@@ -5,23 +5,13 @@
  * Tardía y clara: la Home no se vuelve corporativa, pero reconoce a la empresa
  * y la lleva a su experiencia (principio UX 8).
  *
- * Enlaza a WhatsApp mientras /empresas no exista como página propia.
+ * Enlaza a /empresas/, que es la experiencia propia de este público.
  */
 import Icon from './Icon.astro';
 
-interface Props {
-  /**
-   * Foto de fondo, cuando exista. Sin ella el fondo es la geometría de abajo,
-   * que NO es un relleno provisional: dice lo mismo que la sección.
-   * Ver el comentario del velo en el CSS antes de activarla.
-   */
-  photo?: string;
-}
-const { photo } = Astro.props;
 ---
 <section
-  class:list={['business', 'on-tinta-surface', photo && 'has-photo']}
-  style={photo ? `--bg-photo: url('${photo}')` : undefined}
+  class="business on-tinta-surface"
   id="empresas"
   aria-labelledby="business-title"
 >
@@ -74,35 +64,9 @@ const { photo } = Astro.props;
     padding: var(--s-9) 0;
   }
 
-  /* ── Capa de foto ────────────────────────────────────────────────────────
-     Sólo existe cuando se pasa `photo`. Hasta entonces no se emite ningún
-     marcado extra ni se pide ningún archivo. */
-  .has-photo::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-    background: var(--bg-photo) center / cover no-repeat;
-  }
-
-  /* ── Velo de tinta ───────────────────────────────────────────────────────
-     0.85, no 0.80. Verificado sobre el PEOR caso —un píxel blanco de la foto—:
-       0.80 → párrafo a 4.44:1  ✗ (AA pide 4.5)
-       0.85 → párrafo a 5.33:1  ✓  · titular 10.72:1 · botón 5.51:1
-     Y opacidad, no `mix-blend-mode: multiply`: multiplicar por una tinta casi
-     negra aplasta la foto a negro y se pagaría una imagen para no verla. */
-  .has-photo::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: var(--tinta);
-    opacity: .85;
-  }
-
   /* ── Geometría de fondo ──────────────────────────────────────────────────
      Sangrada por la derecha. Contraste bajo a propósito: acompaña, no compite.
-     Con foto no se dibuja: dos fondos serían ruido. */
+     */
   .mesh {
     position: absolute;
     z-index: -1;
@@ -118,7 +82,6 @@ const { photo } = Astro.props;
     pointer-events: none;
     display: none;
   }
-  .has-photo .mesh { display: none; }
   .trunk, .branch {
     stroke: var(--verde);
     stroke-width: 1.25;
@@ -166,6 +129,6 @@ const { photo } = Astro.props;
      del párrafo. Con el texto a 56ch (~476px) y la figura de 520px sangrada 24,
      la holgura recién aparece aquí — 40px a 1140, 100px a 1200. */
   @media (min-width: 1140px) {
-    .business:not(.has-photo) .mesh { display: block; }
+    .mesh { display: block; }
   }
 </style>
