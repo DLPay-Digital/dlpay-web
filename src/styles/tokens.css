@@ -23,6 +23,13 @@
   --line:rgba(11,19,32,.14);
   --on-tinta:#EDF2EF;
   --on-tinta-mute:#9DB0AA;
+  --on-verde:#04140E;      /* texto sobre relleno --verde (botones, salto). 8.58:1 */
+  --line-on-tinta:rgba(237,242,239,.40);
+                          /* contorno de CONTROL sobre tinta. 0.40 es el alfa que
+                             da 3.50:1 sobre --tinta y 3.47:1 sobre --tinta-2, el
+                             mínimo que WCAG 1.4.11 pide a un control. A 0.28
+                             daba 2.32:1 y ya se coló una vez. Los separadores
+                             decorativos (0.06–0.14) NO usan este token. */
 
   /* ── Semánticos (separados del acento) ─────────────────────────────────── */
   --sube:#16C784;         /* coincide con el verde de marca, a propósito */

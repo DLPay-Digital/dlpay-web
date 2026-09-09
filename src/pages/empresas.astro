@@ -228,7 +228,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
     align-items: center;
     gap: var(--s-2);
     background: var(--verde);
-    color: #04140e;
+    color: var(--on-verde);
     font-weight: 700;
     font-size: var(--t-body);
     padding: var(--s-4) var(--s-6);
@@ -244,7 +244,7 @@ const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
        2.35:1 y WCAG 1.4.11 pide 3:1 al contorno de un control. 0.40 da 3.47:1
        aquí y 3.50:1 sobre `--tinta`, así que un solo valor sirve para las dos
        superficies oscuras y coincide con el fantasma de `Steps.astro`. */
-    border: 1px solid rgba(237, 242, 239, 0.4);
+    border: 1px solid var(--line-on-tinta);
     color: var(--on-tinta);
     font-weight: 600;
     font-size: var(--t-body-sm);

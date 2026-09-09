@@ -45,6 +45,8 @@ planos, sin antialias intermedio. Son los oficiales (ver ADR-0001 §2, enmienda 
 | `--line` | `rgba(11,19,32,.14)` | Bordes hairline, divisores. |
 | `--on-tinta` | `#EDF2EF` | Texto principal sobre tinta. |
 | `--on-tinta-mute` | `#9DB0AA` | Texto secundario sobre tinta. |
+| `--on-verde` | `#04140E` | Texto sobre relleno `--verde` (CTA, enlace de salto). 8.58:1. **Añadido 2026-09-09**: estaba escrito a mano en 9 sitios. |
+| `--line-on-tinta` | `rgba(237,242,239,.40)` | Contorno de **control** sobre tinta. 0.40 es el alfa mínimo que cumple el 3:1 de WCAG 1.4.11 (3.50:1 sobre `--tinta`, 3.47:1 sobre `--tinta-2`). Los separadores decorativos de 0.06–0.14 **no** lo usan. **Añadido 2026-09-09**: a 0.28 ya se coló una vez. |
 
 ### 2.3 Colores semánticos (separados del acento)
 
