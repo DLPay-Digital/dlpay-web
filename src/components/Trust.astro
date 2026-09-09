@@ -14,15 +14,30 @@ import { trust } from '../content/home.ts';
       <p>Nada de sellos. Esto es lo que efectivamente pasa con tu dinero.</p>
     </header>
 
-    <ul class="grid">
-      {trust.map((block) => (
-        <li class="block">
-          <IconBadge name={block.icon} />
-          <h3>{block.title}</h3>
-          <p>{block.body}</p>
-        </li>
-      ))}
-    </ul>
+    {/*
+      Carril deslizable en móvil, rejilla en escritorio — el mismo patrón que
+      `UseCases.astro`.
+
+      `tabindex="0"` no es un descuido: un contenedor con `overflow-x: auto` NO
+      es enfocable por defecto, y dentro de los bloques no hay nada que reciba
+      foco (insignia decorativa, título y párrafo). Sin esto, quien navega sólo
+      con teclado no podría desplazar el carril y los bloques 2 y 3 quedarían
+      fuera de su alcance: cambiaríamos apilamiento por un fallo de WCAG 2.1.1.
+    */}
+    <div class="viewport" tabindex="0" role="group" aria-labelledby="trust-title">
+      <ul class="grid">
+        {trust.map((block) => (
+          <li class="block">
+            <IconBadge name={block.icon} />
+            <h3>{block.title}</h3>
+            <p>{block.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    {/* FUERA del carril a propósito: es un enlace, y dentro se desplazaría
+        fuera de la vista justo cuando alguien va a pulsarlo. */}
     <p class="more"><ArrowLink href="/confianza/">Cómo cuidamos tu operación</ArrowLink></p>
   </div>
 </section>
@@ -54,8 +69,57 @@ import { trust } from '../content/home.ts';
   .block p { color: var(--ink-mute); max-width: 46ch; }
   .more { margin-top: var(--s-6); }
 
+  /* El foco del carril se dibuja fuera, para no recortarlo con el overflow.
+     Esta superficie es clara, así que `--focus` es `--verde-deep`: 4.44:1 sobre
+     `--papel-2`, por encima del 3:1 que WCAG pide a un indicador de foco. */
+  .viewport:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+  /* ── Carril deslizable · sólo móvil ────────────────────────────────────── */
+  @media (max-width: 759px) {
+    .viewport {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      /* Que el deslizamiento horizontal no dispare el "atrás" del navegador. */
+      overscroll-behavior-x: contain;
+      /* El carril no aporta scroll vertical: sólo se desplaza en un eje. */
+      overflow-y: hidden;
+    }
+
+    .grid { display: flex; gap: var(--s-4); }
+
+    /*
+      El asomo se resta en PÍXELES, no en porcentaje: así lo que se ve del
+      bloque siguiente son 48px exactos en cualquier ancho, en vez de depender
+      del tamaño de pantalla. Y 48px es justo el ancho de `IconBadge` en su
+      tamaño `md`, así que lo que asoma es la insignia COMPLETA del bloque
+      siguiente — una señal más legible que un recorte de texto.
+    */
+    .block {
+      flex: 0 0 calc(100% - var(--s-8));
+      min-width: 0;
+      scroll-snap-align: start;
+    }
+
+    /*
+      NO hace falta el override de `[data-enter]` que sí lleva `UseCases.astro`.
+      Allí las tarjetas lo tienen y, al nacer recortadas por el `overflow`, no
+      intersecan nunca y se quedaban en `opacity: 0`. Aquí `data-enter` está
+      sólo en el `h2`, que vive fuera del carril: no hay nada que desatascar y
+      la regla sería CSS muerta.
+
+      ⚠️ Si algún día se le añade `data-enter` a `.block`, hay que reponerla o
+      los bloques 2 y 3 saldrán en blanco —incluida la insignia que asoma— sin
+      que salte ningún error.
+    */
+  }
+
   @media (min-width: 760px) {
-    .grid { grid-template-columns: repeat(3, 1fr); gap: var(--s-7); }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-7); }
+    /* En rejilla no hay nada que desplazar; `visible` deja respirar el anillo
+       de foco. El carril sigue siendo una parada de tabulación aquí, porque
+       `tabindex` es HTML y no se retira por CSS: anuncia el grupo y su nombre,
+       pero no hace nada. Mismo coste asumido que en `UseCases.astro`. */
+    .viewport { overflow: visible; }
   }
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
