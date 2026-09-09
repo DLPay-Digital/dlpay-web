@@ -78,6 +78,7 @@ src/
 ├── styles/
 │   ├── fonts.css     # @font-face del set T-C, auto-hospedado
 │   └── tokens.css    # espejo del Design System V1 + gate del Motion System
+│                     # (tres tokens sin uso hoy y a propósito — ver «Tokens reservados»)
 └── lib/
     ├── config/
     │   ├── environment.ts   # resolución y validación del entorno — PURO
@@ -122,6 +123,20 @@ cuenta:
 - **`bare`** — sólo el dispositivo, visible en todos los anchos. Lo usa `Process.astro` cuatro
   veces, con hilos **narrativos** que quedan fuera de esa garantía a propósito.
 
+### Tokens reservados: sin uso hoy, y a propósito
+
+Un barrido de `var(--…)` encuentra **tres tokens de `tokens.css` que ningún archivo consume**. Los
+tres se conservan porque expresan una intención del sistema, no porque se haya olvidado borrarlos:
+
+| Token | Por qué sigue |
+|---|---|
+| `--sube` | Par semántico de `--baja` (que sí se usa): el color de «precio que sube». Lo consumirá el estado `market_moving` del cotizador, hoy inalcanzable sin fuente de precio real (D7). Borrarlo obliga a reinventarlo cuando llegue. |
+| `--f-display` | Alias de `--f-text`, porque T-C usa una sola familia. Es la **costura** del Design System §3: el día que display y texto se separen tipográficamente, es el único punto de cambio. |
+| `--r-0` | El cero de la escala de radios. Nadie lo invoca porque se escribe `0`, pero la escala se lee completa (0 · 3 · 6 · 10 · 14 · 20). |
+
+Coste de conservarlos: tres líneas. Si una auditoría futura los vuelve a marcar, la respuesta está
+aquí.
+
 ## Dependencias instaladas
 
 **Cuatro** paquetes declarados, con la justificación que exige `CLAUDE.md` §8. Ninguno llega al
@@ -148,6 +163,12 @@ coherencia con el Principio 10.
 Set **T-C**: Familjen Grotesk (títulos y texto) + Spline Sans Mono (cifras). Ambas
 variables, SIL OFL 1.1, **auto-hospedadas** en `public/fonts/` con sus licencias al
 lado. Nunca se cargan desde un CDN de terceros.
+
+> **Los dos `*-OFL.txt` de `public/fonts/` no los referencia ningún código, y aun así NO se
+> borran.** La licencia SIL Open Font License 1.1 exige que su texto acompañe a las fuentes que se
+> distribuyen, y servir los `woff2` desde `public/` es distribuirlas. Que un barrido de "assets sin
+> referencia" los marque es lo esperado: son una obligación de licencia, no un asset del sitio.
+> La auditoría del 2026-09-09 los señaló y se descartó tocarlos por esta razón.
 
 Para actualizarlas: descargar los `woff2` variables y reemplazar los archivos; los
 `unicode-range` de `fonts.css` cubren `latin` y `latin-ext` (el español necesita
