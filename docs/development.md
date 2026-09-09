@@ -232,6 +232,62 @@ el `<svg>`. La especificidad es idéntica, así que no altera ninguna cascada.
 
 **Si algún día un icono no responde a su CSS, mirar esto primero.**
 
+## La otra trampa: una animación crea contexto de apilamiento
+
+**Regla: todo elemento superpuesto lleva `z-index` explícito.** Nunca se confía en el orden de
+pintado implícito.
+
+No es una preferencia de estilo. Costó un bug real el 2026-09-09: con el menú móvil desplegado, el
+enlace de la franja de notificación se dibujaba **por encima** del cajón del menú.
+
+Lo desconcertante es que no se ve leyendo el CSS. Ni la cabecera ni la franja declaraban nada
+sospechoso — cero `position`, `z-index`, `transform` o `isolation` en la franja. La cadena real es
+ésta:
+
+1. La franja rota sus dos mensajes con una animación de **`opacity`**.
+2. Un elemento con una animación viva de `opacity` **obtiene contexto de apilamiento** mientras
+   corre, aunque su opacidad valga 1 en ese instante.
+3. Ese contexto entra en el mismo grupo de pintado que el cajón posicionado —los dos con
+   `z-index: auto`— y ahí decide el **orden del DOM**.
+4. La franja va después de `.bar` dentro del `<header>`, así que ganaba.
+
+El cajón nunca había tenido `z-index` propio: funcionaba por accidente, hasta que se añadió una
+franja que animaba opacidad encima. **Un componente nuevo puede romper el apilamiento de otro sin
+tocarlo.**
+
+### Por qué importa aquí en particular
+
+El sitio tiene **siete animaciones que tocan `opacity`** repartidas por los componentes:
+`AnnouncementBar` (`announce-cycle`), `Hero` (`heroIn`, `wedgeIn`), `Quoter` (`settle`, ×3) y
+`ActivityFeed` (`appear`). Cada una induce un contexto de apilamiento invisible al leer el CSS. Hoy
+sólo la de la franja convivía con un elemento superpuesto; la próxima puede no tener esa suerte.
+
+### Escalera de `z-index` en uso
+
+| Valor | Dónde | Contexto |
+|---|---|---|
+| `30` | `.dock` del cotizador (barra fija inferior) | raíz de la página |
+| `20` | `.skip:focus` — el enlace de salto va por encima de todo, por accesibilidad | dentro de `.site-header` |
+| `15` | `.drawer` — el menú móvil, por encima del contenido de la cabecera | dentro de `.site-header` |
+| `10` | `.site-header` | raíz de la página |
+| `1` | `.thread` de `Steps`, `.island` del teléfono | locales, dentro de su propia caja |
+| `-1`, `-2` | capas de fondo de `Business` | detrás del contenido |
+
+Los valores locales (`1`) no compiten con la escalera global: viven dentro de un elemento que ya
+crea su propio contexto.
+
+### Cómo diagnosticarlo
+
+`elementFromPoint` sobre el punto de solape dice quién pinta encima, sin interpretar reglas:
+
+```js
+const el = document.elementFromPoint(x, y);
+console.log(drawer.contains(el) ? 'el cajón' : 'otra cosa');
+```
+
+Y para confirmar que la causa es una animación, basta desactivarla y volver a medir:
+`el.style.animation = 'none'`. Si el orden cambia, ya está localizado.
+
 ## Verificación visual con Chrome headless
 
 El MCP de Playwright **no conecta** en este entorno (`npx` fuera del `$PATH`, `CLAUDE.md` §11), así

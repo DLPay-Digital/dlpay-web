@@ -170,8 +170,25 @@ const isCurrent = (href: string) => href === current;
   .burger i { display: block; width: 20px; height: 1.5px; background: var(--on-tinta-mute); transition: background-color var(--m-fast) var(--m-ease); }
   .menu[open] .burger i { background: var(--on-tinta); }
 
+  /*
+    `z-index` EXPLÍCITO, y no es decorativo: sin él el enlace de la franja de
+    notificación se dibujaba ENCIMA del menú desplegado.
+
+    El motivo no se ve leyendo el CSS del cajón. La franja rota sus dos mensajes
+    con una animación de `opacity`, y un elemento con una animación viva de
+    `opacity` obtiene contexto de apilamiento mientras corre. Ese contexto entra
+    en el MISMO grupo de pintado que este cajón posicionado —los dos con
+    `z-index: auto`—, y dentro de ese grupo decide el orden del DOM: la franja
+    va después de `.bar`, así que ganaba.
+
+    Un menú superpuesto no debe depender del orden del DOM de sus hermanos.
+    Escalera de apilamiento dentro de `.site-header`, que es el contexto:
+      15 → este cajón, por encima del contenido de la cabecera
+      20 → `.skip:focus`, que va por encima de todo por accesibilidad
+  */
   .drawer {
     position: absolute;
+    z-index: 15;
     right: 0;
     top: calc(100% + var(--s-3));
     background: var(--tinta-2);

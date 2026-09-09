@@ -230,6 +230,25 @@ caso, conviene revisar si sigue siendo "bloque contenido" o si se está usando c
 | `--elev-card` | `0 24px 60px -24px rgba(11,19,32,.45)` | **Sólo** la tarjeta del cotizador sobre la tinta. |
 | `--elev-pop` | `0 8px 24px -12px rgba(11,19,32,.25)` | Menús/popovers (futuro). |
 
+### 4.5.1 Apilamiento (`z-index`) — añadido 2026-09-09
+
+**Regla: todo elemento superpuesto lleva `z-index` explícito.** Nunca se confía en el orden de
+pintado implícito, porque en este sistema **una animación puede romperlo desde otro componente**:
+un elemento con una animación viva de `opacity` obtiene contexto de apilamiento mientras corre, y
+entonces gana por orden del DOM. Hay siete animaciones de `opacity` repartidas por el sitio.
+
+| Valor | Qué |
+|---|---|
+| `30` | Barra fija inferior del cotizador. |
+| `20` | Enlace de salto al contenido. **Siempre lo más alto**, por accesibilidad. |
+| `15` | Menú móvil desplegado. |
+| `10` | Cabecera. |
+| `1` | Superposiciones **locales**, dentro de una caja que ya crea su contexto. |
+| negativos | Capas de fondo detrás del contenido. |
+
+Antes de añadir un valor nuevo, comprobar si basta con uno local. El caso completo y cómo se
+diagnostica están en `docs/development.md`.
+
 ### 4.6 Bordes
 
 Hairline `1px solid var(--line)`. Los campos de formulario usan borde, no sombra. "No todo es una
