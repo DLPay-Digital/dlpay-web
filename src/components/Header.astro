@@ -11,16 +11,40 @@ import Logo from './Logo.astro';
 import AnnouncementBar from './AnnouncementBar.astro';
 import { platform } from '../lib/config/site.ts';
 
+/**
+ * Orden: primero a QUIÉN va dirigido, después el detalle, y la acción al final.
+ *
+ * "Personas" apunta a la Home porque la Home está escrita para personas; es su
+ * contrapartida de "Empresas", que sí tiene página propia. Sin ella, la Home no
+ * tenía representación en el menú y la pareja Personas/Empresas no se leía.
+ *
+ * Efecto lateral bueno: ahora la Home marca `aria-current="page"` en su entrada,
+ * cosa que antes no ocurría en ninguna ruta del menú.
+ *
+ * Este array alimenta la navegación de escritorio Y el cajón móvil: se ordena
+ * una vez.
+ */
 const nav = [
-  { label: 'Cotizar', href: '/cotizar/' },
-  { label: 'Cómo funciona', href: '/como-funciona/' },
+  { label: 'Personas', href: '/' },
   { label: 'Empresas', href: '/empresas/' },
+  { label: 'Cómo funciona', href: '/como-funciona/' },
   { label: 'Confianza', href: '/confianza/' },
+  { label: 'Cotizar', href: '/cotizar/' },
 ];
 
-/** Marca la página actual para lectores de pantalla y para el estilo. */
-const current = Astro.url.pathname.replace(/\/$/, '') || '/';
-const isCurrent = (href: string) => href === current;
+/**
+ * Marca la página actual para lectores de pantalla y para el estilo.
+ *
+ * Normaliza LOS DOS lados. Antes sólo se le quitaba la barra final a la ruta
+ * actual y se comparaba contra un `href` que sí la lleva —`/empresas` contra
+ * `/empresas/`—, así que no coincidía nunca: ninguna página interior marcaba su
+ * entrada, ni con el subrayado verde ni con `aria-current` para un lector de
+ * pantalla. Se rompió al adoptar `trailingSlash: 'always'` (auditoría
+ * 2026-09-04, B2), cuando los enlaces del menú ganaron la barra.
+ */
+const normalize = (path: string): string => path.replace(/\/+$/, '') || '/';
+const current = normalize(Astro.url.pathname);
+const isCurrent = (href: string): boolean => normalize(href) === current;
 ---
 <header class="site-header on-tinta-surface">
   <a class="skip" href="#main">Saltar al contenido</a>
@@ -119,6 +143,13 @@ const isCurrent = (href: string) => href === current;
     text-decoration: none;
     font-size: var(--t-body-sm);
     font-weight: 500;
+    /*
+      Con cinco entradas, en la franja 900–1023px "Cómo funciona" partía en dos
+      líneas. Y como el `ul` es flex con `align-items: stretch`, ESA entrada
+      estiraba a las cinco: las `li` pasaban de 31px a 50px y la barra entera de
+      77px a 83px. Un enlace de menú no se parte nunca.
+    */
+    white-space: nowrap;
   }
   .desktop-nav a { transition: color var(--m-fast) var(--m-ease); }
   .desktop-nav a:hover { color: var(--on-tinta); }
@@ -236,6 +267,9 @@ const isCurrent = (href: string) => href === current;
       text-decoration: none;
       font-size: var(--t-body-sm);
       font-weight: 500;
+      /* Mismo motivo que en los enlaces del menú: en 900–1023px "Iniciar
+         sesión" partía en dos líneas y quedaba apilado junto al botón. */
+      white-space: nowrap;
     }
     .login { transition: color var(--m-fast) var(--m-ease); }
   .login:hover { color: var(--on-tinta); }
