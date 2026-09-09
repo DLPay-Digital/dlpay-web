@@ -18,7 +18,7 @@ import { contact, quoteLimits } from '../lib/config/site.ts';
    cotizador aplica: ambos leen quoteLimits (D24). El pendiente D6 vive junto al
    valor, en environment.ts. */
 const minPay = quoteLimits.minPayClp;
-const wa = `https://wa.me/${contact.whatsappNumber}`;
+const wa = contact.whatsappUrl();
 ---
 <Legal
   title="Tarifas"

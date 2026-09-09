@@ -13,9 +13,9 @@ import Legal from '../layouts/Legal.astro';
 import PendingNotice from '../components/PendingNotice.astro';
 import { contact } from '../lib/config/site.ts';
 
-const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
+const wa = contact.whatsappUrl(
   'Hola, quiero presentar un reclamo formal.'
-)}`;
+);
 ---
 <Legal
   title="Canal de denuncias"

@@ -14,9 +14,9 @@ import Legal from '../layouts/Legal.astro';
 import PendingNotice from '../components/PendingNotice.astro';
 import { contact, site } from '../lib/config/site.ts';
 
-const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
+const wa = contact.whatsappUrl(
   'Hola, tengo una consulta sobre el tratamiento de mis datos personales.'
-)}`;
+);
 ---
 <Legal
   title="Privacidad"

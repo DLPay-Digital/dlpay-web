@@ -14,9 +14,9 @@ import Icon from '../components/Icon.astro';
 import { businessUseCases, differences, onboarding } from '../content/business.ts';
 import { contact } from '../lib/config/site.ts';
 
-const wa = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(
+const wa = contact.whatsappUrl(
   'Hola, escribo por DLPay Empresas. Quiero conocer las condiciones para pagos al exterior y cambio de divisas.'
-)}`;
+);
 ---
 <Base
   title="DLPay Empresas"

@@ -12,7 +12,7 @@ import Icon from './Icon.astro';
 import Alliances from './Alliances.astro';
 import { site, contact } from '../lib/config/site.ts';
 
-const wa = `https://wa.me/${contact.whatsappNumber}`;
+const wa = contact.whatsappUrl();
 const legal = [
   { label: 'Términos y condiciones', href: '/terminos/' },
   { label: 'Privacidad', href: '/privacidad/' },

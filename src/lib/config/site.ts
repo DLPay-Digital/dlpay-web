@@ -47,9 +47,25 @@ export const indexing = {
   allowed: allowsIndexing(env),
 } as const;
 
+const whatsappNumber = read(env.PUBLIC_WHATSAPP_NUMBER, '56977615921');
+
 export const contact = {
   /** Formato internacional sin signos, como lo espera wa.me */
-  whatsappNumber: read(env.PUBLIC_WHATSAPP_NUMBER, '56977615921'),
+  whatsappNumber,
+  /**
+   * Enlace a WhatsApp, con o sin mensaje prellenado. ÚNICO sitio de la
+   * aplicación que sabe cómo se arma: antes ocho archivos escribían la URL a
+   * mano. Los enlaces que nacen de una COTIZACIÓN siguen usando
+   * `whatsappUrl()` de `lib/pricing/quote.ts`, que compone el mensaje desde el
+   * `Quote`; este es para los enlaces de contacto planos.
+   *
+   * Si `text` no viene, el chat se abre en blanco. Hoy lo hacen cuatro enlaces
+   * y es una decisión de contenido abierta (CLAUDE.md §13, D22), no un descuido.
+   */
+  whatsappUrl(text?: string): string {
+    const base = `https://wa.me/${whatsappNumber}`;
+    return text ? `${base}?text=${encodeURIComponent(text)}` : base;
+  },
 } as const;
 
 /**

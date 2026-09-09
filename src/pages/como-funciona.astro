@@ -16,7 +16,7 @@ import Icon from '../components/Icon.astro';
 import { detailedSteps, checklist } from '../content/process.ts';
 import { contact, platform } from '../lib/config/site.ts';
 
-const wa = `https://wa.me/${contact.whatsappNumber}`;
+const wa = contact.whatsappUrl();
 ---
 <Base
   title="Cómo funciona"

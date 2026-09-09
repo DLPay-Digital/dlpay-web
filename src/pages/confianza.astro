@@ -16,7 +16,7 @@ import Icon from '../components/Icon.astro';
 import { mechanisms, honesty, requirements } from '../content/trust.ts';
 import { site, contact } from '../lib/config/site.ts';
 
-const wa = `https://wa.me/${contact.whatsappNumber}`;
+const wa = contact.whatsappUrl();
 ---
 <Base
   title="Confianza"
