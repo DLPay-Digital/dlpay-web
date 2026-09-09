@@ -1,6 +1,6 @@
 ---
 /**
- * Cabecera. Navegación corta (Fase 1 §5.2) y WhatsApp siempre visible.
+ * Cabecera. Navegación corta (Fase 1 §5.2) y una entrada a la plataforma.
  * El menú móvil usa <details>: sin JavaScript (ADR-0004 §6).
  *
  * La franja de notificación va aquí, dentro del `<header>`, y no en cada
@@ -8,9 +8,8 @@
  * las props de esta única etiqueta (ver `AnnouncementBar.astro`).
  */
 import Logo from './Logo.astro';
-import Icon from './Icon.astro';
 import AnnouncementBar from './AnnouncementBar.astro';
-import { contact, platform } from '../lib/config/site.ts';
+import { platform } from '../lib/config/site.ts';
 
 const nav = [
   { label: 'Cotizar', href: '/cotizar/' },
@@ -18,7 +17,6 @@ const nav = [
   { label: 'Empresas', href: '/empresas/' },
   { label: 'Confianza', href: '/confianza/' },
 ];
-const wa = `https://wa.me/${contact.whatsappNumber}`;
 
 /** Marca la página actual para lectores de pantalla y para el estilo. */
 const current = Astro.url.pathname.replace(/\/$/, '') || '/';
@@ -46,10 +44,7 @@ const isCurrent = (href: string) => href === current;
     </nav>
 
     <div class="actions">
-      <a class="wa-link" href={wa} target="_blank" rel="noopener">
-        <Icon name="whatsapp" class="wa-icon" />
-        <span>WhatsApp</span>
-      </a>
+      <a class="register" href={platform.registerUrl}>Crear cuenta</a>
       <a class="login" href={platform.loginUrl}>Iniciar sesión</a>
 
       <details class="menu">
@@ -142,17 +137,36 @@ const isCurrent = (href: string) => href === current;
     align-items: center;
     gap: var(--s-4);
   }
-  .wa-link {
-    display: flex;
+  /*
+    Contorno, NO relleno verde. "Cotizar es el centro" y sólo hay una acción
+    primaria por pantalla (CLAUDE.md §6): un botón verde relleno aquí arriba
+    competiría con el CTA del cotizador, que es el que tiene que ganar. Esto es
+    una entrada secundaria, y así se ve.
+
+    El alfa del borde es 0.40 porque es el que da 3.50:1 sobre tinta, el mínimo
+    que WCAG 1.4.11 pide al contorno de un control. Mismo valor que los
+    fantasmas de `Steps.astro` y `/empresas`.
+  */
+  .register {
+    display: inline-flex;
     align-items: center;
-    gap: var(--s-2);
+    /* Objetivo táctil de 44px (Design System §10) sin agrandar el texto. */
+    min-height: 44px;
+    padding: 0 var(--s-3);
+    border: 1px solid rgba(237, 242, 239, 0.4);
+    border-radius: var(--r-2);
     color: var(--on-tinta);
     text-decoration: none;
     font-size: var(--t-body-sm);
     font-weight: 600;
+    /* En 320px la cabecera va justa: partir "Crear cuenta" en dos líneas
+       rompería la fila entera. */
+    white-space: nowrap;
+    flex: none;
   }
-  .wa-icon { width: 17px; height: 17px; }
-  .wa-link span { display: none; }
+  .register { transition: border-color var(--m-fast) var(--m-ease); }
+  .register:hover { border-color: var(--on-tinta); }
+
   .login { display: none; }
 
   /* Menú móvil sin JavaScript */
@@ -215,7 +229,7 @@ const isCurrent = (href: string) => href === current;
   @media (min-width: 900px) {
     .bar { padding-inline: var(--pad-section); gap: var(--s-8); }
     .desktop-nav { display: block; }
-    .wa-link span { display: inline; }
+    .register { padding-inline: var(--s-4); }
     .login {
       display: inline;
       color: var(--on-tinta-mute);
