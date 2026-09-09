@@ -6,6 +6,44 @@
  * Tres usos, no un catálogo de servicios. El alcance completo (persona a
  * persona, cuenta propia, empresa a proveedor, tesorería) se reconoce dentro de
  * estos tres sin convertir la Home en una lista.
+ *
+ * ── Carril deslizable en móvil, rejilla en escritorio ───────────────────────
+ *
+ * Bajo 760px las tres tarjetas viven en un carril horizontal con anclaje
+ * (`scroll-snap`): la persona desliza con el dedo y cada tarjeta se queda
+ * encajada. Desde 760px vuelve la rejilla de tres columnas, donde se ven las
+ * tres a la vez con coste de interacción cero.
+ *
+ * NADA SE MUEVE SOLO, y eso es el punto. La versión anterior rotaba
+ * automáticamente cada 5s, lo que incumplía WCAG 2.2.2 "Pausa, detención,
+ * ocultación" (nivel A): exige un mecanismo para detener el movimiento, y en
+ * móvil no había ninguno posible sin JavaScript —no hay `:hover` en táctil y
+ * las tarjetas no tienen nada enfocable, así que `:focus-within` tampoco se
+ * dispara—. Se resolvió de raíz quitando la rotación, no mitigándola.
+ * `CLAUDE.md` §7 pone WCAG AA como piso.
+ *
+ * ── Sin puntos de paginación, y por qué ─────────────────────────────────────
+ *
+ * Sin rotación no hay estado que sincronizar. La vía de vanguardia
+ * (`animation-timeline: scroll()`) degrada a puntos INERTES en cualquier
+ * navegador sin soporte, y unos puntos que no responden son peores que ninguno:
+ * prometen una interacción que no existe. La respuesta correcta llegará con
+ * `::scroll-marker` de CSS Overflow 5, que los convierte en controles de verdad
+ * —pulsables, navegables con teclado y con `:target-current` para el activo—.
+ * Hoy su soporte es demasiado estrecho para servirlo como única señal.
+ *
+ * En su lugar, la señal es el propio contenido: la tarjeta siguiente ASOMA por
+ * el borde derecho. Es autoexplicativo, funciona en todos los navegadores y no
+ * necesita leyenda.
+ *
+ * ── El carril es enfocable a propósito ──────────────────────────────────────
+ *
+ * `tabindex="0"` en el carril no es un descuido: un contenedor con
+ * `overflow-x: auto` NO es enfocable por defecto, y dentro de las tarjetas no
+ * hay nada que pueda recibir foco. Sin esto, alguien que navega sólo con
+ * teclado no podría desplazar el carril y las tarjetas 2 y 3 quedarían
+ * visualmente fuera de su alcance — cambiaríamos un fallo de 2.2.2 por uno de
+ * 2.1.1 (Teclado). Con el carril enfocable, las flechas lo desplazan.
  */
 import { useCases } from '../content/home.ts';
 import UseCaseFigure from './UseCaseFigure.astro';
@@ -13,15 +51,23 @@ import UseCaseFigure from './UseCaseFigure.astro';
 <section class="uses" aria-labelledby="uses-title">
   <div class="inner">
     <h2 id="uses-title" data-enter>Tres formas de usarlo</h2>
-    <ul class="grid">
-      {useCases.map((item) => (
-        <li class="use" data-enter>
-          <UseCaseFigure kind={item.figure} />
-          <h3>{item.title}</h3>
-          <p>{item.body}</p>
-        </li>
-      ))}
-    </ul>
+
+    <div
+      class="viewport"
+      tabindex="0"
+      role="group"
+      aria-labelledby="uses-title"
+    >
+      <ul class="track">
+        {useCases.map((item) => (
+          <li class="use" data-enter>
+            <UseCaseFigure kind={item.figure} />
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -36,7 +82,16 @@ import UseCaseFigure from './UseCaseFigure.astro';
     margin-bottom: var(--s-7);
     max-width: 46ch;
   }
-  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
+
+  /* Base: la pila de siempre. Es el suelo al que cae cualquier ancho subpíxel
+     que se escape entre los dos media queries. */
+  .track {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-6);
+  }
   .use h3 {
     font-size: var(--t-h3-m);
     font-weight: 600;
@@ -50,8 +105,68 @@ import UseCaseFigure from './UseCaseFigure.astro';
   .use .fig { margin-bottom: var(--s-4); }
   .use p { color: var(--ink-mute); max-width: 42ch; }
 
+  /* El foco del carril se dibuja fuera, para no recortarlo con el overflow. */
+  .viewport:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+  /* ── Carril deslizable · sólo móvil ────────────────────────────────────── */
+  @media (max-width: 759px) {
+    .viewport {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      /* Que el deslizamiento horizontal no dispare el "atrás" del navegador. */
+      overscroll-behavior-x: contain;
+      /* El carril no aporta scroll vertical: sólo se desplaza en un eje. */
+      overflow-y: hidden;
+    }
+
+    .track { display: flex; gap: var(--s-4); }
+
+    /*
+      84% y no 100%: la tarjeta siguiente ASOMA por el borde derecho, y ese
+      asomo es la única señal de que hay más que ver. Sustituye a los puntos de
+      paginación, con la ventaja de no prometer un control que no existe.
+
+      El asomo se resta en PÍXELES, no en porcentaje. Con un 84% lo que asoma
+      depende del ancho de pantalla: medido, iba de 26px a 320px —donde se lee
+      como un recorte accidental— hasta 87px a 700px. Restando 64px fijos y
+      descontando el hueco de 16, asoman 48px exactos en cualquier ancho, que es
+      el tamaño en el que se reconoce que hay otra tarjeta detrás.
+    */
+    .use {
+      flex: 0 0 calc(100% - var(--s-8));
+      min-width: 0;
+      scroll-snap-align: start;
+    }
+
+    /*
+      OBLIGATORIO. `[data-enter]` deja las tarjetas en `opacity: 0` hasta que el
+      IntersectionObserver las ve, y las tarjetas 2 y 3 nacen recortadas por el
+      `overflow` del carril: no intersecan. Sin esto, el ASOMO de la tarjeta
+      siguiente —que es la única señal de que hay más contenido— estaría en
+      blanco, y con ello se cae el argumento para no poner puntos.
+      La especificidad gana a `.js-motion [data-enter]` de tokens.css.
+    */
+    :global(.js-motion) .use[data-enter],
+    :global(.js-motion) .use[data-enter].is-in {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   @media (min-width: 760px) {
-    .grid { grid-template-columns: repeat(3, 1fr); gap: var(--s-7); }
+    .track { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-7); }
+    /*
+      En rejilla no hay nada que desplazar. `overflow: visible` deja respirar
+      sombras y anillos de foco.
+
+      COSTE ASUMIDO: el carril sigue siendo una parada de tabulación aquí,
+      porque `tabindex` es un atributo HTML y no se puede retirar por CSS. No es
+      ruido gratuito —anuncia el grupo y su nombre—, pero tampoco hace nada.
+      La alternativa era confiar en que el navegador enfoque solo los
+      contenedores con scroll sin hijos enfocables (Chrome 127+ lo hace,
+      otros no), y preferimos algo determinista a una heurística.
+    */
+    .viewport { overflow: visible; }
   }
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
