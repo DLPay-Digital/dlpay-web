@@ -1,43 +1,83 @@
 ---
 /**
- * Cómo llega el mensaje al ejecutivo. Acompaña al cotizador: responde la duda
- * que aparece justo antes de pulsar el CTA — "¿me va a abrir un chat en blanco
- * y tengo que explicarlo todo yo?".
- *
- * REGLA DURA: el texto de la burbuja NO se escribe a mano. Sale de
- * `whatsappMessage()`, la misma función que arma el enlace del botón, con la
- * misma cotización inicial que carga el cotizador. Así es imposible que el
- * mockup prometa un mensaje distinto del que se envía, y si alguien edita la
- * plantilla, esto cambia con ella. Un texto de ejemplo escrito aparte habría
- * divergido en el primer cambio — ya nos pasó con la aritmética del cotizador.
+ * Un teléfono dibujado en CSS con una conversación dentro. Cero imágenes.
  *
  * No imita a WhatsApp: usa los verdes de DLPay, el isotipo de DLPay y nuestra
  * tipografía. Es una abstracción de un chat, no una réplica de una app ajena.
  *
- * El dispositivo va aria-hidden y el pie lo explica con palabras: un lector de
- * pantalla no necesita el cromo de un teléfono dibujado.
+ * ── Dos variantes, dos consumidores reales ──────────────────────────────────
+ *
+ * · `proof` (por omisión) — el bloque de la Home que acompaña al cotizador:
+ *   teléfono + pie explicativo, y OCULTO bajo 900px, porque en móvil la persona
+ *   ya está en el teléfono desde el que va a escribir y dibujarle un teléfono
+ *   dentro del teléfono no le aporta nada.
+ * · `bare` — sólo el dispositivo, visible en todos los anchos. Lo usa
+ *   `Process.astro`, donde el teléfono ES el contenido de cada paso y ocultarlo
+ *   en móvil dejaría la sección sin la mitad de su narrativa.
+ *
+ * ── REGLA DURA que sobrevive al refactor ────────────────────────────────────
+ *
+ * Sin la prop `thread`, el texto de la burbuja NO se escribe a mano: sale de
+ * `whatsappMessage()`, la misma función que arma el enlace del botón, con la
+ * misma cotización inicial que carga el cotizador. Así es imposible que el
+ * mockup de la Home prometa un mensaje distinto del que se envía.
+ *
+ * Con `thread`, el hilo es NARRATIVO y lo escribe quien llama. Eso lo saca de
+ * la garantía anterior a propósito: son ejemplos de una conversación, no el
+ * mensaje que se va a enviar. Quien pase un hilo se hace responsable de que lo
+ * que diga ahí sea aprobable — y si menciona cifras, de derivarlas de
+ * `lib/pricing` en vez de teclearlas.
+ *
+ * El dispositivo va aria-hidden y el contexto lo dan las palabras de alrededor:
+ * un lector de pantalla no necesita el cromo de un teléfono dibujado.
  */
 import Logo from './Logo.astro';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { buildQuote, whatsappMessage } from '../lib/pricing/quote.ts';
 
-const price = await new ConfigPriceSource().getPrice();
-const minPay = Number(import.meta.env.PUBLIC_QUOTE_MIN_CLP ?? '50000') || 50000;
-const maxRaw = Number(import.meta.env.PUBLIC_QUOTE_MAX_CLP ?? '');
-const maxPay = Number.isFinite(maxRaw) && maxRaw > 0 ? maxRaw : undefined;
+interface ChatMessage {
+  /** `user` sale por la derecha; `dlpay` entra por la izquierda. */
+  sender: 'user' | 'dlpay';
+  text: string;
+}
 
-/** Mismos valores que Quoter.astro: el mockup y el botón dicen lo mismo al cargar. */
-const samplePay = 2_000_000;
-const sampleQuote = buildQuote({
-  intent: 'send_abroad',
-  giveAmount: samplePay,
-  price,
-  minPay,
-  ...(maxPay !== undefined ? { maxPay } : {}),
-});
-const message = whatsappMessage(sampleQuote, samplePay);
+interface Props {
+  /** Hilo narrativo. Sin él, se muestra el mensaje real del cotizador. */
+  thread?: readonly ChatMessage[];
+  variant?: 'proof' | 'bare';
+}
+
+const { thread, variant = 'proof' } = Astro.props;
+
+/** El hilo por omisión se deriva; nunca se teclea. Ver la regla dura arriba. */
+async function defaultThread(): Promise<readonly ChatMessage[]> {
+  const price = await new ConfigPriceSource().getPrice();
+  const minPay = Number(import.meta.env.PUBLIC_QUOTE_MIN_CLP ?? '50000') || 50000;
+  const maxRaw = Number(import.meta.env.PUBLIC_QUOTE_MAX_CLP ?? '');
+  const maxPay = Number.isFinite(maxRaw) && maxRaw > 0 ? maxRaw : undefined;
+
+  /** Mismos valores que Quoter.astro: el mockup y el botón dicen lo mismo. */
+  const samplePay = 2_000_000;
+  const quote = buildQuote({
+    intent: 'send_abroad',
+    giveAmount: samplePay,
+    price,
+    minPay,
+    ...(maxPay !== undefined ? { maxPay } : {}),
+  });
+
+  return [{ sender: 'user', text: whatsappMessage(quote, samplePay) }];
+}
+
+const messages = thread ?? (await defaultThread());
 ---
-<figure class="proof" data-enter>
+{/*
+  El `data-enter` sólo lo lleva la variante `proof`, que es un bloque autónomo.
+  En `bare` el movimiento lo decide quien coloca el teléfono: anidar dos
+  `[data-enter]` haría que el contenedor se revele y, dentro, el teléfono se
+  revele otra vez — dos fundidos para una sola cosa.
+*/}
+<figure class:list={['mockup', variant]} data-enter={variant === 'proof' ? '' : undefined}>
   <div class="device" aria-hidden="true">
     <div class="screen">
       <span class="island"></span>
@@ -46,16 +86,20 @@ const message = whatsappMessage(sampleQuote, samplePay);
         <span class="who">DLPay</span>
       </div>
       <div class="chat">
-        <p class="bubble">{message}</p>
+        {messages.map((m) => (
+          <p class:list={['bubble', m.sender === 'user' ? 'out' : 'in']}>{m.text}</p>
+        ))}
       </div>
     </div>
   </div>
 
-  <figcaption class="claim">
-    <b>El chat se abre con tu operación ya escrita.</b>
-    No empiezas de cero ni tienes que repetir el monto: llega tal cual lo dejaste
-    en el cotizador, y un ejecutivo confirma el precio final.
-  </figcaption>
+  {variant === 'proof' && (
+    <figcaption class="claim">
+      <b>El chat se abre con tu operación ya escrita.</b>
+      No empiezas de cero ni tienes que repetir el monto: llega tal cual lo dejaste
+      en el cotizador, y un ejecutivo confirma el precio final.
+    </figcaption>
+  )}
 </figure>
 
 <style>
@@ -76,17 +120,33 @@ const message = whatsappMessage(sampleQuote, samplePay);
     }
   }
 
+  /* La variante desnuda no trae layout propio: lo pone quien la coloca. */
+  .bare { margin: 0; }
+
+  /*
+    Dos ajustes que sólo aplican a `bare`, donde hay CUATRO teléfonos seguidos.
+    No se tocan en `proof`, que es un teléfono único y ya está aprobado así.
+
+    1· El chat se apoya ABAJO. Es como se ve de verdad una conversación corta en
+       cualquier app de mensajería: el historial crece hacia arriba y lo último
+       queda al borde inferior. Anclado arriba, los ~350px de pantalla vacía por
+       debajo se leen como un error de maquetación en vez de como aire.
+    2· 196px en vez de 236px de ancho. Con la proporción 9/19.5 eso baja cada
+       teléfono de 511px a 425px: 344px menos de scroll a lo largo de la
+       sección, sin perder legibilidad de las burbujas.
+  */
+  .bare .chat { justify-content: flex-end; }
+  .bare .device { width: 196px; }
+
   /* ── El dispositivo ──────────────────────────────────────────────────────
      Puro CSS. Bisel en tinta, sin marcas ni botones de ningún fabricante. */
   .device {
     width: 236px;
-    /* 9/19.5 — la proporción de un teléfono actual. A 236px de ancho da 511px
-       de alto, así que la pantalla queda mucho más larga que el chat: ese aire
-       de abajo es correcto, una conversación de un mensaje se ve así. */
+    /* 9/19.5 — la proporción de un teléfono actual. */
     aspect-ratio: 9 / 19.5;
     display: flex;
-    /* Bisel fino y uniforme. El de 24px arriba ya no hace falta: la isla vive
-       dentro de la pantalla, que es donde vive de verdad. */
+    /* Bisel fino y uniforme. La isla vive dentro de la pantalla, que es donde
+       vive de verdad. */
     padding: 8px;
     background: var(--tinta);
     border-radius: 40px;
@@ -170,39 +230,59 @@ const message = whatsappMessage(sampleQuote, samplePay);
   /* --on-tinta sobre --verde-deep = 4.72:1 (AA para texto normal). */
   .who { color: var(--on-tinta); font-weight: 600; font-size: var(--t-body-sm); }
 
-  .chat { padding: var(--s-4); flex: 1; }
+  /* Una conversación, no un mensaje: hueco entre burbujas y alineación por
+     emisor. El hueco es de UI móvil, más apretado que el ritmo del sitio. */
+  .chat {
+    padding: var(--s-4);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+  }
 
-  /* Burbuja de salida. --verde diluido, nunca el verde de WhatsApp.
-     --ink encima da 12.41:1 — AAA de sobra (pide 7:1).
-     Se alinea a la derecha, como un mensaje enviado de verdad. */
   .bubble {
-    --burbuja: rgba(22, 199, 132, .22);
     position: relative;
     max-width: 92%;
-    margin: 0 0 0 auto;
-    background: var(--burbuja);
-    border-radius: var(--r-3) 0 var(--r-3) var(--r-3);
-    /* Ritmo de UI móvil, no de párrafo web: más compacto y más apretado.
-       14px queda fuera de la escala tipográfica a propósito — esto simula el
-       cromo de otra aplicación, no es texto del sitio. */
+    /* Ritmo de UI móvil, no de párrafo web. 14px queda fuera de la escala
+       tipográfica a propósito — esto simula el cromo de otra aplicación, no es
+       texto del sitio. */
     padding: var(--s-2) var(--s-3);
     font-size: 14px;
     line-height: 1.4;
     color: var(--ink);
     box-shadow: 0 1px 2px rgba(11, 19, 32, .10);
   }
-  /* La colita del mensaje saliente. El radio superior derecho es 0 para que
-     encaje al ras; el triángulo sale por fuera y cabe en el padding del chat. */
+  /* La colita, en la esquina superior del lado por el que sale el mensaje. */
   .bubble::after {
     content: '';
     position: absolute;
     top: 0;
-    right: -6px;
     width: 7px;
     height: 11px;
     background: var(--burbuja);
-    clip-path: polygon(0 0, 100% 0, 0 100%);
   }
+
+  /* Saliente: --verde diluido, nunca el verde de WhatsApp.
+     --ink encima da 12.41:1 — AAA de sobra (pide 7:1). */
+  .out {
+    --burbuja: rgba(22, 199, 132, .22);
+    margin: 0 0 0 auto;
+    background: var(--burbuja);
+    border-radius: var(--r-3) 0 var(--r-3) var(--r-3);
+  }
+  .out::after { right: -6px; clip-path: polygon(0 0, 100% 0, 0 100%); }
+
+  /* Entrante: papel sobre la pantalla en papel-2. Los dos tonos claros sólo se
+     separan 1.11:1, así que lo que define la burbuja es la sombra, igual que en
+     una app real — no un borde, que ensuciaría el cromo. --ink sobre --papel da
+     16.00:1. */
+  .in {
+    --burbuja: var(--papel);
+    margin: 0 auto 0 0;
+    background: var(--burbuja);
+    border-radius: 0 var(--r-3) var(--r-3) var(--r-3);
+  }
+  .in::after { left: -6px; clip-path: polygon(100% 0, 0 0, 100% 100%); }
 
   .claim { color: var(--ink-mute); max-width: 46ch; font-size: var(--t-body); }
   .claim b { color: var(--ink); font-weight: 600; display: block; margin-bottom: var(--s-2); }

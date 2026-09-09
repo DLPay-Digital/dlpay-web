@@ -1,0 +1,197 @@
+---
+/**
+ * El recorrido real, contado en cuatro pasos con el chat a la vista.
+ *
+ * Zig-zag en escritorio, apilado en móvil. El DOM va SIEMPRE texto → teléfono,
+ * que es el orden correcto en móvil y el orden de lectura correcto siempre; en
+ * escritorio las filas pares se recolocan con `grid-column` explícito. Los
+ * teléfonos van `aria-hidden` y sin nada enfocable dentro, así que no hay
+ * desajuste entre orden visual y orden de tabulación.
+ *
+ * Se coloca por `grid-column` y no por `order`: con `order` el intercambio
+ * depende de que las dos columnas midan lo mismo, y el día que alguien ponga
+ * `1fr auto` el teléfono se queda con la columna elástica sin que salte ningún
+ * error. Explícito no depende de nada más.
+ *
+ * ── Por qué este zig-zag y no el que se borró ───────────────────────────────
+ *
+ * El anterior alternaba figuras ABSTRACTAS —cuñas, topologías— que no decían
+ * nada por sí solas: había que leer el texto y luego descifrar el dibujo. Aquí
+ * la figura es la conversación literal, así que se entiende sin leer. Es la
+ * diferencia entre un diagrama y una captura.
+ *
+ * ── Las cifras no se teclean ────────────────────────────────────────────────
+ *
+ * El monto y la tasa que aparecen en los hilos salen de `ConfigPriceSource` y
+ * de los formateadores de `lib/pricing`. Escribir "919,70" a mano habría creado
+ * una cuarta fuente de verdad para el precio y, peor, habría dejado clavado en
+ * el copy un valor de MUESTRA que hoy es un placeholder (D7 abierta).
+ */
+import WhatsAppMockup from './WhatsAppMockup.astro';
+import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
+import { formatCLP, formatRate } from '../lib/pricing/format.ts';
+
+interface ChatMessage {
+  sender: 'user' | 'dlpay';
+  text: string;
+}
+
+interface Step {
+  title: string;
+  body: string;
+  thread: readonly ChatMessage[];
+}
+
+const price = await new ConfigPriceSource().getPrice();
+
+/** Mismo monto de muestra que el cotizador, el mockup y el bloque anterior. */
+const SAMPLE_PAY = 2_000_000;
+const monto = formatCLP(SAMPLE_PAY);
+const tasa = formatRate(price.rate);
+
+const steps: readonly Step[] = [
+  {
+    title: '1. Inicias el chat',
+    body: 'Tu operación llega escrita automáticamente desde nuestro cotizador.',
+    thread: [
+      { sender: 'user', text: `Hola, necesito convertir ${monto} CLP. ¿Me confirman el precio?` },
+    ],
+  },
+  {
+    // REQUIERE VALIDACIÓN DE COMPLIANCE — "Precio garantizado" y "Congelamos tu
+    // precio" afirman una cotización cerrada. CLAUDE.md §6 dice que el
+    // cotizador "no bloquea precios, no promete cotizaciones cerradas", y
+    // `Quote.isReferential` es un literal de tipo, no un booleano variable:
+    // V1 no puede emitir un precio garantizado. El copy va textual por
+    // decisión del equipo (2026-09-09) y la aprobación es de DLPay.
+    // Alternativa que dice lo mismo sin el claim: "2. Un ejecutivo confirma tu
+    // precio".
+    title: '2. Precio garantizado',
+    // REQUIERE VALIDACIÓN DE COMPLIANCE — "mesa de dinero" describe una
+    // función de tesorería concreta; conviene confirmar que es como DLPay
+    // quiere nombrar su operación.
+    body: 'Un ejecutivo confirma tu tasa en tiempo real por la mesa de dinero.',
+    thread: [
+      { sender: 'dlpay', text: `Precio confirmado a ${tasa}. ¿Cerramos la operación?` },
+      { sender: 'user', text: 'Sí, acepto.' },
+    ],
+  },
+  {
+    title: '3. Transfieres con seguridad',
+    body: 'Envías tus pesos a nuestra cuenta bancaria en Chile.',
+    thread: [
+      { sender: 'user', text: 'Transferencia enviada.' },
+      { sender: 'dlpay', text: 'Fondos recibidos. Procesando...' },
+    ],
+  },
+  {
+    // Cumple la regla dura del §1: la rapidez se predica de NUESTRA operación
+    // —la entrega del dólar digital en la billetera— y no de una recepción
+    // bancaria en destino, que DLPay no presta.
+    title: '4. Recibes en minutos',
+    body: 'Sin esperar días hábiles ni lidiar con bancos intermediarios.',
+    thread: [
+      { sender: 'dlpay', text: '¡Listo! Dólares digitales enviados a tu billetera.' },
+    ],
+  },
+];
+---
+<section class="process" aria-labelledby="process-title">
+  <div class="inner">
+    {/*
+      La sección lleva su propio h2 y los pasos van en h3.
+      Se pidieron los cuatro títulos como h2, pero cuatro h2 hermanos sin un
+      encabezado que los agrupe dejan la sección sin nombre accesible y rompen
+      la jerarquía que el DoD verifica (CLAUDE.md §7). El resto del sitio tiene
+      exactamente un h2 por sección. El texto de los pasos es el que se pidió,
+      literal, sólo que en el nivel que le corresponde.
+    */}
+    <header class="head" data-enter>
+      <h2 id="process-title">Así se ve tu operación, paso a paso</h2>
+    </header>
+
+    <ol class="list">
+      {steps.map((step) => (
+        <li class="step" data-enter>
+          <div class="body">
+            <h3>{step.title}</h3>
+            <p>{step.body}</p>
+          </div>
+          <div class="phone">
+            <WhatsAppMockup variant="bare" thread={step.thread} />
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .process { background: var(--papel); padding: var(--s-9) 0; }
+  .inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 var(--pad-section-m);
+  }
+
+  .head { max-width: 40ch; margin-bottom: var(--s-8); }
+  h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+  }
+
+  /* El respiro entre pasos es lo que hace legible una narración larga: sin él,
+     cuatro teléfonos seguidos se leen como una rejilla de producto. */
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-9);
+  }
+
+  /* Móvil: una columna, texto arriba y teléfono abajo en los cuatro pasos.
+     Como el DOM ya va en ese orden, aquí no hace falta ninguna regla. */
+  .step { display: grid; gap: var(--s-5); }
+
+  h3 {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    margin-bottom: var(--s-2);
+  }
+  .body p { color: var(--ink-mute); max-width: 44ch; }
+
+  .phone { display: flex; justify-content: center; }
+
+  @media (min-width: 900px) {
+    .inner { padding-inline: var(--pad-section); }
+    h2 { font-size: var(--t-h2); }
+    h3 { font-size: var(--t-h3); }
+    /* `--s-9` y no `--s-10`: con cuatro teléfonos de 425px, 128px entre pasos
+       llevaban la sección por encima de 2.400px. 96px sigue siendo respiro
+       amplio y recorta casi 100px de scroll. */
+    .list { gap: var(--s-9); }
+
+    /* Columnas iguales para que el intercambio del zig-zag no cambie los
+       anchos de una fila a la siguiente. */
+    .step {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: var(--s-9);
+    }
+
+    /* Única regla del zig-zag: las filas PARES se recolocan. Las impares se
+       quedan en el orden del DOM. Da texto│tel · tel│texto · texto│tel ·
+       tel│texto. */
+    .step:nth-child(even) .body { grid-column: 2; grid-row: 1; }
+    .step:nth-child(even) .phone { grid-column: 1; grid-row: 1; }
+
+    /* El texto se acerca al teléfono de su fila en vez de quedar pegado al
+       borde de la página: la pareja se lee como una unidad. */
+    .step:nth-child(odd) .body { justify-self: end; }
+    .step:nth-child(even) .body { justify-self: start; }
+  }
+</style>
