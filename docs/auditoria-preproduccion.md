@@ -102,6 +102,8 @@ siendo legible y navegable, sólo que no interrumpe.
 `MockActivitySource` se instancia en el frontmatter y otra vez en el script del cliente. Al llegar
 la fuente real habría que acordarse de las dos. **Corregido:** una función única en
 `src/lib/activity/source.ts`; cambiar de fuente es cambiar una línea.
+*(Módulo eliminado el 2026-09-09 al descartarse la funcionalidad — ver B2 de la revisión
+2026-09-08 y D18.)*
 
 ### C3 · `.inner` duplicado en las páginas interiores
 Mismos valores repetidos en cuatro archivos. Sin efecto visual, pero es el mecanismo por el que
@@ -281,9 +283,10 @@ DOM y sin levantar un build: **20 tests nuevos**.
 
 ### B2 · `ActivityFeed` es una tercera isla, y envía el generador de datos de ejemplo al cliente
 
-> ✅ **Resuelto el 2026-09-09, de raíz.** Se eliminó `/cotizar`, que era su única página, así que
-> el componente quedó sin consumidores y el generador ficticio ya no llega a ningún navegador. No
-> se mitigó: desapareció. El componente y `lib/activity` se conservan como costura de D18.
+> ✅ **Resuelto el 2026-09-09, de raíz.** Se eliminó `/cotizar`, que era su única página, y acto
+> seguido se descartó la funcionalidad entera: el componente, `lib/activity` y sus 15 tests se
+> borraron. No se mitigó, desapareció. El motivo no fue el arrastre sino que el feed nunca salió
+> de la investigación y chocaba con **D10** —es una cifra de volumen—. **D18 queda cerrada.**
 
 `arquitectura-produccion.md` describía el JS del cliente como «el cotizador… más el reloj del feed
 de actividad». Lo que viaja no es un reloj: el `<script>` de `ActivityFeed.astro` **arrastra

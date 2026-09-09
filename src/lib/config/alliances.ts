@@ -7,7 +7,7 @@
  *
  * El candado es `verified`. Mientras sea false la entrada no se renderiza:
  * el pie queda exactamente como está hoy. Mismo criterio que `isReal` en
- * lib/activity — un dato sin respaldo no ocupa el lugar de uno respaldado.
+ * lib/pricing — un dato sin respaldo no ocupa el lugar de uno respaldado.
  *
  * NO cambiar `verified` a true por tener el archivo. Se cambia cuando existe
  * la aprobación, y las dos cosas van en el mismo commit.

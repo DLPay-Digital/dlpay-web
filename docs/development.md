@@ -66,8 +66,6 @@ src/
 ├── components/
 │   ├── Quoter.astro       # la única isla interactiva
 │   ├── Motion.astro       # motor del Motion System V1 (IntersectionObserver)
-│   ├── ActivityFeed.astro # actividad reciente. SIN CONSUMIDORES desde que se
-│   │                      # eliminó /cotizar; se conserva como costura de D18
 │   ├── Steps.astro        # bloque contenido en tinta: argumento + tarjeta + chat
 │   ├── Process.astro      # los 4 pasos en zig-zag, con un teléfono cada uno
 │   ├── WhatsAppMockup.astro # el teléfono en CSS. Dos variantes: proof y bare
@@ -85,12 +83,11 @@ src/
     │   ├── environment.ts   # resolución y validación del entorno — PURO
     │   ├── site.ts          # marca, contacto, enlaces a Guita, URL, indexación
     │   └── alliances.ts     # FinteChile y UAF, con el alcance de cada claim
-    ├── pricing/             # types · config-price-source · quote · format
-    └── activity/            # types · source · mock-activity-source · format
+    └── pricing/             # types · config-price-source · quote · format
 public/
 ├── fonts/            # woff2 variables + sus licencias OFL
 └── alianzas/         # emblemas de FinteChile y UAF
-tests/                # pricing · activity · config (runner nativo de Node)
+tests/                # pricing · config (runner nativo de Node)
 ```
 
 Las carpetas se crean **cuando una necesidad real las pide**, no antes (Principio 5).
@@ -165,43 +162,27 @@ público y se trata como público. Hoy el proyecto **no tiene ningún secreto** 
 las variables son configuración pública (número de WhatsApp, precio de muestra,
 enlaces a la plataforma de Guita).
 
-## Actividad reciente
+## Actividad reciente — descartada (2026-09-09)
 
-`src/lib/activity/` sigue el mismo patrón de desacople que el precio: la UI consume eventos y no
-sabe de dónde vienen.
+Existió un componente `ActivityFeed` con su módulo `lib/activity`: una lista en vivo de
+"operaciones recientes" que vivía en `/cotizar`. **Se eliminó junto con esa ruta**, y no por
+arrastre sino tras revisarlo:
 
-Hoy la única implementación es **`MockActivitySource`**, que declara `isReal = false`. Esa bandera
-no es documentación: **el componente comprueba la condición y muestra un distintivo visible de
-"Datos de ejemplo" más una nota aclaratoria**. No hay forma de publicar datos inventados haciéndolos
-pasar por operaciones reales, aunque alguien lo olvide.
+- **Nunca salió de la investigación.** Cero menciones en `phase-2.5-definicion-experiencia.md`
+  —el documento operativo para construir— y cero en `cotizador-spec.md`. Nació al implementar.
+- **Chocaba con D10.** Un feed de actividad **es** una cifra de volumen: dice con qué frecuencia
+  opera DLPay y por cuánto. Publicarlo en continuo es una decisión de Compliance, no de
+  ingeniería. Y contradice el principio de la zona de confianza: *sólo señales que DLPay puede
+  respaldar hoy, sin cifras de vanidad*.
+- **Se quedó sin página.** La estructura de la Home se definió sin él.
 
-El tipo `ActivityEvent` sólo admite tipo de operación, monto redondeado y momento. **No hay dónde
-poner un nombre, un RUT ni un dato personal**, aunque se quisiera.
+Se borraron el componente, `lib/activity` y sus 15 tests — 514 líneas. **D18 queda cerrada**
+(`CLAUDE.md` §13). Si algún día se quiere prueba social, la puerta es **D10**, y el código está en
+el historial antes de `4185c7d`.
 
-**En vivo.** El feed se actualiza solo: los tiempos relativos se refrescan cada 5 s y aparecen
-operaciones nuevas cada 14–46 s, con un intervalo irregular a propósito —una cadencia exacta se lee
-como un contador, no como una mesa operando—. La operación nueva **aparece con una atenuación de
-420 ms, no se desliza ni parpadea**, y bajo `prefers-reduced-motion` no se anima. Nada corre
-mientras la pestaña está oculta.
-
-Refrescar los tiempos es la parte que más dice "esto está vivo" y **es honesta también con datos
-reales**: el dato no cambia, sólo su antigüedad.
-
-**Previsualizar el diseño sin el distintivo.** En `.env` (que no se versiona):
-
-```
-PUBLIC_ACTIVITY_PREVIEW=true
-```
-
-Oculta el distintivo de "Datos de ejemplo" **sólo en `npm run dev`**. No tiene efecto en un build:
-`import.meta.env.DEV` es false fuera del servidor de desarrollo, así que un sitio publicado siempre
-lo muestra mientras la fuente no sea real. Ponerlo en un servidor no hace nada. Verificado
-construyendo con la variable activada.
-
-Cuando exista la fuente real: se agrega `DLPayActivitySource` que implemente
-`StreamingActivitySource` con `isReal = true` sobre operaciones confirmadas y anonimizadas, y se
-cambian dos líneas —una en el frontmatter de `ActivityFeed.astro` y otra en su script—. El resto no
-se toca.
+Lo que sí se conserva es el **patrón**, que era la parte valiosa: una interfaz de fuente con
+implementación intercambiable. Sigue vivo y en uso en `lib/pricing` (`PriceSource` →
+`ConfigPriceSource`), que sirve de plantilla si hace falta rehacerlo.
 
 ## El cotizador
 
@@ -258,10 +239,10 @@ tocarlo.**
 
 ### Por qué importa aquí en particular
 
-El sitio tiene **siete animaciones que tocan `opacity`** repartidas por los componentes:
-`AnnouncementBar` (`announce-cycle`), `Hero` (`heroIn`, `wedgeIn`), `Quoter` (`settle`, ×3) y
-`ActivityFeed` (`appear`). Cada una induce un contexto de apilamiento invisible al leer el CSS. Hoy
-sólo la de la franja convivía con un elemento superpuesto; la próxima puede no tener esa suerte.
+El sitio tiene **seis animaciones que tocan `opacity`** repartidas por los componentes:
+`AnnouncementBar` (`announce-cycle`), `Hero` (`heroIn`, `wedgeIn`) y `Quoter` (`settle`, ×3). Cada
+una induce un contexto de apilamiento invisible al leer el CSS. Hoy sólo la de la franja convivía
+con un elemento superpuesto; la próxima puede no tener esa suerte.
 
 ### Escalera de `z-index` en uso
 

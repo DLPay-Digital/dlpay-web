@@ -3,7 +3,8 @@
 > Revisión de análisis. **No modifica la UI ni agrega funcionalidades.**
 > Creado 2026-09-04 · actualizado 2026-09-08 con la guarda de despliegue y el escudo de
 > indexación · **actualizado 2026-09-09**: se eliminó la ruta `/cotizar` y con ella el tercer
-> script del cliente. El sitio pasa a **ocho rutas** (§1.1, §2.2).
+> script del cliente, y se descartó la actividad reciente por completo (D18). El sitio pasa a
+> **ocho rutas** y **dos scripts** (§1.1, §2.2).
 > Todo lo afirmado aquí está verificado contra el código y la salida del build, no descrito de
 > memoria.
 
@@ -48,16 +49,11 @@ Los dos scripts y qué hace cada uno:
    ponen `.js-motion` antes de pintar; el estado oculto de `[data-enter]` existe **sólo** bajo esa
    clase (`tokens.css:139`), así que si el script no corre la página se ve completa e inmóvil.
    Se incluye únicamente en las páginas con movimiento de entrada: las cuatro legales no lo llevan.
-3. ~~**Actividad reciente**~~ — *retirado del cliente el 2026-09-09.* `ActivityFeed.astro`
-   arrastraba `mock-activity-source.ts` completo al navegador (PRNG, rangos por tipo de operación,
-   `subscribe`, un `setInterval` de 5 s y un emisor cada 14–46 s) y vivía sólo en `/cotizar/`. Al
-   eliminarse esa ruta dejó de enviarse.
-
-   El componente y `lib/activity` **se conservan en el repositorio, sin consumidores**, porque son
-   la costura de D18 y están cubiertos por 20 tests. Su salvaguarda sigue bien construida —el
-   distintivo de «Datos de ejemplo» depende de `source.isReal` y de `import.meta.env.DEV`, y está
-   verificado que `PUBLIC_ACTIVITY_PREVIEW` no tiene efecto en un build—, así que reponerlo el día
-   que exista la fuente real es colocar el componente en una página. Si D18 se descarta, se borran.
+3. ~~**Actividad reciente**~~ — *eliminada del proyecto el 2026-09-09.* Vivía sólo en `/cotizar` y
+   arrastraba `mock-activity-source.ts` completo al navegador. Al eliminarse esa ruta quedó sin
+   página, y al revisarla se descartó la funcionalidad entera: nunca salió de la investigación y
+   chocaba con D10 —un feed de actividad **es** una cifra de volumen—. El componente,
+   `lib/activity` y sus tests se borraron. Ver D18 en `CLAUDE.md` §13.
 
 ### Lo que esto implica
 
@@ -91,7 +87,6 @@ de operación, sin rotación de credenciales y sin un incidente posible de fuga 
 | Sistema | Interfaz que lo espera | Implementación de hoy | Qué cuesta enchufarlo | Bloqueado por |
 |---|---|---|---|---|
 | **Fuente de precio real** | `PriceSource` | `ConfigPriceSource` (valor de muestra) | Una clase nueva + una línea. La UI consume `Quote` y no sabe de dónde viene. | D7 |
-| **Fuente de actividad real** | `StreamingActivitySource` | `MockActivitySource` — **el componente no está colocado en ninguna página** desde que se eliminó `/cotizar` (2026-09-09) | Una clase nueva, una línea en `lib/activity/source.ts` y colocar `ActivityFeed` donde corresponda. | D18 |
 | **Auth / KYC propios** | — | Enlaces a Guita | Cambiar dos constantes. La web **no** reconstruye registro ni KYC: es etapa aparte. | Etapa independiente |
 
 ### 2.3 Sistemas que existen en la operación pero **no** tocan la web
@@ -146,7 +141,6 @@ El grafo de importaciones se analizó completo. **No hay una sola dependencia in
    pages  ──►  layouts  ──►  components  ──►  content
                                 │
                                 ├──►  lib/pricing    (dominio: conversión y mensaje)
-                                ├──►  lib/activity   (dominio: eventos de la mesa)
                                 └──►  lib/config     (marca, contacto, enlaces a Guita,
                                           │           URL del sitio, indexación)
                                           └──►  lib/config/environment.ts
