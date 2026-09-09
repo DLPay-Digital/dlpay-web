@@ -67,9 +67,12 @@ src/
 │   ├── Quoter.astro       # la única isla interactiva
 │   ├── Motion.astro       # motor del Motion System V1 (IntersectionObserver)
 │   ├── ActivityFeed.astro # actividad reciente (hoy con fuente de ejemplo)
-│   ├── Header · Footer · Hero · PageHero · Steps · Trust · UseCases
-│   ├── Business · Faq · Alliances · FlowDiagram · WhatsAppMockup
-│   ├── Icon · Logo · StepFigure · UseCaseFigure · PendingNotice
+│   ├── Steps.astro        # bloque contenido en tinta: argumento + tarjeta + chat
+│   ├── Process.astro      # los 4 pasos en zig-zag, con un teléfono cada uno
+│   ├── WhatsAppMockup.astro # el teléfono en CSS. Dos variantes: proof y bare
+│   ├── Header · Footer · Hero · PageHero · Trust · UseCases
+│   ├── Business · Faq · Alliances · FlowDiagram · AnnouncementBar
+│   ├── Icon · Logo · UseCaseFigure · PendingNotice
 │   └── ui/                # IconBadge, ArrowLink — sólo donde corresponden
 ├── content/          # dato tipado, separado de la presentación
 │   └── home.ts · process.ts · trust.ts · business.ts
@@ -95,6 +98,31 @@ Las carpetas se crean **cuando una necesidad real las pide**, no antes (Principi
 el entorno como argumento. Es lo que permite que lo consuman los dos runtimes que leen el entorno
 de forma distinta —`astro.config.mjs` con `loadEnv`, `site.ts` con `import.meta.env`— sin duplicar
 la lógica, y lo que lo hace testeable sin levantar un build.
+
+### Qué pasó con el zig-zag de los pasos (2026-09-08 / 09)
+
+Un cambio en dos movimientos que conviene leer junto, porque el nombre de los archivos no lo
+cuenta:
+
+1. **`Steps.astro` dejó de ser el zig-zag** y pasó a ser el bloque contenido en tinta —argumento y
+   acción a un lado, la operación dibujada al otro—. Con eso **`StepFigure.astro` quedó sin
+   consumidores y se borró**, junto al array `steps` de `content/home.ts` que lo alimentaba
+   (Principio 5). No se perdió información del sitio: `/como-funciona/` cubre los seis pasos con
+   más detalle que los cuatro que tenía la Home.
+2. **`Process.astro` es un zig-zag nuevo y distinto**, no el anterior recuperado. El viejo
+   alternaba figuras *abstractas* —cuñas, topologías— que había que descifrar después de leer el
+   texto; este muestra la conversación literal en un teléfono, así que se entiende sin leer. Es la
+   diferencia entre un diagrama y una captura.
+
+`WhatsAppMockup.astro` sirve a los dos mundos con una prop `variant`:
+
+- **`proof`** — teléfono con pie explicativo, oculto bajo 900px. **Hoy sin consumidores.** Se
+  conserva porque es el modo que mantiene la regla dura: sin la prop `thread`, el texto de la
+  burbuja sale de `whatsappMessage()`, la misma función que arma el enlace del botón, así que es
+  imposible que el mockup prometa un mensaje distinto del que se envía. Es lo que se querría si el
+  teléfono vuelve a `/cotizar/`.
+- **`bare`** — sólo el dispositivo, visible en todos los anchos. Lo usa `Process.astro` cuatro
+  veces, con hilos **narrativos** que quedan fuera de esa garantía a propósito.
 
 ## Dependencias instaladas
 
@@ -242,6 +270,68 @@ se comprobó que la franja rota de verdad y no sólo que se superpone:
 > ⚠️ **No medir geometría en una captura.** A anchos estrechos la imagen sale escalada o recortada
 > y aparenta desbordes que no existen. Casi se reportó un desborde horizontal en móvil que no
 > había. Las capturas sirven para *ver*; para *medir*, el paso 2.
+
+#### Dos trampas que dejan la captura en blanco
+
+Descubiertas fotografiando el bloque oscuro de la Home, donde el primer intento salió
+completamente vacío y parecía un bug de maquetación que no existía.
+
+**1· `--screenshot` no respeta el scroll programático.** Captura desde el inicio del documento, así
+que `scrollIntoView()` o `window.scrollTo()` **no sirven** para fotografiar una sección interior:
+el DOM sí se desplaza —se puede comprobar leyendo `window.scrollY`— pero la imagen sale del
+principio de la página. Para retratar una sección hay que **aislarla** en una página propia con las
+mismas hojas de estilo del build:
+
+```sh
+python3 - <<'PY'
+import re
+src = open('dist/index.html', encoding='utf-8').read()
+links = re.findall(r'<link rel="stylesheet"[^>]*>', src)
+m = re.search(r'<section class="feature.*?</section>', src, re.S)   # la sección que sea
+open('dist/__iso.html','w',encoding='utf-8').write(
+  '<!doctype html><meta charset="utf-8">' + ''.join(links) + '<body>' + m.group(0) + '</body>')
+PY
+```
+
+Y borrar ese `__iso.html` al terminar: `dist/` no se versiona, pero si la sonda va a `public/` sí.
+
+**2· El Motion System deja los elementos invisibles.** `[data-enter]` nace en `opacity: 0` y sólo
+se revela cuando el `IntersectionObserver` lo ve; en headless no siempre llega a dispararse. Hay
+que anular el gate antes de capturar —lo más limpio es quitar la clase de `<html>`, porque sin
+`.js-motion` el estado oculto no existe:
+
+```html
+<script>document.documentElement.classList.remove('js-motion')</script>
+```
+
+Es además el estado que ve alguien con `prefers-reduced-motion`, así que la captura es
+representativa y no un montaje.
+
+> El mismo mecanismo explica un fallo real que salió de aquí: un elemento con `[data-enter]`
+> recortado por un `overflow` **nunca interseca**, así que nunca se revela. Pasó con las tarjetas de
+> un carrusel y con las de un carril deslizable: se habrían quedado en blanco en producción. Si un
+> componente recorta contenido, hay que anular el estado oculto en su CSS, no sólo en la sonda.
+
+#### Verificar animaciones sin esperar el reloj
+
+`--virtual-time-budget` adelanta el tiempo, pero para *comprobar sincronía* no hace falta esperar
+nada: la **Web Animations API** permite posicionar una animación en un instante exacto y leer el
+resultado. Es determinista y no depende de cuándo dispare el capturador.
+
+```js
+const a = el.getAnimations()[0];
+for (const t of [0, 5000, 11000]) {
+  a.currentTime = t;                                  // milisegundos
+  const m = new DOMMatrix(getComputedStyle(el).transform);
+  console.log(t, m.m41);                              // desplazamiento en X
+}
+```
+
+Así se verificó que un track y sus puntos de paginación caían en el mismo instante, sin mirarlo a
+ojo. Y `getAnimations().length` es el diagnóstico más directo de "esto no anima": devolvió `0` en
+unos puntos cuyo `animation` era inválido porque el `var()` del ciclo estaba declarado en un
+elemento **hermano** y no en un ancestro, así que no heredaba. Sin esa medición el síntoma —tres
+puntos quietos— era indistinguible de un problema de keyframes.
 
 ### 2 · Estilos computados — la parte que de verdad importa
 

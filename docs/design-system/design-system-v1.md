@@ -208,8 +208,19 @@ reconocerlos antes de repetirlos.
 | `--r-2` | 6 px | Botones, campos, chips (default A×C). |
 | `--r-3` | 10 px | Tarjetas contenedoras (cotizador, bloques de confianza). |
 | `--r-card` | 14 px | Sólo la tarjeta del cotizador cuando "flota" sobre la tinta. |
+| `--r-block` | 20 px | **Bloque contenido**: una banda en tinta dentro de una sección clara. Añadido 2026-09-08. |
 
 Botones **nunca** con `border-radius` tipo píldora.
+
+**Sobre `--r-block` (adición del 2026-09-08).** Es el radio **más amplio del sistema y su techo**:
+por encima de 20 px se pierde el registro A×C de "radios discretos" y la caja empieza a leerse como
+una tarjeta de plantilla. Es mayor que `--r-card` **a propósito**, no por escalar la escala: la
+tarjeta vive *dentro* del bloque, y dos radios iguales anidados se leen como un error de encaje —
+el exterior tiene que abrir más que el interior. Se pidió "24 px o `--radius-lg`"; se cerró en 20
+para no romper el registro y para continuar la progresión existente (0 · 3 · 6 · 10 · 14 · **20**).
+
+Hoy lo usa una sola pieza, el bloque oscuro de `Steps.astro` en la Home. Si aparece un segundo
+caso, conviene revisar si sigue siendo "bloque contenido" o si se está usando como radio genérico.
 
 ### 4.5 Elevación (mínima, por rol)
 
