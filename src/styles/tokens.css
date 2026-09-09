@@ -66,6 +66,12 @@
   --r-2:6px;
   --r-3:10px;
   --r-card:14px;          /* sólo la tarjeta del cotizador flotando sobre tinta */
+  --r-block:20px;         /* bloque contenido: una banda en tinta dentro de una
+                             sección clara. Mayor que --r-card A PROPÓSITO: la
+                             tarjeta vive DENTRO del bloque y dos radios iguales
+                             anidados se leen como un error de encaje. Es el
+                             radio más amplio del sistema y el techo: por encima
+                             se pierde el registro A×C de "radios discretos". */
 
   /* ── Elevación (mínima, por rol) ───────────────────────────────────────── */
   --elev-card:0 24px 60px -24px rgba(11,19,32,.45);

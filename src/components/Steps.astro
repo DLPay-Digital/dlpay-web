@@ -1,47 +1,115 @@
 ---
 /**
- * "Cómo funciona" — web + WhatsApp + verificación como UN solo recorrido
- * (Fase 1 §5.5, principio UX 3). Numerado porque es una secuencia real.
+ * "De la cotización al dinero movido" — layout de dos columnas: argumento y
+ * acción a la izquierda, la operación dibujada a la derecha.
  *
- * Zig-zag en escritorio, apilado en móvil. El DOM va SIEMPRE figura → texto,
- * que es el orden correcto en móvil; en escritorio se invierten sólo las filas
- * impares con `order`. Una regla, sin duplicar marcado.
+ * SUSTITUYE al zig-zag de cuatro pasos. El zig-zag alternaba el lado de la
+ * figura fila a fila y obligaba a reencuadrar la vista cuatro veces; el proceso
+ * completo, con sus seis pasos, vive en `/como-funciona/`, que es donde alguien
+ * va cuando quiere el detalle. Aquí la Home dice qué pasa y ofrece la acción.
  *
- * `order` no altera el orden del DOM ni el de lectura, y las figuras van
- * aria-hidden sin nada enfocable dentro: no hay desajuste entre orden visual y
- * orden de tabulación.
+ * REGLA DURA — las cifras no se escriben a mano. Salen de `ConfigPriceSource` y
+ * de `convert()`, la misma función que usa el cotizador para la pantalla y para
+ * el mensaje de WhatsApp. Un número escrito aparte habría divergido en el primer
+ * cambio de precio: ya pasó con la aritmética del cotizador (auditoría
+ * 2026-09-04, B1) y con el monto mínimo (D24). Si mañana entra una fuente de
+ * precio real, esta tarjeta la refleja sin tocarla.
  *
- * El número dejó de ser un marcador de 32px y pasó a etiqueta ("Paso 1"): la
- * secuencia sigue siendo información, pero el protagonismo visual es de la
- * figura. Dos anclas por paso competían.
+ * No se lee `PUBLIC_QUOTE_MIN_CLP` a propósito: esta tarjeta no muestra estado
+ * de validación, así que no necesita `buildQuote`, y añadir un tercer lector de
+ * esa variable con su propio valor por defecto empeoraría D24.
  *
- * Las cuñas entre pasos se retiraron: vivían en una columna-marcador que ya no
- * existe, y ahora cada figura muestra movimiento por su cuenta.
+ * La composición es geometría con función (ADR-0001 §5): la cuña entre los dos
+ * montos ES la conversión, y las burbujas superpuestas SON el momento en que
+ * una persona cierra la operación. Nada decorativo.
  */
-import { steps } from '../content/home.ts';
-import StepFigure from './StepFigure.astro';
+import Icon from './Icon.astro';
+import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
+import { convert, formatAmount } from '../lib/pricing/quote.ts';
+import { formatCLP, formatRate } from '../lib/pricing/format.ts';
+
+const price = await new ConfigPriceSource().getPrice();
+
+/** Mismo monto de muestra que el cotizador y el mockup de WhatsApp. */
+const SAMPLE_PAY = 2_000_000;
+const received = convert('send_abroad', SAMPLE_PAY, price.rate);
 ---
-<section class="steps" id="como-funciona" aria-labelledby="steps-title">
+<section class="feature" id="como-funciona" aria-labelledby="feature-title">
   <div class="inner">
-    <header class="head">
-      <h2 id="steps-title" data-enter>De la cotización al dinero movido</h2>
-      <p>Cuatro pasos. La web te deja listo; una persona cierra la operación.</p>
-    </header>
+    {/*
+      `on-tinta-surface` NO es decorativo: redefine `--focus` al verde de marca,
+      que sobre tinta da 8.45:1. Sin la clase, el anillo de foco heredaría
+      `--verde-deep`, pensado para superficie clara. Es la misma trampa de la
+      franja de notificación, al revés.
+    */}
+    <div class="block on-tinta-surface">
+    <div class="copy" data-enter>
+      <h2 id="feature-title">De la cotización al dinero movido en minutos.</h2>
+      <p class="lead">
+        Sin esperar días hábiles. Tú cotizas en la web y nuestro equipo cierra la
+        conversión por chat, entregando dólares digitales directo a tu billetera.
+      </p>
 
-    <ol class="list">
-      {steps.map((step) => (
-        <li class="step" data-enter>
-          <StepFigure kind={step.figure} />
-          <div class="body">
-            <p class="paso num">Paso {step.n}</p>
-            <h3>{step.title}</h3>
-            <p>{step.body}</p>
-            {step.time && <span class="time num">{step.time}</span>}
-          </div>
-        </li>
-      ))}
-    </ol>
+      <div class="actions">
+        {/* Ancla, no `/cotizar/`: en la Home el cotizador está en el héroe, y
+            recargar una página para llegar a un instrumento que ya está
+            cargado contradice "rápido de verdad" (principio UX 6). */}
+        <a class="cta" href="#cotizador">Cotizar mi envío</a>
+        <a class="ghost" href="/empresas/">
+          Conoce DLPay Empresas
+          <Icon name="chevron" size={15} class="chev" />
+        </a>
+      </div>
+    </div>
 
+    {/*
+      aria-hidden: es una abstracción dibujada de lo que la columna izquierda ya
+      dice con palabras. Un lector de pantalla recibe el titular, el párrafo y
+      las dos acciones — el mensaje completo, sin narrarle un dibujo. Mismo
+      criterio que el mockup de WhatsApp.
+    */}
+    <figure class="composition" data-enter aria-hidden="true">
+      <div class="card">
+        <p class="card-title">Tu cotización</p>
+
+        <div class="leg">
+          <span class="leg-label">Envías</span>
+          <span class="leg-amount num">CLP {formatCLP(SAMPLE_PAY)}</span>
+        </div>
+
+        <div class="turn">
+          <span class="rule"></span>
+          <Icon name="chevron" size={15} class="turn-mark" />
+          <span class="rule"></span>
+        </div>
+
+        <div class="leg">
+          <span class="leg-label">Recibes</span>
+          <span class="leg-amount num lead-amount">{formatAmount(received, 'USD')}</span>
+        </div>
+
+        <p class="card-foot">
+          <span class="num">1 USD = {formatRate(price.rate)} CLP</span>
+          <span class="ref">Precio referencial. Lo confirma un ejecutivo.</span>
+        </p>
+      </div>
+
+      <div class="thread">
+        <p class="bubble mine">Quiero cambiar {formatCLP(SAMPLE_PAY)} CLP</p>
+        {/* REQUIERE VALIDACIÓN DE COMPLIANCE — respuesta puesta en boca de
+            DLPay que afirma un precio confirmado. Es una condición comercial,
+            no una descripción del servicio. */}
+        <p class="bubble theirs">Precio confirmado ✅. Cotización realizada!</p>
+      </div>
+    </figure>
+    </div>
+
+    {/*
+      El pie queda FUERA del bloque, sobre el papel de la sección. Es una nota
+      de contexto sobre todo el proceso, no parte del argumento: dentro de la
+      caja oscura competiría con el titular y obligaría a invertir también su
+      enlace. Afuera, el bloque se lee como una unidad cerrada.
+    */}
     <p class="foot">
       Antes de tu primera operación te pedimos registro y verificación de identidad.
       Es obligatorio para todos, personas y empresas.
@@ -51,61 +119,219 @@ import StepFigure from './StepFigure.astro';
 </section>
 
 <style>
-  .steps { background: var(--papel); padding: var(--s-9) 0; }
+  /* `--papel` y no `--papel-2`: mantiene el ritmo de superficies de la Home
+     —usos (papel) → esta (papel) → confianza (papel-2)—. Con papel-2 aquí,
+     esta sección y la siguiente quedaban del mismo tono, pegadas. */
+  .feature { background: var(--papel); padding: var(--s-9) 0; }
   .inner {
     max-width: var(--container);
     margin: 0 auto;
     padding: 0 var(--pad-section-m);
   }
-  .head { max-width: 46ch; margin-bottom: var(--s-7); }
+
+  /*
+    Bloque contenido: una banda en tinta dentro de una sección clara, en vez de
+    una sección que se funde con el resto del papel.
+
+    El relleno es lo que hace que sea un bloque y no una caja de color: en móvil
+    va a `--s-5` (24px) y en escritorio a `--s-8` (64px). Menos en móvil y el
+    contenido roza el borde; más y la tarjeta se queda sin ancho para sus cifras
+    a 360px, que es el ancho donde esto se rompe primero.
+  */
+  .block {
+    background: var(--tinta);
+    color: var(--on-tinta);
+    border-radius: var(--r-block);
+    padding: var(--s-5);
+    display: grid;
+    gap: var(--s-8);
+  }
+
+  /* ── Columna izquierda ─────────────────────────────────────────────────── */
+  /* `--t-h2`, NO `--t-display`. La escala es un techo, no un objetivo, y el
+     display está reservado al h1 del héroe: dos titulares del mismo peso en una
+     página compiten, y aquí quien manda es la cifra de la tarjeta
+     (Design System §3.0). */
   h2 {
+    /* `--on-tinta` y no `--papel`: es el token que el sistema define para texto
+       sobre tinta y el que usan cabecera, héroe y pie. Da 16.44:1 — `--papel`
+       daría 17.06:1, una diferencia invisible a cambio de salirse del sistema. */
+    color: var(--on-tinta);
     font-size: var(--t-h2-m);
     font-weight: 700;
     line-height: var(--lh-h2);
     letter-spacing: var(--ls-h2);
-    margin-bottom: var(--s-3);
+    margin-bottom: var(--s-4);
+    max-width: 24ch;
   }
-  .head p { color: var(--ink-mute); }
+  /* 8.18:1 sobre tinta. El par más ajustado del bloque, y aun así 1.8× el
+     mínimo de AA para texto normal. */
+  .lead { color: var(--on-tinta-mute); max-width: 46ch; }
 
-  .list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--s-8);
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-6);
   }
-  /* Móvil: una columna, figura arriba y texto abajo en los cuatro pasos.
-     Como el DOM ya va en ese orden, aquí no hace falta ninguna regla. */
-  .step { display: grid; gap: var(--s-4); justify-items: start; }
+  /* Mismo tratamiento que el CTA del cotizador: relleno verde con tinta casi
+     negra. El verde va como relleno de un control, nunca como wash. */
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--verde);
+    color: #04140e;
+    font-size: var(--t-body-sm);
+    font-weight: 700;
+    padding: var(--s-4) var(--s-5);
+    border-radius: var(--r-2);
+    text-decoration: none;
+  }
+  .cta { transition: background-color var(--m-fast) var(--m-ease); }
+  .cta:hover { background: var(--verde-hi); }
 
-  .paso {
+  /*
+    Fantasma neutro sobre tinta, no verde.
+    Business.astro usa un fantasma con borde y texto verdes, pero ahí ESE es el
+    único control. Aquí al lado hay un `.cta` verde relleno, y dos controles
+    verdes seguidos aplanan la jerarquía — el mismo motivo por el que ArrowLink
+    no es un botón fantasma.
+
+    El alfa del borde es 0.40, NO el 0.28 que usa `empresas.astro`: mezclado
+    sobre tinta, 0.28 da 2.32:1 y WCAG 1.4.11 pide 3:1 al contorno de un
+    control. 0.40 da 3.50:1. (El 0.28 de `empresas.astro` es un defecto
+    preexistente, anotado aparte.)
+  */
+  .ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    border: 1px solid rgba(237, 242, 239, 0.4);
+    border-radius: var(--r-2);
+    padding: var(--s-4) var(--s-5);
+    color: var(--on-tinta);
+    text-decoration: none;
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+  }
+  .ghost { transition: border-color var(--m-fast) var(--m-ease); }
+  .ghost:hover { border-color: var(--on-tinta); }
+  .chev { flex: none; transition: transform var(--m-fast) var(--m-ease); }
+  .ghost:hover .chev,
+  .ghost:focus-visible .chev { transform: translateX(2px); }
+
+  /* ── Columna derecha: la composición ──────────────────────────────────── */
+  .composition { margin: 0; }
+
+  .card {
+    background: var(--papel);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    box-shadow: var(--elev-card);
+    padding: var(--s-6);
+  }
+  .card-title {
+    font-size: var(--t-label);
+    letter-spacing: var(--ls-label);
+    font-weight: 600;
+    color: var(--ink-mute);
+    margin-bottom: var(--s-5);
+  }
+
+  /* Cada tramo en su propio bloque hundido: es el registro de instrumento del
+     cotizador, no una tarjeta de marketing. */
+  .leg {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+    background: var(--papel-2);
+    border-radius: var(--r-2);
+    padding: var(--s-3) var(--s-4);
+  }
+  .leg-label {
     font-size: var(--t-label);
     letter-spacing: var(--ls-label);
     font-weight: 600;
     color: var(--verde-deep);
-    margin-bottom: var(--s-2);
   }
-
-  .body { padding-bottom: var(--s-2); }
-  h3 {
-    font-size: var(--t-h3-m);
-    font-weight: 600;
-    line-height: var(--lh-h3);
-    margin-bottom: var(--s-2);
-  }
-  /* :not(.paso) — sin esto, `.body p` (0,3,1) pisa a `.paso` (0,2,0) y además
-     va después en la hoja: la etiqueta del paso salía gris en vez de verde. */
-  .body p:not(.paso) { color: var(--ink-mute); max-width: 52ch; }
-  .time {
-    display: inline-block;
-    margin-top: var(--s-3);
-    font-size: var(--t-dato-sm);
+  .leg-amount {
+    font-size: var(--t-dato-m);
     font-weight: 500;
+    line-height: var(--lh-dato);
+    color: var(--ink);
+  }
+  /* El monto recibido es la cifra protagonista de la composición. */
+  .lead-amount { font-weight: 600; }
+
+  /* La cuña ES la conversión: un giro entre los dos tramos, en la dirección en
+     que el valor se mueve. Geometría con función (ADR-0001 §5). */
+  .turn {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: var(--s-3) var(--s-4);
+  }
+  .rule { flex: 1; height: 1px; background: var(--line); }
+  .turn-mark { flex: none; color: var(--verde-deep); transform: rotate(90deg); }
+
+  .card-foot {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+    margin-top: var(--s-5);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--line);
+    font-size: var(--t-dato-sm);
     color: var(--ink-mute);
   }
+  .card-foot .ref { line-height: 1.4; }
 
+  /* ── El hilo de chat ──────────────────────────────────────────────────── */
+  /* En móvil va en flujo normal, bajo la tarjeta: superponer en 360px de ancho
+     tapa las cifras. La asimetría entra en escritorio. */
+  .thread {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-4);
+  }
+  .bubble {
+    width: fit-content;
+    max-width: 90%;
+    padding: var(--s-3) var(--s-4);
+    font-size: var(--t-body-sm);
+    line-height: 1.4;
+    box-shadow: var(--elev-pop);
+  }
+  /* Usuario a la derecha, en verde: la convención que todo el mundo ya sabe
+     leer. Es un relleno de elemento pequeño, no un wash. */
+  .mine {
+    margin-left: auto;
+    background: var(--verde);
+    color: #04140e;
+    font-weight: 500;
+    border-radius: var(--r-3) var(--r-3) var(--r-1) var(--r-3);
+  }
+  /*
+    DLPay a la izquierda, sobria, no en color.
+
+    El borde claro es OBLIGATORIO desde que el bloque es tinta. La burbuja
+    sobresale de la tarjeta y cae sobre el bloque, y ahí un relleno oscuro sobre
+    fondo oscuro da 1.07:1: desaparecía por completo. El borde la define
+    (3.71:1 sobre tinta) sin encenderla de color, y sobre la tarjeta de papel el
+    relleno sigue dando 15.98:1. `--tinta-2` en vez de `--tinta` añade el
+    mínimo de separación cuando la burbuja pisa el bloque.
+  */
+  .theirs {
+    background: var(--tinta-2);
+    color: var(--on-tinta);
+    border: 1px solid rgba(237, 242, 239, 0.4);
+    border-radius: var(--r-3) var(--r-3) var(--r-3) var(--r-1);
+  }
+
+  /* ── Pie de la sección ────────────────────────────────────────────────── */
   .foot {
-    margin-top: var(--s-7);
+    margin-top: var(--s-5);
     padding-top: var(--s-5);
     border-top: 1px solid var(--line);
     font-size: var(--t-body-sm);
@@ -117,17 +343,51 @@ import StepFigure from './StepFigure.astro';
 
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
-    h2 { font-size: var(--t-h2); }
-    h3 { font-size: var(--t-h3); }
-    .list { gap: var(--s-9); }
-    .step {
+    .block {
       grid-template-columns: 1fr 1fr;
       align-items: center;
-      gap: var(--s-8);
+      column-gap: var(--s-8);
+      padding: var(--s-8);
     }
-    .fig { justify-self: center; }
-    /* Única regla del zig-zag: las impares invierten, las pares se quedan en el
-       orden del DOM. Da texto│figura · figura│texto · texto│figura · figura│texto. */
-    .step:nth-child(odd) .fig { order: 2; }
+    h2 { font-size: var(--t-h2); }
+    /*
+      Se mantiene en `--t-dato-m` (26px) y NO sube a `--t-dato` (32px).
+      Con el relleno del bloque la tarjeta baja de 380px a 332px, y a 32px
+      "CLP 2.000.000" ya no cabe en una línea: envolvía mientras
+      "US$ 2.174,62" seguía en una sola, y dos cifras hermanas maquetadas
+      distinto se leen como un descuadre. `nowrap` deja el fallo a la vista si
+      alguien vuelve a subir el tamaño, en vez de esconderlo en un salto de
+      línea silencioso.
+    */
+    .leg-amount { white-space: nowrap; }
+
+    .foot { max-width: 72ch; }
+
+    /*
+      La superposición se hace con margen negativo en flujo normal, no con
+      posicionamiento absoluto: así la composición conserva su altura real y el
+      hilo no puede desbordar la sección a un ancho intermedio.
+
+      El relleno inferior de la tarjeta NO es aire decorativo: es la zona sobre
+      la que aterrizan las burbujas. Sin él, el hilo tapaba la línea "Precio
+      referencial. Lo confirma un ejecutivo" —verificado en render— y esa es la
+      declaración de honestidad sobre el precio (principio UX 1), justo lo que
+      no puede quedar debajo de un adorno. La conversación se superpone a un
+      hueco reservado, no a un texto.
+    */
+    .card { margin-right: var(--s-8); padding-bottom: var(--s-9); }
+    /* 70% y no 88%: en el tramo estrecho de dos columnas (900–1100px) la
+       tarjeta baja a ~268px y con 88% el hilo salía MÁS ancho que ella, así que
+       las burbujas asomaban por los dos lados y se perdía la lectura de
+       "conversación sobre la cotización". Medido, no estimado. */
+    .thread {
+      position: relative;
+      z-index: 1;
+      width: min(320px, 70%);
+      margin: calc(-1 * var(--s-8)) 0 0 auto;
+    }
+    /* Asimetría: la respuesta de DLPay queda desfasada hacia dentro, de modo
+       que las dos burbujas no comparten borde izquierdo ni derecho. */
+    .theirs { margin-left: var(--s-6); }
   }
 </style>

@@ -6,16 +6,6 @@
  * Ver phase-2.5-definicion-experiencia.md §5.
  */
 
-export interface Step {
-  n: number;
-  title: string;
-  body: string;
-  /** Tiempo concreto. Reduce la ansiedad del proceso (Fase 1, patrón 7). */
-  time?: string;
-  /** Abstracción del paso. Ver StepFigure.astro. */
-  figure: 'cotiza' | 'chat' | 'custodia' | 'entrega';
-}
-
 export interface TrustBlock {
   icon: 'bank' | 'clock' | 'people';
   title: string;
@@ -53,43 +43,6 @@ export const useCases: UseCase[] = [
     figure: 'reparte',
     title: 'Pagar desde tu empresa',
     body: 'A proveedores, servicios o equipos en el exterior que operan con dólar digital. Con un ejecutivo que conoce tu operación.',
-  },
-];
-
-/**
- * El recorrido completo: web + WhatsApp + verificación como UNA sola secuencia
- * (principio UX 3). Numerado porque es una secuencia real (Fase 1, patrón 11).
- */
-export const steps: Step[] = [
-  {
-    n: 1,
-    figure: 'cotiza',
-    title: 'Dices qué necesitas',
-    body: 'Enviar al extranjero, pasar tus pesos a dólares o volver a pesos. Escribes el monto y ves al instante cuánto recibes.',
-    time: 'ahora mismo',
-  },
-  {
-    n: 2,
-    figure: 'chat',
-    title: 'Continúas por WhatsApp',
-    body: 'El botón abre el chat con tu operación ya escrita. Una persona te confirma el precio final y te indica cómo seguir.',
-    time: 'minutos',
-  },
-  {
-    n: 3,
-    figure: 'custodia',
-    title: 'Transfieres y verificamos',
-    body: 'Transfieres desde tu banco y confirmamos la recepción en la cuenta de DLPay antes de mover nada.',
-    time: 'según tu banco',
-  },
-  {
-    n: 4,
-    figure: 'entrega',
-    title: 'Recibes tus dólares',
-    // El tiempo corresponde a NUESTRA operación: la entrega del dólar digital.
-    // No a una liquidación bancaria en destino, que DLPay no realiza.
-    body: 'Te enviamos el dólar digital a tu billetera y te confirmamos por el mismo chat. Desde ahí decides: lo mantienes, lo mueves o lo conviertes.',
-    time: '~5 min desde el pago',
   },
 ];
 
