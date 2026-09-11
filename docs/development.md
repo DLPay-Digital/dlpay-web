@@ -199,7 +199,7 @@ arrastre sino tras revisarlo:
 
 Se borraron el componente, `lib/activity` y sus 15 tests — 514 líneas. **D18 queda cerrada**
 (`CLAUDE.md` §13). Si algún día se quiere prueba social, la puerta es **D10**, y el código está en
-el historial antes de `4185c7d`.
+el historial antes de `7577ffe`.
 
 Lo que sí se conserva es el **patrón**, que era la parte valiosa: una interfaz de fuente con
 implementación intercambiable. Sigue vivo y en uso en `lib/pricing` (`PriceSource` →
