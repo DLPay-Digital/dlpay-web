@@ -24,12 +24,33 @@ import { platform } from '../lib/config/site.ts';
  * Este array alimenta la navegación de escritorio Y el cajón móvil: se ordena
  * una vez.
  */
-const nav = [
+const navMain = [
   { label: 'Personas', href: '/' },
   { label: 'Empresas', href: '/empresas/' },
-  { label: 'Cómo funciona', href: '/como-funciona/' },
-  { label: 'Confianza', href: '/confianza/' },
 ];
+
+/**
+ * Entradas agrupadas bajo «Información».
+ *
+ * REQUIERE VALIDACIÓN DE COMPLIANCE no aplica a estas descripciones porque
+ * están escritas para NO abrir claim: la de Confianza dice qué verificamos y
+ * qué no afirmamos, y evita a propósito la palabra «regulaciones». CLAUDE.md §6
+ * prohíbe afirmar o sugerir que DLPay está regulado, y D26 fijó que el único
+ * registro público admisible es «registrada y supervisada» ante la UAF.
+ */
+const navInfo = [
+  {
+    label: 'Cómo funciona',
+    href: '/como-funciona/',
+    detail: 'El recorrido del dinero, paso a paso',
+  },
+  {
+    label: 'Confianza',
+    href: '/confianza/',
+    detail: 'Qué verificamos y qué no afirmamos',
+  },
+];
+
 
 /**
  * Marca la página actual para lectores de pantalla y para el estilo.
@@ -44,6 +65,9 @@ const nav = [
 const normalize = (path: string): string => path.replace(/\/+$/, '') || '/';
 const current = normalize(Astro.url.pathname);
 const isCurrent = (href: string): boolean => normalize(href) === current;
+/* Si la página actual vive dentro del desplegable, el disparador se marca:
+   si no, la cabecera dejaría de señalar dónde estás en dos de las ocho rutas. */
+const infoIsCurrent = navInfo.some((item) => isCurrent(item.href));
 ---
 <header class="site-header on-tinta-surface">
   <a class="skip" href="#main">Saltar al contenido</a>
@@ -56,13 +80,55 @@ const isCurrent = (href: string): boolean => normalize(href) === current;
 
     <nav class="desktop-nav" aria-label="Principal">
       <ul>
-        {nav.map((item) => (
+        {navMain.map((item) => (
           <li>
             <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
               {item.label}
             </a>
           </li>
         ))}
+
+        {/*
+          Desplegable sin una línea de JavaScript: abre con `:hover` y con
+          `:focus-within`.
+
+          El disparador es un `<button>` DE VERDAD y eso no es cosmético: el
+          panel se oculta con `visibility`, así que sus enlaces no son
+          enfocables mientras está cerrado y `:focus-within` no podría
+          dispararse nunca. Con un botón enfocable, el tabulador llega al
+          disparador, el panel se abre y el foco puede entrar en los enlaces.
+          En pantallas táctiles ocurre lo mismo: tocar el botón le da foco.
+
+          No lleva `aria-expanded` a propósito: sin JavaScript no hay forma de
+          mantenerlo sincronizado, y un valor fijo mentiría la mitad del tiempo.
+        */}
+        <li class:list={['nav-item', { 'is-current': infoIsCurrent }]}>
+          <button class="trigger" type="button">
+            Información
+            <svg class="chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path
+                d="M1 1l4 4 4-4"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+
+          <div class="dropdown">
+            <ul>
+              {navInfo.map((item) => (
+                <li>
+                  <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                    <span class="d-title">{item.label}</span>
+                    <span class="d-detail">{item.detail}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </li>
       </ul>
     </nav>
 
@@ -74,11 +140,26 @@ const isCurrent = (href: string): boolean => normalize(href) === current;
         <summary aria-label="Abrir menú">
           <span class="burger"><i></i><i></i><i></i></span>
         </summary>
+        {/* En móvil nada flota: «Información» es un rótulo y sus dos enlaces
+            cuelgan indentados debajo. Un desplegable dentro de un desplegable
+            obligaría a dos gestos para llegar a una página. */}
         <nav class="drawer" aria-label="Principal, móvil">
           <ul>
-            {nav.map((item) => (
+            {navMain.map((item) => (
               <li>
                 <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              </li>
+            ))}
+            <li class="drawer-group">Información</li>
+            {navInfo.map((item) => (
+              <li>
+                <a
+                  class="drawer-sub"
+                  href={item.href}
+                  aria-current={isCurrent(item.href) ? 'page' : undefined}
+                >
                   {item.label}
                 </a>
               </li>
@@ -137,7 +218,14 @@ const isCurrent = (href: string): boolean => normalize(href) === current;
 
   .desktop-nav { display: none; }
   .desktop-nav ul { display: flex; gap: var(--s-5); list-style: none; margin: 0; padding: 0; }
-  .desktop-nav a {
+  /*
+    Selector de HIJO DIRECTO, y no `.desktop-nav a`, a propósito: los enlaces
+    del desplegable también cuelgan de esta navegación, y con el selector
+    descendente heredaban el subrayado verde de `aria-current` —que aparecía
+    suelto dentro del panel— y un `white-space: nowrap` que habría impedido que
+    su descripción fluyera en más de una línea.
+  */
+  .desktop-nav > ul > li > a {
     color: var(--on-tinta-mute);
     text-decoration: none;
     font-size: var(--t-body-sm);
@@ -150,15 +238,148 @@ const isCurrent = (href: string): boolean => normalize(href) === current;
     */
     white-space: nowrap;
   }
-  .desktop-nav a { transition: color var(--m-fast) var(--m-ease); }
-  .desktop-nav a:hover { color: var(--on-tinta); }
-  .desktop-nav a[aria-current='page'] { color: var(--on-tinta); }
-  .desktop-nav a[aria-current='page']::after {
+  .desktop-nav > ul > li > a { transition: color var(--m-fast) var(--m-ease); }
+  .desktop-nav > ul > li > a:hover { color: var(--on-tinta); }
+  .desktop-nav > ul > li > a[aria-current='page'] { color: var(--on-tinta); }
+  .desktop-nav > ul > li > a[aria-current='page']::after {
     content: '';
     display: block;
     height: 1.5px;
     background: var(--verde);
     margin-top: 5px;
+  }
+
+  /* ── Desplegable «Información» ───────────────────────────────────────────
+     Cero JavaScript: abre con `:hover` y con `:focus-within`.
+
+     Se oculta con `visibility` y NO con `display: none`, para que la
+     transición exista y para que el panel siga participando del cálculo de
+     `:focus-within`. `pointer-events: none` evita que un panel invisible
+     intercepte clics de lo que tiene debajo.
+
+     Duración `--m-fast`: es M1 del Motion System —respuesta de un control al
+     puntero o al foco—, no una entrada. Muy por debajo del techo de 280 ms. */
+  .nav-item { position: relative; display: none; }
+
+  .trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    /* Objetivo táctil de 44px (Design System §10) sin agrandar el texto. */
+    min-height: 44px;
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: var(--on-tinta-mute);
+    font-family: inherit;
+    font-size: var(--t-body-sm);
+    font-weight: 500;
+    white-space: nowrap;
+    transition: color var(--m-fast) var(--m-ease);
+  }
+  .nav-item:hover .trigger,
+  .nav-item:focus-within .trigger { color: var(--on-tinta); }
+
+  .chevron { flex: none; transition: transform var(--m-fast) var(--m-ease); }
+  .nav-item:hover .chevron,
+  .nav-item:focus-within .chevron { transform: rotate(180deg); }
+
+  /* La página actual vive dentro del desplegable: se marca igual que una
+     entrada de primer nivel, para no perder la señal de «dónde estoy». */
+  .nav-item.is-current .trigger { color: var(--on-tinta); }
+  .nav-item.is-current .trigger::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 8px;
+    width: calc(100% - 16px);
+    height: 1.5px;
+    background: var(--verde);
+  }
+
+  /*
+    `z-index: 15`, el mismo de `.drawer` y por el mismo motivo: la franja de
+    notificación anima `opacity`, y mientras lo hace obtiene contexto de
+    apilamiento propio. Sin declararlo, su enlace se dibujaría encima de este
+    panel. Ver la nota larga del cajón móvil.
+  */
+  .dropdown {
+    position: absolute;
+    z-index: 15;
+    left: 0;
+    top: calc(100% - var(--s-2));
+    min-width: 272px;
+    padding: var(--s-2);
+    background: var(--tinta-2);
+    border: 1px solid var(--line-on-tinta);
+    border-radius: var(--r-3);
+    box-shadow: var(--elev-card);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity var(--m-fast) var(--m-ease),
+      visibility var(--m-fast) var(--m-ease);
+  }
+  .nav-item:hover .dropdown,
+  .nav-item:focus-within .dropdown {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .dropdown ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .dropdown a {
+    position: relative;
+    display: block;
+    padding: var(--s-3) var(--s-3) var(--s-3) var(--s-4);
+    border-radius: var(--r-2);
+    text-decoration: none;
+    transition: background-color var(--m-fast) var(--m-ease);
+  }
+  .dropdown a:hover,
+  .dropdown a:focus-visible { background: rgba(237, 242, 239, .06); }
+
+  /* La cuña del sistema geométrico apuntando a la entrada: señala cuál está
+     activa, que es función y no adorno (ADR-0001 §3). */
+  .dropdown a::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    width: 5px;
+    height: 12px;
+    margin-top: -6px;
+    background: var(--verde);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    opacity: 0;
+    transition: opacity var(--m-fast) var(--m-ease);
+  }
+  .dropdown a:hover::before,
+  .dropdown a:focus-visible::before,
+  .dropdown a[aria-current='page']::before { opacity: 1; }
+
+  .d-title {
+    display: block;
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    color: var(--on-tinta);
+    transition: color var(--m-fast) var(--m-ease);
+  }
+  .dropdown a:hover .d-title,
+  .dropdown a:focus-visible .d-title,
+  .dropdown a[aria-current='page'] .d-title { color: var(--verde); }
+  .d-detail {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    line-height: 1.35;
+    color: var(--on-tinta-mute);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chevron, .dropdown, .dropdown a, .dropdown a::before { transition: none; }
   }
 
   .actions {
@@ -255,10 +476,27 @@ const isCurrent = (href: string): boolean => normalize(href) === current;
   .drawer a { transition: background-color var(--m-fast) var(--m-ease); }
   .drawer a:hover { background: rgba(237, 242, 239, 0.06); }
   .drawer a[aria-current='page'] { color: var(--verde); }
+  /* Rótulo de grupo: no es un enlace y no debe parecerlo. */
+  .drawer-group {
+    padding: var(--s-3) var(--s-3) var(--s-1);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--on-tinta-mute);
+  }
+  /* `.drawer a.drawer-sub` y no `.drawer-sub` a secas: `.drawer a` tiene más
+     especificidad y su `padding` corto ganaba, así que la indentación no se
+     aplicaba. */
+  .drawer a.drawer-sub { padding-left: var(--s-6); }
 
   @media (min-width: 900px) {
     .bar { padding-inline: var(--pad-section); gap: var(--s-8); }
-    .desktop-nav { display: block; }
+    /* La nav ocupa el espacio libre para que su ÚLTIMA entrada —el
+       desplegable— quede pegada al bloque de autenticación, sin sacarla del
+       landmark de navegación. */
+    .desktop-nav { display: block; flex: 1; }
+    .nav-item { display: block; margin-left: auto; }
     .register { padding-inline: var(--s-4); }
     .login {
       display: inline;
