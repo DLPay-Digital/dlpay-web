@@ -10,6 +10,16 @@
 import Quoter from './Quoter.astro';
 import Icon from './Icon.astro';
 
+/**
+ * El titular entra palabra por palabra (M6 enmendado el 2026-09-10). Ver la
+ * nota larga en `PageHero.astro`: mismo mecanismo, desfase estándar por
+ * palabra, y los bloques de abajo arrancan cuando la última empieza a entrar.
+ */
+const title = 'Cambia pesos por dólares. Muévelos donde necesites.';
+const titleWords = title.split(' ');
+const seqSub = titleWords.length - 1;
+const seqStrip = seqSub + 1;
+
 const trustStrip = [
   { icon: 'bank' as const, label: 'Verificamos en el banco' },
   { icon: 'clock' as const, label: 'Sin depender de días hábiles' },
@@ -21,13 +31,24 @@ const trustStrip = [
 
   <div class="inner">
     <div class="copy">
-      <h1 class="seq" style="--seq:0">Cambia pesos por dólares. Muévelos donde necesites.</h1>
-      <p class="sub seq" style="--seq:1">
-        Recibes dólar digital: se transfiere en minutos, a cualquier hora, sin los tiempos
-        de una transferencia bancaria tradicional. Al precio real del mercado y con una
-        persona que cierra tu operación.
+      <h1>
+        {titleWords.map((word, i) => (
+          <Fragment>{i > 0 ? ' ' : ''}<span class="w" style={`--w:${i}`}>{word}</span></Fragment>
+        ))}
+      </h1>
+      {/*
+        El sujeto de "en minutos" NO se puede soltar. D17 (CLAUDE.md §1) reformuló
+        esta frase justamente para que la rapidez se prediquara de NUESTRA
+        operación —la conversión y la entrega del dólar digital— y nunca de una
+        recepción bancaria en destino: "sin esperar días" jamás debe poder leerse
+        como "el destinatario recibe dinero en su cuenta en minutos". Por eso
+        "Recibes dólar digital:" encabeza la frase y ancla a qué se refiere.
+      */}
+      <p class="sub seq" style={`--seq:${seqSub}`}>
+        Recibes dólar digital: en minutos, a cualquier hora, sin los tiempos de una
+        operación bancaria tradicional.
       </p>
-      <ul class="strip seq" style="--seq:2">
+      <ul class="strip seq" style={`--seq:${seqStrip}`}>
         {trustStrip.map((item) => (
           <li>
             <Icon name={item.icon} class="strip-icon" />
@@ -62,6 +83,14 @@ const trustStrip = [
     animation: heroIn var(--m-base) var(--m-ease) both;
     animation-delay: calc(var(--seq) * var(--m-stagger));
   }
+  /* Palabras del titular. `inline-block` es obligatorio: un `inline` no acepta
+     `transform`. Los espacios van FUERA del span para no romper el salto de
+     línea ni el `text-wrap: balance`. */
+  .w {
+    display: inline-block;
+    animation: heroIn var(--m-base) var(--m-ease) both;
+    animation-delay: calc(var(--w) * var(--m-stagger));
+  }
   @keyframes heroIn {
     from { opacity: 0; transform: translate(var(--m-shift-x), var(--m-shift-y)); }
     to   { opacity: 1; transform: none; }
@@ -77,7 +106,7 @@ const trustStrip = [
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .seq, .wedges { animation: none; }
+    .seq, .w, .wedges { animation: none; }
   }
 
   /* Cuñas del sistema geométrico. Opacidad baja, nunca sobre el cotizador. */
