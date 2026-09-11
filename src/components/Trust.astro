@@ -52,7 +52,9 @@ import { trust } from '../content/home.ts';
     padding: var(--s-9) 0;
   }
   .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
-  .head { max-width: 46ch; margin-bottom: var(--s-7); }
+  /* Centrado de titular y bajada. `margin-inline: auto` centra la caja; sin él
+     el `max-width` la dejaría pegada a la izquierda. */
+  .head { max-width: 46ch; margin: 0 auto var(--s-7); text-align: center; }
   h2 {
     font-size: var(--t-h2-m);
     font-weight: 700;

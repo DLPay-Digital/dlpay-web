@@ -135,7 +135,9 @@ const steps: readonly Step[] = [
     padding: 0 var(--pad-section-m);
   }
 
-  .head { max-width: 40ch; margin-bottom: var(--s-8); }
+  /* Centrado. Ver la nota en `UseCases.astro`: la caja se centra con
+     `margin-inline: auto`, no sólo con `text-align`. */
+  .head { max-width: 40ch; margin: 0 auto var(--s-8); text-align: center; }
   h2 {
     font-size: var(--t-h2-m);
     font-weight: 700;

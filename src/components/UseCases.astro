@@ -74,13 +74,17 @@ import UseCaseFigure from './UseCaseFigure.astro';
 <style>
   .uses { background: var(--papel); padding: var(--s-9) 0; }
   .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
+  /* Centrado: el `max-width` mantiene la medida de lectura, y `margin-inline:
+     auto` es lo que centra la CAJA — sin él, `text-align` centraría el texto
+     dentro de un bloque que sigue pegado a la izquierda. */
   h2 {
     font-size: var(--t-h2-m);
     font-weight: 700;
     line-height: var(--lh-h2);
     letter-spacing: var(--ls-h2);
-    margin-bottom: var(--s-7);
+    margin: 0 auto var(--s-7);
     max-width: 46ch;
+    text-align: center;
   }
 
   /* Base: la pila de siempre. Es el suelo al que cae cualquier ancho subpíxel
