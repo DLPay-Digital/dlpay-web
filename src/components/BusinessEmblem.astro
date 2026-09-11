@@ -1,0 +1,203 @@
+---
+/**
+ * Los cuatro emblemas de «Para qué lo usan» en /empresas.
+ *
+ * NO son ilustraciones y no hay dos iguales con distinto relleno: cada uno
+ * dibuja la FORMA de su operación, que es lo que ADR-0001 §3 exige —cada trazo
+ * representa movimiento, flujo de valor o un paso—. Misma regla que
+ * `UseCaseFigure.astro` en la Home; aquí la escala es mayor porque el emblema
+ * sostiene la mitad de una fila, no el borde de una tarjeta.
+ *
+ *   proveedores · un origen que cruza una frontera y se reparte    → uno a varios, fuera de Chile
+ *   tesoreria   · un volumen contenido, quieto                     → el dinero NO se mueve, se guarda
+ *   recurrentes · la misma operación repetida en el tiempo         → tres iguales, desplazadas
+ *   divisas     · dos planos que se encuentran en un corte de 32°  → dos unidades, un intercambio
+ *
+ * Cada emblema vive sobre un panel en tinta con proporción fija, de modo que la
+ * columna visual nunca crece más que su bloque de texto.
+ *
+ * Técnica mixta a propósito: SVG donde manda el trazo (flujo y planos) y
+ * HTML/CSS donde manda la superficie (bóveda y cascada). Ninguna imagen.
+ *
+ * `aria-hidden`: el h3 y el párrafo de al lado ya lo dicen con palabras.
+ */
+import type { EmblemKind } from '../content/business.ts';
+
+interface Props {
+  kind: EmblemKind;
+}
+const { kind } = Astro.props;
+---
+<div class:list={['emblem', kind]} aria-hidden="true">
+  {kind === 'proveedores' && (
+    <svg class="fig" viewBox="0 0 240 180" fill="none">
+      {/* La frontera: lo único punteado del sistema. Marca un límite, no un flujo. */}
+      <path class="edge" d="M132 24V156" stroke-dasharray="3 5" />
+
+      <circle class="node" cx="16" cy="90" r="5.5" />
+      {/* Tronco con la cuña del diagrama de flujo: el dinero moviéndose. */}
+      <path class="link" d="M26 90h32l5-4 5 8 5-4h12" />
+
+      {/* El reparto. Diagonales a 32° —60 de avance por 36 de subida—, el corte
+          del isotipo. Una sola operación que se abre a varias contrapartes. */}
+      <path class="link" d="M85 90h14l60-36h64" />
+      <path class="link" d="M85 90h138" />
+      <path class="link" d="M85 90h14l60 36h64" />
+
+      <circle class="node" cx="230" cy="54" r="4.5" />
+      <circle class="node" cx="230" cy="90" r="4.5" />
+      <circle class="node" cx="230" cy="126" r="4.5" />
+
+      <text class="tag" x="4" y="170">CLP</text>
+      <text class="tag" x="236" y="170" text-anchor="end">USD</text>
+    </svg>
+  )}
+
+  {kind === 'tesoreria' && (
+    /* Bóveda: un volumen cerrado por líneas de contención concéntricas. No hay
+       ningún trazo de flujo porque en este caso el dinero justamente NO va a
+       ninguna parte — se queda. La sigla es la cifra, y por eso va en la
+       tipografía tabular y en el verde del dato vivo. */
+    <div class="vault">
+      <span class="sigla num">USD</span>
+    </div>
+  )}
+
+  {kind === 'recurrentes' && (
+    /* Cascada: la MISMA operación repetida. Las tres tarjetas son idénticas y
+       sólo se desplazan sobre la diagonal de la marca; su barra verde mide lo
+       mismo en las tres, que es lo que dice «recurrente» sin escribirlo. */
+    <div class="stack">
+      <span class="card"></span>
+      <span class="card"></span>
+      <span class="card"></span>
+    </div>
+  )}
+
+  {kind === 'divisas' && (
+    <svg class="fig" viewBox="0 0 240 180" fill="none">
+      {/* Dos planos angulares con el corte del isotipo —42 de avance por 26 de
+          caída, 31,8°— y de TAMAÑO IDÉNTICO: el valor no cambia, cambia la
+          unidad. Es la gramática de `convierte` en UseCaseFigure, engordada a
+          planos porque aquí lo que se comunica es el volumen. Entre ambos, la
+          misma cuña del diagrama de flujo: el intercambio. */}
+      <path class="plane-solid" d="M76 46H236L194 72H34Z" />
+      <path class="plane-solid" d="M76 108H236L194 134H34Z" />
+      <path class="link" d="M135 74v10l4 4-8 4 4 4v10" />
+      <text class="tag" x="74" y="67">CLP</text>
+      <text class="tag" x="74" y="129">USD</text>
+    </svg>
+  )}
+</div>
+
+<style>
+  /* Panel en tinta con proporción fija: la columna visual no puede crecer más
+     que su bloque de texto, y las cuatro filas mantienen el mismo ritmo. */
+  .emblem {
+    width: 100%;
+    max-width: 380px;
+    aspect-ratio: 4 / 3;
+    background: var(--tinta);
+    border-radius: var(--r-3);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+
+  .fig { display: block; width: 100%; height: 100%; }
+
+  /* ── Vocabulario compartido, el mismo del diagrama de flujo ─────────────── */
+  .node { fill: var(--verde); }
+  .link,
+  .seam {
+    stroke: var(--verde-hi);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .edge { stroke: var(--line-on-tinta); stroke-width: 1.25; }
+  .tag {
+    font-family: var(--f-num);
+    font-size: 11px;
+    letter-spacing: .04em;
+    fill: var(--on-tinta-mute);
+  }
+
+  /* ── Planos ─────────────────────────────────────────────────────────────── */
+  /* `--tinta-2` sobre `--tinta` da 1,07:1: como relleno solo, el plano sería
+     invisible. Lo que dibuja el plano es el contorno; el relleno le da cuerpo. */
+  .plane-solid { fill: var(--tinta-2); stroke: var(--line-on-tinta); stroke-width: 1.25; }
+
+  /* ── Bóveda ─────────────────────────────────────────────────────────────── */
+  .vault {
+    position: relative;
+    width: 62%;
+    aspect-ratio: 1;
+    background: var(--tinta-2);
+    border: 1px solid var(--line-on-tinta);
+    display: grid;
+    place-items: center;
+  }
+  /* Segunda línea de contención. Dos rectángulos concéntricos leen «cerrado»
+     sin dibujar un candado, que sería iconografía de plantilla. */
+  .vault::before {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    border: 1px solid var(--line-on-tinta);
+    opacity: .45;
+  }
+  .sigla {
+    font-size: var(--t-display-m);
+    font-weight: 600;
+    color: var(--verde);
+    letter-spacing: var(--ls-dato);
+    line-height: var(--lh-dato);
+  }
+
+  /* ── Cascada ────────────────────────────────────────────────────────────── */
+  .stack { position: relative; width: 74%; aspect-ratio: 4 / 3; }
+  .card {
+    position: absolute;
+    width: 62%;
+    aspect-ratio: 8 / 5;
+    background: var(--tinta-2);
+    border: 1px solid var(--line-on-tinta);
+    border-radius: var(--r-2);
+    /* Sombra de contacto corta: apoya las tarjetas sin convertirlas en un
+       efecto. Es la misma familia que la del teléfono de la Home. */
+    box-shadow: 0 6px 14px -6px rgba(0, 0, 0, .55);
+  }
+  /* Desplazamiento sobre la diagonal de la marca: 19% de avance por 12% de
+     caída ≈ 32°. No es un apilado al azar. */
+  .card:nth-child(1) { left: 0;   top: 0;   z-index: 1; }
+  .card:nth-child(2) { left: 19%; top: 12%; z-index: 2; }
+  .card:nth-child(3) { left: 38%; top: 24%; z-index: 3; }
+  /* El monto de la operación: idéntico en las tres, porque es la misma
+     operación repitiéndose. */
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 12%;
+    top: 30%;
+    width: 46%;
+    height: 5px;
+    border-radius: var(--r-1);
+    background: var(--verde);
+  }
+  /* La línea de detalle, en neutro: acompaña al monto, no compite con él. */
+  .card::after {
+    content: '';
+    position: absolute;
+    left: 12%;
+    top: 58%;
+    width: 66%;
+    height: 1px;
+    background: var(--line-on-tinta);
+  }
+
+  @media (min-width: 900px) {
+    .sigla { font-size: var(--t-display); }
+    .card::before { height: 6px; }
+  }
+</style>

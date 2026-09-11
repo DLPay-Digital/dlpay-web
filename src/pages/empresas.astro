@@ -10,6 +10,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
 import MacbookMockup from '../components/MacbookMockup.astro';
+import BusinessEmblem from '../components/BusinessEmblem.astro';
 import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
 import { businessUseCases, differences, onboarding } from '../content/business.ts';
@@ -74,11 +75,26 @@ const waPlain = contact.whatsappUrl();
             pesos y te entregamos dólar digital. Si la tuya no está acá, conversémosla.
           </p>
         </header>
-        <ul class="grid">
+        {/*
+          Zigzag: texto y emblema alternan de lado en escritorio. El orden del
+          DOM es siempre texto → emblema, que es el orden de lectura; el lado lo
+          decide `grid-column`, no el orden de los elementos, para que un lector
+          de pantalla nunca oiga la página en zigzag.
+
+          Las cuatro filas conservan `data-enter`: son cuatro hermanas, justo el
+          tope de M5 (Motion System V1 §4, regla dura 4), y el escalonado por
+          `nth-child` de tokens.css sigue aplicando igual que antes.
+        */}
+        <ul class="cases-list">
           {businessUseCases.map((item) => (
-            <li class="case" data-enter>
-              <h3>{item.title}</h3>
-              <p>{item.body}</p>
+            <li class="case-row" data-enter>
+              <div class="case-text">
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </div>
+              <div class="case-visual">
+                <BusinessEmblem kind={item.emblem} />
+              </div>
             </li>
           ))}
         </ul>
@@ -178,25 +194,22 @@ const waPlain = contact.whatsappUrl();
   .head p { color: var(--ink-mute); }
 
   .cases { background: var(--papel); padding: var(--s-9) 0; }
-  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
-  .case h3 {
+
+  /* Una fila por caso, no una rejilla de tarjetas: cada operación pesa lo
+     mismo que su emblema. La regla de acento verde que llevaban los titulares
+     se retiró — el emblema ya cumple esa función y con más sentido. */
+  .cases-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-8); }
+  .case-row { display: grid; gap: var(--s-5); }
+  /* En móvil el emblema va SIEMPRE arriba, aunque en el DOM vaya después:
+     la figura presenta el caso y el texto lo explica. */
+  .case-visual { order: -1; display: flex; justify-content: center; }
+  .case-text h3 {
     font-size: var(--t-h3-m);
     font-weight: 600;
     line-height: var(--lh-h3);
     margin-bottom: var(--s-2);
   }
-  /* Regla de acento de ancho fijo. Antes era un border-top sobre un
-     inline-block, así que medía lo que el titular más largo de esa tarjeta:
-     cada tarjeta tenía una raya distinta. */
-  .case h3::before {
-    content: '';
-    display: block;
-    width: 28px;
-    height: 2px;
-    background: var(--verde);
-    margin-bottom: var(--s-3);
-  }
-  .case p { color: var(--ink-mute); max-width: 46ch; }
+  .case-text p { color: var(--ink-mute); max-width: 46ch; }
 
   .diff { background: var(--papel-2); padding: var(--s-9) 0; }
   .table-wrap { overflow-x: auto; }
@@ -296,12 +309,25 @@ const waPlain = contact.whatsappUrl();
   .wa-icon { width: 16px; height: 16px; }
 
   @media (min-width: 760px) {
-    .grid { grid-template-columns: repeat(2, 1fr); gap: var(--s-7); }
     .split { grid-template-columns: 1fr 1.2fr; gap: var(--s-8); }
   }
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
     h2 { font-size: var(--t-h2); }
-    .case h3 { font-size: var(--t-h3); }
+    .case-text h3 { font-size: var(--t-h3); }
+
+    /* Zigzag. `--s-8` son exactamente los 4rem pedidos y sale de la escala.
+       La posición se fija con `grid-column`/`grid-row` y no con `order`: así no
+       depende de que nadie añada un tercer hijo a la fila, y el `order: -1` del
+       móvil deja de tener efecto sin necesidad de anularlo. */
+    .case-row {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-8);
+      align-items: center;
+    }
+    .case-text   { grid-row: 1; grid-column: 1; }
+    .case-visual { grid-row: 1; grid-column: 2; }
+    .case-row:nth-child(even) .case-text   { grid-column: 2; }
+    .case-row:nth-child(even) .case-visual { grid-column: 1; }
   }
 </style>

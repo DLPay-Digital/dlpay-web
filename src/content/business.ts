@@ -6,9 +6,14 @@
  * hasta tener el dato verificable y la autorización (phase-2.5 §5, D10).
  */
 
+/** Emblema geométrico que acompaña a cada caso. Ver BusinessEmblem.astro. */
+export type EmblemKind = 'proveedores' | 'tesoreria' | 'recurrentes' | 'divisas';
+
 export interface UseCase {
   title: string;
   body: string;
+  /** La forma de la operación, no un adorno: misma lógica que `kind` en home.ts. */
+  emblem: EmblemKind;
 }
 
 export interface Difference {
@@ -20,18 +25,22 @@ export interface Difference {
 export const businessUseCases: UseCase[] = [
   {
     title: 'Pagos a proveedores en el exterior',
+    emblem: 'proveedores',
     body: 'Conviertes a dólar digital y pagas a proveedores que operan con él, sin la cadena de bancos corresponsales ni sus horarios. Si tu proveedor sólo recibe por banco, conversémoslo antes.',
   },
   {
     title: 'Tesorería en dólares',
+    emblem: 'tesoreria',
     body: 'Mantienes parte de la caja en dólar digital y la conviertes de vuelta a pesos cuando la necesitas, sin abrir una cuenta en el extranjero.',
   },
   {
     title: 'Pagos recurrentes al exterior',
+    emblem: 'recurrentes',
     body: 'Servicios, equipos o proveedores fijos que reciben en dólar digital. Tu ejecutivo ya conoce la operación y el ida y vuelta se acorta cada mes.',
   },
   {
     title: 'Cambio de divisas por volumen',
+    emblem: 'divisas',
     body: 'CLP y USD como operación independiente, en montos donde el spread de un banco pesa de verdad y una app retail no alcanza.',
   },
 ];
