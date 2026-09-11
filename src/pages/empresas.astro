@@ -162,7 +162,12 @@ const waPlain = contact.whatsappUrl();
     margin: 0 auto;
     padding: 0 var(--pad-section-m);
   }
-  .head { max-width: 46ch; margin-bottom: var(--s-7); }
+  /* Centrado de las dos cabeceras con `.head` —«Para qué lo usan» y «Qué cambia
+     respecto de una persona»—, titular y bajada. `margin-inline: auto` es lo que
+     centra la CAJA: con sólo `text-align`, el `max-width` la dejaría pegada a la
+     izquierda. Las otras dos cabeceras de la página no llevan esta clase y siguen
+     alineadas a la izquierda. */
+  .head { max-width: 46ch; margin: 0 auto var(--s-7); text-align: center; }
   h2 {
     font-size: var(--t-h2-m);
     font-weight: 700;
