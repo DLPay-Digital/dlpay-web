@@ -2,202 +2,343 @@
 /**
  * Los cuatro emblemas de «Para qué lo usan» en /empresas.
  *
- * NO son ilustraciones y no hay dos iguales con distinto relleno: cada uno
- * dibuja la FORMA de su operación, que es lo que ADR-0001 §3 exige —cada trazo
- * representa movimiento, flujo de valor o un paso—. Misma regla que
- * `UseCaseFigure.astro` en la Home; aquí la escala es mayor porque el emblema
- * sostiene la mitad de una fila, no el borde de una tarjeta.
+ * Son WIDGETS de interfaz, no dibujos: cada uno simula la pantalla de software
+ * que corresponde a su caso —ruteo, saldo, comprobantes, terminal— construida
+ * con HTML y CSS nativo. Cero imágenes, cero dependencias.
  *
- *   proveedores · un origen que cruza una frontera y se reparte    → uno a varios, fuera de Chile
- *   tesoreria   · un volumen contenido, quieto                     → el dinero NO se mueve, se guarda
- *   recurrentes · la misma operación repetida en el tiempo         → tres iguales, desplazadas
- *   divisas     · dos planos que se encuentran en un corte de 32°  → dos unidades, un intercambio
+ * ── REGLA DURA, la misma del teléfono y del portátil ────────────────────────
  *
- * Cada emblema vive sobre un panel en tinta con proporción fija, de modo que la
- * columna visual nunca crece más que su bloque de texto.
+ * Las cifras NO se teclean: salen de `quoteLimits` y de `lib/pricing`, el
+ * origen único que alimenta al cotizador (D24), con la misma función
+ * `convert()` que usa el instrumento. Un saldo inventado en una página
+ * comercial sería una cifra sin respaldo —lo que CLAUDE.md §3 obliga a marcar y
+ * D10 directamente prohíbe publicar—, así que el widget de tesorería muestra el
+ * monto de muestra convertido, no un número escogido a mano.
  *
- * Técnica mixta a propósito: SVG donde manda el trazo (flujo y planos) y
- * HTML/CSS donde manda la superficie (bóveda y cascada). Ninguna imagen.
+ * El precio sigue siendo de MUESTRA (ConfigPriceSource, D7) y por eso el
+ * terminal lleva su etiqueta «referencial»: la web nunca muestra un precio
+ * cerrado (CLAUDE.md §6).
  *
- * `aria-hidden`: el h3 y el párrafo de al lado ya lo dicen con palabras.
+ * ── Qué dice cada uno ──────────────────────────────────────────────────────
+ *
+ *   proveedores · ruteo: un origen, varios destinos, todos activos
+ *   tesoreria   · saldo: el dinero quieto, en la billetera del cliente
+ *   recurrentes · tres comprobantes idénticos apilados: la misma operación cada mes
+ *   divisas     · terminal: el par, su precio referencial y las dos patas
+ *
+ * `aria-hidden`: el h3 y el párrafo de al lado ya lo dicen con palabras, y una
+ * interfaz simulada no debe leerse como si fuera operable.
  */
+import { formatCLP, formatRate, formatUSD } from '../lib/pricing/format.ts';
+import { convert } from '../lib/pricing/quote.ts';
+import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
+import { quoteLimits } from '../lib/config/site.ts';
 import type { EmblemKind } from '../content/business.ts';
 
 interface Props {
   kind: EmblemKind;
 }
 const { kind } = Astro.props;
+
+const price = await new ConfigPriceSource().getPrice();
+const pay = quoteLimits.samplePayClp;
+const get = convert('send_abroad', pay, price.rate);
 ---
 <div class:list={['emblem', kind]} aria-hidden="true">
   {kind === 'proveedores' && (
-    <svg class="fig" viewBox="0 0 240 180" fill="none">
-      {/* La frontera: lo único punteado del sistema. Marca un límite, no un flujo. */}
-      <path class="edge" d="M132 24V156" stroke-dasharray="3 5" />
-
-      <circle class="node" cx="16" cy="90" r="5.5" />
-      {/* Tronco con la cuña del diagrama de flujo: el dinero moviéndose. */}
-      <path class="link" d="M26 90h32l5-4 5 8 5-4h12" />
-
-      {/* El reparto. Diagonales a 32° —60 de avance por 36 de subida—, el corte
-          del isotipo. Una sola operación que se abre a varias contrapartes. */}
-      <path class="link" d="M85 90h14l60-36h64" />
-      <path class="link" d="M85 90h138" />
-      <path class="link" d="M85 90h14l60 36h64" />
-
-      <circle class="node" cx="230" cy="54" r="4.5" />
-      <circle class="node" cx="230" cy="90" r="4.5" />
-      <circle class="node" cx="230" cy="126" r="4.5" />
-
-      <text class="tag" x="4" y="170">CLP</text>
-      <text class="tag" x="236" y="170" text-anchor="end">USD</text>
-    </svg>
+    <>
+      <header class="top">
+        <span class="title">Ruteo de pagos</span>
+        <span class="state"><i class="dot"></i>Activo</span>
+      </header>
+      <div class="routes">
+        {[0, 1, 2].map((i) => (
+          <div class="route">
+            <span class="idx num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="bars">
+              <i class="bar"></i>
+              <i class="bar sm"></i>
+            </span>
+            <i class="dot"></i>
+          </div>
+        ))}
+      </div>
+      <footer class="foot">
+        <span>3 destinos</span>
+        <span class="num">USD</span>
+      </footer>
+    </>
   )}
 
   {kind === 'tesoreria' && (
-    /* Bóveda: un volumen cerrado por líneas de contención concéntricas. No hay
-       ningún trazo de flujo porque en este caso el dinero justamente NO va a
-       ninguna parte — se queda. La sigla es la cifra, y por eso va en la
-       tipografía tabular y en el verde del dato vivo. */
-    <div class="vault">
-      <span class="sigla num">USD</span>
+    <div class="balance-card">
+      <span class="title">Saldo en tesorería</span>
+      <p class="balance num">{formatUSD(get)}<em>USD</em></p>
+      <span class="state"><i class="dot"></i>Dólar digital en tu billetera</span>
     </div>
   )}
 
   {kind === 'recurrentes' && (
-    /* Cascada: la MISMA operación repetida. Las tres tarjetas son idénticas y
-       sólo se desplazan sobre la diagonal de la marca; su barra verde mide lo
-       mismo en las tres, que es lo que dice «recurrente» sin escribirlo. */
+    /* Tres comprobantes IDÉNTICOS: el mismo monto, la misma operación. Eso es
+       lo que dice «recurrente» sin necesidad de escribirlo. */
     <div class="stack">
-      <span class="card"></span>
-      <span class="card"></span>
-      <span class="card"></span>
+      {[0, 1, 2].map((i) => (
+        <article class="receipt" style={`--i:${i}`}>
+          <span class="r-top">
+            <span class="title">Pago recurrente</span>
+            <i class="dot"></i>
+          </span>
+          <p class="r-amount num">{formatUSD(get)}<em>USD</em></p>
+          <span class="r-foot"></span>
+        </article>
+      ))}
     </div>
   )}
 
   {kind === 'divisas' && (
-    <svg class="fig" viewBox="0 0 240 180" fill="none">
-      {/* Dos planos angulares con el corte del isotipo —42 de avance por 26 de
-          caída, 31,8°— y de TAMAÑO IDÉNTICO: el valor no cambia, cambia la
-          unidad. Es la gramática de `convierte` en UseCaseFigure, engordada a
-          planos porque aquí lo que se comunica es el volumen. Entre ambos, la
-          misma cuña del diagrama de flujo: el intercambio. */}
-      <path class="plane-solid" d="M76 46H236L194 72H34Z" />
-      <path class="plane-solid" d="M76 108H236L194 134H34Z" />
-      <path class="link" d="M135 74v10l4 4-8 4 4 4v10" />
-      <text class="tag" x="74" y="67">CLP</text>
-      <text class="tag" x="74" y="129">USD</text>
-    </svg>
+    <>
+      <header class="top">
+        <span class="title num">USD/CLP</span>
+        <span class="state"><i class="dot"></i>Referencial</span>
+      </header>
+      <p class="rate num">{formatRate(price.rate)}</p>
+      <div class="legs">
+        <div class="leg">
+          <span>Venta</span>
+          <span class="chip num">CLP</span>
+          <span class="leg-val num">{formatCLP(pay)}</span>
+        </div>
+        <div class="swap"><i></i></div>
+        <div class="leg">
+          <span>Compra</span>
+          <span class="chip num">USD</span>
+          <span class="leg-val num">{formatUSD(get)}</span>
+        </div>
+      </div>
+    </>
   )}
 </div>
 
 <style>
-  /* Panel en tinta con proporción fija: la columna visual no puede crecer más
-     que su bloque de texto, y las cuatro filas mantienen el mismo ritmo. */
+  /**
+   * Tonos del widget, locales al componente. No son tokens del Design System:
+   * describen el cromo de una interfaz simulada, igual que los grises del
+   * bisel del teléfono en `WhatsAppMockup`. Los dos sólidos están derivados de
+   * la paleta —mezclas de `--tinta` con `--on-tinta` al 6% y 12%—, así que son
+   * neutros de DLPay y no valores de otra librería.
+   */
   .emblem {
+    --w-surface: #19212D;   /* filas y tarjetas, sobre el panel      */
+    --w-raised: #222B39;    /* la pieza que va encima del resto      */
+    --w-line: rgba(255, 255, 255, .08);
+    --w-line-2: rgba(255, 255, 255, .14);
+
     width: 100%;
     max-width: 380px;
     aspect-ratio: 4 / 3;
-    background: var(--tinta);
+    background: var(--tinta-2);
+    border: 1px solid var(--w-line);
     border-radius: var(--r-3);
+    box-shadow: var(--elev-card);
+    padding: var(--s-4);
     overflow: hidden;
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--s-3);
   }
 
-  .fig { display: block; width: 100%; height: 100%; }
-
-  /* ── Vocabulario compartido, el mismo del diagrama de flujo ─────────────── */
-  .node { fill: var(--verde); }
-  .link,
-  .seam {
-    stroke: var(--verde-hi);
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  .edge { stroke: var(--line-on-tinta); stroke-width: 1.25; }
-  .tag {
-    font-family: var(--f-num);
-    font-size: 11px;
-    letter-spacing: .04em;
-    fill: var(--on-tinta-mute);
-  }
-
-  /* ── Planos ─────────────────────────────────────────────────────────────── */
-  /* `--tinta-2` sobre `--tinta` da 1,07:1: como relleno solo, el plano sería
-     invisible. Lo que dibuja el plano es el contorno; el relleno le da cuerpo. */
-  .plane-solid { fill: var(--tinta-2); stroke: var(--line-on-tinta); stroke-width: 1.25; }
-
-  /* ── Bóveda ─────────────────────────────────────────────────────────────── */
-  .vault {
-    position: relative;
-    width: 62%;
-    aspect-ratio: 1;
-    background: var(--tinta-2);
-    border: 1px solid var(--line-on-tinta);
-    display: grid;
-    place-items: center;
-  }
-  /* Segunda línea de contención. Dos rectángulos concéntricos leen «cerrado»
-     sin dibujar un candado, que sería iconografía de plantilla. */
-  .vault::before {
-    content: '';
-    position: absolute;
-    inset: 7px;
-    border: 1px solid var(--line-on-tinta);
-    opacity: .45;
-  }
-  .sigla {
-    font-size: var(--t-display-m);
+  /* ── Piezas compartidas ─────────────────────────────────────────────────── */
+  .top { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
+  .title {
+    font-size: var(--t-dato-sm);
     font-weight: 600;
-    color: var(--verde);
-    letter-spacing: var(--ls-dato);
-    line-height: var(--lh-dato);
+    letter-spacing: var(--ls-label);
+    color: var(--on-tinta);
+  }
+  .state {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--on-tinta-mute);
+  }
+  /* Indicador de estado. El resplandor es el mismo verde a baja opacidad: es
+     lo que hace que un punto se lea como «encendido» y no como una viñeta. */
+  .dot {
+    width: 7px;
+    height: 7px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--verde);
+    box-shadow: 0 0 0 3px rgba(22, 199, 132, .16);
+  }
+  .foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--w-line);
+    font-size: 11px;
+    color: var(--on-tinta-mute);
   }
 
-  /* ── Cascada ────────────────────────────────────────────────────────────── */
-  .stack { position: relative; width: 74%; aspect-ratio: 4 / 3; }
-  .card {
-    position: absolute;
-    width: 62%;
-    aspect-ratio: 8 / 5;
-    background: var(--tinta-2);
-    border: 1px solid var(--line-on-tinta);
+  /* ── Ruteo de pagos ─────────────────────────────────────────────────────── */
+  .routes { display: grid; gap: 6px; }
+  .route {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: 9px var(--s-3);
+    background: var(--w-surface);
+    border: 1px solid var(--w-line);
     border-radius: var(--r-2);
-    /* Sombra de contacto corta: apoya las tarjetas sin convertirlas en un
-       efecto. Es la misma familia que la del teléfono de la Home. */
-    box-shadow: 0 6px 14px -6px rgba(0, 0, 0, .55);
   }
-  /* Desplazamiento sobre la diagonal de la marca: 19% de avance por 12% de
-     caída ≈ 32°. No es un apilado al azar. */
-  .card:nth-child(1) { left: 0;   top: 0;   z-index: 1; }
-  .card:nth-child(2) { left: 19%; top: 12%; z-index: 2; }
-  .card:nth-child(3) { left: 38%; top: 24%; z-index: 3; }
-  /* El monto de la operación: idéntico en las tres, porque es la misma
-     operación repitiéndose. */
-  .card::before {
-    content: '';
-    position: absolute;
-    left: 12%;
-    top: 30%;
-    width: 46%;
-    height: 5px;
-    border-radius: var(--r-1);
-    background: var(--verde);
+  .idx { font-size: 11px; color: var(--on-tinta-mute); flex: none; }
+  /* Los destinos van abstraídos en barras: la página no inventa nombres de
+     clientes ni de proveedores (D10). */
+  .bars { flex: 1; display: grid; gap: 5px; }
+  .bar { height: 5px; border-radius: var(--r-1); background: var(--w-raised); }
+  .bar.sm { width: 55%; opacity: .7; }
+
+  /* ── Saldo ──────────────────────────────────────────────────────────────── */
+  .balance-card {
+    /* `margin-block: auto` en vez de `flex: 1`: la tarjeta mide lo que mide su
+       contenido y se centra en el panel. Estirada dejaba media tarjeta vacía. */
+    margin-block: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--s-2);
+    padding: var(--s-4);
+    background: var(--w-surface);
+    border: 1px solid var(--w-line);
+    border-radius: var(--r-2);
   }
-  /* La línea de detalle, en neutro: acompaña al monto, no compite con él. */
-  .card::after {
-    content: '';
+  .balance {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-2);
+    font-size: var(--t-h2-m);
+    font-weight: 600;
+    line-height: var(--lh-dato);
+    letter-spacing: var(--ls-dato);
+    color: var(--verde);
+  }
+  .balance em {
+    font-style: normal;
+    font-size: var(--t-dato-sm);
+    font-weight: 500;
+    color: var(--on-tinta-mute);
+  }
+
+  /* ── Comprobantes apilados ──────────────────────────────────────────────── */
+  .stack { position: relative; flex: 1; }
+  .receipt {
     position: absolute;
-    left: 12%;
-    top: 58%;
-    width: 66%;
+    left: 0;
+    right: 0;
+    /* Anclado al centro del panel y desplazado desde ahí: el del medio queda
+       centrado y los otros dos reparten arriba y abajo. Con `top: 0` la pila
+       se apelotonaba contra el borde superior y dejaba el panel vacío debajo.
+       Cada comprobante baja un escalón y se estrecha un poco: la pila se lee
+       en perspectiva sin recurrir a una transformación 3D. */
+    top: 50%;
+    transform:
+      translateY(calc(-50% + (var(--i) - 1) * 26px))
+      scaleX(calc(1 - (2 - var(--i)) * .05));
+    z-index: var(--i);
+    padding: var(--s-3);
+    background: var(--w-surface);
+    border: 1px solid var(--w-line);
+    border-radius: var(--r-2);
+    box-shadow: 0 10px 20px -10px rgba(0, 0, 0, .6);
+  }
+  .receipt:nth-child(3) { background: var(--w-raised); border-color: var(--w-line-2); }
+  .r-top { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
+  .r-amount {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: var(--s-2);
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-dato);
+    letter-spacing: var(--ls-dato);
+    color: var(--verde);
+  }
+  .r-amount em {
+    font-style: normal;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--on-tinta-mute);
+  }
+  .r-foot {
+    display: block;
     height: 1px;
-    background: var(--line-on-tinta);
+    margin-top: var(--s-3);
+    background: var(--w-line);
   }
+
+  /* ── Terminal ───────────────────────────────────────────────────────────── */
+  .rate {
+    font-size: var(--t-h2-m);
+    font-weight: 600;
+    line-height: var(--lh-dato);
+    letter-spacing: var(--ls-dato);
+    color: var(--on-tinta);
+  }
+  .legs { display: grid; gap: 6px; }
+  .leg {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: 9px var(--s-3);
+    background: var(--w-surface);
+    border: 1px solid var(--w-line);
+    border-radius: var(--r-2);
+    font-size: 11px;
+    color: var(--on-tinta-mute);
+  }
+  .chip {
+    padding: 2px 6px;
+    border-radius: var(--r-1);
+    background: var(--w-raised);
+    color: var(--on-tinta);
+    font-size: 10px;
+  }
+  .leg-val { margin-left: auto; color: var(--on-tinta); font-size: var(--t-dato-sm); }
+  /* El indicador de conversión: la cuña del sistema, girada al eje vertical. */
+  .swap { display: flex; justify-content: center; }
+  .swap i {
+    display: block;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(22, 199, 132, .14);
+    position: relative;
+  }
+  .swap i::before,
+  .swap i::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    width: 1.5px;
+    height: 6px;
+    background: var(--verde);
+    border-radius: 1px;
+  }
+  .swap i::before { top: 5px; transform: translateX(-50%) rotate(28deg); }
+  .swap i::after  { bottom: 5px; transform: translateX(-50%) rotate(28deg); }
 
   @media (min-width: 900px) {
-    .sigla { font-size: var(--t-display); }
-    .card::before { height: 6px; }
+    .emblem { padding: var(--s-5); }
+    .balance { font-size: var(--t-h2); }
+    .rate { font-size: var(--t-h2); }
+    .receipt {
+      transform:
+        translateY(calc(-50% + (var(--i) - 1) * 30px))
+        scaleX(calc(1 - (2 - var(--i)) * .05));
+    }
   }
 </style>
