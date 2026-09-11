@@ -62,7 +62,12 @@ import { trust } from '../content/home.ts';
     letter-spacing: var(--ls-h2);
     margin-bottom: var(--s-3);
   }
-  .head p { color: var(--ink-mute); }
+  /* `balance` en vez del `pretty` global de tokens.css: centrada, esta bajada
+     partía con una segunda línea de dos palabras, y descentrada esa asimetría
+     se nota. `balance` reparte las dos líneas parejas. Sólo aplica acá — el
+     resto del sitio sigue con `pretty`, que es lo correcto para párrafos
+     alineados a la izquierda y de más de tres líneas. */
+  .head p { color: var(--ink-mute); text-wrap: balance; }
 
   .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
   /* La insignia no trae margen propio: el espaciado lo pone quien la coloca. */
