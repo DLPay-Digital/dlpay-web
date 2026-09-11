@@ -38,6 +38,25 @@ Motivo de la enmienda: petición explícita del equipo (Sebastián, 2026-09-08).
 conflicto y lo que se hizo para acotarlo están en
 [`../decisions/0006-franja-de-notificacion.md`](../decisions/0006-franja-de-notificacion.md).
 
+### Enmienda externa — 2026-09-10
+
+| Regla de este documento | Estado |
+|---|---|
+| §4, **M6** — "secuencia de carga del héroe… 320 ms total" | **Enmendado.** El titular entra **palabra por palabra**, con el desfase estándar `--m-stagger`. El total del héroe sube a **620 ms** en las dos páginas |
+| §4, regla dura 4 — **"Máximo cuatro hermanos con stagger"** | **Enmendado, y sólo para las palabras de un titular.** Son 7 en la Home y 6 en `/empresas`. Sigue vigente para tarjetas, bloques y cualquier rejilla: el tope existe para que una rejilla escalonada no se lea como plantilla, y las palabras de una frase no son una rejilla |
+| §2c — techo de **280 ms** | **Intacto.** Cada palabra dura `--m-base`, 200 ms. Lo que crece es el desfase acumulado, no ninguna transición |
+| §3 — `--m-stagger` = 60 ms | **Intacto.** El primer intento usó medio desfase (30 ms) y hubo que corregirlo: medido en el navegador, a 30 ms una palabra va apenas al **15%** de su fundido cuando arranca la siguiente, las siete se solapan y la cascada se lee como un único fundido del bloque —fue exactamente el reporte de "el titular de la Home está estático". A 60 ms cada palabra va por el **30%** y la ola se distingue |
+| §4, regla dura 5 — sin JavaScript todo se ve | **Intacto.** Es CSS puro: mismo `heroIn`, misma diagonal de marca. No se añadió un solo byte de JS |
+
+Motivo: petición explícita del equipo (Sebastián, 2026-09-10), que pidió que los titulares "se
+escribieran". **Lo que se descartó, y por qué:** una máquina de escribir carácter a carácter habría
+sido el **séptimo movimiento** —con ADR propio, como la franja—, habría durado entre **1,3 y 2,0 s**
+contra un techo de 280 ms, habría exigido **JavaScript nuevo** en las dos páginas (un `steps()` de
+CSS sólo sirve en una línea monoespaciada, y los dos titulares usan Familjen Grotesk con
+`text-wrap: balance` y parten en varias líneas) y habría retrasado el **LCP**, que en ambas páginas
+es justamente el titular. La entrada por palabra da la misma lectura sin ninguno de esos cuatro
+costes.
+
 ---
 
 ## 1. Estado actual, verificado
@@ -138,7 +157,7 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 | Zona | Movimiento | Por qué |
 |---|---|---|
 | Cabecera | M1 en enlaces y WhatsApp | Hoy saltan |
-| Héroe | **M6**: la tarjeta del cotizador ya está; entran titular, subtítulo y franja, 60 ms entre sí | El instrumento primero, las palabras después |
+| Héroe | **M6**: la tarjeta del cotizador ya está; entra el titular palabra por palabra, y detrás subtítulo y franja | El instrumento primero, las palabras después |
 | Cuñas del héroe | **M3**, una vez, al cargar | Es el vector de la marca dibujándose |
 | Cotizador | **M1** en opciones y botón · **M2** al recalcular | Acuse de recibo y dato que cambió |
 | Tres usos | **M4** en el titular + **M5** en las tres tarjetas · **M3** en las reglas de acento | 3 hermanos: dentro del máximo |
@@ -170,6 +189,7 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 
 | Zona | Movimiento | Por qué |
 |---|---|---|
+| Encabezado | **M6** en titular, bajada, botones y el portátil | *Añadido el 2026-09-10.* Está sobre el pliegue: entra al cargar y sin depender del observador, igual que el héroe de la Home. Cuatro elementos en secuencia, justo en el tope de 4. El portátil **no** es el instrumento —es un mockup sin controles, hermano del teléfono de la Home—, así que la regla dura 2 no le aplica y sí entra |
 | Casos de uso | **M3** en las reglas de acento + **M5** en las 4 tarjetas | Justo en el máximo |
 | Tabla comparativa | **Nada** | Son datos: se leen, no se presentan |
 | Incorporación | **M4** en el titular | |
@@ -243,7 +263,7 @@ El riesgo de un sistema de movimiento es que crezca por acumulación. Tres compr
 | **M3** `draw` | Cuñas del héroe, cuñas entre pasos, conectores del diagrama |
 | **M4** `enter` | 3 titulares en Home, 3 en `/empresas`, 2 en `/confianza`, 1 en `/como-funciona` |
 | **M5** `stagger` | 3 tarjetas de usos (Home) y 4 casos (`/empresas`). Nada más |
-| **M6** `sequence` | Héroe de la Home: la tarjeta ya está, entran las palabras |
+| **M6** `sequence` | Héroe de la Home: la tarjeta ya está, entra el texto. Encabezado de `/empresas`: titular, bajada, botones y el portátil. En los dos, el titular entra **palabra por palabra** (enmienda del 2026-09-10) |
 
 **Entradas por página:** Home 9 · `/empresas` 8 · `/como-funciona` 3 · `/confianza` 3 ·
 `/cotizar` **0** · las cuatro legales **0**.

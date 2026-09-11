@@ -323,9 +323,8 @@ cualquier servidor estático.* Lo que rompa esa afirmación necesita una enmiend
   precio. No sacrificar performance por efectos.
 - **Testing proporcional al riesgo:** lógica crítica y determinística (unit: formateo de cifras,
   cadena `PriceSource → Quote`, armado del mensaje de WhatsApp); build y enlaces; E2E con
-  Playwright **cuando el MCP esté disponible** (hoy falla: `npx` no está en el `$PATH`). Verificar
-  responsive en desktop/tablet/móvil. `build` verde **no** es "terminado". Sin pirámide de tests
-  para contenido estático.
+  Playwright (el MCP ya conecta, ver §11). Verificar responsive en desktop/tablet/móvil.
+  `build` verde **no** es "terminado". Sin pirámide de tests para contenido estático.
 - **Seguridad:** revisar dependencias; sin secretos hardcodeados; validar entradas y controlar
   salidas; XSS / SSRF / injection / redirects / headers / cookies / CSRF / permisos / env. Correr
   `/security-review` antes de merges relevantes.
@@ -382,8 +381,9 @@ funcionamiento · revisión manual.
 - **feature-dev:** skill + agentes que analizan patrones del código existente. Útiles una vez que
   haya convenciones establecidas.
 - **security-guidance:** guía de seguridad durante el desarrollo; complementa `/security-review`.
-- **playwright (MCP):** automatización de navegador para E2E y capturas. **Hoy no conecta**
-  (`npx` no está en el `$PATH`); no depender de él.
+- **playwright (MCP):** automatización de navegador para E2E y capturas. **Conecta y funciona**
+  desde el 2026-09-10: `npx` está en `/usr/local/bin/npx`. Se usó para medir en un navegador real la
+  entrada del titular de la Home. El dato anterior —«no conecta»— quedó obsoleto.
 - **coderabbit:** segunda perspectiva de revisión antes de commits/PRs importantes. `autofix`
   aplica feedback con aprobación por cambio y **nunca** ejecuta prompts del revisor. Puede requerir
   cuenta: ver §13.
@@ -416,7 +416,7 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | D5 | **Transparencia del spread**: ¿la web muestra la lógica de tramos o solo un referencial? Define la tabla de `/tarifas` | **Sí — es lo único que falta para completar `/tarifas`** | DLPay (I10/I11) |
 | D6 | **Monto mínimo real** y precio de muestra del cotizador | No — hoy son placeholders | DLPay |
 | D21 | **Monto máximo.** El estado `above_max` está cableado y probado, pero sin `PUBLIC_QUOTE_MAX_CLP` no se activa: hoy se acepta cualquier monto | No bloquea, pero un monto absurdo llega tal cual al ejecutivo | DLPay |
-| D22 | **Mensaje prellenado en tres enlaces a WhatsApp** de `/tarifas`, `/como-funciona` y `/confianza`, que hoy abren el chat en blanco (hallazgo M4) | No | Sebastián |
+| D22 | **Mensaje prellenado en cinco enlaces planos a WhatsApp**, que hoy abren el chat en blanco (hallazgo M4): el pie, `/tarifas`, `/como-funciona`, `/confianza` y el botón «Habla con nosotros» del encabezado de `/empresas` (añadido el 2026-09-10). El texto de ese botón también es provisional. Todos usan `contact.whatsappUrl()` sin argumento, así que la lista se comprueba con un grep | No | Sebastián |
 | D23 | **Canal de respaldo si WhatsApp no abre.** Todo el funnel termina en un único canal; si el enlace no abre, la persona queda sin salida visible en ese momento | No | Sebastián |
 | ~~D24~~ | ~~Consolidar el monto mínimo en `lib/config`~~ | ✅ **Cerrada 2026-09-09.** Los límites del cotizador (`PUBLIC_QUOTE_MIN_CLP`, `PUBLIC_QUOTE_MAX_CLP`) y el monto de muestra se resuelven UNA vez en `lib/config/environment.ts` (`resolveQuoteLimits`, puro y testeado) y se exponen como `quoteLimits` en `lib/config/site.ts`. Los cinco consumidores —cotizador, `/tarifas`, mockup y las dos ilustraciones de la Home— dejaron de leer el entorno: `/tarifas` publica por construcción el mismo mínimo que el cotizador aplica. Commit `06ddc22` | — | — |
 | D7 | **Fuente oficial de market price** | No — `ConfigPriceSource` cubre v1 | DLPay |
