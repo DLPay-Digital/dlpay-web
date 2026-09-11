@@ -73,6 +73,26 @@ export default defineConfig({
   integrations: [deployGuard()],
   output: 'static',
   /**
+   * Objetivo del CSS compilado. NO es una optimización: es una corrección.
+   *
+   * Sin declararlo, el minificador reescribe `@media (min-width: 900px)` como
+   * `@media (width >= 900px)`, la sintaxis de rango de Media Queries nivel 4.
+   * Safari anterior a 16.4, Chrome anterior a 104 y Firefox anterior a 102
+   * **descartan la regla entera** al no entender la condición: el sitio se
+   * queda sin ninguna de sus reglas de escritorio y todas las páginas se
+   * apilan en una sola columna. No falla de forma visible ni da error en
+   * consola; simplemente se ve roto.
+   *
+   * Con estos objetivos el minificador conserva `min-width` y el sitio
+   * responde igual en navegadores de 2021 en adelante. Se verifica con:
+   *   grep -o '@media ([^)]*)' dist/_astro/*.css
+   */
+  vite: {
+    build: {
+      cssTarget: ['chrome87', 'edge88', 'firefox78', 'safari14'],
+    },
+  },
+  /**
    * Declarado a propósito. El build genera `dist/cotizar/index.html`, así que la
    * URL canónica lleva barra final. Sin declararlo, los enlaces internos
    * apuntaban a `/cotizar` y el sitemap a `/cotizar/`: Cloudflare y Vercel no
