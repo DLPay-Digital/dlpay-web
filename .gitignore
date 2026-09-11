@@ -44,3 +44,6 @@ kyb/
 clientes/
 operaciones/
 contratos/
+
+# Capturas y trazas del MCP de Playwright: salida de herramienta, no del proyecto
+.playwright-mcp/
