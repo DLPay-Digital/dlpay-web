@@ -268,10 +268,25 @@ son una sola conversación · móvil primero · confianza que se comprueba, no q
 geometría siempre tiene función · rápido de verdad · personas y empresas caben pero la Home no se
 vuelve corporativa · español chileno plano · identidad propia.
 
-**Arquitectura de información v1 — enmendada el 2026-09-09:**
+**Arquitectura de información v1 — enmendada el 2026-09-09 y el 2026-09-11:**
 `/` (Home con el cotizador en el hero) · `/como-funciona` · `/empresas` · `/confianza` ·
+`/blog` y `/blog/<slug>` ·
 legales: `/terminos`, `/privacidad`, `/tarifas`, `/canal-de-denuncias`.
-Las **ocho** rutas existen y resuelven. La FAQ vive en la Home, no como página propia.
+Las **nueve** rutas estáticas existen y resuelven, más una por artículo. La FAQ vive en la Home,
+no como página propia.
+
+**`/blog` se añadió el 2026-09-11.** Colección tipada de Astro (`src/content.config.ts`) con
+esquema cerrado: `title`, `description`, `pubDate`, `category` —sólo `DLPay` o `Mercado`, un valor
+fuera de esa lista rompe el build— y `coverImage` opcional resuelta por `astro:assets`. Sin
+paquetes nuevos: `sharp` ya viene como dependencia opcional de Astro, así que `package.json` sigue
+declarando cuatro. Enlazado desde el desplegable «Información» de la cabecera. El sitemap se
+derivaba de `src/pages/**/*.astro` y publicaba `/blog/index/` y `/blog/[slug]/` —dos 404—: ahora
+colapsa los `index` anidados, descarta las rutas dinámicas y añade cada artículo desde la
+colección.
+
+**Ningún artículo se publica sin pasar por Compliance.** Un análisis de mercado es, por
+definición, contenido que afirma algo sobre precios: cae de lleno en §3. El artículo de ejemplo
+que existe hoy lleva su marcador y es sólo para verificar la infraestructura.
 
 **`/cotizar` se eliminó el 2026-09-09.** Duplicaba el cotizador que ya está en el héroe de la
 Home y no se ganaba el espacio. Con eso se **cierra la hipótesis H8** de Fase 1 —«`/cotizar` como

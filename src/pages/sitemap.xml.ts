@@ -6,18 +6,26 @@
  * paquete oficial de sitemap no aporta nada sobre nueve rutas estáticas.
  */
 import type { APIRoute } from 'astro';
+import { getCollection } from 'astro:content';
 
 import { site } from '../lib/config/site.ts';
 
 const pages = import.meta.glob('./**/*.astro');
 
-/** `./index.astro` -> `/` · `./como-funciona.astro` -> `/como-funciona/` */
+/**
+ * `./index.astro` -> `/` · `./como-funciona.astro` -> `/como-funciona/`
+ * `./blog/index.astro` -> `/blog/` — cualquier `index` anidado colapsa a su
+ * carpeta. Sin esto el sitemap publicaba `/blog/index/`, que da 404.
+ */
 function routeOf(file: string): string {
-  const path = file.replace(/^\.\//, '').replace(/\.astro$/, '');
-  return path === 'index' ? '/' : `/${path}/`;
+  const path = file.replace(/^\.\//, '').replace(/\.astro$/, '').replace(/(^|\/)index$/, '');
+  return path === '' ? '/' : `/${path}/`;
 }
 
-export const GET: APIRoute = () => {
+/** Una ruta dinámica no es una URL: `[slug].astro` no se publica tal cual. */
+const isDynamic = (file: string): boolean => file.includes('[');
+
+export const GET: APIRoute = async () => {
   // `site.url` ya viene normalizado sin barra final (lib/config/environment.ts).
   const base = site.url;
 
@@ -25,8 +33,12 @@ export const GET: APIRoute = () => {
   // 0.9 hasta que se eliminó: duplicaba el cotizador del héroe de la Home.
   const priority = (route: string): string => (route === '/' ? '1.0' : '0.7');
 
-  const urls = Object.keys(pages)
-    .map(routeOf)
+  /* Las rutas dinámicas se excluyen del recorrido de archivos y entran por su
+     colección, que es donde viven las URLs de verdad. */
+  const estaticas = Object.keys(pages).filter((file) => !isDynamic(file)).map(routeOf);
+  const articulos = (await getCollection('blog')).map((post) => `/blog/${post.id}/`);
+
+  const urls = [...estaticas, ...articulos]
     .sort()
     .map(
       (route) =>
