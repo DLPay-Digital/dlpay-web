@@ -59,8 +59,10 @@ export const contact = {
    * `whatsappUrl()` de `lib/pricing/quote.ts`, que compone el mensaje desde el
    * `Quote`; este es para los enlaces de contacto planos.
    *
-   * Si `text` no viene, el chat se abre en blanco. Hoy lo hacen cuatro enlaces
-   * y es una decisión de contenido abierta (CLAUDE.md §13, D22), no un descuido.
+   * Si `text` no viene, el chat se abre en blanco. Hoy lo hacen cinco enlaces
+   * —pie, /tarifas, /como-funciona, /confianza y el botón del encabezado de
+   * /empresas— y es una decisión de contenido abierta (CLAUDE.md §13, D22), no
+   * un descuido.
    */
   whatsappUrl(text?: string): string {
     const base = `https://wa.me/${whatsappNumber}`;

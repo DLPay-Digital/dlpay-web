@@ -1,0 +1,301 @@
+---
+/**
+ * Un portátil dibujado en CSS con la mesa de operaciones dentro. Cero imágenes.
+ *
+ * Hermano del teléfono de `WhatsAppMockup.astro` y con sus mismas reglas: el
+ * dispositivo es cromo —va `aria-hidden`, no tiene ningún control y el contexto
+ * lo dan las palabras de al lado—, y lo que se ve en pantalla NO se teclea.
+ *
+ * ── REGLA DURA heredada del teléfono ────────────────────────────────────────
+ *
+ * Las cifras salen de `quoteLimits` y de `lib/pricing`, el origen único que
+ * alimenta al cotizador (D24), con la MISMA función `convert()` que usa el
+ * instrumento. Así es imposible que este mockup muestre un monto o un precio
+ * que contradiga a lo que el cotizador calcula.
+ *
+ * El precio sigue siendo de MUESTRA (ConfigPriceSource, D7) y la línea
+ * "referencial" se queda: la web nunca muestra un precio cerrado (CLAUDE.md §6).
+ *
+ * ── Anatomía del chasis ─────────────────────────────────────────────────────
+ *
+ *   .mac-screen   tapa: marco perimetral grueso en tinta + cámara en el canto
+ *                 superior. La pantalla interior va en tinta-2.
+ *   .mac-hinge    bisagra: más angosta que la tapa y en otro tono, para que la
+ *                 tapa y el chasis se lean como dos piezas y no como un bloque.
+ *   .mac-base     chasis: sobresale a los lados, canto inferior más redondeado
+ *                 —el aluminio curvo— y la hendidura para levantar la tapa,
+ *                 centrada y en tinta, que es el tono más oscuro del sistema.
+ *
+ * Plano y sin trucos: nada de 3D, reflejos ni desenfoques. Lo que hace tangible
+ * al objeto es el CHASIS CLARO, y eso corrige dos intentos fallidos: la primera
+ * versión pintó el bisel en `--tinta` —el mismo color de la banda del héroe— y
+ * la segunda subió los grises sin salir de la gama oscura. Las dos seguían
+ * camufladas, porque un objeto oscuro sobre un fondo oscuro no se recorta por
+ * mucho que se ajusten los pasos intermedios.
+ *
+ * La solución es de material, no de calibración: el aluminio va en plata y da
+ * 12,79:1 contra el héroe. Contra esa base clara, la bisagra y el bisel en
+ * negro puro dibujan el objeto por sí solos.
+ *
+ * Los tres círculos de la barra de título son variaciones de opacidad de UN
+ * token neutro, no el semáforo de macOS: el cromo se abstrae, no se copia
+ * —misma regla que el teléfono, que tampoco imita a WhatsApp.
+ */
+import { formatCLP, formatRate, formatUSD } from '../lib/pricing/format.ts';
+import { convert } from '../lib/pricing/quote.ts';
+import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
+import { quoteLimits } from '../lib/config/site.ts';
+
+const price = await new ConfigPriceSource().getPrice();
+const pay = quoteLimits.samplePayClp;
+const get = convert('send_abroad', pay, price.rate);
+---
+<figure class="mac" aria-hidden="true">
+  <div class="mac-screen">
+    <div class="ui">
+      <div class="app">
+        <div class="titlebar">
+          <span class="dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </span>
+          <span class="app-name">Conversión B2B</span>
+        </div>
+
+        <div class="body">
+          <div class="block">
+            <span class="label">Envías</span>
+            <p class="figure">
+              <b class="num">{formatCLP(pay)}</b>
+              <span class="cur">CLP</span>
+            </p>
+          </div>
+
+          {/* El paso, en la gramática geométrica del sistema: la misma cuña de
+              `convierte` en UseCaseFigure. No es un separador decorativo. */}
+          <div class="connector">
+            <svg class="wedge" width="12" height="22" viewBox="0 0 12 22" fill="none">
+              <path d="M6 0v5l3 3-6 3 3 3v8" />
+            </svg>
+          </div>
+
+          <div class="block get">
+            <span class="label">Recibes aprox.</span>
+            <p class="figure">
+              <b class="num">{formatUSD(get)}</b>
+              <span class="cur">USD</span>
+            </p>
+          </div>
+
+          <p class="price">
+            Precio referencial
+            <span class="num">{formatRate(price.rate)}</span>
+            CLP por dólar
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mac-hinge"></div>
+  <div class="mac-base"></div>
+</figure>
+
+<style>
+  /**
+   * Tonos del CROMO, locales a este mockup. No son tokens del Design System y
+   * no deben salir de aquí: describen un objeto de otra marca, igual que los
+   * grises del bisel del teléfono en `WhatsAppMockup`.
+   *
+   * Los tres grises están derivados de la propia paleta —mezclas de `--tinta`
+   * con `--on-tinta` al 10%, 15% y 34%—, así que son neutros de DLPay y no
+   * valores de otra librería. Van en hexadecimal y no en `color-mix()` a
+   * propósito: si el navegador no entendiera la función, la declaración se
+   * descartaría y volveríamos justo al problema que esto corrige.
+   */
+  .mac {
+    --mac-bisel: #000000;     /* tapa y bisagra: el punto más oscuro       */
+    --mac-pantalla: #222935;  /* el software: 1,44:1 sobre el bisel        */
+    --mac-chasis: #D2D7D6;    /* el aluminio: 12,79:1 sobre el héroe       */
+    --mac-canto: #A9AFB1;     /* el filo curvo del chasis, 1,53:1 sobre él */
+
+    margin: 0;
+    width: 100%;
+    max-width: 440px;
+  }
+
+  /* ── Tapa ────────────────────────────────────────────────────────────────
+     El relleno ES el marco. El canto exterior va en `outline` para quedar
+     FUERA del borde y dibujar la silueta contra la tinta del héroe. */
+  .mac-screen {
+    position: relative;
+    background: var(--mac-bisel);
+    border-radius: var(--r-3);
+    /* El canto va en `--line-on-tinta` y no en un rgba(255,255,255,.15): es
+       nuestro token, y con .40 de opacidad traza la silueta casi tres veces
+       más fuerte, que es exactamente lo que hacía falta. */
+    border: 1px solid var(--line-on-tinta);
+    /* Sombra profunda: es lo que despega la tapa del fondo oscuro y la única
+       elevación del conjunto. Cae sobre la bisagra y el chasis, como cae de
+       verdad la de una tapa sobre su teclado. */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, .5);
+    padding: 14px;
+  }
+  /* Cámara: centrada en el canto superior, del tamaño que tiene de verdad. */
+  .mac-screen::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--line-on-tinta);
+  }
+
+  /* ── Bisagra ─────────────────────────────────────────────────────────────
+     Más angosta que la tapa y en negro: contra el aluminio claro de abajo es
+     el corte que separa la pantalla del teclado. */
+  .mac-hinge {
+    width: 92%;
+    height: 12px;
+    margin: 0 auto;
+    background: var(--mac-bisel);
+  }
+
+  /* ── Chasis ──────────────────────────────────────────────────────────────
+     Sobresale a los lados de la tapa y cierra abajo con el radio más marcado
+     del conjunto. Es la pieza que hace visible el portátil: plata contra la
+     banda de tinta. Los márgenes negativos devuelven el ensanche para que la
+     figura no crezca. */
+  .mac-base {
+    position: relative;
+    width: calc(100% + 26px);
+    margin-inline: -13px;
+    height: 20px;
+    background: var(--mac-chasis);
+    /* El filo curvo va ABAJO y en un plata más oscuro. Un canto claro arriba
+       ya no pinta nada: sobre aluminio no se vería, y la separación con la
+       tapa la hace la bisagra negra. */
+    border-bottom: 2px solid var(--mac-canto);
+    border-radius: var(--r-1) var(--r-1) var(--r-3) var(--r-3);
+  }
+  /* La hendidura para levantar la tapa: un corte centrado en negro sobre el
+     aluminio, que es lo que lo hace leer como hueco y no como pieza pegada. */
+  .mac-base::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14%;
+    height: 7px;
+    background: var(--mac-bisel);
+    border-radius: 0 0 var(--r-2) var(--r-2);
+  }
+
+  /* ── Pantalla ────────────────────────────────────────────────────────────
+     RESPONSIVIDAD SEGURA. La proporción 16/10 se aplica como MÍNIMO, no como
+     altura fija, y ahí está la diferencia: `aspect-ratio` da una altura
+     definida que el contenido no estira —se desborda o se recorta—, mientras
+     que este pseudo-elemento sólo RESERVA la altura dentro de la misma celda de
+     rejilla que el contenido. La fila mide el mayor de los dos, así que en una
+     pantalla estrecha el marco crece y el panel jamás se corta. */
+  .ui {
+    display: grid;
+    background: var(--mac-pantalla);
+    border-radius: var(--r-1);
+    overflow: hidden;
+  }
+  .ui::before { content: ''; grid-area: 1 / 1; padding-top: 62.5%; }
+  .app { grid-area: 1 / 1; display: flex; flex-direction: column; }
+
+  /* ── Barra de título ─────────────────────────────────────────────────────
+     Tres círculos en variaciones de opacidad de un mismo neutro. */
+  .titlebar {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: var(--s-2) var(--s-3);
+    border-bottom: 1px solid var(--line-on-tinta);
+  }
+  .dots { display: flex; gap: var(--s-2); flex: none; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line-on-tinta); }
+  .dot:nth-child(2) { opacity: .7; }
+  .dot:nth-child(3) { opacity: .45; }
+  .app-name {
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: var(--ls-label);
+    color: var(--on-tinta-mute);
+  }
+
+  /* ── Panel de conversión ─────────────────────────────────────────────────
+     En móvil cada bloque va en una línea —etiqueta y cifra enfrentadas— y en
+     escritorio se apila. No es capricho: apilado en una columna estrecha el
+     panel crece tanto que el marco deja de tener proporción de portátil. */
+  .body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--s-2);
+    padding: var(--s-3);
+  }
+
+  .block { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-3); }
+  .label { font-size: var(--t-dato-sm); color: var(--on-tinta-mute); }
+  .figure { display: flex; align-items: baseline; gap: var(--s-2); }
+
+  /* La cifra manda: lo más grande de la pantalla y en Spline Sans Mono, como
+     toda cifra monetaria del sitio (Design System §5). */
+  .figure b {
+    font-family: var(--f-num);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--ls-dato);
+    font-weight: 600;
+    font-size: var(--t-h3);
+    line-height: var(--lh-dato);
+    color: var(--on-tinta);
+  }
+  /* Lo que se recibe es el dato vivo, y para eso está definido el verde de
+     marca. Sobre la pantalla del mockup da 6.64:1. */
+  .get .figure b { color: var(--verde); }
+
+  .cur {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    font-weight: 500;
+    color: var(--on-tinta-mute);
+  }
+
+  .connector { display: flex; align-items: center; gap: var(--s-3); }
+  .connector::after { content: ''; flex: 1; height: 1px; background: var(--line-on-tinta); }
+  .wedge {
+    flex: none;
+    stroke: var(--verde);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .price {
+    margin-top: var(--s-1);
+    padding-top: var(--s-2);
+    border-top: 1px solid var(--line-on-tinta);
+    font-size: var(--t-dato-sm);
+    color: var(--on-tinta-mute);
+  }
+  .price .num { color: var(--on-tinta); font-weight: 600; }
+
+  @media (min-width: 900px) {
+    .titlebar { padding: var(--s-3) var(--s-4); }
+    .body { gap: var(--s-3); padding: var(--s-4); }
+    /* Bloque superior y bloque inferior, apilados: acá la columna sí da el
+       ancho para que la etiqueta viva encima de su cifra. */
+    .block { flex-direction: column; align-items: flex-start; gap: var(--s-1); }
+    .figure b { font-size: var(--t-dato-m); }
+  }
+</style>

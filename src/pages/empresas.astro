@@ -9,14 +9,24 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
+import MacbookMockup from '../components/MacbookMockup.astro';
 import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
 import { businessUseCases, differences, onboarding } from '../content/business.ts';
-import { contact } from '../lib/config/site.ts';
+import { contact, platform } from '../lib/config/site.ts';
 
 const wa = contact.whatsappUrl(
   'Hola, escribo por DLPay Empresas. Quiero conocer las condiciones para pagos al exterior y cambio de divisas.'
 );
+
+/**
+ * Enlace del encabezado. Abre el chat EN BLANCO a propósito: el mensaje
+ * prellenado de los enlaces planos es D22 (CLAUDE.md §13) y está en pausa.
+ *
+ * PENDIENTE DE DECISIÓN — texto del botón ("Habla con nosotros", provisional) y
+ * mensaje prellenado de este enlace. Depende de D22 / Sebastián.
+ */
+const waPlain = contact.whatsappUrl();
 ---
 <Base
   title="DLPay Empresas"
@@ -26,10 +36,34 @@ const wa = contact.whatsappUrl(
   <Motion />
   <Header />
   <main id="main">
+    {/*
+      REQUIERE VALIDACIÓN DE COMPLIANCE — "el mejor precio" es un claim
+      comparativo sobre el precio, y los claims de precio, spread y condiciones
+      comerciales los aprueba DLPay, no ingeniería (CLAUDE.md §3). Se cruza
+      además con D5, la transparencia del spread, que sigue abierta. Copy pedido
+      por Sebastián el 2026-09-10; queda publicado bajo esa decisión.
+
+      La bajada, en cambio, NO abre claim nuevo: dice lo mismo que ya afirma
+      `/tarifas` —un solo precio con el spread dentro y ninguna comisión que se
+      sume al final—, así que las dos páginas se sostienen entre sí.
+    */}
     <PageHero
-      title="La misma mesa, otro tamaño de operación"
-      lead="Cambio de divisas y tesorería en dólar digital para empresas que mueven montos grandes o de forma recurrente, donde un banco es lento y una app retail no alcanza."
-    />
+      title="La misma mesa, el mejor precio"
+      lead="Un solo precio, con el spread ya incluido. Sin comisiones que aparezcan después."
+      titleSize="hero"
+      sequence
+    >
+      <Fragment slot="cta">
+        <a class="cta" href={waPlain} target="_blank" rel="noopener">
+          <Icon name="whatsapp" class="wa-icon" />
+          Habla con nosotros
+        </a>
+        {/* Misma ruta que el botón de la cabecera: la plataforma de Guita, que
+            es donde vive el registro. La web nueva no lo reconstruye. */}
+        <a class="ghost" href={platform.registerUrl}>Crea tu cuenta</a>
+      </Fragment>
+      <MacbookMockup slot="aside" />
+    </PageHero>
 
     <section class="cases" aria-labelledby="cases-title">
       <div class="inner">

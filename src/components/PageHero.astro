@@ -3,18 +3,87 @@
  * Encabezado de páginas interiores. Misma banda de tinta y mismas cuñas del
  * héroe de la Home, en menor escala: las páginas deben sentirse el mismo
  * producto, no diseños independientes.
+ *
+ * Dos ranuras OPCIONALES para las páginas que las necesiten (hoy sólo
+ * /empresas): `cta` cuelga una acción bajo la bajada y `aside` ocupa la mitad
+ * derecha en escritorio. Sin ellas el encabezado se renderiza exactamente como
+ * antes, a una columna — /como-funciona y /confianza no cambian.
+ *
+ * `sequence` enciende M6 (Motion System V1 §4) en titular, bajada y acción.
+ * `titleSize="hero"` sube el titular a la escala del héroe de la Home. Los dos
+ * son opt-in y no globales a propósito: encender movimiento o cambiar la escala
+ * tipográfica de las otras dos páginas es una decisión de diseño, no un efecto
+ * colateral de este componente.
+ *
+ * `lead` es opcional. Sin bajada el encabezado queda en titular + acciones, que
+ * es lo que pide /empresas: un titular directo y los dos botones, sin párrafo
+ * intermedio.
  */
 interface Props {
   title: string;
-  lead: string;
+  lead?: string;
+  /** `page` (por omisión) usa --t-h2; `hero`, la misma escala que la Home. */
+  titleSize?: 'page' | 'hero';
+  sequence?: boolean;
 }
-const { title, lead } = Astro.props;
+const { title, lead, titleSize = 'page', sequence = false } = Astro.props;
+const hasCta = Astro.slots.has('cta');
+const hasAside = Astro.slots.has('aside');
+
+/**
+ * El titular entra PALABRA POR PALABRA (Motion System V1 §4, M6 enmendado el
+ * 2026-09-10). Cada palabra usa el mismo fundido y la misma diagonal de marca
+ * que el resto, con el desfase estándar `--m-stagger`.
+ *
+ * El desfase es de 60 ms y NO de 30, que fue el primer intento. Medido en el
+ * navegador, a 30 ms una palabra va apenas al 15% de su propio fundido de
+ * 200 ms cuando arranca la siguiente: las siete se solapan tanto que la
+ * cascada se lee como un único fundido del bloque. A 60 ms cada palabra va por
+ * el 30% y la ola se distingue. No es un valor nuevo: es el mismo desfase que
+ * usa todo el escalonado del sistema.
+ *
+ * Lo que se descartó fue la máquina de escribir carácter a carácter: séptimo
+ * movimiento, 1,3-2,0 s contra un techo de 280, JavaScript nuevo y LCP
+ * retrasado.
+ */
+const titleWords = title.split(' ');
+
+/**
+ * Índices de M5/M6: se calculan, no se escriben a mano. Los bloques que siguen
+ * al titular arrancan cuando la última palabra empieza a entrar, y no antes: si
+ * la bajada apareciera a los 60 ms, la frase todavía se estaría escribiendo
+ * detrás y el efecto se perdería.
+ */
+let step = titleWords.length - 1;
+const seqLead = lead ? step++ : 0;
+const seqCta = hasCta ? step++ : 0;
+const seqAside = hasAside ? step++ : 0;
 ---
 <section class="page-hero on-tinta-surface">
   <div class="wedges" aria-hidden="true"></div>
-  <div class="inner">
-    <h1>{title}</h1>
-    <p>{lead}</p>
+  <div class:list={['inner', { split: hasAside }]}>
+    <div class="copy">
+      <h1 class:list={{ hero: titleSize === 'hero' }}>
+        {sequence
+          ? titleWords.map((word, i) => (
+              <Fragment>{i > 0 ? ' ' : ''}<span class="w" style={`--w:${i}`}>{word}</span></Fragment>
+            ))
+          : title}
+      </h1>
+      {lead && (
+        <p class:list={{ seq: sequence }} style={sequence ? `--seq:${seqLead}` : undefined}>{lead}</p>
+      )}
+      {hasCta && (
+        <div class:list={['actions', { seq: sequence }]} style={sequence ? `--seq:${seqCta}` : undefined}>
+          <slot name="cta" />
+        </div>
+      )}
+    </div>
+    {hasAside && (
+      <div class:list={['aside', { seq: sequence }]} style={sequence ? `--seq:${seqAside}` : undefined}>
+        <slot name="aside" />
+      </div>
+    )}
   </div>
 </section>
 
@@ -54,10 +123,62 @@ const { title, lead } = Astro.props;
     font-size: var(--t-body);
   }
 
+  .actions { margin-top: var(--s-6); display: flex; flex-wrap: wrap; gap: var(--s-3); }
+
+  /* Con `aside` el encabezado pasa a dos columnas. En móvil se apila: primero
+     las palabras, después el mockup. */
+  .inner.split { display: grid; gap: var(--s-7); }
+  .aside { display: flex; justify-content: center; }
+
+  /**
+   * M6 · secuencia de carga (Motion System V1 §4). Animación CSS pura, no el
+   * observador: el encabezado está sobre el pliegue y tiene que entrar al
+   * cargar, no al hacer scroll. Sobre el eje diagonal de la marca —nunca un
+   * translateY vertical— y dentro del techo de 280 ms.
+   */
+  .seq {
+    animation: heroIn var(--m-base) var(--m-ease) both;
+    animation-delay: calc(var(--seq) * var(--m-stagger));
+  }
+  /* Palabras del titular. `inline-block` es obligatorio: un `inline` no acepta
+     `transform`, así que sin él no habría diagonal. Los espacios van FUERA del
+     span para que la línea siga partiendo donde debe. */
+  .w {
+    display: inline-block;
+    animation: heroIn var(--m-base) var(--m-ease) both;
+    animation-delay: calc(var(--w) * var(--m-stagger));
+  }
+  @keyframes heroIn {
+    from { opacity: 0; transform: translate(var(--m-shift-x), var(--m-shift-y)); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .seq, .w { animation: none; }
+  }
+
   @media (min-width: 900px) {
     .page-hero { padding: var(--s-8) 0 var(--s-9); }
     .inner { padding-inline: var(--pad-section); }
+    /* Dos columnas iguales. `--s-7` son exactamente los 3rem pedidos, y sale
+       de la escala en vez de ser un valor suelto. Las posiciones van FIJADAS:
+       el texto en la primera columna y el mockup en la segunda, para que no
+       dependan del orden del DOM ni de que alguien añada un tercer hijo.
+       `display:grid` se repite aquí a propósito: la regla de escritorio queda
+       completa por sí sola y no depende de que nadie toque la de móvil. */
+    .inner.split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-7);
+      align-items: center;
+    }
+    .inner.split .copy { grid-column: 1; grid-row: 1; }
+    .inner.split .aside { grid-column: 2; grid-row: 1; }
     h1 { font-size: var(--t-h2); }
+    /* Misma escala que el H1 del héroe de la Home (`Hero.astro`): el resto de
+       la regla —peso, `--lh-display`, `--ls-display` y el tope de 18ch— ya
+       coincide, así que la única diferencia era el tamaño en escritorio. */
+    h1.hero { font-size: var(--t-display); }
     .inner p { font-size: var(--t-h3-m); }
+    .aside { justify-content: flex-end; }
   }
 </style>
