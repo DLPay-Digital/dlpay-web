@@ -360,10 +360,23 @@ funcionamiento · revisión manual.
 
 ## 10. Git, GitHub y documentación
 
-- **El repositorio aún no está inicializado.** `git init`, `.gitignore` y política de `.env` son
-  lo primero de Fase 3.
-- El repositorio debe **pertenecer a DLPay** (organización, no una cuenta personal como único
-  dueño). Ver §13.
+- **Repositorio inicializado y sólo local.** 48 commits, sin remoto. Todo el historial está
+  firmado por `Sebastián Villanueva Pereira <sebastian@dlpay.cl>`, fijado en `.git/config` de
+  este repo (no en la configuración global). La identidad quedó saneada el 2026-09-11: hasta
+  entonces los commits iban a nombre de un usuario y un hostname locales.
+- **PENDIENTE DE DECISIÓN — crear la organización GitHub de DLPay (D3).** Mientras no exista, el
+  repositorio **no tiene copia fuera de este equipo** y esa es la mayor exposición del proyecto:
+  un disco que falla se lleva las Fases 3 y 4 completas. El repositorio debe **pertenecer a
+  DLPay** (organización, no una cuenta personal como único dueño).
+- **Respaldo provisional en Google Drive** (decidido el 2026-09-11, hasta que exista la
+  organización). Se guarda un **`git bundle`**, no la carpeta sincronizada: el cliente de Drive
+  sincroniza `.git/` mientras git escribe dentro y puede dejar el repositorio corrupto, además de
+  arrastrar `node_modules/` y `dist/`. Un bundle es **un solo archivo**, contiene el historial
+  completo y se restaura con `git clone <bundle> <carpeta>`. Se regenera con:
+  `git bundle create ../dlpay-web-<fecha>.bundle --all`
+- **Al subir a la organización, `push` normal, nunca `push --mirror`.** `--mirror` sube todas las
+  referencias, incluidas las de respaldo de cualquier reescritura, y republicaría historiales que
+  se limpiaron a propósito.
 - Historial limpio, commits comprensibles, branches y PRs para cambios relevantes, secretos fuera
   del repo. Sin commits masivos e inexplicables.
 - `docs/`: arquitectura · decisiones (ADRs) · desarrollo · deployment · edición de contenido ·
@@ -411,7 +424,7 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | D1b | **Proveedor de hosting** (candidatos: Cloudflare, Vercel). Desarrollo en local mientras tanto | No — portabilidad protegida por ADR-0005 | Sebastián, cuando haya qué publicar |
 | ~~D1c~~ | ~~Instalar Node.js~~ | ✅ Resuelto: v24.20.0 / npm 11.19.0 | — |
 | ~~D2~~ | ~~Familia tipográfica~~ | ✅ Cerrado 2026-09-04: **T-C** (Familjen Grotesk + Spline Sans Mono) | ADR-0001 §4 |
-| D3 | **Titularidad de la organización GitHub** de DLPay | No — el repo es local por ahora (ADR-0003) | Sebastián |
+| D3 | **Crear la organización GitHub de DLPay** y trasladar ahí el repositorio, que debe pertenecer a la empresa y no a una cuenta personal (ADR-0003). Al 2026-09-11 la organización **no existe** y el repo **no tiene copia fuera del equipo de Sebastián**; el respaldo provisional es un `git bundle` en Google Drive (ver §10). Al trasladarlo: `push` normal, nunca `--mirror` | No bloquea construir, **sí es el mayor riesgo operativo abierto**: hoy no hay redundancia del historial | Sebastián |
 | ~~D4~~ | ~~Idioma de código y commits~~ | ✅ Cerrado: código en inglés, commits/docs/contenido en español | ADR-0003 |
 | D5 | **Transparencia del spread**: ¿la web muestra la lógica de tramos o solo un referencial? Define la tabla de `/tarifas` | **Sí — es lo único que falta para completar `/tarifas`** | DLPay (I10/I11) |
 | D6 | **Monto mínimo real** y precio de muestra del cotizador | No — hoy son placeholders | DLPay |
