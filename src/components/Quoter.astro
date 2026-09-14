@@ -180,9 +180,9 @@ const intents = [
     border: 1px solid var(--line);
   }
 
-  /* El primer paso de la conversación: qué quieres hacer. Tres opciones, no un
-     binario, porque enviar al extranjero y convertir a dólares son la misma
-     aritmética pero operaciones distintas para quien las pide. */
+  /* El primer paso de la conversación: qué quieres hacer. Dos opciones desde el
+     2026-09-14, cuando se retiró «Enviar al extranjero» por hacer la misma
+     aritmética que «Convertir a dólares». Ver cotizador-spec.md. */
   .intent { border: 0; padding: 0; margin: 0 0 var(--s-5); }
   .intent-legend {
     font-size: var(--t-label);
@@ -478,7 +478,11 @@ const intents = [
     /* En escritorio el cotizador nunca se pierde de vista: la barra no aplica. */
     .dock { display: none; }
     .price-value { font-size: var(--t-dato); }
-    .intent-options { grid-template-columns: repeat(3, 1fr); }
+    /* DOS columnas, no tres: al retirar «Enviar al extranjero» esta regla se
+       quedó en 3 y la tercera columna vacía empujaba las dos opciones contra el
+       borde izquierdo. Con `1fr 1fr` reparten el ancho de la tarjeta y quedan
+       centradas respecto de ella. */
+    .intent-options { grid-template-columns: repeat(2, 1fr); }
     .intent-option span {
       justify-content: center;
       text-align: center;
