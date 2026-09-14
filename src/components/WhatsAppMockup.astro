@@ -56,7 +56,7 @@ async function defaultThread(): Promise<readonly ChatMessage[]> {
   /* Mismo origen que el cotizador, por construcción y no por disciplina (D24). */
   const { minPayClp: minPay, maxPayClp: maxPay, samplePayClp: samplePay } = quoteLimits;
   const quote = buildQuote({
-    intent: 'send_abroad',
+    intent: 'to_usd',
     giveAmount: samplePay,
     price,
     minPay,

@@ -36,7 +36,7 @@ const initialGet = initialPay / price.rate;
  * ejemplo escrito; con JavaScript se actualiza a medida que el usuario tipea.
  */
 const initialQuote = buildQuote({
-  intent: 'send_abroad',
+  intent: 'to_usd',
   giveAmount: initialPay,
   price,
   minPay,
@@ -45,7 +45,6 @@ const initialQuote = buildQuote({
 const wa = whatsappUrl(contact.whatsappNumber, initialQuote, initialPay);
 
 const intents = [
-  { value: 'send_abroad', label: 'Enviar al extranjero' },
   { value: 'to_usd', label: 'Convertir a dólares' },
   { value: 'to_clp', label: 'Convertir a pesos' },
 ];
@@ -76,7 +75,7 @@ const intents = [
   </fieldset>
 
   <div class="field">
-    <label class="label" for="give-input" data-label-give>Envías</label>
+    <label class="label" for="give-input">Conviertes</label>
     <div class="input-box">
       <input
         id="give-input"
@@ -120,7 +119,10 @@ const intents = [
 
   <p class="note" id="quoter-note">
     <strong>Sin comisiones ocultas:</strong> el precio ya incluye el spread.
-    <span class="source">Referencia: {price.source}</span>
+    <span class="source">
+      El precio del dólar que ves es un valor referencial de mercado, no un precio cerrado:
+      lo confirma tu ejecutivo antes de operar.
+    </span>
   </p>
   <p class="rail">
     Recibes <strong>dólar digital</strong> en tu billetera, equivalente 1:1 al dólar. Es lo
@@ -364,7 +366,9 @@ const intents = [
     margin: var(--s-4) 0 var(--s-5);
   }
   .note strong { color: var(--ink); font-weight: 600; }
-  .source { font-family: var(--f-num); font-size: var(--t-dato-sm); }
+  /* Antes mostraba una etiqueta de dato y por eso iba en la tipografía de
+     cifras. Ahora es una frase: va en la tipografía de texto. */
+  .source { display: block; margin-top: var(--s-2); font-size: var(--t-dato-sm); }
 
   /* El riel se explica, pero en el peso que le corresponde: no es el titular */
   .rail strong { color: var(--ink); font-weight: 600; }
@@ -506,7 +510,6 @@ const intents = [
 
     const giveInput = root.querySelector<HTMLInputElement>('#give-input')!;
     const getInput = root.querySelector<HTMLInputElement>('#get-input')!;
-    const giveLabel = root.querySelector<HTMLElement>('[data-label-give]')!;
     const giveCur = root.querySelector<HTMLElement>('[data-cur-give]')!;
     const getCur = root.querySelector<HTMLElement>('[data-cur-get]')!;
     const alertEl = root.querySelector<HTMLElement>('[data-alert]')!;
@@ -524,7 +527,7 @@ const intents = [
 
     const price = { rate, pair: 'USD/CLP' as const, source, asOf: new Date() };
 
-    let intent: Intent = 'send_abroad';
+    let intent: Intent = 'to_usd';
     let giveAmount = parseAmount(giveInput.value);
     let lastShown = '';
 
@@ -543,7 +546,6 @@ const intents = [
         ...(maxPay !== undefined ? { maxPay } : {}),
       });
 
-      giveLabel.textContent = intent === 'send_abroad' ? 'Envías' : 'Conviertes';
       giveCur.textContent = give;
       getCur.textContent = get;
       giveInput.inputMode = give === 'CLP' ? 'numeric' : 'decimal';

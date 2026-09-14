@@ -306,7 +306,9 @@ contenido real porque describen el servicio, no obligaciones contractuales. `/te
 
 **El cotizador:** modelo `qué quieres hacer → monto → cuánto recibes → precio referencial →
 WhatsApp prellenado → el ejecutivo confirma el precio final y coordina el destino`. La intención
-—enviar al extranjero, convertir a dólares, convertir a pesos— es el primer paso. Especificación completa en `docs/design-system/cotizador-spec.md`. No ejecuta
+—convertir a dólares, convertir a pesos— es el primer paso. **Eran tres hasta el 2026-09-14:**
+«enviar al extranjero» se retiró por hacer la misma aritmética que «convertir a dólares» y leerse
+como un camino duplicado. Lo que se pierde está razonado en `cotizador-spec.md`. Especificación completa en `docs/design-system/cotizador-spec.md`. No ejecuta
 operaciones, no bloquea precios, no promete cotizaciones cerradas.
 
 **Nunca afirmar** que DLPay está regulado por la CMF ni ningún claim regulatorio equivalente.

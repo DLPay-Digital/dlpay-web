@@ -48,7 +48,7 @@ import { quoteLimits } from '../lib/config/site.ts';
 
 const price = await new ConfigPriceSource().getPrice();
 const pay = quoteLimits.samplePayClp;
-const get = convert('send_abroad', pay, price.rate);
+const get = convert('to_usd', pay, price.rate);
 ---
 <figure class="mac" aria-hidden="true">
   <div class="mac-screen">

@@ -17,16 +17,26 @@ El cotizador es **el elemento central de la web**. Su trabajo:
 `qué quieres hacer → monto → cuánto recibes → precio referencial → WhatsApp → un ejecutivo
 confirma el precio final y coordina el destino`.
 
-**La intención es el primer paso**, no la moneda. Tres opciones:
+**La intención es el primer paso**, no la moneda. Dos opciones:
 
 | Intención | Entregas | Recibes | Por qué existe |
 |---|---|---|---|
-| `send_abroad` — Enviar al extranjero | CLP | USD | El caso principal del nuevo posicionamiento |
-| `to_usd` — Convertir a dólares | CLP | USD | Misma aritmética que enviar, **otra conversación** |
+| `to_usd` — Convertir a dólares | CLP | USD | El caso principal |
 | `to_clp` — Convertir a pesos | USD | CLP | La vuelta |
 
-`send_abroad` y `to_usd` calculan igual pero generan mensajes de WhatsApp distintos: para quien
-pide y para el ejecutivo que cierra son operaciones diferentes.
+**Enmienda del 2026-09-14.** Había una tercera, `send_abroad` — «Enviar al extranjero» —, retirada
+a petición de Sebastián. Hacía exactamente la misma aritmética que `to_usd` y en el selector las
+dos se leían como dos caminos para lo mismo, que es el tipo de duda que el primer paso del
+cotizador existe para evitar.
+
+Lo que se pierde, y conviene tenerlo escrito: producía un mensaje de WhatsApp distinto —«quiero
+enviar X al extranjero» en vez de «quiero convertir X a dólares»—, así que el ejecutivo ya no
+recibe esa intención por escrito. Si le importa, la pregunta. Si alguna vez pesa más la señal al
+ejecutivo que la claridad del selector, la intención está en el historial y vuelve con un commit.
+
+Efecto lateral: la etiqueta del campo de entrada era dinámica —«Envías» para `send_abroad`,
+«Conviertes» para el resto— y ahora es fija, «Conviertes», porque las dos intenciones que quedan
+son conversiones.
 
 **Vocabulario:** la UI habla de **USD / dólares**, no de USDT. El dólar digital es el riel y se
 explica en una nota permanente dentro del propio cotizador, sin ser el titular.

@@ -90,7 +90,6 @@ export function whatsappMessage(quote: Quote, giveAmount: number): string {
   }
 
   const what: Record<Intent, string> = {
-    send_abroad: `enviar ${formatAmount(giveAmount, give)} al extranjero`,
     to_usd: `convertir ${formatAmount(giveAmount, give)} a dólares`,
     to_clp: `convertir ${formatAmount(giveAmount, give)} a pesos`,
   };

@@ -13,11 +13,14 @@ export type Direction = 'buy' | 'sell';
  * Qué quiere hacer la persona. Es el PRIMER paso del cotizador: la conversación
  * empieza por la intención, no por la moneda.
  *
- * `send_abroad` y `to_usd` hacen la misma aritmética pero son operaciones
- * distintas para quien las pide y para el ejecutivo que las cierra, así que
- * producen mensajes de WhatsApp distintos.
+ * Hubo una tercera, `send_abroad` («enviar al extranjero»), retirada el
+ * 2026-09-14 a petición de Sebastián: hacía exactamente la misma aritmética que
+ * `to_usd` y en el selector se leían como dos caminos para lo mismo. Producía un
+ * mensaje de WhatsApp distinto —«quiero enviar X al extranjero»—, y eso es lo
+ * único que se pierde: el ejecutivo ya no recibe esa intención escrita y, si le
+ * importa, la pregunta. Está en el historial si se quiere reponer.
  */
-export type Intent = 'send_abroad' | 'to_usd' | 'to_clp';
+export type Intent = 'to_usd' | 'to_clp';
 
 /** La moneda que ve el usuario. El dólar se entrega como dólar digital. */
 export type Currency = 'CLP' | 'USD';

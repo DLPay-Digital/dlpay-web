@@ -33,7 +33,7 @@ const price = await new ConfigPriceSource().getPrice();
 
 /** El mismo monto que carga el cotizador: un solo origen (D24). */
 const SAMPLE_PAY = quoteLimits.samplePayClp;
-const received = convert('send_abroad', SAMPLE_PAY, price.rate);
+const received = convert('to_usd', SAMPLE_PAY, price.rate);
 ---
 <section class="feature" id="como-funciona" aria-labelledby="feature-title">
   <div class="inner">

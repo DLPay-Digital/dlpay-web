@@ -103,10 +103,6 @@ describe('parseo de montos escritos por una persona', () => {
 });
 
 describe('qué quiere hacer la persona', () => {
-  test('enviar al extranjero entrega pesos y recibe dólares', () => {
-    assert.deepEqual(currenciesFor('send_abroad'), { give: 'CLP', get: 'USD' });
-  });
-
   test('convertir a dólares entrega pesos y recibe dólares', () => {
     assert.deepEqual(currenciesFor('to_usd'), { give: 'CLP', get: 'USD' });
   });
@@ -115,12 +111,11 @@ describe('qué quiere hacer la persona', () => {
     assert.deepEqual(currenciesFor('to_clp'), { give: 'USD', get: 'CLP' });
   });
 
-  test('enviar y convertir a dólares comparten aritmética', () => {
-    assert.equal(
-      convert('send_abroad', 2_000_000, 919.7),
-      convert('to_usd', 2_000_000, 919.7)
-    );
-    assert.equal(directionFor('send_abroad'), directionFor('to_usd'));
+  /* Cobertura directa de `directionFor`. La tenía de rebote la prueba que
+     comparaba `send_abroad` con `to_usd`, retirada con esa intención. */
+  test('la dirección la fija la intención', () => {
+    assert.equal(directionFor('to_usd'), 'buy');
+    assert.equal(directionFor('to_clp'), 'sell');
   });
 
   test('la conversión se invierte al pasar a pesos', () => {
@@ -139,7 +134,7 @@ describe('qué quiere hacer la persona', () => {
   });
 
   test('el monto en pesos se identifica en cualquier intención', () => {
-    assert.equal(clpAmount('send_abroad', 2_000_000, 919.7), 2_000_000);
+    assert.equal(clpAmount('to_usd', 2_000_000, 919.7), 2_000_000);
     assert.ok(Math.abs(clpAmount('to_clp', 2174.62, 919.7) - 2_000_000) < 5);
   });
 
@@ -174,13 +169,13 @@ describe('estados del cotizador', () => {
 
 describe('objeto Quote', () => {
   test('V1 nunca emite una cotización cerrada', () => {
-    const quote = buildQuote({ intent: 'send_abroad', giveAmount: 2_000_000, price, minPay: MIN });
+    const quote = buildQuote({ intent: 'to_usd', giveAmount: 2_000_000, price, minPay: MIN });
     assert.equal(quote.isReferential, true);
     assert.equal(quote.spreadIncluded, true);
   });
 
   test('payAmount es siempre el monto en pesos, sea cual sea la intención', () => {
-    const send = buildQuote({ intent: 'send_abroad', giveAmount: 2_000_000, price, minPay: MIN });
+    const send = buildQuote({ intent: 'to_usd', giveAmount: 2_000_000, price, minPay: MIN });
     const back = buildQuote({ intent: 'to_clp', giveAmount: 2174.62, price, minPay: MIN });
     assert.equal(send.payAmount, 2_000_000);
     assert.ok(Math.abs(back.payAmount - 2_000_000) < 5);
@@ -193,23 +188,13 @@ describe('objeto Quote', () => {
 });
 
 describe('mensaje de WhatsApp', () => {
-  test('enviar al extranjero se nombra como envío, no como compra de cripto', () => {
-    const quote = buildQuote({ intent: 'send_abroad', giveAmount: 2_000_000, price, minPay: MIN });
+  test('convertir a dólares se nombra como cambio, no como compra de cripto', () => {
+    const quote = buildQuote({ intent: 'to_usd', giveAmount: 2_000_000, price, minPay: MIN });
     const msg = whatsappMessage(quote, 2_000_000);
-    assert.match(msg, /enviar CLP 2\.000\.000 al extranjero/);
+    assert.match(msg, /convertir CLP 2\.000\.000 a dólares/);
     assert.match(msg, /US\$ 2\.174,62/);
     assert.match(msg, /precio final/);
     assert.doesNotMatch(msg, /USDT|comprar/);
-  });
-
-  test('convertir a dólares produce un mensaje distinto al de enviar, con la misma cifra', () => {
-    const send = buildQuote({ intent: 'send_abroad', giveAmount: 2_000_000, price, minPay: MIN });
-    const conv = buildQuote({ intent: 'to_usd', giveAmount: 2_000_000, price, minPay: MIN });
-    const a = whatsappMessage(send, 2_000_000);
-    const b = whatsappMessage(conv, 2_000_000);
-    assert.notEqual(a, b);
-    assert.match(b, /convertir CLP 2\.000\.000 a dólares/);
-    assert.equal(send.getAmount, conv.getAmount);
   });
 
   test('convertir a pesos invierte las monedas del mensaje', () => {
@@ -234,8 +219,8 @@ describe('mensaje de WhatsApp', () => {
   });
 
   test('sin monto NO se manda una cifra vacía al ejecutivo', () => {
-    // Antes llegaba "quiero enviar CLP 0 al extranjero (recibo aprox. US$ 0,00)".
-    const quote = buildQuote({ intent: 'send_abroad', giveAmount: 0, price, minPay: MIN });
+    // Antes llegaba "quiero convertir CLP 0 a dólares (recibo aprox. US$ 0,00)".
+    const quote = buildQuote({ intent: 'to_usd', giveAmount: 0, price, minPay: MIN });
     const msg = whatsappMessage(quote, 0);
     assert.doesNotMatch(msg, /CLP 0|US\$ 0,00/);
     assert.match(msg, /quiero cotizar una operación/);
@@ -243,7 +228,7 @@ describe('mensaje de WhatsApp', () => {
 
   test('sobre el máximo pregunta, cuando hay un máximo definido', () => {
     const quote = buildQuote({
-      intent: 'send_abroad',
+      intent: 'to_usd',
       giveAmount: 90_000_000,
       price,
       minPay: MIN,
@@ -254,10 +239,10 @@ describe('mensaje de WhatsApp', () => {
   });
 
   test('la URL queda codificada y apunta al número configurado', () => {
-    const quote = buildQuote({ intent: 'send_abroad', giveAmount: 2_000_000, price, minPay: MIN });
+    const quote = buildQuote({ intent: 'to_usd', giveAmount: 2_000_000, price, minPay: MIN });
     const url = whatsappUrl('56977615921', quote, 2_000_000);
     assert.ok(url.startsWith('https://wa.me/56977615921?text='));
     assert.doesNotMatch(url.split('?text=')[1] ?? '', /[ ?&#]/);
-    assert.match(decodeURIComponent(url), /Hola, quiero enviar/);
+    assert.match(decodeURIComponent(url), /Hola, quiero convertir/);
   });
 });

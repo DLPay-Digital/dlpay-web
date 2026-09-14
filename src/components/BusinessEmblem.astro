@@ -42,7 +42,7 @@ const { kind } = Astro.props;
 
 const price = await new ConfigPriceSource().getPrice();
 const pay = quoteLimits.samplePayClp;
-const get = convert('send_abroad', pay, price.rate);
+const get = convert('to_usd', pay, price.rate);
 ---
 <div class:list={['emblem', kind]} aria-hidden="true">
   {kind === 'proveedores' && (
