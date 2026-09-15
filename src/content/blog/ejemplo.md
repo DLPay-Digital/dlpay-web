@@ -1,6 +1,6 @@
 ---
 title: 'El dólar cerró la semana con menos volatilidad de la esperada'
-description: 'Qué movió al peso esta semana, qué mirar la próxima y por qué el precio que ves en el cotizador se mueve con el mercado.'
+description: 'Qué movió al peso esta semana, qué mirar la próxima y por qué el precio del cotizador es referencial hasta que un ejecutivo lo confirma.'
 pubDate: 2026-09-11
 category: 'Mercado'
 coverImage: './ejemplo-portada.png'
