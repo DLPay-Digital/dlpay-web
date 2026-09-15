@@ -1,18 +1,19 @@
-# Enmienda Motion System V1 — Segunda excepción documentada
+# ADR-0008 — Enmienda Motion System V1: segunda excepción documentada
 
-**Identificador**: motion-v1-e2
-**Estado**: Propuesta
-**Fecha**: 2026-09-15
-**Referencia**: Motion System V1 (sección del CLAUDE.md)
-**Autor**: Sebastián Villanueva Pereira
-**Precedente**: ADR-0006 — Franja de notificación (2026-09-08), cuya enmienda está
-registrada en `docs/design-system/motion-system-v1.md` §0
+- **Estado:** Aceptada — 2026-09-15
+- **Decide:** Sebastián Villanueva (con análisis de Claude Code, Fase 4)
+- **Ámbito:** `src/components/hero/GloboRotativo.astro`. Enmienda el Motion System V1; no toca los
+  seis movimientos ni el techo de 280 ms fuera de esa pieza.
+- **Identificador:** `motion-v1-e2`
+- **Referencia:** Motion System V1 (sección del CLAUDE.md)
+- **Precedente:** ADR-0006 — Franja de notificación (2026-09-08), cuya enmienda está registrada en
+  `docs/design-system/motion-system-v1.md` §0
 
 ## Contexto
 
 Motion System V1 define seis movimientos permitidos, techo de 280 ms por movimiento, y una regla dura: **"una sola vez"** — nada se anima en loop. Ya existe una excepción documentada (ADR-0006, franja de notificación, 2026-09-08): la rotación de sus dos mensajes es infinita y se re-anima cada 5 s, que es literalmente el caso que la regla «una sola vez» describe como prohibido. Está acotada a esa pieza y sin sigla propia.
 
-El hero visual introducido en fase 4 (globo rotativo, ADR-0007) requiere una **rotación continua** para comunicar "DLPay conecta Chile con el mundo". Sin rotación, la ilustración lee como un mapa estático de Sudamérica, no como un planeta con alcance global. El componente pierde su función narrativa.
+La sección del globo introducida en fase 4 (globo rotativo, ADR-0007) requiere una **rotación continua** para comunicar "DLPay conecta Chile con el mundo". Sin rotación, la ilustración lee como un mapa estático de Sudamérica, no como un planeta con alcance global. El componente pierde su función narrativa.
 
 Adicionalmente, el highlight sobre Chile usa un pulso rítmico (dos anillos expandiéndose escalonadamente) para comunicar "aquí origina la actividad", en vez de un marker fijo que se leería como "punto en un mapa".
 

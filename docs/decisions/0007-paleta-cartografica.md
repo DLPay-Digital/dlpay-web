@@ -1,19 +1,19 @@
-# ADR-0007: Paleta cartográfica acotada al hero visual
+# ADR-0007 — Paleta cartográfica acotada a la sección del globo
 
-**Estado**: Propuesto
-**Fecha**: 2026-09-15
-**Autor**: Sebastián Villanueva Pereira
-**Relacionado**: ADR-0001 (paleta base congelada)
-**Nota de numeración**: redactada como «ADR-0007» en la sesión de diseño del
-2026-09-15. Ese número ya estaba tomado por *Framework, lenguaje y arquitectura de
-contenido*, así que se emitió como **0007**, el siguiente correlativo libre.
-**Ámbito**: `src/components/hero/GloboRotativo.astro`
+- **Estado:** Aceptada — 2026-09-15
+- **Decide:** Sebastián Villanueva (con análisis de Claude Code, Fase 4)
+- **Ámbito:** `src/components/hero/GloboRotativo.astro`. Coexiste con ADR-0001, que sigue
+  congelando la paleta del resto del sitio.
+- **Relacionado:** ADR-0001 (paleta base congelada)
+- **Nota de numeración:** redactada como «ADR-0002» en la sesión de diseño del 2026-09-15. Ese
+  número ya estaba tomado por *Framework, lenguaje y arquitectura de contenido*, así que se emitió
+  como **0007**, el siguiente correlativo libre.
 
 ## Contexto
 
 ADR-0001 congeló la paleta de DLPay a dos colores primarios: verde `#16C784` (acción, positivo) y tinta `#0B1320` (texto, fondo oscuro). Esa paleta funciona correctamente para toda la interfaz de producto: cotizador, botones, formularios, cards, navegación, footer.
 
-Al construir el hero visual (globo terráqueo rotativo con Chile como origen y ocho destinos internacionales), aparece un conflicto real: la representación cartográfica requiere colores que comuniquen "océano", "tierra" y "bordes de países" con contraste suficiente para ser legibles a escala pequeña, y esa función semántica no la cumplen los dos colores de ADR-0001.
+Al construir la sección del globo (globo terráqueo rotativo con Chile como origen y ocho destinos internacionales), aparece un conflicto real: la representación cartográfica requiere colores que comuniquen "océano", "tierra" y "bordes de países" con contraste suficiente para ser legibles a escala pequeña, y esa función semántica no la cumplen los dos colores de ADR-0001.
 
 Forzar la paleta base al globo produce lecturas ambiguas:
 - Un océano en verde `#16C784` lee como "acción disponible", no como "agua"
@@ -48,7 +48,7 @@ Los siete tokens SOLO pueden usarse **dentro** del archivo `src/components/hero/
 ## Consecuencias
 
 **Positivas**:
-- El hero visual comunica claramente "este es el mundo, DLPay conecta Chile con estos ocho destinos", sin ambigüedad de lectura.
+- La sección del globo comunica claramente "este es el mundo, DLPay conecta Chile con estos ocho destinos", sin ambigüedad de lectura.
 - La paleta base de producto (ADR-0001) queda intacta, mantiene su función semántica y su reconocimiento a través del sitio.
 - La paleta cartográfica está tokenizada y limitada — no se derrama al resto del sitio por accidente porque los valores viven scoped en un solo archivo.
 

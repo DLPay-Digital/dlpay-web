@@ -11,9 +11,9 @@ evaluadas, decisión y consecuencias**. La documentación explica el *porqué*, 
 | [0004](0004-estilos-y-tokens.md) | Estilos y tokens — CSS nativo con custom properties, sin Tailwind | Aceptada | 3 |
 | [0005](0005-despliegue-y-portabilidad.md) | Despliegue — portabilidad primero, proveedor diferido | Aceptada | 3 |
 | [0006](0006-franja-de-notificacion.md) | Franja de notificación — estática, sin botón de cerrar | Aceptada | 4 |
-| [0007](0007-paleta-cartografica.md) | Paleta cartográfica acotada al hero visual — coexiste con ADR-0001 | Propuesta | 4 |
-| [0008](0008-motion-v1-e2-globo-rotativo.md) | Motion V1, segunda excepción — rotación continua y pulso, sólo en el globo | Propuesta | 4 |
-| [0009](0009-cero-js-e1-globo-rotativo.md) | Primera excepción a «cero JS al cliente» — runtime acotado al globo | Propuesta | 4 |
+| [0007](0007-paleta-cartografica.md) | Paleta cartográfica acotada a la sección del globo — coexiste con ADR-0001 | Aceptada | 4 |
+| [0008](0008-motion-v1-e2-globo-rotativo.md) | Motion V1, segunda excepción — rotación continua y pulso, sólo en el globo | Aceptada | 4 |
+| [0009](0009-cero-js-e1-globo-rotativo.md) | Primera excepción a «cero JS al cliente» — runtime acotado al globo | Aceptada | 4 |
 
 **Convención:** numeración correlativa, un archivo por decisión, nunca se reescribe una decisión
 aceptada — se **enmienda** dejando visible lo anterior, o se supera con un ADR nuevo que la cite.

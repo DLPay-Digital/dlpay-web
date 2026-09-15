@@ -1,10 +1,11 @@
-# Enmienda §7 — Primera excepción a "cero JS al cliente"
+# ADR-0009 — Enmienda §7: primera excepción a "cero JS al cliente"
 
-**Identificador**: cero-js-e1
-**Estado**: Propuesta
-**Fecha**: 2026-09-15
-**Referencia**: §7 CLAUDE.md (cero dependencias runtime, cero JS al cliente)
-**Autor**: Sebastián Villanueva Pereira
+- **Estado:** Aceptada — 2026-09-15
+- **Decide:** Sebastián Villanueva (con análisis de Claude Code, Fase 4)
+- **Ámbito:** `src/components/hero/GloboRotativo.astro`. Enmienda §7 sólo para esa pieza; el resto
+  del sitio sigue en cero JS al cliente.
+- **Identificador:** `cero-js-e1`
+- **Referencia:** §7 CLAUDE.md (cero dependencias runtime, cero JS al cliente)
 
 ## Contexto
 
@@ -18,7 +19,7 @@ Estas reglas dan al sitio dos propiedades fuertes que son parte de la identidad 
 - **Portabilidad total**: el sitio compilado es HTML + CSS estático, servible desde cualquier CDN, cualquier servidor, o incluso `file://` local. Sin backend, sin runtime, sin dependencias externas.
 - **Robustez extrema**: no se rompe con adblockers agresivos, no depende de JS habilitado, funciona en navegadores mínimos, no falla si el CDN de una librería tercera cae.
 
-El hero visual introducido en fase 4 (globo rotativo, ADR-0007, motion-v1-e2) requiere **renderizado JS runtime** para la rotación: cada frame se recalculan proyecciones ortográficas de ~1500 vértices, se interpolan cruces del terminador (el borde entre lo visible y lo oculto del hemisferio), se cierran polígonos por arcos pegados al borde curvo de la esfera. Esto no es factible con CSS puro — la proyección ortográfica involucra funciones trigonométricas no lineales aplicadas por vértice.
+La sección del globo introducida en fase 4 (globo rotativo, ADR-0007, motion-v1-e2) requiere **renderizado JS runtime** para la rotación: cada frame se recalculan proyecciones ortográficas de ~1500 vértices, se interpolan cruces del terminador (el borde entre lo visible y lo oculto del hemisferio), se cierran polígonos por arcos pegados al borde curvo de la esfera. Esto no es factible con CSS puro — la proyección ortográfica involucra funciones trigonométricas no lineales aplicadas por vértice.
 
 Esto entra en conflicto directo con "cero JS al cliente".
 
@@ -48,7 +49,7 @@ Se permite:
 
 5. **Fallback sin JS**: cuando JS está deshabilitado o falla, el componente debe seguir siendo visualmente aceptable. El SVG base (círculo del globo + fill de océano navy + halo verde sutil) es servido por Astro en el HTML estático. Los paths de land/borders/chile quedan vacíos, pero el globo se ve como un círculo azul-navy con halo en el hero. Aceptable como degradación graceful. El resto del sitio (cotizador, formularios, navegación) sigue funcionando sin JS al 100%.
 
-6. **Sin efecto sobre navegación ni interacción crítica**: el resto del sitio sigue funcionando sin JS como antes. El cotizador (§6) funciona sin JS. Los formularios funcionan sin JS. Los links funcionan sin JS. Solo el hero visual tiene componente animado — el sitio sigue siendo "estático + un pixel animado en el hero".
+6. **Sin efecto sobre navegación ni interacción crítica**: el resto del sitio sigue funcionando sin JS como antes. El cotizador (§6) funciona sin JS. Los formularios funcionan sin JS. Los links funcionan sin JS. Solo la sección del globo tiene componente animado — el sitio sigue siendo "estático + un pixel animado en el hero".
 
 ### Regla de ámbito para futuros JS
 

@@ -24,6 +24,7 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   movimiento, infinito, y contradice la regla dura 1 («una sola vez») a petición explícita del
   equipo. Acotada a esa pieza, sin sigla propia y sin abrir la puerta a más movimiento. Enmienda
   registrada en `motion-system-v1.md` §0 y razonada en ADR-0006.
+  **Una segunda, del 2026-09-15:** la rotación continua del globo. Ver ADR-0008.
 - **Auditoría previa a producción hecha, en dos revisiones (2026-09-04 y 2026-09-08).** La segunda
   cerró dos fallos críticos que no se veían en localhost: la guarda de `PUBLIC_SITE_URL` se
   esquivaba con `astro build` directo y sólo comprobaba presencia —`.env.example` traía
@@ -255,6 +256,8 @@ Referencias (Global66, Buda, Wise, DolarApp, Fintual, Bithonor como contra-ejemp
 **principios** de UX, jerarquía, conversión, densidad, navegación y comunicación de confianza. No
 copiar layout, componentes, textos, colores, iconografía, estructura, animaciones ni branding.
 
+Ver ADR-0007: única excepción de paleta, una gama cartográfica acotada al componente del globo.
+
 ---
 
 ## 6. UX  ·  *cerrada en Fase 2.5*
@@ -347,6 +350,8 @@ cualquier servidor estático.* Lo que rompa esa afirmación necesita una enmiend
   `/security-review` antes de merges relevantes.
 - **Contenido / compliance:** nunca inventar datos regulatoria o comercialmente sensibles; marcar
   `REQUIERE VALIDACIÓN DE COMPLIANCE`.
+
+Ver ADR-0009: única excepción a «cero JS al cliente», un runtime acotado al componente del globo.
 
 ---
 
