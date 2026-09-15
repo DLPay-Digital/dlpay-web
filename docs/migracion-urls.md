@@ -51,6 +51,11 @@ Los enlaces de "Iniciar sesión" y "Crear cuenta" de la web nueva ya salen de un
 ## Después
 
 - Enviar el sitemap (`/sitemap.xml`) a Search Console.
-- Vigilar 404 y errores durante 48–72 h.
+- Vigilar 404 y errores durante 48–72 h. **Desde el 2026-09-15 hay página propia** (`dist/404.html`,
+  en la raíz del build): quien llegue a una URL muerta ve la identidad DLPay y dos salidas, el
+  inicio y `platform.loginUrl`. La segunda es la que importa acá — lo más probable que caiga en la
+  404 durante el cutover son las URL de cuenta de la tabla de arriba, si alguna redirección se
+  escapa. **Comprobar que el host sirve `404.html`**: los estáticos gestionados lo hacen solos;
+  nginx y Apache necesitan una directiva (`error_page 404 /404.html;`).
 - Retirar los PDF legales del bucket de Guita una vez publicados los textos propios
   (`legal-brief.md` §2.5), para que no queden dos versiones circulando.

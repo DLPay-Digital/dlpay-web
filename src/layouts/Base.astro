@@ -19,9 +19,27 @@ interface Props {
    * primer viewport. En el resto sería peso desperdiciado.
    */
   hasQuoter?: boolean;
+  /**
+   * Cierra la indexación de ESTA página, esté abierta o no la del sitio. Hoy lo
+   * usa sólo la 404: es la única página que se sirve bajo cualquier URL, así que
+   * no tiene una dirección propia que un buscador deba guardar.
+   *
+   * Arrastra la omisión del `<link rel="canonical">` a propósito. Un canónico
+   * afirma «esta es la versión preferida de este contenido» y `noindex` afirma
+   * «no guardes este contenido»: juntos son señales contradictorias, y además
+   * aquí el contenido no vive en ninguna URL. El `og:url` sí se conserva, porque
+   * una tarjeta Open Graph sin URL queda inválida.
+   */
+  noindex?: boolean;
 }
 
-const { title, description, path = Astro.url.pathname, hasQuoter = false } = Astro.props;
+const {
+  title,
+  description,
+  path = Astro.url.pathname,
+  hasQuoter = false,
+  noindex = false,
+} = Astro.props;
 const canonical = new URL(path, site.url).href;
 const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
 const ogImage = new URL('/og-image.png', site.url).href;
@@ -47,19 +65,19 @@ const organization = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {!noindex && <link rel="canonical" href={canonical} />}
 
     {/*
       Escudo de indexación. Este layout es el único `<head>` del sitio —las
       páginas legales pasan por `Legal.astro`, que envuelve a este—, así que
-      basta ponerlo aquí para cubrir las nueve rutas.
+      basta ponerlo aquí para cubrir todas las rutas.
 
       Va cerrado salvo que se abra explícitamente (PUBLIC_ALLOW_INDEXING=true).
       Un Staging indexable publicaría bajo la marca DLPay `/terminos/` y
       `/privacidad/`, que son páginas de estado pendientes de Compliance
       (CLAUDE.md §13, D9/D19/D20), y duplicaría el contenido de dlpay.cl.
     */}
-    {!indexing.allowed && <meta name="robots" content="noindex, nofollow" />}
+    {(noindex || !indexing.allowed) && <meta name="robots" content="noindex, nofollow" />}
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

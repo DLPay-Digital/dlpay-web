@@ -108,4 +108,36 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
-| — | *(sin entregas todavía)* | — | — |
+| 2026-09-15 | [`2026-09-15-404`](2026-09-15-404/ficha.md) — página 404 | **Integrada** | Pasa el DoD sin cambios visuales. Trasladada tal cual a `src/pages/404.astro` |
+
+### Notas de la integración de `2026-09-15-404`
+
+Lo que verifiqué y lo que cambié, para que no haya que deducirlo del diff.
+
+**Comprobado, no asumido.** Las seis razones de contraste de la ficha §7 son exactas al segundo
+decimal, recalculadas. Las medidas de la ficha §8 también: a 360 px el desborde es 0, el titular
+mide 30 px, la banda 322 px y los dos botones 57 px en la misma fila; a 1280 px, 32 px y 351 px. La
+secuencia M6 sale 0/60/120/180 ms en las cuatro palabras, 180 ms la bajada y 240 ms las acciones —
+440 ms en total, dentro del techo. La página se construye con **cero bytes de JavaScript
+ejecutable** y es la quinta del sitio en ese estado, junto a las cuatro legales.
+
+**Los seis puntos de integración, resueltos.** (1) `404.astro` queda excluido del barrido de
+`sitemap.xml.ts` por nombre: el sitemap sigue publicando diez URL. (2) `Base.astro` gana la prop
+`noindex`, verificada con la indexación abierta —la 404 lleva `noindex, nofollow` y ninguna otra
+página cambió—; **decidí que además omita el `<link rel="canonical">`**, porque un canónico afirma
+«esta es la versión preferida de este contenido» y `noindex` afirma lo contrario, y porque esta
+página no vive en ninguna URL. El `og:url` se conserva: una tarjeta Open Graph sin URL queda
+inválida. (3) y (4) venían resueltos por construcción. (5) **Confirmado en el build: Astro emite
+`dist/404.html` en la raíz**, no `dist/404/index.html`, pese a `trailingSlash: 'always'`. (6) El par
+`.cta`/`.ghost` se trasladó repetido, con el comentario que lo señala: consolidarlo es un refactor
+propio y no se mete a empujones en esta entrega.
+
+**Un hallazgo que la vista no podía mostrar.** Con `Header` y `Footer` reales, el pie arranca
+exactamente donde termina la banda y los dos son `--tinta`, así que la página queda como un solo
+campo oscuro y la cuña corta el aire a media altura. Medido sobre el render: la cuña es `(12,32,39)`
+contra `(11,19,32)` del pie, o sea apenas perceptible, y no bloquea nada. Queda anotado por si
+alguna vez se quiere cerrar ese canto — es la única página del sitio donde héroe y pie se tocan.
+
+**Sobre la carpeta `Claude outputs/`** en la raíz del repositorio: trae copias de `vista-390.png` y
+`vista-1280.png` que **no** son idénticas a las de la entrega. Queda sin versionar, fuera del
+contrato de §1. Conviene que las salidas terminen sólo dentro de `cowork/AAAA-MM-DD-slug/`.

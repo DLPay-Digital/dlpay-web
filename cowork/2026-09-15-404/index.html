@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vista — página 404 · propuesta Cowork 2026-09-15</title>
+
+<!-- Consume el tokens.css REAL del proyecto. No hay copia: si un token cambia,
+     esta vista cambia con él y no puede quedar desalineada. -->
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+
+<style>
+  /* Las fuentes reales, con ruta relativa porque la vista se abre con file://
+     y el fonts.css del proyecto apunta a /fonts/ (raíz del servidor). Es la
+     ÚNICA diferencia con el sitio, y sólo afecta a cómo se cargan. */
+  @font-face{
+    font-family:'Familjen Grotesk'; font-style:normal; font-weight:400 700; font-display:swap;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'Spline Sans Mono'; font-style:normal; font-weight:400 600; font-display:swap;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2');
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     ANDAMIO DE LA VISTA — no es parte de la propuesta.
+     Marca dónde van Header.astro y Footer.astro para poder juzgar el ritmo
+     vertical sin falsificar dos componentes que ya existen.
+     ───────────────────────────────────────────────────────────────────────── */
+  .scaffold{
+    font-family:var(--f-num);
+    font-size:var(--t-dato-sm);
+    color:var(--ink-mute);
+    background:var(--papel-2);
+    border:1px dashed var(--line);
+    padding:var(--s-4) var(--s-5);
+    text-align:center;
+  }
+  .scaffold b{font-weight:500;color:var(--ink)}
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     CSS REPLICADO de src/components/PageHero.astro — copiado literal para que
+     la vista muestre lo que el componente produce. El código candidato NO lo
+     duplica: reusa el componente. Si PageHero cambia, esta vista caduca.
+     ───────────────────────────────────────────────────────────────────────── */
+  .page-hero{
+    background:var(--tinta);
+    color:var(--on-tinta);
+    position:relative;
+    overflow:hidden;
+    padding:var(--s-7) 0 var(--s-8);
+  }
+  .wedges{
+    position:absolute; inset:0; pointer-events:none;
+    background:var(--verde); opacity:.07;
+    clip-path:polygon(0 100%,46% 0,60% 0,15% 100%,20% 100%,66% 0,71% 0,26% 100%);
+  }
+  .inner{
+    position:relative;
+    max-width:var(--container);
+    margin:0 auto;
+    padding:0 var(--pad-section-m);
+  }
+  h1{
+    font-size:var(--t-display-m);
+    font-weight:700;
+    line-height:var(--lh-display);
+    letter-spacing:var(--ls-display);
+    margin-bottom:var(--s-4);
+    max-width:18ch;
+  }
+  .inner p{
+    color:var(--on-tinta-mute);
+    max-width:54ch;
+    font-size:var(--t-body);
+  }
+  .actions{margin-top:var(--s-6); display:flex; flex-wrap:wrap; gap:var(--s-3)}
+
+  /* M6 · secuencia de carga. Animación CSS pura, no el observador. */
+  .seq{
+    animation:heroIn var(--m-base) var(--m-ease) both;
+    animation-delay:calc(var(--seq) * var(--m-stagger));
+  }
+  .w{
+    display:inline-block;
+    animation:heroIn var(--m-base) var(--m-ease) both;
+    animation-delay:calc(var(--w) * var(--m-stagger));
+  }
+  @keyframes heroIn{
+    from{opacity:0; transform:translate(var(--m-shift-x),var(--m-shift-y))}
+    to  {opacity:1; transform:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .seq,.w{animation:none}
+  }
+  @media (min-width:900px){
+    .page-hero{padding:var(--s-8) 0 var(--s-9)}
+    .inner{padding-inline:var(--pad-section)}
+    h1{font-size:var(--t-h2)}
+    .inner p{font-size:var(--t-h3-m)}
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     CSS QUE APORTA LA PÁGINA — lo único nuevo de esta entrega.
+     Copiado de src/pages/empresas.astro, que es donde ya vive el par de
+     acciones sobre tinta. Mismo par, mismos tokens, misma regla de contorno.
+     ───────────────────────────────────────────────────────────────────────── */
+  .cta{
+    display:inline-flex; align-items:center; gap:var(--s-2);
+    background:var(--verde); color:var(--on-verde);
+    font-weight:700; font-size:var(--t-body);
+    padding:var(--s-4) var(--s-6);
+    border-radius:var(--r-2);
+    text-decoration:none;
+    transition:background-color var(--m-fast) var(--m-ease);
+  }
+  .cta:hover{background:var(--verde-hi)}
+  .ghost{
+    display:inline-flex; align-items:center;
+    /* 0.40 y no 0.28: WCAG 1.4.11 pide 3:1 al contorno de un control y este
+       alfa da 3.50:1 sobre --tinta. Es el mismo valor de Steps y empresas. */
+    border:1px solid var(--line-on-tinta);
+    color:var(--on-tinta);
+    font-weight:600; font-size:var(--t-body-sm);
+    padding:var(--s-4) var(--s-5);
+    border-radius:var(--r-2);
+    text-decoration:none;
+    transition:border-color var(--m-fast) var(--m-ease);
+  }
+  .ghost:hover{border-color:var(--on-tinta)}
+</style>
+</head>
+<body>
+
+<div class="scaffold">andamio de la vista · aquí va <b>Header.astro</b> (cabecera real del sitio)</div>
+
+<main>
+  <!-- PageHero.astro con title, lead, sequence y la ranura `cta`.
+       titleSize por omisión = `page`: --t-h2 en escritorio, la voz de todas
+       las páginas interiores (Design System §3.0, regla 1). -->
+  <section class="page-hero on-tinta-surface">
+    <div class="wedges" aria-hidden="true"></div>
+    <div class="inner">
+      <div class="copy">
+        <h1>
+          <span class="w" style="--w:0">Esta</span> <span class="w" style="--w:1">página</span>
+          <span class="w" style="--w:2">no</span> <span class="w" style="--w:3">existe.</span>
+        </h1>
+        <p class="seq" style="--seq:3">
+          El enlace puede estar antiguo o la dirección venir con un error de tipeo.
+          Si venías a tu cuenta, entra directo desde acá.
+        </p>
+        <div class="actions seq" style="--seq:4">
+          <a class="cta" href="/">Ir al inicio</a>
+          <a class="ghost" href="https://dlpay.cl/auth/login">Entra a tu cuenta</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="scaffold">andamio de la vista · aquí va <b>Footer.astro</b> (pie real, con la navegación completa)</div>
+
+</body>
+</html>

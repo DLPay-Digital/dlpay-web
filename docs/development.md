@@ -532,6 +532,15 @@ cualquier servidor estático.** Lo que rompa esa afirmación necesita una enmien
 | `/privacidad` | Página de estado: lo verificable sobre esta web | 0 |
 | `/blog` | Índice de artículos, desde la colección tipada | 0,5 KB |
 | `/blog/<slug>` | Un artículo. Una página por entrada de la colección | 0,5 KB |
+| `404` | La dirección no existe. **No es una ruta**: el host la sirve bajo cualquier URL | 0 |
+
+**La 404 se añadió el 2026-09-15** y no se cuenta entre las rutas: no tiene dirección propia. Reusa
+`PageHero` sin componentes nuevos, va con `noindex` y sin canónico, queda **excluida del sitemap**
+por nombre en `sitemap.xml.ts` y no importa `Motion.astro`, así que es la quinta página del sitio en
+cero bytes de JavaScript. Ofrece dos salidas —el inicio y `platform.loginUrl`— porque en el cutover
+lo más probable que caiga aquí son URL de cuenta (`/auth/login/`, `/app/`), no de marketing: ver
+`migracion-urls.md`. Astro la emite como `dist/404.html` **en la raíz** pese a
+`trailingSlash: 'always'`, que es donde un host estático la busca.
 
 **El blog se añadió el 2026-09-11** y es la novena ruta estática, más una por artículo. La
 colección vive en `src/content.config.ts` con un esquema cerrado —`title`, `description`,
@@ -550,16 +559,16 @@ Lo que falta y qué decisiones lo bloquean está en **`docs/legal-brief.md`**.
 
 ## Estado (2026-09-15)
 
-- `npm run check` → **0 errores, 0 avisos y 7 sugerencias en 56 archivos** · `npm test` →
+- `npm run check` → **0 errores, 0 avisos y 7 sugerencias en 57 archivos** · `npm test` →
   **59 tests en 11 suites** en verde · `npm audit` → 0 vulnerabilidades · `build` verde,
-  **10 páginas**.
+  **11 páginas** — las diez indexables más la 404, que no es una ruta.
 - **JS enviado al cliente: tres scripts, y el tercero es nuevo.**
   - Cotizador: 4 528 B / 2,0 KB gzip, chunk externo, **sólo en la Home**.
   - Motion System: 489 B en línea + 56 B síncronos, en **seis de las diez páginas**.
   - **Globo rotativo: 40 525 B en línea, sólo en la Home.** Casi todo son coordenadas del
     mapamundi; el runtime que las proyecta y las rota son unas pocas decenas de líneas.
-  - Las **cuatro legales siguen en cero bytes** de JavaScript ejecutable. Lo único que llevan es
-    el bloque `application/ld+json`, que no se ejecuta.
+  - **Cinco páginas en cero bytes** de JavaScript ejecutable: las cuatro legales y la 404. Lo
+    único que llevan es el bloque `application/ld+json`, que es dato y no se ejecuta.
 - HTML de 18,0 a 29,2 KB en crudo (**4,9 a 6,7 KB gzip**), salvo la Home: **86,0 KB / 24,1 KB
   gzip**, y la diferencia es el globo. CSS de 16,6 a 44,1 KB por página, repartido en cuatro
   hojas según la ruta · fuentes 112 KB · `dist/` completo **740 KB**.

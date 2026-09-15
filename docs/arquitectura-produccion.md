@@ -37,9 +37,12 @@ reloj del feed»). Ni eran dos páginas ni es un reloj.
 | `/` | 56 B | 489 B | 4 528 B | 40 525 B | **45,6 KB** |
 | `/como-funciona/`, `/confianza/`, `/empresas/`, `/blog/`, `/blog/<slug>/` | 56 B | 489 B | — | — | **0,5 KB** |
 | `/terminos/`, `/privacidad/`, `/tarifas/`, `/canal-de-denuncias/` | — | — | — | — | **0 B** |
+| `404.html` | — | — | — | — | **0 B** |
 
-Las cuatro legales siguen en **cero bytes ejecutables**: lo único que llevan es el bloque
-`application/ld+json`, que es dato y no se ejecuta.
+**Cinco páginas en cero bytes ejecutables**: las cuatro legales y la 404, añadida el 2026-09-15. Lo
+único que llevan es el bloque `application/ld+json`, que es dato y no se ejecuta. La 404 no figura
+entre las rutas porque no lo es: el host la sirve bajo cualquier URL que no exista, va con
+`noindex` y sin canónico, y queda fuera del sitemap.
 
 **El tercer script es el globo, y conviene mirarlo de frente.** De sus 40 525 B, casi todo son las
 coordenadas del mapamundi incrustadas en línea; el código que las proyecta y las rota son unas

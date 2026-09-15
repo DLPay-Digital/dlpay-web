@@ -25,6 +25,13 @@ function routeOf(file: string): string {
 /** Una ruta dinámica no es una URL: `[slug].astro` no se publica tal cual. */
 const isDynamic = (file: string): boolean => file.includes('[');
 
+/**
+ * La 404 se construye como una página más, pero no es una dirección: se sirve
+ * bajo cualquier URL que no exista. Publicarla en el sitemap sería pedirle a un
+ * buscador que indexe la página de error. Va fuera, igual que va con `noindex`.
+ */
+const isNotFound = (file: string): boolean => file === './404.astro';
+
 export const GET: APIRoute = async () => {
   // `site.url` ya viene normalizado sin barra final (lib/config/environment.ts).
   const base = site.url;
@@ -35,7 +42,9 @@ export const GET: APIRoute = async () => {
 
   /* Las rutas dinámicas se excluyen del recorrido de archivos y entran por su
      colección, que es donde viven las URLs de verdad. */
-  const estaticas = Object.keys(pages).filter((file) => !isDynamic(file)).map(routeOf);
+  const estaticas = Object.keys(pages)
+    .filter((file) => !isDynamic(file) && !isNotFound(file))
+    .map(routeOf);
   const articulos = (await getCollection('blog')).map((post) => `/blog/${post.id}/`);
 
   const urls = [...estaticas, ...articulos]

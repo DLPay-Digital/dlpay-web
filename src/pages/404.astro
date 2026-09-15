@@ -1,0 +1,91 @@
+---
+/**
+ * 404 — la dirección no existe.
+ *
+ * Reusa `PageHero` sin añadir nada: misma banda, mismas cuñas, misma secuencia
+ * M6. Dos salidas, una interna y una a la plataforma, porque en el cutover el
+ * tráfico más probable viene de URL de cuenta (/auth/login/, /app/) y no del
+ * sitio de marketing (`docs/migracion-urls.md`).
+ *
+ * NO importa `Motion.astro` a propósito: el movimiento de `PageHero` es CSS de
+ * carga, y un observador podría dejar el contenido oculto justo en la página
+ * donde el usuario ya llegó. La página va en CERO bytes de JavaScript.
+ *
+ * Dos cosas la separan del resto de páginas y las dos son deliberadas:
+ * · `noindex` — se sirve bajo cualquier URL que no exista, así que no tiene una
+ *   dirección propia que un buscador deba guardar. La prop arrastra además la
+ *   omisión del canónico; el porqué está en `Base.astro`.
+ * · Queda fuera del sitemap, excluida por nombre en `sitemap.xml.ts`.
+ */
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
+import { platform } from '../lib/config/site.ts';
+---
+<Base
+  title="Página no encontrada"
+  description="La dirección no existe o cambió. Vuelve al inicio de DLPay o entra a tu cuenta."
+  path="/404/"
+  noindex
+>
+  <Header />
+  <main id="main">
+    <PageHero
+      title="Esta página no existe."
+      lead="El enlace puede estar antiguo o la dirección venir con un error de tipeo. Si venías a tu cuenta, entra directo desde acá."
+      sequence
+    >
+      <Fragment slot="cta">
+        <a class="cta" href="/">Ir al inicio</a>
+        {/*
+          Sale a la plataforma de Guita y va SIEMPRE por `platform.loginUrl`,
+          nunca con la URL escrita a mano: `lib/config/site.ts` es el punto único
+          de acoplamiento, así que el día que exista infraestructura propia la
+          migración es un solo cambio y esta página lo sigue sola.
+
+          En la MISMA pestaña, sin `target`: quien llega aquí quería su cuenta, y
+          dejarle atrás una pestaña con un 404 muerto no le sirve de nada.
+        */}
+        <a class="ghost" href={platform.loginUrl}>Entra a tu cuenta</a>
+      </Fragment>
+    </PageHero>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  /* Copia literal del par de acciones sobre tinta de `empresas.astro`. Es la
+     tercera aparición del par —`index.astro` lo tiene en variante clara— y está
+     anotada como tal en la ficha de la entrega: si algún día se consolida en un
+     sitio compartido, esta página debería consumirlo en vez de repetirlo. */
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    background: var(--verde);
+    color: var(--on-verde);
+    font-weight: 700;
+    font-size: var(--t-body);
+    padding: var(--s-4) var(--s-6);
+    border-radius: var(--r-2);
+    text-decoration: none;
+    transition: background-color var(--m-fast) var(--m-ease);
+  }
+  .cta:hover { background: var(--verde-hi); }
+  .ghost {
+    display: inline-flex;
+    align-items: center;
+    /* 0.40 y no 0.28: WCAG 1.4.11 pide 3:1 al contorno de un control y este
+       alfa da 3.50:1 sobre `--tinta`. Mismo valor que Steps y empresas. */
+    border: 1px solid var(--line-on-tinta);
+    color: var(--on-tinta);
+    font-weight: 600;
+    font-size: var(--t-body-sm);
+    padding: var(--s-4) var(--s-5);
+    border-radius: var(--r-2);
+    text-decoration: none;
+    transition: border-color var(--m-fast) var(--m-ease);
+  }
+  .ghost:hover { border-color: var(--on-tinta); }
+</style>
