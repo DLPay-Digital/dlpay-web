@@ -51,26 +51,26 @@ Si aparece una tercera propuesta de loop continuo, el equipo debe considerar si 
 ## Consecuencias
 
 **Positivas**:
-- El hero comunica alcance global sin necesidad de copy adicional ni ilustraciones múltiples ("nuestros destinos son...").
+- La sección del globo comunica alcance global sin necesidad de copy adicional ni ilustraciones múltiples ("nuestros destinos son...").
 - Los guardarrieles duros previenen que el movimiento se descontrole en el futuro (velocidad, easing, pulso todos acotados numéricamente).
 - `prefers-reduced-motion` sigue siendo respetado — el usuario con esa preferencia obtiene una experiencia equivalente sin movimiento (globo estático con la misma composición visual).
 
 **Negativas**:
 - Motion System V1 acumula ahora dos excepciones documentadas (banner + globo). El principio "una sola vez" se vuelve "una sola vez excepto donde se ha aprobado formalmente". Requiere disciplina en revisiones futuras para no normalizar excepciones.
 - El movimiento continuo puede causar molestia a usuarios que no activaron `prefers-reduced-motion` pero prefieren sitios estáticos. Los guardarrieles de velocidad y easing minimizan pero no eliminan esto.
-- La rotación implica renderizado por-frame (~60 fps), lo que aumenta el consumo de CPU del sitio comparado con hero estático. En devices low-end podría bajar a ~30 fps sin degradación visual grave (probado en el diseño).
+- La rotación implica renderizado por-frame (~60 fps), lo que aumenta el consumo de CPU del sitio comparado con una versión estática. En devices low-end podría bajar a ~30 fps sin degradación visual grave (probado en el diseño).
 
 ## Trigger de revisión
 
 Reabrir enmienda si:
 - Aparece una tercera propuesta de loop continuo → revisar Motion V1 completo, posible Motion V2.
 - Telemetría muestra > 5% bounce rate correlacionado con la rotación → considerar bajar velocidad a 3°/s, o detener por defecto con opción "activar" (fuera del scope actual).
-- Se reciben reportes de accesibilidad relacionados con movimiento en el hero → revisar guardarrieles.
+- Se reciben reportes de accesibilidad relacionados con movimiento en la sección del globo → revisar guardarrieles.
 - Se decide cambiar la velocidad, dirección, o composición del pulso → esta enmienda se actualiza con el diff, no se abre una nueva.
 
 ## Alternativas consideradas
 
-1. **Mapa estático (sin rotación)**: **rechazada** — no comunica alcance global, lee como mapa regional. El hero pierde función narrativa.
+1. **Mapa estático (sin rotación)**: **rechazada** — no comunica alcance global, lee como mapa regional. La sección del globo pierde función narrativa.
 2. **Rotación solo en hover**: **rechazada** — depende de interacción, un usuario que scroll rápido no ve la narrativa. Además, en mobile el "hover" no existe.
 3. **Rotación con auto-stop después de 1-2 vueltas**: **considerada, rechazada** — introduce un "estado final" que no lee como natural (¿por qué se detuvo?), y complica el algoritmo para dudoso beneficio narrativo.
 4. **Rotación más lenta (3°/s, ciclo 120s)**: **considerada** — quedaría demasiado sutil, un usuario que scroll rápido no percibe el movimiento como intencional.

@@ -65,7 +65,7 @@ Los siete tokens SOLO pueden usarse **dentro** del archivo `src/components/hero/
 ## Alternativas consideradas
 
 1. **Forzar paleta base**: el globo con océano verde `#16C784` y tierra tinta `#0B1320`. **Rechazada** — lectura ambigua, el globo no lee como globo.
-2. **Mapa monocromático**: todo en tinta base con distintos niveles de opacidad. **Rechazada** — pierde la lectura de "Chile como acento verde", que es el punto narrativo del hero.
+2. **Mapa monocromático**: todo en tinta base con distintos niveles de opacidad. **Rechazada** — pierde la lectura de "Chile como acento verde", que es el punto narrativo de la sección del globo.
 3. **Gradientes decorativos** para diferenciar océano/tierra: **rechazada** por §2 principio 3 (prohibido stock 3D, SaaS genérico, gradientes decorativos, blobs, glassmorphism).
 4. **Textura vía imagen raster**: **rechazada** — añade peso significativo, no se adapta bien a la rotación, y los patterns SVG cumplen la misma función con ~200 bytes cada uno.
 

@@ -47,9 +47,9 @@ Se permite:
 
 4. **Renderizado bloqueado a UN elemento visible**. El script solo escribe atributos SVG del `<svg>` dentro del componente. **No** modifica el DOM fuera de su scope. **No** lee ni escribe `localStorage` ni `sessionStorage`. **No** hace `fetch` ni `XMLHttpRequest`. **No** toca `document.cookie`. **No** registra event listeners globales (window/document). **No** modifica meta tags, título, ni URL.
 
-5. **Fallback sin JS**: cuando JS está deshabilitado o falla, el componente debe seguir siendo visualmente aceptable. El SVG base (círculo del globo + fill de océano navy + halo verde sutil) es servido por Astro en el HTML estático. Los paths de land/borders/chile quedan vacíos, pero el globo se ve como un círculo azul-navy con halo en el hero. Aceptable como degradación graceful. El resto del sitio (cotizador, formularios, navegación) sigue funcionando sin JS al 100%.
+5. **Fallback sin JS**: cuando JS está deshabilitado o falla, el componente debe seguir siendo visualmente aceptable. El SVG base (círculo del globo + fill de océano navy + halo verde sutil) es servido por Astro en el HTML estático. Los paths de land/borders/chile quedan vacíos, pero el globo se ve como un círculo azul-navy con halo. Aceptable como degradación graceful. El resto del sitio (cotizador, formularios, navegación) sigue funcionando sin JS al 100%.
 
-6. **Sin efecto sobre navegación ni interacción crítica**: el resto del sitio sigue funcionando sin JS como antes. El cotizador (§6) funciona sin JS. Los formularios funcionan sin JS. Los links funcionan sin JS. Solo la sección del globo tiene componente animado — el sitio sigue siendo "estático + un pixel animado en el hero".
+6. **Sin efecto sobre navegación ni interacción crítica**: el resto del sitio sigue funcionando sin JS como antes. El cotizador (§6) funciona sin JS. Los formularios funcionan sin JS. Los links funcionan sin JS. Solo la sección del globo tiene componente animado — el sitio sigue siendo "estático + un pixel animado en la sección del globo".
 
 ### Regla de ámbito para futuros JS
 
@@ -60,27 +60,27 @@ Si el cotizador (§6) alguna vez requiere JS (ej. para autocompletar montos, o p
 ## Consecuencias
 
 **Positivas**:
-- El hero comunica alcance global de forma memorable, refuerza la narrativa DLPay ("conectamos Chile con el mundo").
+- La sección del globo comunica alcance global de forma memorable, refuerza la narrativa DLPay ("conectamos Chile con el mundo").
 - El resto del sitio mantiene la propiedad de "cero JS" — ~99% del código servido sigue siendo HTML + CSS. La excepción está tokenizada (un archivo, un script, ~3 KB) y es fácilmente auditable.
 - El fallback graceful (círculo navy si JS falla) preserva la composición visual sin errores, aunque pierda la rotación.
 
 **Negativas**:
-- El sitio deja de ser "100% funcional sin JS". El hero degrada a un círculo azul si JS falla. Aceptable pero es una pérdida real de robustez.
-- Aumenta la superficie de bugs potenciales del sitio: cualquier error en el runtime del globo puede romper visualmente el hero (aunque no la funcionalidad crítica del cotizador).
+- El sitio deja de ser "100% funcional sin JS". El globo degrada a un círculo azul si JS falla. Aceptable pero es una pérdida real de robustez.
+- Aumenta la superficie de bugs potenciales del sitio: cualquier error en el runtime del globo puede romper visualmente la sección del globo (aunque no la funcionalidad crítica del cotizador).
 - El componente ya no es portable a plataformas que prohíben JS inline (algunos ambientes de CMS restrictivos, algunas plataformas de email/newsletter). No es un problema hoy pero limita opciones futuras de re-uso del componente.
 - CSP: el script inline puede requerir `unsafe-inline` en `script-src`, o un nonce por request si se quiere mantener CSP estricto. Requiere decisión en headers de deployment.
 
 **Mitigaciones**:
 - CSP-friendly con nonce: si se quiere mantener CSP estricto (`script-src 'self'` sin `unsafe-inline`), Astro soporta nonce por request en modo SSR. Como estamos en `output: 'static'`, no es trivial — considerar `unsafe-inline` acotado, o usar hash del script en la CSP.
-- Testing manual en el checklist QA: "deshabilitar JS en DevTools y verificar que el hero muestra el círculo navy sin errores en consola".
-- Monitoring: si se instrumenta client-side error tracking (fuera del scope actual), priorizar errores JS del globo como bugs de hero, no como caídas del sitio.
+- Testing manual en el checklist QA: "deshabilitar JS en DevTools y verificar que el globo muestra el círculo navy sin errores en consola".
+- Monitoring: si se instrumenta client-side error tracking (fuera del scope actual), priorizar errores JS del globo como bugs de la sección del globo, no como caídas del sitio.
 
 ## Trigger de revisión
 
 Reabrir enmienda si:
 - Aparece una segunda propuesta de JS runtime en el sitio (ej. buscador con autocomplete, comparador de destinos, calculadora avanzada) → revisar §7 completo. Posible cambio de doctrina en vez de acumulación de excepciones.
 - El peso del runtime crece > 5 KB minificado → revisar si vale la pena vs. reemplazar por asset estático (SVG animado, video, PNG secuencial).
-- Telemetría muestra tasa de error JS > 0.5% en el hero → considerar reemplazar por SVG estático o video mp4/webm.
+- Telemetría muestra tasa de error JS > 0.5% en el globo → considerar reemplazar por SVG estático o video mp4/webm.
 - Aparece un requerimiento de CSP estricto sin `unsafe-inline` que sea difícil de cumplir con este enfoque → revisar approach (posible mover a asset externo con hash).
 - Cambia significativamente la naturaleza del hero → esta enmienda se re-evalúa junto con el rediseño.
 
