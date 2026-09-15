@@ -56,9 +56,10 @@ esquivar llamando a `astro build` directamente. Detalle en
 
 ```
 src/
-├── pages/            # una ruta por página — las ocho de la AI v1
+├── pages/            # una ruta por página — las nueve de la AI v1, más el blog
 │   ├── index.astro · como-funciona · empresas · confianza
 │   ├── terminos · privacidad · tarifas · canal-de-denuncias
+│   ├── blog/index.astro · blog/[slug].astro  # índice + una página por artículo
 │   └── sitemap.xml.ts · robots.txt.ts   # generados, no a mano
 ├── layouts/
 │   ├── Base.astro    # el ÚNICO <head> del sitio: SEO, tokens, escudo noindex
@@ -69,12 +70,17 @@ src/
 │   ├── Steps.astro        # bloque contenido en tinta: argumento + tarjeta + chat
 │   ├── Process.astro      # los 4 pasos en zig-zag, con un teléfono cada uno
 │   ├── WhatsAppMockup.astro # el teléfono en CSS. Dos variantes: proof y bare
+│   ├── MacbookMockup.astro  # el portátil en CSS del encabezado de /empresas
+│   ├── BusinessEmblem.astro # los cuatro widgets de los casos de uso B2B
+│   ├── hero/GloboRotativo.astro # el globo de la Home (SVG + datos en línea)
 │   ├── Header · Footer · Hero · PageHero · Trust · UseCases
 │   ├── Business · Faq · Alliances · FlowDiagram · AnnouncementBar
 │   ├── Icon · Logo · UseCaseFigure · PendingNotice
 │   └── ui/                # IconBadge, ArrowLink — sólo donde corresponden
+├── content.config.ts # esquema de la colección del blog (Content Layer)
 ├── content/          # dato tipado, separado de la presentación
-│   └── home.ts · process.ts · trust.ts · business.ts
+│   ├── home.ts · process.ts · trust.ts · business.ts
+│   └── blog/         # los artículos en markdown y sus portadas
 ├── styles/
 │   ├── fonts.css     # @font-face del set T-C, auto-hospedado
 │   └── tokens.css    # espejo del Design System V1 + gate del Motion System
@@ -210,10 +216,11 @@ implementación intercambiable. Sigue vivo y en uso en `lib/pricing` (`PriceSour
 La UI consumirá **sólo** un objeto `Quote` (`src/lib/pricing/types.ts`). No conoce la
 fuente del precio ni la fórmula del spread.
 
-El primer paso del cotizador es la **intención** (enviar al extranjero, convertir a dólares,
-convertir a pesos), no la moneda. `send_abroad` y `to_usd` hacen la misma aritmética pero producen
-mensajes de WhatsApp distintos, porque para quien pide y para el ejecutivo son operaciones
-diferentes.
+El primer paso del cotizador es la **intención** (convertir a dólares, convertir a pesos), no la
+moneda. **Eran tres hasta el 2026-09-14:** `send_abroad` hacía exactamente la misma aritmética que
+`to_usd` y sólo cambiaba el texto del mensaje de WhatsApp, así que en pantalla se leía como un
+tercer camino que no existía. Se retiró; lo que se pierde está razonado en `cotizador-spec.md` y en
+el docblock de `lib/pricing/types.ts`.
 
 Hoy existe una sola implementación de `PriceSource`: **`ConfigPriceSource`**, que
 devuelve un valor de muestra configurable por `PUBLIC_QUOTE_SAMPLE_RATE`. **No es un
@@ -293,10 +300,11 @@ Y para confirmar que la causa es una animación, basta desactivarla y volver a m
 
 ## Verificación visual con Chrome headless
 
-El MCP de Playwright **no conecta** en este entorno (`npx` fuera del `$PATH`, `CLAUDE.md` §11), así
-que durante mucho tiempo no hubo forma de comprobar un render salvo mirarlo a ojo. Sí la hay:
-**Chrome ya está instalado y su modo headless basta** para capturar pantallas y, sobre todo, para
-leer **estilos computados** — que es lo que distingue «lo veo raro» de «sé por qué».
+**El MCP de Playwright conecta desde el 2026-09-10** (`npx` está en `/usr/local/bin/npx`,
+`CLAUDE.md` §11); el dato anterior —«no conecta»— quedó obsoleto. Aun así este camino sigue vigente
+y a menudo es el más corto: **Chrome ya está instalado y su modo headless basta** para capturar
+pantallas y, sobre todo, para leer **estilos computados** — que es lo que distingue «lo veo raro»
+de «sé por qué».
 
 Descubierto el 2026-09-08 diagnosticando la franja de notificación, donde el CSS del repositorio
 era correcto y lo que estaba mal era el servidor de desarrollo. Sin medir, se habría «arreglado»
@@ -487,7 +495,10 @@ valor por defecto.
 Generados, no escritos a mano:
 
 - **`/sitemap.xml`** se deriva de `src/pages/`. Una página nueva entra sola; no puede quedar fuera
-  por olvido. Cero dependencias: el paquete oficial no aporta nada sobre ocho rutas estáticas.
+  por olvido. Cero dependencias: el paquete oficial no aporta nada sobre nueve rutas estáticas más
+  una por artículo. Hay dos ajustes que sí hicieron falta al llegar el blog: colapsar los `index`
+  anidados —si no, se publicaba `/blog/index/`— y descartar las rutas dinámicas —`/blog/[slug]/`—,
+  cuyos artículos entran desde la colección.
 - **`/robots.txt`** toma la URL del sitemap del `site` configurado.
 - **`og:image`** (`public/og-image.png`, 1200×630) se compuso con la tipografía real del proyecto
   incrustada en un SVG y se rasterizó con el motor de macOS. Importa más de lo habitual: este
@@ -511,7 +522,7 @@ cualquier servidor estático.** Lo que rompa esa afirmación necesita una enmien
 
 | Ruta | Qué es | JS |
 |---|---|---|
-| `/` | Home: héroe con cotizador, usos, los cuatro pasos, confianza, empresas, FAQ | 5,1 KB |
+| `/` | Home: héroe con cotizador, globo, usos, los cuatro pasos, confianza, empresas, FAQ | 45,6 KB |
 | `/como-funciona` | El recorrido completo con el diagrama de flujo y los tiempos | 0 |
 | `/empresas` | Carril B2B: casos de uso, diferencias, incorporación | 0 |
 | `/confianza` | El mecanismo, los requisitos y lo que no afirmamos | 0 |
@@ -519,6 +530,16 @@ cualquier servidor estático.** Lo que rompa esa afirmación necesita una enmien
 | `/canal-de-denuncias` | Cómo presentar un reclamo y qué ocurre después | 0 |
 | `/terminos` | Página de estado: lo que rige hoy, mientras el texto está en revisión | 0 |
 | `/privacidad` | Página de estado: lo verificable sobre esta web | 0 |
+| `/blog` | Índice de artículos, desde la colección tipada | 0,5 KB |
+| `/blog/<slug>` | Un artículo. Una página por entrada de la colección | 0,5 KB |
+
+**El blog se añadió el 2026-09-11** y es la novena ruta estática, más una por artículo. La
+colección vive en `src/content.config.ts` con un esquema cerrado —`title`, `description`,
+`pubDate`, `category` (sólo `DLPay` o `Mercado`) y `coverImage` opcional—: una categoría fuera de
+esa lista rompe el build. Sin paquetes nuevos, porque `sharp` ya viene como dependencia opcional
+de Astro. **Ningún artículo se publica sin pasar por Compliance** (CLAUDE.md §6): un análisis de
+mercado afirma algo sobre precios y cae de lleno en §3. El que existe hoy lleva su marcador y sólo
+sirve para verificar la infraestructura.
 
 **Textos legales.** Claude Code **no redacta documentos vinculantes** (CLAUDE.md §7).
 `/tarifas` y `/canal-de-denuncias` tienen contenido real porque describen el servicio, no
@@ -527,19 +548,29 @@ revisión y ofrecen el documento vigente por WhatsApp, en vez de publicar un tex
 
 Lo que falta y qué decisiones lo bloquean está en **`docs/legal-brief.md`**.
 
-## Estado (2026-09-08)
+## Estado (2026-09-15)
 
-- `npm run check` → **0 errores en 56 archivos** · `npm test` → **68 tests** en verde ·
-  `npm audit` → 0 vulnerabilidades · `build` verde.
-- **JS enviado al cliente: dos scripts.** Cotizador (4 672 B / 2,1 KB gzip, chunk externo, sólo en
-  la Home) y Motion System (489 B en línea + 62 B síncronos). Está en **cuatro de las ocho
-  páginas**; las **cuatro legales siguen en cero bytes**. La actividad reciente era el tercero y
-  ya no envía nada: vivía sólo en `/cotizar/`.
-- HTML de 15,4 a 39,4 KB en crudo, **4,3 a 8,3 KB gzip** · CSS 41,5 KB / 9,0 KB gzip ·
-  fuentes 96 KB · `dist/` completo **660 KB**.
-- Las ocho páginas: un solo `h1`, sin saltos de nivel, `lang="es-CL"`, cero enlaces
+- `npm run check` → **0 errores, 0 avisos y 7 sugerencias en 56 archivos** · `npm test` →
+  **59 tests en 11 suites** en verde · `npm audit` → 0 vulnerabilidades · `build` verde,
+  **10 páginas**.
+- **JS enviado al cliente: tres scripts, y el tercero es nuevo.**
+  - Cotizador: 4 528 B / 2,0 KB gzip, chunk externo, **sólo en la Home**.
+  - Motion System: 489 B en línea + 56 B síncronos, en **seis de las diez páginas**.
+  - **Globo rotativo: 40 525 B en línea, sólo en la Home.** Casi todo son coordenadas del
+    mapamundi; el runtime que las proyecta y las rota son unas pocas decenas de líneas.
+  - Las **cuatro legales siguen en cero bytes** de JavaScript ejecutable. Lo único que llevan es
+    el bloque `application/ld+json`, que no se ejecuta.
+- HTML de 18,0 a 29,2 KB en crudo (**4,9 a 6,7 KB gzip**), salvo la Home: **86,0 KB / 24,1 KB
+  gzip**, y la diferencia es el globo. CSS de 16,6 a 44,1 KB por página, repartido en cuatro
+  hojas según la ruta · fuentes 112 KB · `dist/` completo **740 KB**.
+- Las diez páginas: un solo `h1`, sin saltos de nivel, `lang="es-CL"`, cero enlaces
   muertos, todos los campos con etiqueta, enlace de salto al contenido y `aria-current`
   en la navegación.
+- **Dos reglas duras del §7 están hoy en suspenso sobre la Home y su enmienda todavía es una
+  propuesta:** «el cotizador es la única isla interactiva» y «cero JS al cliente». El globo es una
+  segunda pieza con runtime propio y con una rotación infinita, que además contradice la regla 1
+  del Motion System. Las tres enmiendas —ADR-0007, 0008 y 0009— están escritas y en estado
+  **Propuesta**: mientras no se acepten, el código va por delante de la decisión.
 - Contraste verificado por cálculo, no a ojo: `--verde` sobre papel da **2.02:1**, así
   que no se usa para texto ni para gráficos con significado; ahí va `--verde-deep`
   (4.90:1). Sobre tinta el verde da 8.45:1 y sí sirve. El token `--focus` cambia según

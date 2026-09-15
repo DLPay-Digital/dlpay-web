@@ -1,6 +1,7 @@
 # DLPay — Design System V1
 
-> **Estado:** V1 congelado en lo esencial; tipografía `PENDIENTE` (elección visual, ver §3).
+> **Estado:** V1 congelado. La tipografía se cerró el 2026-09-04 en el **set T-C** —Familjen
+> Grotesk para display y texto, Spline Sans Mono para cifras— y el detalle está en §3.
 > **Base:** ADR-0001. **Fecha:** 2026-09-03.
 > Esto **no** es implementación. Son las decisiones visuales que guiarán la construcción.
 > Regla: **los assets reales de DLPay mandan** sobre cualquier valor de aquí que se marque provisional.
@@ -332,7 +333,7 @@ Cada uno se construye sólo cuando una página real lo necesita (Principio 5, CL
 | **Callout WhatsApp** | Contacto humano | Icono chat + texto + botón. Presente en fallbacks del cotizador y en "Cómo funciona". |
 | **Franja de bifurcación** | Personas / Empresas | Dos caminos claros; el de Empresas lleva a `/empresas`. Tardía en la Home. |
 | **Banda Empresas** | Pitch B2B | Sobre `--tinta-2`. Texto + CTA a `/empresas`. |
-| **Header** | Navegación | Isotipo + "DLPay" · nav corta (`Cotizar · Cómo funciona · Empresas · Confianza`) · `WhatsApp` + `Crear cuenta` (secundario). Móvil: isotipo + WhatsApp + menú. |
+| **Header** | Navegación | Isotipo + "DLPay" · nav corta (`Personas · Empresas · Información ▾`, donde el desplegable agrupa `Cómo funciona`, `Confianza` y `Blog`) · `WhatsApp` + `Crear cuenta` (secundario). Móvil: isotipo + WhatsApp + menú, con «Información» como rótulo estático y sus enlaces indentados. **Actualizado el 2026-09-11:** `/cotizar` se eliminó el 2026-09-09 y el desplegable sustituyó a la lista plana. |
 | **Footer** | Cierre + legal | Producto · Contacto · **Legal** (Términos, Privacidad, Tarifas, Canal de denuncias) · `DLPZ INCZ SpA · opera bajo la marca DLPay`. |
 | **FAQ item** | Objeciones | Acordeón; sólo objeciones reales pre-primera-operación. |
 | **Diagrama de flujo** | Explicar la operación | Sistema geométrico §6. |

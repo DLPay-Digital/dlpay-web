@@ -304,9 +304,10 @@ ficticias es código que se descarga en el navegador de cada visitante.
 
 ### B3 · El JS no está «sólo en las dos páginas con cotizador»
 
-> ⚠️ *Cifras de su fecha. Tras eliminar `/cotizar` (2026-09-09) el sitio tiene ocho rutas y dos
-> scripts: la Home con 5,1 KB, tres páginas con 0,5 KB y las cuatro legales en cero. Inventario
-> vigente en `arquitectura-produccion.md` §1.1.*
+> ⚠️ *Cifras de su fecha. Al 2026-09-15 el sitio tiene **nueve rutas estáticas más una por
+> artículo** y **tres scripts**: la Home con 45,6 KB —40,5 de los cuales son el globo del héroe—,
+> cinco páginas con 0,5 KB y las cuatro legales en cero. Inventario vigente en
+> `arquitectura-produccion.md` §1.1.*
 
 Está en **cinco de nueve**, porque el Motion System viaja a toda página que lo importe. Inventario
 verificado sobre el build:

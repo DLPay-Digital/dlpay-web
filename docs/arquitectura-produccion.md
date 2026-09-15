@@ -4,7 +4,9 @@
 > Creado 2026-09-04 · actualizado 2026-09-08 con la guarda de despliegue y el escudo de
 > indexación · **actualizado 2026-09-09**: se eliminó la ruta `/cotizar` y con ella el tercer
 > script del cliente, y se descartó la actividad reciente por completo (D18). El sitio pasa a
-> **ocho rutas** y **dos scripts** (§1.1, §2.2).
+> **ocho rutas** y **dos scripts** (§1.1, §2.2). **Actualizado 2026-09-15**: con `/blog` (2026-09-11)
+> y el globo del héroe (2026-09-15) el sitio pasa a **nueve rutas estáticas más una por artículo**
+> y **tres scripts**. Inventario rehecho en §1.1.
 > Todo lo afirmado aquí está verificado contra el código y la salida del build, no descrito de
 > memoria.
 
@@ -18,8 +20,8 @@ Reverificado el 2026-09-08 — cero `fetch`, `XMLHttpRequest`, `WebSocket`, `Eve
 
 | Momento | Qué ocurre |
 |---|---|
-| **Build** | Se valida la configuración de despliegue (URL canónica y política de indexación), se resuelve el precio (`ConfigPriceSource`), se lee la configuración, se compone el HTML de las ocho páginas, se genera el sitemap y el robots. Todo queda escrito en `dist/`. |
-| **Cliente** | Entre **0 y 5,1 KB** de JavaScript según la página (tabla abajo). Dos scripts. |
+| **Build** | Se valida la configuración de despliegue (URL canónica y política de indexación), se resuelve el precio (`ConfigPriceSource`), se lee la configuración, se compone el HTML de las **diez** páginas —nueve rutas fijas más una por artículo del blog—, se genera el sitemap y el robots. Todo queda escrito en `dist/`. |
+| **Cliente** | Entre **0 y 45,6 KB** de JavaScript según la página (tabla abajo). Tres scripts, y el peso está concentrado en la Home. |
 | **Fuera del sistema** | La conversación por WhatsApp, la verificación bancaria y la ejecución de la operación. Nada de eso pasa por la web. |
 
 ### 1.1 El JavaScript que se envía — inventario exacto
@@ -27,28 +29,46 @@ Reverificado el 2026-09-08 — cero `fetch`, `XMLHttpRequest`, `WebSocket`, `Eve
 Corrige una afirmación anterior de este documento («6 KB en las dos páginas con cotizador… más el
 reloj del feed»). Ni eran dos páginas ni es un reloj.
 
-| Página | `is:inline` | Motion | Quoter | Total |
-|---|---|---|---|---|
-| `/` | 62 B | 489 B | 4 672 B | **5,1 KB** |
-| `/como-funciona/`, `/confianza/`, `/empresas/` | 62 B | 489 B | — | **0,5 KB** |
-| `/terminos/`, `/privacidad/`, `/tarifas/`, `/canal-de-denuncias/` | — | — | — | **0 B** |
+> **Rehecho sobre el build del 2026-09-15.** La tabla anterior —dos scripts, ocho rutas— quedó
+> obsoleta con `/blog` y, sobre todo, con el globo del héroe.
 
-**Eran tres scripts hasta el 2026-09-09; hoy son dos.** El tercero era la actividad reciente
+| Página | `is:inline` | Motion | Quoter | Globo | Total |
+|---|---|---|---|---|---|
+| `/` | 56 B | 489 B | 4 528 B | 40 525 B | **45,6 KB** |
+| `/como-funciona/`, `/confianza/`, `/empresas/`, `/blog/`, `/blog/<slug>/` | 56 B | 489 B | — | — | **0,5 KB** |
+| `/terminos/`, `/privacidad/`, `/tarifas/`, `/canal-de-denuncias/` | — | — | — | — | **0 B** |
+
+Las cuatro legales siguen en **cero bytes ejecutables**: lo único que llevan es el bloque
+`application/ld+json`, que es dato y no se ejecuta.
+
+**El tercer script es el globo, y conviene mirarlo de frente.** De sus 40 525 B, casi todo son las
+coordenadas del mapamundi incrustadas en línea; el código que las proyecta y las rota son unas
+pocas decenas de líneas de JavaScript sin dependencias. Aun así son dos reglas duras de
+`CLAUDE.md` §7 en suspenso —«el cotizador es la única isla interactiva» y «cero JS al cliente»— más
+la regla 1 del Motion System, porque la rotación es infinita. Las tres enmiendas están escritas
+(ADR-0007, 0008 y 0009) y siguen en estado **Propuesta**: hasta que se acepten, el código va por
+delante de la decisión.
+
+**Eran tres scripts hasta el 2026-09-09, dos hasta el 2026-09-15, y hoy vuelven a ser tres.** El tercero era la actividad reciente
 (2 336 B), y vivía **sólo** en `/cotizar/`. Al eliminarse esa ruta —duplicaba el cotizador del
 héroe de la Home— el componente quedó sin consumidores y su generador de operaciones ficticias
 **ya no llega a ningún navegador**. Es la mejor resolución posible del punto 3 de más abajo: no se
 mitigó, desapareció.
 
-Los dos scripts y qué hace cada uno:
+Los tres scripts y qué hace cada uno:
 
-1. **Cotizador** (`Quoter.astro`, chunk externo de 4 672 B / 2,1 KB gzip) — la única isla
-   interactiva. Interpreta lo que el usuario escribe, convierte con la **misma** función que arma
+1. **Cotizador** (`Quoter.astro`, chunk externo de 4 528 B / 2,0 KB gzip) — la isla interactiva
+   original. Interpreta lo que el usuario escribe, convierte con la **misma** función que arma
    el mensaje, y compone un enlace `wa.me`. Nada sale del navegador.
 2. **Motion System V1** (`Motion.astro`, 489 B en línea + 62 B síncronos en el `<head>`) — un
    `IntersectionObserver` que añade `is-in` una vez por elemento y deja de observarlo. Los 62 B
    ponen `.js-motion` antes de pintar; el estado oculto de `[data-enter]` existe **sólo** bajo esa
    clase (`tokens.css:139`), así que si el script no corre la página se ve completa e inmóvil.
    Se incluye únicamente en las páginas con movimiento de entrada: las cuatro legales no lo llevan.
+4. **Globo rotativo** (`hero/GloboRotativo.astro`, 40 525 B en línea, **sólo en la Home**) —
+   proyecta el mapamundi sobre una esfera y avanza la longitud 6°/s con `requestAnimationFrame`.
+   Sin imports, sin `fetch` y sin red: los datos viajan en el propio script. Con
+   `prefers-reduced-motion: reduce` no rota — dibuja una sola vez y se detiene.
 3. ~~**Actividad reciente**~~ — *eliminada del proyecto el 2026-09-09.* Vivía sólo en `/cotizar` y
    arrastraba `mock-activity-source.ts` completo al navegador. Al eliminarse esa ruta quedó sin
    página, y al revisarla se descartó la funcionalidad entera: nunca salió de la investigación y

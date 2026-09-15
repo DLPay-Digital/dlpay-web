@@ -52,8 +52,8 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   | 1 | Exploración visual & UX (benchmark, patrones) | ✅ cerrada |
   | 2 | Direcciones visuales + mockups + prototipo del cotizador | ✅ cerrada |
   | 2.5 | Definición de la experiencia DLPay | ✅ cerrada |
-  | **3** | **Arquitectura: ADRs + esqueleto del proyecto** | 🔵 **en curso** |
-  | 4 | Construcción del sitio público (en staging) | pendiente |
+  | 3 | Arquitectura: ADRs + esqueleto del proyecto | ✅ cerrada |
+  | **4** | **Construcción del sitio público (en staging)** | 🔵 **en curso** |
   | 5 | Contenido, SEO, compliance y QA | pendiente |
   | 6 | Cutover controlado a producción | pendiente |
 
