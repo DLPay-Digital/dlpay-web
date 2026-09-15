@@ -49,7 +49,7 @@ No se reescriben aquí. Esta tabla existe para que se sepa contra qué se revisa
 |---|---|
 | `CLAUDE.md` | Principios, límites de fase, marcadores, Definition of Done |
 | `docs/design-system/design-system-v1.md` | Tokens, escala, composición, accesibilidad |
-| `docs/design-system/motion-system-v1.md` | Los seis movimientos y sus dos excepciones |
+| `docs/design-system/motion-system-v1.md` | Los seis movimientos y sus **tres** excepciones |
 | `docs/design-system/cotizador-spec.md` | El elemento central de la web |
 | `docs/decisions/` | Las decisiones formales. Las propuestas (0007–0009) aún no son ley |
 | `src/styles/tokens.css` | El vocabulario real. Ningún valor literal en una entrega |

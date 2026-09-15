@@ -73,6 +73,6 @@ Los siete tokens SOLO pueden usarse **dentro** del archivo `src/components/hero/
 
 Reabrir ADR si:
 - Se decide usar la paleta cartográfica fuera del globo (ej. en otro componente visual).
-- Se agrega otro elemento visual complejo al hero que también requiera paleta propia — considerar consolidar en un ADR-0003 unificado.
+- Se agrega otro elemento visual complejo que también requiera paleta propia — considerar consolidar las excepciones en un ADR nuevo que supere a éste. (Decía «ADR-0003», que es *Repositorio y convenciones*: referencia corregida el 2026-09-15.)
 - Cambia ADR-0001 (paleta base). Si cambia el verde base, revisar si `map-highlight` sigue teniendo relación de familia.
 - Aparecen problemas de accesibilidad de contraste WCAG en el globo (ninguno detectado en revisión inicial — todos los pares de colores usados dentro del globo cumplen AA para elementos no-textuales).

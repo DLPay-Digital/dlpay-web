@@ -24,16 +24,23 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   movimiento, infinito, y contradice la regla dura 1 («una sola vez») a petición explícita del
   equipo. Acotada a esa pieza, sin sigla propia y sin abrir la puerta a más movimiento. Enmienda
   registrada en `motion-system-v1.md` §0 y razonada en ADR-0006.
-  **Una segunda, del 2026-09-15:** la rotación continua del globo. Ver ADR-0008.
+  **Una segunda, del 2026-09-15:** el globo, con **dos** movimientos infinitos —la rotación de la
+  esfera y el pulso del marcador de Chile—. Ver ADR-0008. Con eso son tres en todo el sitio, y la
+  regla dura 1 («una sola vez») sigue valiendo para todo lo demás.
 - **Auditoría previa a producción hecha, en dos revisiones (2026-09-04 y 2026-09-08).** La segunda
   cerró dos fallos críticos que no se veían en localhost: la guarda de `PUBLIC_SITE_URL` se
   esquivaba con `astro build` directo y sólo comprobaba presencia —`.env.example` traía
   `localhost`—, y no existía forma de evitar que Staging fuera indexado. Ver
   `docs/auditoria-preproduccion.md`.
-- **El proyecto técnico está terminado. No queda ingeniería para publicar.** La salida a producción
-  depende **exclusivamente** de Compliance: D9 (razón social), D19 (correo oficial) y D20 (alcance
-  de los T&C). Todo lo demás es configuración del host. Ver *Bloqueantes de producción* en
-  `docs/auditoria-preproduccion.md`.
+- **El proyecto técnico está terminado. No queda ingeniería para publicar.** Lo que falta es de
+  Compliance. Tres decisiones **bloquean** los textos legales: D9 (razón social), D19 (correo
+  oficial) y D20 (alcance de los T&C). Pero no son lo único que necesita firma: hay además
+  **claims ya publicados** con marcador `REQUIERE VALIDACIÓN DE COMPLIANCE` —el banco por nombre,
+  el tiempo de ~5 minutos, los 10 días hábiles, «Precio garantizado», «la mesa de dinero» y «el
+  mejor precio»— que nadie ha aprobado. Decía «exclusivamente» y era inexacto: corregido el
+  2026-09-15 a raíz de una auditoría externa. La lista completa está en *Bloqueantes de producción*
+  y en *Claims publicados pendientes de firma*, en `docs/auditoria-preproduccion.md`. Todo lo demás
+  es configuración del host.
 - **Dos variables gobiernan el despliegue y el build las valida** (`dlpay:deploy-guard` en
   `astro.config.mjs`): `PUBLIC_SITE_URL` es obligatoria y debe ser publicable —rechaza hosts
   locales, lo que no sea `https` y rutas fuera de la raíz—, y `PUBLIC_ALLOW_INDEXING` va **cerrada
@@ -41,8 +48,13 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   en local necesita la URL en la misma línea:
   `PUBLIC_SITE_URL=https://dlpay.cl npm run build`.
 - **Esqueleto creado y verificado.** Astro 7 + TypeScript strict, `npm run check` y
-  `npm run build` en verde, **0 JS enviado al cliente**, fuentes T-C auto-hospedadas, tokens del
-  Design System en código, y la cadena `PriceSource → Quote` en pie. Ver `docs/development.md`.
+  `npm run build` en verde, fuentes T-C auto-hospedadas, tokens del Design System en código, y la
+  cadena `PriceSource → Quote` en pie. Ver `docs/development.md`.
+  **Sobre el JavaScript, que ya no es cero:** el esqueleto se levantó sin una sola línea en el
+  cliente y así siguen las cuatro legales y la 404. Hoy la Home envía **45,6 KB**: el cotizador
+  (4,5 KB), el Motion System (0,5 KB) y el globo (40,5 KB, casi todo coordenadas). Las dos
+  excepciones están autorizadas y acotadas —ADR-0009 y ADR-0008—; el inventario exacto, por página,
+  está en `docs/arquitectura-produccion.md` §1.1.
 - **Fase 3 cerrada.** Lo siguiente es **Fase 4: construir el sitio público**, empezando por la
   Home con el cotizador (`phase-2.5-definicion-experiencia.md` §2).
 - **Numeración de fases (única y definitiva — la del repositorio):**
@@ -322,7 +334,9 @@ operaciones, no bloquea precios, no promete cotizaciones cerradas.
 
 **Stack (cerrado en Fase 3):** **Astro + TypeScript** (ADR-0002) · **CSS nativo con custom
 properties**, sin Tailwind ni framework de UI (ADR-0004) · salida **estática** · **cero
-dependencias** más allá de Astro. El cotizador es la **única** isla interactiva. Contenido: copy
+dependencias** más allá de Astro. El cotizador es la isla interactiva del producto, y la **única**
+salvo la excepción que ADR-0009 autoriza y acota: el globo de la Home, que tiene runtime propio y
+no participa de ninguna operación. Contenido: copy
 en la página, datos estructurados en colecciones tipadas sólo cuando una página los necesite.
 Despliegue portable con proveedor diferido (ADR-0005).
 
@@ -382,7 +396,7 @@ funcionamiento · revisión manual.
 
 ## 10. Git, GitHub y documentación
 
-- **Repositorio inicializado y sólo local.** 48 commits, sin remoto. Todo el historial está
+- **Repositorio inicializado y sólo local.** 78 commits al 2026-09-15, sin remoto. Todo el historial está
   firmado por `Sebastián Villanueva Pereira <sebastian@dlpay.cl>`, fijado en `.git/config` de
   este repo (no en la configuración global). La identidad quedó saneada el 2026-09-11: hasta
   entonces los commits iban a nombre de un usuario y un hostname locales.

@@ -84,7 +84,7 @@ src/
 ├── styles/
 │   ├── fonts.css     # @font-face del set T-C, auto-hospedado
 │   └── tokens.css    # espejo del Design System V1 + gate del Motion System
-│                     # (tres tokens sin uso hoy y a propósito — ver «Tokens reservados»)
+│                     # (cuatro tokens sin uso hoy y a propósito — ver «Tokens reservados»)
 └── lib/
     ├── config/
     │   ├── environment.ts   # resolución y validación del entorno — PURO
@@ -139,6 +139,7 @@ tres se conservan porque expresan una intención del sistema, no porque se haya 
 | `--sube` | Par semántico de `--baja` (que sí se usa): el color de «precio que sube». Lo consumirá el estado `market_moving` del cotizador, hoy inalcanzable sin fuente de precio real (D7). Borrarlo obliga a reinventarlo cuando llegue. |
 | `--f-display` | Alias de `--f-text`, porque T-C usa una sola familia. Es la **costura** del Design System §3: el día que display y texto se separen tipográficamente, es el único punto de cambio. |
 | `--r-0` | El cero de la escala de radios. Nadie lo invoca porque se escribe `0`, pero la escala se lee completa (0 · 3 · 6 · 10 · 14 · 20). |
+| `--aviso` | El ámbar de aviso **sobre tinta**. Sobre superficie clara no alcanza el contraste, y por eso existe `--aviso-deep`, que es el que se usa hoy. Se conserva para el día que haya un aviso sobre una banda oscura; borrarlo obliga a recalcular el par. *Añadido a esta tabla el 2026-09-15: llevaba tiempo sin uso y sin justificación escrita, y una auditoría externa lo marcó.* |
 
 Coste de conservarlos: tres líneas. Si una auditoría futura los vuelve a marcar, la respuesta está
 aquí.
@@ -489,6 +490,46 @@ gestos táctiles, ni lectores de pantalla, ni el comportamiento de fuentes bajo 
 `prefers-reduced-motion` en headless conviene comprobarlo explícitamente con
 `matchMedia('(prefers-reduced-motion: reduce)').matches` dentro de la sonda, en vez de suponer el
 valor por defecto.
+
+## `scripts/` y `Blogs/` — dos carpetas que no entran al build
+
+Ninguna de las dos la toca Astro. Se documentan acá porque hasta el 2026-09-15 no estaban en
+ningún documento y una auditoría externa las marcó, con razón: quien las encuentre no tiene forma
+de saber qué son.
+
+### `scripts/build-worldmap.py` — la cadena de herramientas del globo
+
+Genera el bloque de coordenadas que `hero/GloboRotativo.astro` lleva incrustado. **No corre en el
+build ni en CI**: se ejecuta a mano, muy de vez en cuando, y su salida se pega en el componente.
+
+Lo que exige para funcionar —y este es el punto que hay que tener presente— **no es una dependencia
+del proyecto pero sí una barrera real**: Python, `shapely`, `ogr2ogr` (GDAL) y una descarga de
+Natural Earth. Nada de eso está en `package.json`, nada llega al navegador y nada rompe si falta;
+§8 no se activa porque no se instala ningún paquete. Pero **regenerar el mapa hoy requiere montar
+ese entorno**, y ese conocimiento vivía sólo dentro del propio script.
+
+Si el mapa no necesita cambiar, no hace falta nada. Si llega a necesitarlo y montar la cadena
+resulta caro, la alternativa honesta es tratar las coordenadas actuales como un asset y no como
+algo regenerable.
+
+> El encabezado del script cita «ADR-0002» como referencia, que es *Framework, lenguaje y
+> arquitectura de contenido* y no dice nada de esto. Las decisiones que sí lo cubren son
+> **ADR-0007** (paleta cartográfica) y **ADR-0009** (runtime del globo).
+
+### `Blogs/` — borradores fuera de la colección
+
+Una sola entrada hoy: el borrador del análisis de la Fed, versionado el 2026-09-14 **sólo para
+respaldarlo**, con marcadores `PENDIENTE` sin resolver.
+
+Está **fuera** de `src/content/blog/` a propósito: ahí dentro el esquema lo validaría y, desde el
+candado de publicación (`lib/blog.ts`), necesitaría además `estado: publicado` para salir. Mientras
+siga en `Blogs/` no existe para Astro en absoluto.
+
+Dos cosas que conviene resolver cuando toque, y que no resuelve este documento: el nombre en plural
+y con mayúscula choca con `src/content/blog/`, y el propósito se solapa con `cowork/`, que es el
+banco de trabajo del otro agente. Hoy son dos sitios distintos donde dejar material sin publicar.
+
+---
 
 ## SEO y metadatos
 

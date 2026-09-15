@@ -4,7 +4,7 @@
  * El menú móvil usa <details>: sin JavaScript (ADR-0004 §6).
  *
  * La franja de notificación va aquí, dentro del `<header>`, y no en cada
- * página: las ocho la reciben sin tocar ni una. Para cambiar el copy se editan
+ * página: las nueve la reciben sin tocar ni una. Para cambiar el copy se editan
  * las props de esta única etiqueta (ver `AnnouncementBar.astro`).
  */
 import Logo from './Logo.astro';
@@ -71,7 +71,7 @@ const normalize = (path: string): string => path.replace(/\/+$/, '') || '/';
 const current = normalize(Astro.url.pathname);
 const isCurrent = (href: string): boolean => normalize(href) === current;
 /* Si la página actual vive dentro del desplegable, el disparador se marca:
-   si no, la cabecera dejaría de señalar dónde estás en dos de las ocho rutas. */
+   si no, la cabecera dejaría de señalar dónde estás en dos de las nueve rutas. */
 const infoIsCurrent = navInfo.some((item) => isCurrent(item.href));
 ---
 <header class="site-header on-tinta-surface">

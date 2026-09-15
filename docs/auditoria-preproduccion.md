@@ -437,11 +437,31 @@ que un buscador publique bajo la marca DLPay un texto que Compliance no ha firma
 
 ### Decisiones abiertas que no bloquean
 
-D5 (transparencia del spread → tabla de `/tarifas`), D6 (monto mínimo real), D21 (monto máximo — el
-estado está cableado y probado, inactivo sin el valor), D7 (fuente oficial de precio), D18 (fuente
-real de actividad — ver B2), D22 (mensaje prellenado en tres enlaces), D23 (canal de respaldo si
-WhatsApp no abre), D24 (consolidar el monto mínimo en `lib/config`), D10 (testimonios y cifras),
-D11 (equipo en `/confianza`).
+> **El registro vivo es `CLAUDE.md` §13, y manda.** Esta sección duplicaba la lista y quedó
+> desfasada: daba D18 y D24 por abiertas cuando las dos se cerraron el 2026-09-09, y decía que D22
+> eran «tres enlaces» cuando son **cinco** (`grep -rn "whatsappUrl()" src/` → pie, `/tarifas`,
+> `/como-funciona`, `/confianza` y el botón de `/empresas`). Corregido el 2026-09-15 remitiendo en
+> vez de repetir: una tabla de estado en dos sitios se desincroniza siempre.
+
+### Claims publicados pendientes de firma
+
+**Añadido el 2026-09-15 a raíz de una auditoría externa.** Son claims que **ya están en el sitio**
+y llevan su marcador `REQUIERE VALIDACIÓN DE COMPLIANCE` en el código, pero no figuraban en ninguna
+lista de bloqueantes. No son trabajo de ingeniería: necesitan que DLPay los apruebe o los cambie.
+
+| Claim publicado | Dónde | Marcador |
+|---|---|---|
+| «cuenta de DLPay en BCI» — un banco por su nombre | Home y `/confianza` | `home.ts`, `trust.ts` |
+| «~5 min desde el pago» | `/como-funciona` | `process.ts` |
+| «10 días hábiles» de respuesta | `/canal-de-denuncias` | `canal-de-denuncias.astro` |
+| «Precio garantizado» | Home | `Process.astro` |
+| «la mesa de dinero» | Home | `Process.astro` |
+| «el mejor precio» — claim comparativo, en un H1 | `/empresas` | `empresas.astro` |
+
+Los dos de `Process.astro` tienen además un problema propio, señalado aparte: conviven en la misma
+Home con cinco lugares que dicen «precio referencial, nunca cerrado», y el código ya propone la
+alternativa exacta («2. Un ejecutivo confirma tu precio»). La decisión debería tomarse **viendo las
+dos frases juntas**.
 
 ### Nota sobre el `Disallow: /` de Staging
 

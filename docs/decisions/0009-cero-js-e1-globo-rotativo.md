@@ -43,7 +43,14 @@ Se permite:
 
 2. **Inline en el componente**. El JS vive dentro del archivo `.astro`, no en archivo `.js` separado. Motivo: preserva "un componente = una unidad autocontenida" y evita network requests adicionales. Usar `is:inline` de Astro para asegurar que el script no se procesa por Vite/Rollup y no se convierte en módulo.
 
-3. **Peso máximo runtime**: 5 KB minificado. Data inline es separada (ver ADR-0007 y §7-data-budget). Si el runtime crece más allá de 5 KB, revisar esta enmienda antes de mergear.
+3. **Peso máximo runtime**: 5 KB minificado. Data inline es separada. Si el runtime crece más allá de 5 KB, revisar esta enmienda antes de mergear.
+
+   > **Nota del 2026-09-15.** Este guardarraíl delegaba en un «§7-data-budget» que no existe en
+   > ningún documento del repositorio: referencia retirada. Y hoy no se puede comprobar como está
+   > escrito, porque `is:inline` se salta Vite y el script va **sin minificar**. Medido sobre el
+   > build: **42.132 B** en total, de los cuales ~33 KB son coordenadas (LAND, BORDERS y CHILE) y
+   > el resto es runtime en claro. Para que el límite sea verificable hace falta minificar el
+   > runtime o fijar el tope en bytes sin minificar. Queda anotado, no resuelto.
 
 4. **Renderizado bloqueado a UN elemento visible**. El script solo escribe atributos SVG del `<svg>` dentro del componente. **No** modifica el DOM fuera de su scope. **No** lee ni escribe `localStorage` ni `sessionStorage`. **No** hace `fetch` ni `XMLHttpRequest`. **No** toca `document.cookie`. **No** registra event listeners globales (window/document). **No** modifica meta tags, título, ni URL.
 

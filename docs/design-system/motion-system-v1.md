@@ -57,6 +57,23 @@ CSS sólo sirve en una línea monoespaciada, y los dos titulares usan Familjen G
 es justamente el titular. La entrada por palabra da la misma lectura sin ninguno de esos cuatro
 costes.
 
+### Enmienda externa — 2026-09-15
+
+La segunda excepción a la regla dura 1, **razonada y aceptada en ADR-0008** (`motion-v1-e2`). Se
+registra acá porque ese ADR dice apoyarse en este documento y hasta hoy no figuraba: el documento
+que enumera los movimientos permitidos no conocía dos movimientos infinitos que ya corrían.
+
+| Regla de este documento | Estado |
+|---|---|
+| §4, regla dura 1 — **"una sola vez"** | **Enmendado, y sólo para `src/components/hero/GloboRotativo.astro`.** Dos movimientos infinitos: la **rotación** de la esfera (6°/s, una vuelta cada 60 s) y el **pulso** del marcador de Chile (`chilePing`, ciclo de 3,4 s). Con la franja de notificación son **tres** en todo el sitio; fuera de esas dos piezas la regla sigue intacta |
+| §2c — techo de **280 ms** | **No aplica.** Un movimiento continuo no tiene duración que acotar. Lo que sí se acota es la velocidad, y ADR-0008 la fija en 6°/s: lenta a propósito, para no competir con el cotizador |
+| §4, regla dura 5 — sin JavaScript todo se ve | **Enmendado.** El globo necesita runtime para existir; sin JS degrada a un círculo con halo. Es la excepción que autoriza **ADR-0009**, la única a «cero JS al cliente» |
+| `prefers-reduced-motion` | **Intacto.** Con la preferencia puesta el globo se dibuja una vez y no rota, y el pulso se apaga por CSS |
+
+**Guardarraíl añadido el 2026-09-15**, que ADR-0008 no contemplaba: la rotación **se detiene cuando
+el globo sale del viewport** (`IntersectionObserver`). Antes recalculaba ~1.500 vértices sesenta
+veces por segundo durante toda la navegación de la Home, con el globo fuera de pantalla.
+
 ---
 
 ## 1. Estado actual, verificado
