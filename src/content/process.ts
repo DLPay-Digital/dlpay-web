@@ -32,7 +32,7 @@ export const detailedSteps: DetailedStep[] = [
     n: 1,
     who: 'tú',
     title: 'Dices qué necesitas',
-    body: 'Enviar al extranjero, pasar pesos a dólares o volver a pesos. Escribes el monto y ves al instante el precio referencial y cuánto recibes. No necesitas cuenta para esto.',
+    body: 'Pasar pesos a dólares o volver a pesos. Escribes el monto y ves al instante el precio referencial y cuánto recibes. No necesitas cuenta para esto.',
     time: 'ahora mismo',
   },
   {
