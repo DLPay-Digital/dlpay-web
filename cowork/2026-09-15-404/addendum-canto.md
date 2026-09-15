@@ -30,7 +30,11 @@ La causa es mecánica: `overflow: hidden` de la banda recorta el `clip-path` de 
 otras tres páginas con `PageHero` eso no se nota porque la banda termina contra papel y el canto se
 declara solo. Aquí no hay cambio de superficie que lo declare.
 
-## 3. Propuesta
+## 3. Propuesta  ·  ⚠️ SUPERADA — la regla de abajo estaba mal. Ver §5.
+
+> Se conserva tal cual porque el error es parte del registro: el diagnóstico era correcto y
+> la regla no. Lo que se integró es lo de §5.
+
 
 Un filete de 1 px al final del contenido, **en `404.astro`**, no en `PageHero`:
 
@@ -73,3 +77,42 @@ Verificado en el build: `main` y `.page-hero` tienen exactamente los mismos lím
 la banda. Es inherente a colgar el pie completo de una página corta, y la alternativa sería rellenar
 la 404 con contenido —justo lo que descarté en la ficha §3. El mensaje se lleva la primera pantalla
 completa en los dos anchos, que es lo que tiene que pasar. Lo dejo medido, no corregido.
+
+---
+
+## 5. Corrección — 2026-09-15, tras la revisión de Claude Code
+
+**La regla de §3 estaba mal y el error es mío.** `main` es transparente por omisión; detrás está el
+`body`, que es `--papel`. El borde se pinta en el canto de `main`, **fuera** de la caja de fondo de
+la banda, así que el alfa 0.10 componía contra papel y no contra tinta.
+
+Medido en el build, muestreando el píxel de la fila del borde a 1280 px:
+
+| Regla | Píxel del filete | Contraste contra `--tinta` | Lectura |
+|---|---|---|---|
+| `main { border-bottom }` — lo que propuse | `rgb(245,245,240)` | **17,03:1** | Un filete crema de lado a lado. Lo contrario de un separador |
+| `main { background: var(--tinta); border-bottom }` — lo integrado | `rgb(33,42,52)` | **1,29:1** | Separador decorativo, que es lo que se buscaba |
+| `.page-hero { border-bottom }` — la variante que sí fotografié | `rgb(33,42,52)` | **1,29:1** | Idéntica a la correcta |
+
+Las cifras coinciden con las que midió Claude Code dentro del redondeo.
+
+**Cómo se coló.** La evidencia de `canto-con.png` se hizo aplicando el borde a `.page-hero`, que
+**sí** tiene fondo propio — y el fondo de un elemento pinta también bajo su borde. Al mover la regla
+a `main` por la razón de ámbito de §3, el píxel cambió y la evidencia dejó de corresponder a la
+propuesta. Peor: llegué a generar la captura de la variante sobre `main` —`canto-en-main.png`,
+donde el filete crema se ve a simple vista— y **no la abrí**.
+
+> `canto-en-main.png` no venía en la entrega pese a estar citado acá. Lo repuso Claude Code al
+> versionar el addendum, recortado de su propia captura del build durante la revisión y con el
+> mismo encuadre que `canto-sin.png` y `canto-con.png`: la fila del filete mide `rgb(245,245,241)`.
+> Se deja porque es la evidencia de lo que salió mal, y un documento del registro no debería citar
+> un archivo que no está.
+
+**Tres reglas que salen de acá**, ya incorporadas a `cowork/README.md` §4:
+
+1. Todo color con alfa declara contra qué compone, y su evidencia sale del **build real**. Una
+   vista autónoma no puede reproducir el fondo que hay detrás de una caja transparente, que es
+   exactamente de lo que depende un alfa.
+2. Si una regla se mueve de un elemento a otro, la evidencia se **rehace**. El píxel cambia aunque
+   la regla parezca la misma.
+3. Ninguna captura se genera sin mirarla. Una captura sin abrir no es una verificación.

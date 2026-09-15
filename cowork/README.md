@@ -82,6 +82,19 @@ La **ficha** declara siempre, en este orden:
 7. Qué queda `PENDIENTE DE DECISIÓN` o `REQUIERE VALIDACIÓN DE COMPLIANCE`.
 8. Código candidato, en bloque, listo para que Claude Code lo traslade.
 
+### Reglas de evidencia
+
+Salieron de un error real: una propuesta con un alfa se fotografió sobre un elemento y se
+recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:1
+(`2026-09-15-404/addendum-canto.md` §5).
+
+1. **Todo color con alfa declara contra qué compone**, y su evidencia sale del **build real**, no
+   de la vista. Una vista autónoma no puede reproducir lo que hay detrás de una caja transparente
+   —el `body`, el pie, la cabecera—, y la composición de un alfa depende exactamente de eso.
+2. **Si una regla se mueve de un elemento a otro, la evidencia se rehace.** El píxel cambia aunque
+   la regla se vea igual: el fondo de un elemento pinta bajo su propio borde, y el de su padre no.
+3. **Ninguna captura se genera sin mirarla.** Una captura sin abrir no es una verificación.
+
 ---
 
 ## 5. Protocolo con el agente de Claude Code
