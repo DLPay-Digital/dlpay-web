@@ -11,6 +11,7 @@ evaluadas, decisión y consecuencias**. La documentación explica el *porqué*, 
 | [0004](0004-estilos-y-tokens.md) | Estilos y tokens — CSS nativo con custom properties, sin Tailwind | Aceptada | 3 |
 | [0005](0005-despliegue-y-portabilidad.md) | Despliegue — portabilidad primero, proveedor diferido | Aceptada | 3 |
 | [0006](0006-franja-de-notificacion.md) | Franja de notificación — estática, sin botón de cerrar | Aceptada | 4 |
+| [0007](0007-paleta-cartografica.md) | Paleta cartográfica acotada al hero visual — coexiste con ADR-0001 | Propuesta | 4 |
 
 **Convención:** numeración correlativa, un archivo por decisión, nunca se reescribe una decisión
 aceptada — se **enmienda** dejando visible lo anterior, o se supera con un ADR nuevo que la cite.
