@@ -281,14 +281,49 @@
   if(reduced){
     update();
   }else{
-    let last=0;
+    // Se dibuja una vez para que el globo esté completo antes de entrar en
+    // pantalla: si arrancara vacío, la primera vuelta se vería aparecer.
+    update();
+
+    /*
+      Guardarraíl de visibilidad. Sin esto el bucle proyecta ~1.500 vértices,
+      interpola los cruces del terminador y reescribe ~13 KB de atributos `d`
+      SESENTA VECES POR SEGUNDO durante TODA la navegación de la Home, incluso
+      con el globo a miles de píxeles del viewport. Medido antes del arreglo:
+      con el globo en top=-5519 los `path` seguían cambiando.
+
+      El patrón —IntersectionObserver— es el que ya usa el sitio en
+      `Motion.astro` y en la barra fija del cotizador. Dos notas:
+
+      · `last=0` al pausar. El delta se mide contra el último fotograma, así que
+        sin reiniciarlo la primera vuelta tras volver al viewport aplicaría de
+        golpe todo el tiempo que el globo estuvo fuera y daría un salto.
+      · Sin `IntersectionObserver` —navegador antiguo— se rota siempre, que es
+        exactamente el comportamiento anterior. Degradar es perder la
+        optimización, nunca el globo.
+    */
+    let last=0, corriendo=false, visible=true;
     function tick(t){
+      if(!visible){corriendo=false;last=0;return;}
       if(last>0){const dt=(t-last)/1000;lon0+=6*dt;if(lon0>180)lon0-=360;}
       last=t;
       update();
       requestAnimationFrame(tick);
     }
-    requestAnimationFrame(tick);
+    function arranca(){
+      if(corriendo||!visible)return;
+      corriendo=true;
+      requestAnimationFrame(tick);
+    }
+    const raiz=document.querySelector('.dlpay-globe-only');
+    if(raiz && 'IntersectionObserver' in window){
+      visible=false;
+      new IntersectionObserver(function(entradas){
+        visible=entradas[0].isIntersecting;
+        arranca();
+      }).observe(raiz);
+    }
+    arranca();
   }
 })();
 </script>
