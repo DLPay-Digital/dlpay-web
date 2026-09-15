@@ -50,3 +50,7 @@ contratos/
 
 # Datos crudos de Natural Earth para scripts/build-worldmap.py: se descargan, no se versionan
 scripts/data/raw/
+
+# Salidas de la app de escritorio: recomprime los PNG al entregarlos al chat,
+# así que son copias no idénticas de lo que ya vive en cowork/<entrega>/.
+Claude outputs/

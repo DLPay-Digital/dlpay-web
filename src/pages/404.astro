@@ -55,6 +55,36 @@ import { platform } from '../lib/config/site.ts';
 </Base>
 
 <style>
+  /*
+    El canto del contenido contra el pie. Esta es la ÚNICA página del sitio sin
+    superficie de papel: cabecera, banda y pie son los tres `--tinta`, así que
+    sin filete las cuñas de la banda se cortan planas contra una línea que no
+    existe y se leen como un recorte, no como una decisión. En las otras tres
+    páginas con `PageHero` el canto lo declara el cambio de superficie.
+
+    · `0.1` es el alfa de separador decorativo que ya usan `Header.astro` (borde
+      inferior) y `Footer.astro` (divisor). NO es `--line-on-tinta`: ese token
+      pesa 0.40 y está reservado al contorno de un CONTROL, y el Design System
+      §2.2 dice explícitamente que los decorativos de 0.06–0.14 no lo usan.
+      Literal y justificado en el sitio, como pide ADR-0004 §3.
+    · Va en la página y no en `PageHero`, porque en el componente cambiaría
+      también /como-funciona, /confianza y /empresas, donde no hace falta.
+    · Va sobre `main` y no sobre `.page-hero`: con `scopedStyleStrategy: 'class'`
+      una regla de la página no alcanza a un elemento del componente hijo. Y
+      además dice lo correcto — marca dónde termina el contenido, no dónde
+      termina un componente.
+  */
+  main {
+    /* El fondo NO es decorativo y no se puede quitar: `main` es transparente por
+       omisión y detrás está el `body`, que es `--papel`. El borde se pinta en el
+       canto de ESTE elemento, fuera de la caja de fondo de la banda, así que sin
+       esta línea el alfa 0.1 compone contra papel y sale un filete crema de 16:1
+       — medido: rgb(245,245,241) en vez de rgb(33,42,52). Con el fondo en tinta,
+       el borde compone contra tinta y da el separador discreto que se buscaba. */
+    background: var(--tinta);
+    border-bottom: 1px solid rgba(237, 242, 239, 0.1);
+  }
+
   /* Copia literal del par de acciones sobre tinta de `empresas.astro`. Es la
      tercera aparición del par —`index.astro` lo tiene en variante clara— y está
      anotada como tal en la ficha de la entrega: si algún día se consolida en un

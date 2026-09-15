@@ -109,6 +109,39 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
 | 2026-09-15 | [`2026-09-15-404`](2026-09-15-404/ficha.md) — página 404 | **Integrada** | Pasa el DoD sin cambios visuales. Trasladada tal cual a `src/pages/404.astro` |
+| 2026-09-15 | [`2026-09-15-404` · addendum](2026-09-15-404/addendum-canto.md) — el canto de la banda contra el pie | **Integrada con cambios** | El diagnóstico es correcto y el filete entra, pero la regla propuesta no rendía lo que muestra la evidencia: hizo falta `background: var(--tinta)` en `main` |
+
+### Notas de la integración del addendum `2026-09-15-404`
+
+**El diagnóstico es correcto y lo confirmé entero.** Cabecera 0→109, banda 109→459,76, pie
+459,76→1025,5, las tres `rgb(11,19,32)`: la 404 es efectivamente la única página sin superficie de
+papel salvo la franja de anuncio. `main` y `.page-hero` comparten límites, el `overflow: hidden` de
+la banda es lo que corta las cuñas, y las cuatro decisiones de §3 se sostienen una por una:
+`Header.astro:208` y `Footer.astro:120` usan literalmente `rgba(237, 242, 239, 0.1)`, y el Design
+System §2.2 dice explícitamente que los separadores decorativos de 0.06–0.14 **no** usan
+`--line-on-tinta`. El razonamiento de `scopedStyleStrategy: 'class'` también: la regla de la página
+alcanza a `main` y no alcanzaría a `.page-hero`.
+
+**Pero la línea propuesta no produce lo que muestra `canto-con.png`.** `main` es transparente por
+omisión y detrás está el `body`, que es `--papel`. El borde se pinta en el canto de `main`, **fuera**
+de la caja de fondo de la banda, así que el alfa 0.1 no compone contra tinta sino contra papel.
+Medido sobre el build, con el borde forzado a rojo puro para confirmar que esa fila era el borde y
+no otra cosa: salía **`rgb(245,245,241)`**, un filete crema a **17,03:1** contra la tinta — una regla
+dura de lado a lado de la página, no un separador. La evidencia de la entrega muestra `(33,42,52)`,
+que es el valor correcto compuesto sobre tinta; el render del addendum se hizo en un contexto donde
+detrás del borde ya había tinta.
+
+**Corregido añadiendo una declaración**, no cambiando el enfoque: `background: var(--tinta)` en la
+misma regla de `main`. Con el fondo propio, el borde compone contra tinta y da **`rgb(34,42,53)`**,
+que coincide con la evidencia dentro del redondeo y con el valor esperado `(34,41,53)`. Contraste
+contra la tinta: **1,29:1** — separador decorativo, que es lo que se buscaba. El fondo **no es
+decorativo y no se puede quitar**; queda dicho en el comentario del código, con la medición, para que
+nadie lo lea como una línea sobrante.
+
+Sin efectos fuera de la página: cada ruta tiene su propia clase de alcance y la regla sólo aparece
+en `404.html`. La página sigue en cero bytes de JavaScript y el sitemap en diez URL.
+
+**`Claude outputs/`** pasa al `.gitignore`, con la razón anotada ahí mismo.
 
 ### Notas de la integración de `2026-09-15-404`
 
