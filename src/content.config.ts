@@ -34,6 +34,14 @@ const blog = defineCollection({
        */
       category: z.enum(['DLPay', 'Mercado']),
       /**
+       * El candado de publicación, **cerrado por omisión**. Un artículo sin
+       * `estado` es borrador y no entra a un build: ni al listado, ni a su
+       * propia ruta, ni al sitemap. Se abre escribiendo `estado: publicado`, y
+       * eso sólo después de que Compliance apruebe (CLAUDE.md §6). El filtro
+       * único vive en `lib/blog.ts`; ver ahí el porqué.
+       */
+      estado: z.enum(['borrador', 'publicado']).default('borrador'),
+      /**
        * Opcional a propósito: no todo artículo necesita portada, y el listado
        * ya contempla las dos formas. `image()` resuelve la ruta relativa al
        * propio archivo y entrega ancho, alto y formato, que es lo que permite

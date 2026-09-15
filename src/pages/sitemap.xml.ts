@@ -6,8 +6,8 @@
  * paquete oficial de sitemap no aporta nada sobre nueve rutas estáticas.
  */
 import type { APIRoute } from 'astro';
-import { getCollection } from 'astro:content';
 
+import { publishedPosts } from '../lib/blog.ts';
 import { site } from '../lib/config/site.ts';
 
 const pages = import.meta.glob('./**/*.astro');
@@ -45,7 +45,8 @@ export const GET: APIRoute = async () => {
   const estaticas = Object.keys(pages)
     .filter((file) => !isDynamic(file) && !isNotFound(file))
     .map(routeOf);
-  const articulos = (await getCollection('blog')).map((post) => `/blog/${post.id}/`);
+  /* Mismo candado que el listado y que `[slug]`: un borrador no se anuncia. */
+  const articulos = (await publishedPosts()).map((post) => `/blog/${post.id}/`);
 
   const urls = [...estaticas, ...articulos]
     .sort()
