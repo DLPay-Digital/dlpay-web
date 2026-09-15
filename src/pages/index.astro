@@ -7,6 +7,7 @@
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
+import GloboRotativo from '../components/hero/GloboRotativo.astro';
 import UseCases from '../components/UseCases.astro';
 import Steps from '../components/Steps.astro';
 import Process from '../components/Process.astro';
@@ -26,6 +27,27 @@ import Motion from '../components/Motion.astro';
   <Header />
   <main id="main">
     <Hero />
+
+    {/*
+      Banda del globo, inmediatamente bajo el héroe (decisión del 2026-09-15).
+      NO va dentro del héroe: ahí el cotizador es la única acción primaria (§6) y
+      el Motion System es explícito en que el instrumento tiene que estar
+      encendido al llegar, sin nada que le dispute la atención. En banda propia
+      el globo acompaña sin competir.
+
+      Sigue en tinta para que la transición desde el héroe sea continua: el
+      océano del globo es navy y sobre papel quedaría recortado como una pegatina.
+
+      Ámbito de las tres excepciones que habilita esta pieza —paleta propia,
+      rotación continua y JavaScript en el cliente—: ADR-0007, 0008 y 0009. Fuera
+      de este componente no aplican.
+    */}
+    <section class="globo">
+      <div class="globo-inner">
+        <GloboRotativo />
+      </div>
+    </section>
+
     <UseCases />
     <Steps />
     <Process />
@@ -35,3 +57,26 @@ import Motion from '../components/Motion.astro';
   </main>
   <Footer />
 </Base>
+
+<style>
+  .globo {
+    background: var(--tinta);
+    padding: var(--s-8) 0 var(--s-9);
+  }
+  .globo-inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 var(--pad-section-m);
+  }
+  /* El globo se dibuja sobre un viewBox 700×500 y escala al ancho disponible.
+     El tope evita que en pantallas anchas se coma la banda entera: a más de
+     ~720px deja de leerse como una ilustración y empieza a leerse como fondo. */
+  .globo-inner :global(.dlpay-globe-only) {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 900px) {
+    .globo-inner { padding-inline: var(--pad-section); }
+  }
+</style>

@@ -47,3 +47,6 @@ contratos/
 
 # Capturas y trazas del MCP de Playwright: salida de herramienta, no del proyecto
 .playwright-mcp/
+
+# Datos crudos de Natural Earth para scripts/build-worldmap.py: se descargan, no se versionan
+scripts/data/raw/
