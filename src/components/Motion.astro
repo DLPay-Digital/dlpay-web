@@ -7,15 +7,40 @@
  *
  * El interruptor `.js-motion` se pone de forma síncrona en el `<head>` — antes
  * de pintar — para que no haya un parpadeo de contenido visible que luego se
- * oculta. Si el script no corre, la clase nunca se añade y la página se ve
+ * oculta. Si ese script no corre, la clase nunca se añade y la página se ve
  * completa e inmóvil.
+ *
+ * ── Red de seguridad, añadida el 2026-09-15 ────────────────────────────────
+ *
+ * Son DOS scripts y esa frase sólo cubre al primero. Quien OCULTA es el
+ * `is:inline`, que corre siempre; quien REVELA es el módulo de abajo, que puede
+ * no ejecutarse por su cuenta: una CSP que cubra el hash de uno y no el del
+ * otro (es justo lo que contempla D27), una extensión que bloquee módulos, un
+ * error en tiempo de ejecución. En ese caso la Home dejaba 18 bloques en
+ * `opacity: 0` —el cotizador, el globo, los usos, los pasos, la confianza, la
+ * FAQ— y se veía prácticamente vacía. Sin `<noscript>` ni respaldo.
+ *
+ * El seguro vive en el script que SIEMPRE corre: si el módulo no ha marcado que
+ * arrancó, se retira el interruptor y todo queda visible. En operación normal
+ * el módulo marca en milisegundos y el temporizador no hace nada, así que el
+ * movimiento no cambia. Es una red, no un cambio de comportamiento.
  */
 ---
 <script is:inline>
   document.documentElement.classList.add('js-motion');
+  /* Si el módulo no llegó a arrancar, se revela todo. Ver la nota de arriba. */
+  setTimeout(function () {
+    if (!document.documentElement.hasAttribute('data-motion-ok')) {
+      document.documentElement.classList.remove('js-motion');
+    }
+  }, 1200);
 </script>
 
 <script>
+  /* Primera línea a propósito: desarma la red de seguridad del script de
+     arriba. Si esto no se ejecuta, aquel revela el contenido por su cuenta. */
+  document.documentElement.setAttribute('data-motion-ok', '');
+
   const items = document.querySelectorAll<HTMLElement>('[data-enter], [data-draw]');
 
   if (items.length > 0) {
