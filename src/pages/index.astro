@@ -16,6 +16,7 @@ import Business from '../components/Business.astro';
 import Faq from '../components/Faq.astro';
 import Footer from '../components/Footer.astro';
 import Motion from '../components/Motion.astro';
+import { platform } from '../lib/config/site.ts';
 ---
 <Base
   title="DLPay"
@@ -29,21 +30,36 @@ import Motion from '../components/Motion.astro';
     <Hero />
 
     {/*
-      Banda del globo, inmediatamente bajo el héroe (decisión del 2026-09-15).
-      NO va dentro del héroe: ahí el cotizador es la única acción primaria (§6) y
-      el Motion System es explícito en que el instrumento tiene que estar
-      encendido al llegar, sin nada que le dispute la atención. En banda propia
-      el globo acompaña sin competir.
+      Banda del globo, inmediatamente bajo el héroe. NO va dentro del héroe: ahí
+      el cotizador es la única acción primaria (§6) y el Motion System exige que
+      el instrumento esté encendido al llegar, sin nada que le dispute la
+      atención. En banda propia acompaña sin competir.
 
-      Sigue en tinta para que la transición desde el héroe sea continua: el
-      océano del globo es navy y sobre papel quedaría recortado como una pegatina.
+      Fondo en papel desde el 2026-09-15: en tinta, el océano navy del globo se
+      confundía con la banda y el planeta no se recortaba. Sobre papel el océano
+      da 15,94:1 y el objeto se lee de inmediato.
 
       Ámbito de las tres excepciones que habilita esta pieza —paleta propia,
-      rotación continua y JavaScript en el cliente—: ADR-0007, 0008 y 0009. Fuera
-      de este componente no aplican.
+      rotación continua y JavaScript en el cliente—: ADR-0007, 0008 y 0009.
     */}
-    <section class="globo">
+    <section class="globo" aria-labelledby="globo-title">
       <div class="globo-inner">
+        {/* Cascada al hacer scroll: tres hermanos con `data-enter`, el mismo
+            M4+M5 de los demás titulares. Tres, no cuatro: el globo no entra —
+            ya tiene su propio movimiento y superponerle un fundido sería
+            animar dos veces la misma cosa. */}
+        <header class="globo-head">
+          <h2 id="globo-title" data-enter>Tu dinero, listo para moverse donde y cuando quieras</h2>
+          <p data-enter>
+            Recibes dólar digital en tu billetera y desde ahí lo mueves en minutos, a
+            cualquier hora y sin depender de días hábiles.
+          </p>
+          <div class="acciones" data-enter>
+            <a class="cta" href={platform.registerUrl}>Crea tu cuenta</a>
+            <a class="ghost" href="/#cotizador">Cotiza tu operación</a>
+          </div>
+        </header>
+
         <GloboRotativo />
       </div>
     </section>
@@ -60,17 +76,74 @@ import Motion from '../components/Motion.astro';
 
 <style>
   .globo {
-    background: var(--tinta);
-    padding: var(--s-8) 0 var(--s-9);
+    background: var(--papel);
+    padding: var(--s-9) 0;
   }
   .globo-inner {
     max-width: var(--container);
     margin: 0 auto;
     padding: 0 var(--pad-section-m);
   }
+
+  /* Titular, bajada y botones centrados. `margin-inline: auto` además del
+     `text-align`: el `max-width` en ch conserva la medida de lectura, y sin él
+     la caja quedaría pegada a la izquierda con el texto centrado dentro. */
+  .globo-head {
+    max-width: 44ch;
+    margin: 0 auto var(--s-8);
+    text-align: center;
+  }
+  .globo-head h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: var(--s-4);
+  }
+  .globo-head p { color: var(--ink-mute); }
+
+  .acciones {
+    margin-top: var(--s-6);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--s-3);
+  }
+  /* Misma pareja de acciones que el resto del sitio, adaptada a superficie
+     clara: el relleno verde funciona igual (--on-verde da 8,58:1), pero el
+     fantasma no puede usar --line, que sobre papel da 1,4:1 y no llega al 3:1
+     que WCAG 1.4.11 pide al contorno de un control. Va en --ink-mute: 5,50:1. */
+  .acciones .cta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--s-4) var(--s-6);
+    background: var(--verde);
+    color: var(--on-verde);
+    border-radius: var(--r-2);
+    font-size: var(--t-body);
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color var(--m-fast) var(--m-ease);
+  }
+  .acciones .cta:hover { background: var(--verde-hi); }
+  .acciones .ghost {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--s-4) var(--s-5);
+    border: 1px solid var(--ink-mute);
+    border-radius: var(--r-2);
+    color: var(--ink);
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    text-decoration: none;
+    transition: border-color var(--m-fast) var(--m-ease);
+  }
+  .acciones .ghost:hover { border-color: var(--ink); }
+
   /* El globo se dibuja sobre un viewBox 700×500 y escala al ancho disponible.
-     El tope evita que en pantallas anchas se coma la banda entera: a más de
-     ~720px deja de leerse como una ilustración y empieza a leerse como fondo. */
+     El tope evita que en pantallas anchas se coma la banda entera. */
   .globo-inner :global(.dlpay-globe-only) {
     max-width: 720px;
     margin: 0 auto;
@@ -78,5 +151,7 @@ import Motion from '../components/Motion.astro';
 
   @media (min-width: 900px) {
     .globo-inner { padding-inline: var(--pad-section); }
+    .globo-head h2 { font-size: var(--t-h2); }
+    .globo-head p { font-size: var(--t-h3-m); }
   }
 </style>

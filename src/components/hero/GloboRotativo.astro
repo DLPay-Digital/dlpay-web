@@ -29,12 +29,12 @@
   Lo que queda describe el gráfico y el origen, que sí es exacto, y no afirma
   nada sobre qué representan los arcos.
 */}
-<h2 class="sr-only">
+<h3 class="sr-only">
   Globo terráqueo DLPay rotando continuamente. Chile aparece resaltado en verde
   como país donde DLPay origina sus operaciones. Ocho países señalados sobre el
   mapa: Estados Unidos, México, Venezuela, España, Sudáfrica, India, Japón y
   Australia.
-</h2>
+</h3>
 
 <style>
   /* ADR-0007: paleta cartográfica, tokens solo válidos en este archivo */
@@ -69,8 +69,28 @@
   */
   #chile-anchor, #chile-label { transition: opacity 300ms ease-out; }
   .dlpay-globe-only :global(.dest) { transition: opacity 300ms ease-out; }
+  /*
+    Halo bajo los rótulos. No es decoración: es lo único que los hace legibles.
+
+    El rótulo verde da 10,77:1 sobre el océano, pero 1,14:1 sobre la tierra
+    crema y 1,48:1 sobre el papel de la banda — invisible en los dos casos. Con
+    un trazo del color del océano pintado DEBAJO del relleno (`paint-order`), el
+    texto se lee siempre contra ese halo, caiga donde caiga: sobre mar, sobre
+    continente o fuera del globo.
+
+    Medido antes y después: sin halo, el rótulo de España se salía 39 px del
+    disco sobre fondo blanco y desaparecía.
+  */
+  .dlpay-globe-only :global(.dest-label),
+  .dlpay-globe-only :global(.dest-info),
+  #chile-label text {
+    paint-order: stroke fill;
+    stroke: #0d1a30;
+    stroke-width: 2.5px;
+    stroke-linejoin: round;
+  }
   .dlpay-globe-only :global(.dest-label) { font-family: var(--f-num); font-size: 10px; letter-spacing: 1.2px; fill: #22e88f; }
-  .dlpay-globe-only :global(.dest-info) { font-family: var(--f-num); font-size: 9px; letter-spacing: 0.5px; fill: #c8bea8; fill-opacity: 0.6; }
+  .dlpay-globe-only :global(.dest-info) { font-family: var(--f-num); font-size: 9px; letter-spacing: 0.5px; fill: #c8bea8; fill-opacity: 0.85; }
   #chile-label text { font-family: var(--f-num); letter-spacing: 1.4px; fill: #22e88f; }
   @keyframes chilePing { 0% { transform: scale(1); opacity: 0.7; } 65% { transform: scale(4); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
   @keyframes chilePingSlow { 0% { transform: scale(1); opacity: 0.4; } 70% { transform: scale(5.5); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
