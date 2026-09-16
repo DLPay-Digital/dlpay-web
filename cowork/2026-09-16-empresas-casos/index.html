@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exploración — lenguaje visual de «Para qué lo usan»</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+  @font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+
+  html,body{overflow-x:clip}
+
+  /* — andamio del board, no es parte de la propuesta — */
+  .board-head{max-width:1112px;margin:0 auto;padding:var(--s-8) var(--pad-section) var(--s-6)}
+  .board-head h1{font-size:var(--t-h2);line-height:var(--lh-h2);letter-spacing:var(--ls-h2);margin-bottom:var(--s-3)}
+  .board-head p{color:var(--ink-mute);max-width:62ch;margin-bottom:var(--s-3)}
+  .kicker{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);margin-bottom:var(--s-4)}
+  .sep{max-width:1112px;margin:0 auto;padding:0 var(--pad-section)}
+  .sep > div{border-top:1px solid var(--line);padding-top:var(--s-4);margin-top:var(--s-8);
+    display:flex;flex-wrap:wrap;gap:var(--s-3);align-items:baseline}
+  .sep h2{font-size:var(--t-h3)}
+  .sep .meta{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute)}
+  .sep .nota{color:var(--ink-mute);font-size:var(--t-body-sm);max-width:62ch;margin-top:var(--s-2);flex-basis:100%}
+
+  /* — réplica de .case-row de empresas.astro — */
+  .row{max-width:var(--container);margin:0 auto;padding:var(--s-7) var(--pad-section);
+    display:grid;grid-template-columns:1fr 1fr;gap:var(--s-8);align-items:center;position:relative}
+  .row h3{font-size:var(--t-h3);font-weight:700;line-height:var(--lh-h3);margin-bottom:var(--s-3)}
+  .row .txt p{color:var(--ink-mute)}
+  .fig{display:flex;justify-content:center}
+  .fig svg{width:100%;height:auto;max-width:460px;display:block}
+
+  /* T3 · la banda sangra hasta el canto de la página */
+  .row.t3 .fig{position:relative;padding:var(--s-8) 0;justify-content:flex-start}
+  .row.t3 .fig::before{content:'';position:absolute;inset:0 -100vw 0 calc(-1 * var(--s-6));
+    background:var(--tinta);z-index:-1}
+
+  .hoy img{display:block;width:100%;max-width:1112px;margin:0 auto;border:1px solid var(--line);border-radius:var(--r-2)}
+</style>
+</head>
+<body>
+
+<div class="board-head">
+  <p class="kicker">cowork · 2026-09-16 · /empresas › «Para qué lo usan»</p>
+  <h1>Tres tratamientos del mismo caso, en el lenguaje elegido</h1>
+  <p>
+    Caso de prueba: <strong>pagos a proveedores en el exterior</strong>, el más difícil de los
+    cuatro. Lo que cambia entre los tres es el <strong>tratamiento</strong>; la topología es la
+    misma en los tres, porque es la que dice el texto: un origen, una frontera, un destinatario.
+    Sin panel, sin sombra, sin interfaz simulada y sin ninguna cifra.
+  </p>
+  <p>
+    Elegido el tratamiento, lo extiendo a los cuatro casos con una silueta distinta cada uno:
+    <em>una línea que cruza</em> · <em>una masa quieta</em> · <em>una serie que se acorta</em> ·
+    <em>dos planos que se intercambian</em>.
+  </p>
+</div>
+
+<div class="sep"><div>
+  <h2>Hoy</h2>
+  <span class="meta">panel oscuro · 380×285 · --elev-card</span>
+  <p class="nota">
+    El widget simula un «Ruteo de pagos» con tres destinos activos: una pantalla de software que
+    DLPay no tiene, y que sugiere que la operación la ejecuta DLPay hacia varios destinatarios.
+  </p>
+</div></div>
+<div class="hoy"><img src="hoy-proveedores.png" alt="El caso de proveedores como está hoy"></div>
+
+<div class="sep"><div>
+  <h2>A · Plano recortado</h2>
+  <span class="meta">460×300 · dos superficies, un solo trazo</span>
+  <p class="nota">
+    El plano en tinta es el origen y <strong>su canto es el corte del isotipo</strong>: la frontera
+    deja de ser una línea punteada prestada y pasa a ser la diagonal de la marca. El dinero es el
+    mismo trazo dos veces —hueco dentro del plano, macizo fuera—, y la cuña se parte justo en el
+    canto: el gesto de cruzar está dibujado, no anotado.
+  </p>
+</div></div>
+<div class="row">
+  <div class="txt">
+    <h3>Pagos a proveedores en el exterior</h3>
+    <p>Conviertes a dólar digital y pagas a proveedores que operan con él, sin la cadena de bancos
+       corresponsales ni sus horarios. Si tu proveedor sólo recibe por banco, conversémoslo antes.</p>
+  </div>
+  <div class="fig">
+    <svg viewBox="0 0 460 300" aria-hidden="true">
+      <defs>
+        <clipPath id="dentro"><path d="M0 0H320L118 300H0Z"/></clipPath>
+        <clipPath id="fuera"><path d="M-10 -10H470V310H-10ZM0 0H320L118 300H0Z" clip-rule="evenodd"/></clipPath>
+      </defs>
+      <path d="M0 0H320L118 300H0Z" fill="var(--tinta)"/>
+      <g clip-path="url(#dentro)">
+        <path d="M62 150H192l18-22 18 44 18-22H398" fill="none" stroke="var(--papel)"
+              stroke-width="20" stroke-linejoin="round"/>
+      </g>
+      <g clip-path="url(#fuera)">
+        <path d="M62 150H192l18-22 18 44 18-22H398" fill="none" stroke="var(--tinta)"
+              stroke-width="20" stroke-linejoin="round"/>
+      </g>
+      <circle cx="34" cy="150" r="11" fill="var(--verde)"/>
+      <circle cx="426" cy="150" r="11" fill="var(--verde-deep)"/>
+      <text x="22" y="200" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="13">CLP</text>
+      <text x="438" y="200" fill="var(--ink-mute)" font-family="var(--f-num)" font-size="13" text-anchor="end">USD</text>
+    </svg>
+  </div>
+</div>
+
+<div class="sep"><div>
+  <h2>B · Trazo macizo</h2>
+  <span class="meta">460×200 · el mismo lenguaje de la Home, a otra escala</span>
+  <p class="nota">
+    La topología de <code>UseCaseFigure</code> con el trazo a 14 px en vez de 1,6 y al triple de
+    escala. Es el arreglo mínimo: no inventa gramática nueva y el «boceto» desaparece sólo con el
+    peso. También es el más conservador — y el que más se parece a lo que ya hay en la Home.
+  </p>
+</div></div>
+<div class="row">
+  <div class="txt">
+    <h3>Pagos a proveedores en el exterior</h3>
+    <p>Conviertes a dólar digital y pagas a proveedores que operan con él, sin la cadena de bancos
+       corresponsales ni sus horarios. Si tu proveedor sólo recibe por banco, conversémoslo antes.</p>
+  </div>
+  <div class="fig">
+    <svg viewBox="0 0 460 200" aria-hidden="true">
+      <path d="M219 30V170" stroke="var(--verde-deep)" stroke-width="3"
+            stroke-dasharray="4 9" stroke-linecap="round"/>
+      <path d="M62 100H198l14-12 14 24 14-12h178" fill="none" stroke="var(--tinta)"
+            stroke-width="14" stroke-linejoin="round"/>
+      <circle cx="34" cy="100" r="11" fill="var(--verde-deep)"/>
+      <circle cx="426" cy="100" r="11" fill="var(--verde-deep)"/>
+      <text x="22" y="148" fill="var(--ink-mute)" font-family="var(--f-num)" font-size="13">CLP</text>
+      <text x="438" y="148" fill="var(--ink-mute)" font-family="var(--f-num)" font-size="13" text-anchor="end">USD</text>
+    </svg>
+  </div>
+</div>
+
+<div class="sep"><div>
+  <h2>C · Banda sangrada</h2>
+  <span class="meta">la masa la pone la banda · canto vivo, sin radio ni sombra</span>
+  <p class="nota">
+    La tinta vuelve, pero como <strong>banda que sangra hasta el canto de la página</strong>, no
+    como tarjeta: sin radio, sin sombra y sin borde. Sobre tinta el verde de marca rinde 8,45:1 y
+    puede llevar el trazo. Es el más editorial de los tres y el que más cambia la estructura de la
+    sección, porque obliga a alternar sangrados a izquierda y derecha.
+  </p>
+</div></div>
+<div class="row t3">
+  <div class="txt">
+    <h3>Pagos a proveedores en el exterior</h3>
+    <p>Conviertes a dólar digital y pagas a proveedores que operan con él, sin la cadena de bancos
+       corresponsales ni sus horarios. Si tu proveedor sólo recibe por banco, conversémoslo antes.</p>
+  </div>
+  <div class="fig">
+    <svg viewBox="0 0 460 200" aria-hidden="true">
+      <path d="M219 30V170" stroke="var(--on-tinta-mute)" stroke-width="3"
+            stroke-dasharray="4 9" stroke-linecap="round"/>
+      <path d="M62 100H198l14-12 14 24 14-12h178" fill="none" stroke="var(--verde)"
+            stroke-width="14" stroke-linejoin="round"/>
+      <circle cx="34" cy="100" r="11" fill="var(--verde)"/>
+      <circle cx="426" cy="100" r="11" fill="var(--verde)"/>
+      <text x="22" y="148" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="13">CLP</text>
+      <text x="438" y="148" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="13" text-anchor="end">USD</text>
+    </svg>
+  </div>
+</div>
+
+</body>
+</html>

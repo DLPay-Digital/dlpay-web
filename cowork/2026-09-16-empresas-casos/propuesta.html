@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propuesta — «Para qué lo usan» con los cuatro planos recortados</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+  @font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+
+  /* — réplica de la sección .cases de empresas.astro — */
+  .cases{padding:var(--s-9) 0}
+  .inner{max-width:var(--container);margin:0 auto;padding:0 var(--pad-section)}
+  .head{max-width:46ch;margin:0 auto var(--s-8);text-align:center}
+  .head h2{font-size:var(--t-h2);line-height:var(--lh-h2);letter-spacing:var(--ls-h2);margin-bottom:var(--s-3)}
+  .head p{color:var(--ink-mute)}
+
+  .list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s-9)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-8);align-items:center}
+  .row h3{font-size:var(--t-h3);font-weight:700;line-height:var(--lh-h3);margin-bottom:var(--s-3)}
+  .row .txt p{color:var(--ink-mute)}
+  .fig{display:flex;justify-content:center}
+  .fig svg{width:100%;height:auto;max-width:460px;display:block}
+  /* zigzag: el lado se fija con grid-column, nunca con order — el DOM va
+     siempre texto → figura, que es el orden de lectura */
+  .row .txt{grid-column:1;grid-row:1}
+  .row .fig{grid-column:2;grid-row:1}
+  .row:nth-child(even) .txt{grid-column:2}
+  .row:nth-child(even) .fig{grid-column:1}
+</style>
+</head>
+<body>
+
+<section class="cases">
+  <div class="inner">
+    <header class="head">
+      <h2>Para qué lo usan</h2>
+      <p>Cuatro situaciones concretas. Todas parten del mismo servicio: cambiamos tus pesos y te
+         entregamos dólar digital. Si la tuya no está acá, conversémosla.</p>
+    </header>
+
+    <ul class="list">
+
+      <!-- 1 · PROVEEDORES — una línea que cruza -->
+      <li class="row">
+        <div class="txt">
+          <h3>Pagos a proveedores en el exterior</h3>
+          <p>Conviertes a dólar digital y pagas a proveedores que operan con él, sin la cadena de
+             bancos corresponsales ni sus horarios. Si tu proveedor sólo recibe por banco,
+             conversémoslo antes.</p>
+        </div>
+        <div class="fig">
+          <svg viewBox="0 0 460 300" aria-hidden="true">
+            <defs>
+              <clipPath id="p1-in"><path d="M0 0H320L118 300H0Z"/></clipPath>
+              <clipPath id="p1-out"><path d="M-10 -10H470V310H-10ZM0 0H320L118 300H0Z" clip-rule="evenodd"/></clipPath>
+            </defs>
+            <path d="M0 0H320L118 300H0Z" fill="var(--tinta)"/>
+            <g clip-path="url(#p1-in)"><path d="M62 150H192l18-22 18 44 18-22H398" fill="none"
+               stroke="var(--papel)" stroke-width="20" stroke-linejoin="round"/></g>
+            <g clip-path="url(#p1-out)"><path d="M62 150H192l18-22 18 44 18-22H398" fill="none"
+               stroke="var(--tinta)" stroke-width="20" stroke-linejoin="round"/></g>
+            <circle cx="34" cy="150" r="11" fill="var(--verde)"/>
+            <circle cx="426" cy="150" r="11" fill="var(--verde-deep)"/>
+            <text x="22" y="200" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="13">CLP</text>
+            <text x="438" y="200" fill="var(--ink-mute)" font-family="var(--f-num)" font-size="13" text-anchor="end">USD</text>
+          </svg>
+        </div>
+      </li>
+
+      <!-- 2 · TESORERÍA — una masa quieta. NADA cruza el canto: ése es el dibujo -->
+      <li class="row">
+        <div class="txt">
+          <h3>Tesorería en dólares</h3>
+          <p>Mantienes parte de la caja en dólar digital y la conviertes de vuelta a pesos cuando la
+             necesitas, sin abrir una cuenta en el extranjero.</p>
+        </div>
+        <div class="fig">
+          <svg viewBox="0 0 460 300" aria-hidden="true">
+            <path d="M0 0H320L118 300H0Z" fill="var(--tinta)"/>
+            <!-- La caja, con el MISMO material que el dinero de las otras figuras —una
+                 barra hueca— pero en VERTICAL: un volumen apilado, no un trayecto.
+                 Nada cruza el canto, y ésa es la frase «sin abrir una cuenta en el
+                 extranjero» dicha con el dibujo. -->
+            <rect x="40" y="80" width="130" height="135" fill="var(--papel)"/>
+            <rect x="40" y="80" width="130" height="48" fill="var(--verde)"/>
+            <text x="54" y="111" fill="var(--on-verde)" font-family="var(--f-num)" font-size="13">USD</text>
+            <text x="54" y="179" fill="var(--ink-mute)" font-family="var(--f-num)" font-size="13">CLP</text>
+          </svg>
+        </div>
+      </li>
+
+      <!-- 3 · RECURRENTES — la misma operación, y el trayecto se acorta -->
+      <li class="row">
+        <div class="txt">
+          <h3>Pagos recurrentes al exterior</h3>
+          <p>Servicios, equipos o proveedores fijos que reciben en dólar digital. Tu ejecutivo ya
+             conoce la operación y el ida y vuelta se acorta cada mes.</p>
+        </div>
+        <div class="fig">
+          <svg viewBox="0 0 460 300" aria-hidden="true">
+            <defs>
+              <clipPath id="p3-in"><path d="M0 0H320L118 300H0Z"/></clipPath>
+              <clipPath id="p3-out"><path d="M-10 -10H470V310H-10ZM0 0H320L118 300H0Z" clip-rule="evenodd"/></clipPath>
+            </defs>
+            <path d="M0 0H320L118 300H0Z" fill="var(--tinta)"/>
+            <g clip-path="url(#p3-in)">
+              <path d="M62 90H238l14-17 14 34 14-17H398"  fill="none" stroke="var(--papel)" stroke-width="16" stroke-linejoin="round"/>
+              <path d="M62 150H198l14-17 14 34 14-17H398" fill="none" stroke="var(--papel)" stroke-width="16" stroke-linejoin="round"/>
+              <path d="M62 210H158l14-17 14 34 14-17H398" fill="none" stroke="var(--papel)" stroke-width="16" stroke-linejoin="round"/>
+            </g>
+            <g clip-path="url(#p3-out)">
+              <path d="M62 90H238l14-17 14 34 14-17H398"  fill="none" stroke="var(--tinta)" stroke-width="16" stroke-linejoin="round"/>
+              <path d="M62 150H198l14-17 14 34 14-17H398" fill="none" stroke="var(--tinta)" stroke-width="16" stroke-linejoin="round"/>
+              <path d="M62 210H158l14-17 14 34 14-17H398" fill="none" stroke="var(--tinta)" stroke-width="16" stroke-linejoin="round"/>
+            </g>
+            <circle cx="34" cy="90"  r="10" fill="var(--verde)"/>
+            <circle cx="34" cy="150" r="10" fill="var(--verde)"/>
+            <circle cx="34" cy="210" r="10" fill="var(--verde)"/>
+            <circle cx="426" cy="90"  r="10" fill="var(--verde-deep)"/>
+            <circle cx="426" cy="150" r="10" fill="var(--verde-deep)"/>
+            <circle cx="426" cy="210" r="10" fill="var(--verde-deep)"/>
+          </svg>
+        </div>
+      </li>
+
+      <!-- 4 · DIVISAS — dos planos del mismo tamaño, la cuña entre ellos -->
+      <li class="row">
+        <div class="txt">
+          <h3>Cambio de divisas por volumen</h3>
+          <p>CLP y USD como operación independiente, en montos donde el spread de un banco pesa de
+             verdad y una app retail no alcanza.</p>
+        </div>
+        <div class="fig">
+          <svg viewBox="0 0 460 300" aria-hidden="true">
+            <defs>
+              <clipPath id="p4-in"><path d="M0 0H320L118 300H0Z"/></clipPath>
+              <clipPath id="p4-out"><path d="M-10 -10H470V310H-10ZM0 0H320L118 300H0Z" clip-rule="evenodd"/></clipPath>
+            </defs>
+            <path d="M0 0H320L118 300H0Z" fill="var(--tinta)"/>
+            <!-- mismo alto y mismo ancho a cada lado del canto: el valor no cambia,
+                 cambia la unidad. El tamaño es el argumento del volumen -->
+            <rect x="48" y="90" width="130" height="120" fill="var(--papel)"/>
+            <rect x="270" y="90" width="130" height="120" fill="var(--tinta)"/>
+            <g clip-path="url(#p4-in)"><path d="M219 100v22l14 14-28 14 14 14v22" fill="none"
+               stroke="var(--papel)" stroke-width="16" stroke-linejoin="round"/></g>
+            <g clip-path="url(#p4-out)"><path d="M219 100v22l14 14-28 14 14 14v22" fill="none"
+               stroke="var(--tinta)" stroke-width="16" stroke-linejoin="round"/></g>
+            <text x="48" y="238" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="13">CLP</text>
+            <text x="400" y="238" fill="var(--ink-mute)" font-family="var(--f-num)" font-size="13" text-anchor="end">USD</text>
+          </svg>
+        </div>
+      </li>
+
+    </ul>
+  </div>
+</section>
+
+</body>
+</html>

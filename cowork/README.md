@@ -121,6 +121,54 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-16 | [`2026-09-16-empresas-casos`](2026-09-16-empresas-casos/ficha.md) — lenguaje visual de «Para qué lo usan» (exploración) | **Integrada** | El diagnóstico de §1 es correcto y verificable; el tratamiento A es el único específico de DLPay |
+| 2026-09-16 | [`2026-09-16-empresas-casos` · propuesta](2026-09-16-empresas-casos/propuesta.html) — los cuatro casos en «plano recortado» | **Integrada** | Los cuatro SVG trasladados literalmente. Sin cambios de dibujo |
+
+### Notas de la integración de `2026-09-16-empresas-casos`
+
+**El diagnóstico de §1 es el argumento de peso y lo confirmé.** El motivo no es estético: tres de
+los cuatro emblemas simulaban producto que DLPay no presta. Con el cambio se van además las otras
+tres cosas que señalaba, y las medí: `2.174,62` pasa de **seis apariciones a una** en `/empresas`
+—la que queda es el portátil del encabezado, que sí deriva de `lib/pricing`—, y `--elev-card`
+desaparece de las figuras.
+
+**Los cuatro SVG van copiados literalmente.** Lo verifiqué comparando la fuente con el componente
+dato a dato: los 16 `path` de dibujo, los 10 `stroke-width`, los 4 `rect`, los 8 `circle` y las 6
+etiquetas coinciden **exactamente**. Lo único que no es copia literal son el plano y su complemento,
+que se extrajeron a dos constantes (`PLANO`, `FUERA`) porque aparecen diez veces entre las cuatro
+figuras y son la gramática común: el canto de la marca tiene que ser el mismo en todas por
+definición, y repetirlo diez veces es diez sitios donde se puede desincronizar.
+
+**Un error propio, dicho porque enseña algo:** intenté derivar `FUERA` de `PLANO` con `slice(1)` y
+producía un `path` inválido — el `M` del segundo subtrazo es parte del dato. Corregido antes de
+construir; las dos constantes van literales.
+
+**Verificado en el navegador sobre el build, a 390 y 1280:** desborde horizontal **0** en los dos ·
+las cuatro figuras a **460×300** en escritorio, así que las cuatro filas miden exactamente 300 px ·
+`aria-hidden="true"` en las cuatro · sin sombra y sin radio · los dos `clipPath` aplicados en las
+tres figuras que cruzan y **ninguno** en tesorería, que es el dibujo · los seis ids (`p1-in`…
+`p4-out`) aparecen **una sola vez** cada uno. Todos los `var()` resuelven, incluidos los de los
+atributos de presentación: `--f-num` da Spline Sans Mono y `--tinta` da `rgb(11, 19, 32)`.
+
+**Contrastes recalculados.** Cinco de los seis coinciden al segundo decimal. El sexto no: la ficha
+da **16,44** para «papel sobre tinta» y son **17,06** — 16,44 es la razón de `--on-tinta`, no de
+`--papel`. Sale más alto, así que no cambia nada, pero conviene no arrastrar el número.
+
+**Los cinco puntos de verificación, resueltos.** (1) Los ids globales quedan documentados en el
+docblock del componente, con la condición exacta que los rompería: dos filas con el mismo `kind`.
+(2) `aria-hidden` en las cuatro. (3) El dimensionado pasa de `380px` + `4/3` a `460px` con la
+proporción del `viewBox`. (4) Las cuatro filas conservan su `data-enter` y siguen siendo cuatro
+hermanas. (5) Ningún otro componente dependía de las importaciones de pricing; `/empresas` sigue en
+**0 módulos externos**.
+
+**Una corrección al punto 5 de la entrega:** dice que `/empresas` debía seguir en 545 B de JS y
+mide **862 B**. No lo causa este cambio — son los 314 B del `is:inline` del Motion System, que creció
+ayer al añadirle la red de seguridad por si el módulo que revela el contenido no llega a correr.
+
+**Y un hallazgo que dejo anotado sin tocar:** la ficha tiene razón en que el Design System §4.5
+reserva `--elev-card` **sólo** para la tarjeta del cotizador sobre tinta. Quitarla de las figuras
+arregla una de **tres** infracciones: siguen usándola `Steps.astro:232` y `Header.astro:322`. La del
+encabezado probablemente quiera ser `--elev-pop`. Es cambio visual y es decisión de Sebastián.
 | 2026-09-16 | [`2026-09-16-empresas-encabezado`](2026-09-16-empresas-encabezado/ficha.md) — encabezado centrado y portátil en la costura | **Integrada** | Pasa el DoD. Ruta A, con la variante `layout="stacked"` opt-in en `PageHero`; sin cambios sobre lo propuesto |
 
 ### Notas de la integración de `2026-09-16-empresas-encabezado`

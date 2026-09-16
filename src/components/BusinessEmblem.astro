@@ -1,38 +1,62 @@
 ---
 /**
- * Los cuatro emblemas de «Para qué lo usan» en /empresas.
+ * Las cuatro figuras de «Para qué lo usan» en /empresas.
  *
- * Son WIDGETS de interfaz, no dibujos: cada uno simula la pantalla de software
- * que corresponde a su caso —ruteo, saldo, comprobantes, terminal— construida
- * con HTML y CSS nativo. Cero imágenes, cero dependencias.
+ * ── Por qué se reescribió entero el 2026-09-16 ──────────────────────────────
  *
- * ── REGLA DURA, la misma del teléfono y del portátil ────────────────────────
+ * Antes eran cuatro WIDGETS que simulaban pantallas de software —ruteo, saldo,
+ * comprobantes, terminal—. Tres de ellos insinuaban producto que DLPay no
+ * tiene: un panel de «Ruteo de pagos» con tres destinos activos sugiere que
+ * DLPay ejecuta pagos a varios destinatarios, y un «Saldo en tesorería» sugiere
+ * que DLPay mantiene un saldo de la empresa. El servicio real convierte y
+ * entrega dólar digital EN LA BILLETERA DEL CLIENTE, y desde ahí decide él
+ * (CLAUDE.md §1, regla dura de contenido). No era un problema estético: la
+ * página más comercial del sitio estaba insinuando producto.
  *
- * Las cifras NO se teclean: salen de `quoteLimits` y de `lib/pricing`, el
- * origen único que alimenta al cotizador (D24), con la misma función
- * `convert()` que usa el instrumento. Un saldo inventado en una página
- * comercial sería una cifra sin respaldo —lo que CLAUDE.md §3 obliga a marcar y
- * D10 directamente prohíbe publicar—, así que el widget de tesorería muestra el
- * monto de muestra convertido, no un número escogido a mano.
+ * Con el cambio se van tres cosas más, de un golpe:
+ * · la cifra `2.174,62` aparecía SEIS veces en la página construida;
+ * · los cuatro paneles usaban `--elev-card`, que el Design System §4.5 reserva
+ *   sólo para la tarjeta del cotizador sobre tinta;
+ * · el `aspect-ratio: 4/3` dejaba dos paneles medio vacíos.
  *
- * El precio sigue siendo de MUESTRA (ConfigPriceSource, D7) y por eso el
- * terminal lleva su etiqueta «referencial»: la web nunca muestra un precio
- * cerrado (CLAUDE.md §6).
+ * Por eso este componente ya NO importa `lib/pricing` ni `quoteLimits`: no hay
+ * ninguna cifra que derivar porque no hay ninguna cifra.
  *
- * ── Qué dice cada uno ──────────────────────────────────────────────────────
+ * ── La gramática, común a las cuatro ────────────────────────────────────────
  *
- *   proveedores · ruteo: un origen, varios destinos, todos activos
- *   tesoreria   · saldo: el dinero quieto, en la billetera del cliente
- *   recurrentes · tres comprobantes idénticos apilados: la misma operación cada mes
- *   divisas     · terminal: el par, su precio referencial y las dos patas
+ * · Un PLANO en tinta cuyo canto ES el corte del isotipo: dx 202 : dy 300, los
+ *   ~34° de la marca (ADR-0001 §3, Design System §6). El mismo polígono en las
+ *   cuatro, así que la frontera no es una línea prestada sino la diagonal de
+ *   DLPay.
+ * · El dinero es un canal HUECO dentro del plano y MACIZO fuera: el mismo trazo
+ *   cambiando de material al cruzar, resuelto con dos `clipPath`. Cuando algo
+ *   cruza, la cuña se parte justo en el canto.
+ * · Los nodos son contrapartes, y cambian de token según la superficie que
+ *   tienen debajo: `--verde` sobre tinta (8,45:1) y `--verde-deep` sobre papel
+ *   (4,90:1). No es una inconsistencia — es la regla del Design System §2.4.
+ * · Etiquetas en Spline Sans Mono a 13 px. NINGUNA cifra, en ninguna.
+ * · `viewBox` 460×300 en las cuatro, para que las cuatro filas midan lo mismo.
  *
- * `aria-hidden`: el h3 y el párrafo de al lado ya lo dicen con palabras, y una
- * interfaz simulada no debe leerse como si fuera operable.
+ * Qué dice cada una: proveedores, un canal que cruza · tesorería, un volumen
+ * quieto y nada cruzando el canto —el vacío de la derecha ES la frase «sin
+ * abrir una cuenta en el extranjero»— · recurrentes, tres cruces idénticos
+ * cuyas cuñas caen escalonadas sobre la diagonal · divisas, dos bloques del
+ * mismo tamaño a cada lado del canto con la cuña vertical entre ellos.
+ *
+ * Las coordenadas y los grosores dentro del `viewBox` son EL DIBUJO, no valores
+ * de diseño: no salen de la escala de espaciado ni la contradicen. Mismo
+ * criterio que ya rige en `UseCaseFigure.astro`.
+ *
+ * ── Una limitación conocida ─────────────────────────────────────────────────
+ *
+ * Los `clipPath` usan identificadores globales al documento (`p1-in`, `p3-out`,
+ * …). Hoy es seguro porque cada caso se renderiza UNA sola vez: los cuatro
+ * `emblem` de `content/business.ts` son distintos entre sí. Si algún día dos
+ * filas comparten `kind`, los dos SVG declararían el mismo id y el segundo
+ * recortaría con el primero: habría que sufijar los ids por instancia.
+ *
+ * `aria-hidden`: el `h3` y el párrafo de al lado ya lo dicen con palabras.
  */
-import { formatCLP, formatRate, formatUSD } from '../lib/pricing/format.ts';
-import { convert } from '../lib/pricing/quote.ts';
-import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
-import { quoteLimits } from '../lib/config/site.ts';
 import type { EmblemKind } from '../content/business.ts';
 
 interface Props {
@@ -40,305 +64,112 @@ interface Props {
 }
 const { kind } = Astro.props;
 
-const price = await new ConfigPriceSource().getPrice();
-const pay = quoteLimits.samplePayClp;
-const get = convert('to_usd', pay, price.rate);
+/**
+ * El canto de la marca. Idéntico en las cuatro figuras, a propósito: es lo que
+ * las hace un sistema y no cuatro dibujos sueltos.
+ */
+const PLANO = 'M0 0H320L118 300H0Z';
+/**
+ * El complemento: un rectángulo que desborda el `viewBox` con el plano restado
+ * por `clip-rule="evenodd"`. Sirve para pintar lo que queda FUERA del canto.
+ * Va literal y no derivado de `PLANO` — el `M` del segundo subtrazo es parte
+ * del dato, y concatenarlo a mano es justo donde se cuela un `path` inválido.
+ */
+const FUERA = 'M-10 -10H470V310H-10ZM0 0H320L118 300H0Z';
 ---
-<div class:list={['emblem', kind]} aria-hidden="true">
-  {kind === 'proveedores' && (
-    <>
-      <header class="top">
-        <span class="title">Ruteo de pagos</span>
-        <span class="state"><i class="dot"></i>Activo</span>
-      </header>
-      <div class="routes">
-        {[0, 1, 2].map((i) => (
-          <div class="route">
-            <span class="idx num">{String(i + 1).padStart(2, '0')}</span>
-            <span class="bars">
-              <i class="bar"></i>
-              <i class="bar sm"></i>
-            </span>
-            <i class="dot"></i>
-          </div>
-        ))}
-      </div>
-      <footer class="foot">
-        <span>3 destinos</span>
-        <span class="num">USD</span>
-      </footer>
-    </>
-  )}
+{kind === 'proveedores' && (
+  <svg class="emblem" viewBox="0 0 460 300" aria-hidden="true">
+    <defs>
+      <clipPath id="p1-in"><path d={PLANO}/></clipPath>
+      <clipPath id="p1-out"><path d={FUERA} clip-rule="evenodd"/></clipPath>
+    </defs>
+    <path d={PLANO} fill="var(--tinta)"/>
+    <g clip-path="url(#p1-in)"><path d="M62 150H192l18-22 18 44 18-22H398" fill="none"
+       stroke="var(--papel)" stroke-width="20" stroke-linejoin="round"/></g>
+    <g clip-path="url(#p1-out)"><path d="M62 150H192l18-22 18 44 18-22H398" fill="none"
+       stroke="var(--tinta)" stroke-width="20" stroke-linejoin="round"/></g>
+    <circle cx="34" cy="150" r="11" fill="var(--verde)"/>
+    <circle cx="426" cy="150" r="11" fill="var(--verde-deep)"/>
+    <text x="22" y="200" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="13">CLP</text>
+    <text x="438" y="200" fill="var(--ink-mute)" font-family="var(--f-num)" font-size="13" text-anchor="end">USD</text>
+  </svg>
+)}
 
-  {kind === 'tesoreria' && (
-    <div class="balance-card">
-      <span class="title">Saldo en tesorería</span>
-      <p class="balance num">{formatUSD(get)}<em>USD</em></p>
-      <span class="state"><i class="dot"></i>Dólar digital en tu billetera</span>
-    </div>
-  )}
+{kind === 'tesoreria' && (
+  <svg class="emblem" viewBox="0 0 460 300" aria-hidden="true">
+    <path d={PLANO} fill="var(--tinta)"/>
+    {/*
+      La caja usa el MISMO material que el dinero de las otras figuras —una
+      barra hueca— pero en VERTICAL: un volumen apilado, no un trayecto. Nada
+      cruza el canto, y ése es el dibujo: «sin abrir una cuenta en el
+      extranjero» dicho sin palabras. El vacío de la derecha es la frase.
+    */}
+    <rect x="40" y="80" width="130" height="135" fill="var(--papel)"/>
+    <rect x="40" y="80" width="130" height="48" fill="var(--verde)"/>
+    <text x="54" y="111" fill="var(--on-verde)" font-family="var(--f-num)" font-size="13">USD</text>
+    <text x="54" y="179" fill="var(--ink-mute)" font-family="var(--f-num)" font-size="13">CLP</text>
+  </svg>
+)}
 
-  {kind === 'recurrentes' && (
-    /* Tres comprobantes IDÉNTICOS: el mismo monto, la misma operación. Eso es
-       lo que dice «recurrente» sin necesidad de escribirlo. */
-    <div class="stack">
-      {[0, 1, 2].map((i) => (
-        <article class="receipt" style={`--i:${i}`}>
-          <span class="r-top">
-            <span class="title">Pago recurrente</span>
-            <i class="dot"></i>
-          </span>
-          <p class="r-amount num">{formatUSD(get)}<em>USD</em></p>
-          <span class="r-foot"></span>
-        </article>
-      ))}
-    </div>
-  )}
+{kind === 'recurrentes' && (
+  <svg class="emblem" viewBox="0 0 460 300" aria-hidden="true">
+    <defs>
+      <clipPath id="p3-in"><path d={PLANO}/></clipPath>
+      <clipPath id="p3-out"><path d={FUERA} clip-rule="evenodd"/></clipPath>
+    </defs>
+    <path d={PLANO} fill="var(--tinta)"/>
+    <g clip-path="url(#p3-in)">
+      <path d="M62 90H238l14-17 14 34 14-17H398"  fill="none" stroke="var(--papel)" stroke-width="16" stroke-linejoin="round"/>
+      <path d="M62 150H198l14-17 14 34 14-17H398" fill="none" stroke="var(--papel)" stroke-width="16" stroke-linejoin="round"/>
+      <path d="M62 210H158l14-17 14 34 14-17H398" fill="none" stroke="var(--papel)" stroke-width="16" stroke-linejoin="round"/>
+    </g>
+    <g clip-path="url(#p3-out)">
+      <path d="M62 90H238l14-17 14 34 14-17H398"  fill="none" stroke="var(--tinta)" stroke-width="16" stroke-linejoin="round"/>
+      <path d="M62 150H198l14-17 14 34 14-17H398" fill="none" stroke="var(--tinta)" stroke-width="16" stroke-linejoin="round"/>
+      <path d="M62 210H158l14-17 14 34 14-17H398" fill="none" stroke="var(--tinta)" stroke-width="16" stroke-linejoin="round"/>
+    </g>
+    <circle cx="34" cy="90"  r="10" fill="var(--verde)"/>
+    <circle cx="34" cy="150" r="10" fill="var(--verde)"/>
+    <circle cx="34" cy="210" r="10" fill="var(--verde)"/>
+    <circle cx="426" cy="90"  r="10" fill="var(--verde-deep)"/>
+    <circle cx="426" cy="150" r="10" fill="var(--verde-deep)"/>
+    <circle cx="426" cy="210" r="10" fill="var(--verde-deep)"/>
+  </svg>
+)}
 
-  {kind === 'divisas' && (
-    <>
-      <header class="top">
-        <span class="title num">USD/CLP</span>
-        <span class="state"><i class="dot"></i>Referencial</span>
-      </header>
-      <p class="rate num">{formatRate(price.rate)}</p>
-      <div class="legs">
-        <div class="leg">
-          <span>Venta</span>
-          <span class="chip num">CLP</span>
-          <span class="leg-val num">{formatCLP(pay)}</span>
-        </div>
-        <div class="swap"><i></i></div>
-        <div class="leg">
-          <span>Compra</span>
-          <span class="chip num">USD</span>
-          <span class="leg-val num">{formatUSD(get)}</span>
-        </div>
-      </div>
-    </>
-  )}
-</div>
+{kind === 'divisas' && (
+  <svg class="emblem" viewBox="0 0 460 300" aria-hidden="true">
+    <defs>
+      <clipPath id="p4-in"><path d={PLANO}/></clipPath>
+      <clipPath id="p4-out"><path d={FUERA} clip-rule="evenodd"/></clipPath>
+    </defs>
+    <path d={PLANO} fill="var(--tinta)"/>
+    {/*
+      Mismo alto y mismo ancho a cada lado del canto: el valor no cambia, cambia
+      la unidad. El tamaño de los bloques es el argumento del volumen.
+    */}
+    <rect x="48" y="90" width="130" height="120" fill="var(--papel)"/>
+    <rect x="270" y="90" width="130" height="120" fill="var(--tinta)"/>
+    <g clip-path="url(#p4-in)"><path d="M219 100v22l14 14-28 14 14 14v22" fill="none"
+       stroke="var(--papel)" stroke-width="16" stroke-linejoin="round"/></g>
+    <g clip-path="url(#p4-out)"><path d="M219 100v22l14 14-28 14 14 14v22" fill="none"
+       stroke="var(--tinta)" stroke-width="16" stroke-linejoin="round"/></g>
+    <text x="48" y="238" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="13">CLP</text>
+    <text x="400" y="238" fill="var(--ink-mute)" font-family="var(--f-num)" font-size="13" text-anchor="end">USD</text>
+  </svg>
+)}
 
 <style>
-  /**
-   * Tonos del widget, locales al componente. No son tokens del Design System:
-   * describen el cromo de una interfaz simulada, igual que los grises del
-   * bisel del teléfono en `WhatsAppMockup`. Los dos sólidos están derivados de
-   * la paleta —mezclas de `--tinta` con `--on-tinta` al 6% y 12%—, así que son
-   * neutros de DLPay y no valores de otra librería.
-   */
+  /*
+    Sin panel, sin radio, sin sombra y sin fondo: la figura ES el dibujo. El
+    `max-width` coincide con el ancho del `viewBox` para que nunca se escale
+    por encima de su tamaño natural, y el alto lo deja gobernar la proporción
+    460×300 — igual en las cuatro, así que las cuatro filas miden lo mismo.
+  */
   .emblem {
-    --w-surface: #19212D;   /* filas y tarjetas, sobre el panel      */
-    --w-raised: #222B39;    /* la pieza que va encima del resto      */
-    --w-line: rgba(255, 255, 255, .08);
-    --w-line-2: rgba(255, 255, 255, .14);
-
     width: 100%;
-    max-width: 380px;
-    aspect-ratio: 4 / 3;
-    background: var(--tinta-2);
-    border: 1px solid var(--w-line);
-    border-radius: var(--r-3);
-    box-shadow: var(--elev-card);
-    padding: var(--s-4);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: var(--s-3);
-  }
-
-  /* ── Piezas compartidas ─────────────────────────────────────────────────── */
-  .top { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
-  .title {
-    font-size: var(--t-dato-sm);
-    font-weight: 600;
-    letter-spacing: var(--ls-label);
-    color: var(--on-tinta);
-  }
-  .state {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: var(--on-tinta-mute);
-  }
-  /* Indicador de estado. El resplandor es el mismo verde a baja opacidad: es
-     lo que hace que un punto se lea como «encendido» y no como una viñeta. */
-  .dot {
-    width: 7px;
-    height: 7px;
-    flex: none;
-    border-radius: 50%;
-    background: var(--verde);
-    box-shadow: 0 0 0 3px rgba(22, 199, 132, .16);
-  }
-  .foot {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: var(--s-3);
-    border-top: 1px solid var(--w-line);
-    font-size: 11px;
-    color: var(--on-tinta-mute);
-  }
-
-  /* ── Ruteo de pagos ─────────────────────────────────────────────────────── */
-  .routes { display: grid; gap: 6px; }
-  .route {
-    display: flex;
-    align-items: center;
-    gap: var(--s-3);
-    padding: 9px var(--s-3);
-    background: var(--w-surface);
-    border: 1px solid var(--w-line);
-    border-radius: var(--r-2);
-  }
-  .idx { font-size: 11px; color: var(--on-tinta-mute); flex: none; }
-  /* Los destinos van abstraídos en barras: la página no inventa nombres de
-     clientes ni de proveedores (D10). */
-  .bars { flex: 1; display: grid; gap: 5px; }
-  .bar { height: 5px; border-radius: var(--r-1); background: var(--w-raised); }
-  .bar.sm { width: 55%; opacity: .7; }
-
-  /* ── Saldo ──────────────────────────────────────────────────────────────── */
-  .balance-card {
-    /* `margin-block: auto` en vez de `flex: 1`: la tarjeta mide lo que mide su
-       contenido y se centra en el panel. Estirada dejaba media tarjeta vacía. */
-    margin-block: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: var(--s-2);
-    padding: var(--s-4);
-    background: var(--w-surface);
-    border: 1px solid var(--w-line);
-    border-radius: var(--r-2);
-  }
-  .balance {
-    display: flex;
-    align-items: baseline;
-    gap: var(--s-2);
-    font-size: var(--t-h2-m);
-    font-weight: 600;
-    line-height: var(--lh-dato);
-    letter-spacing: var(--ls-dato);
-    color: var(--verde);
-  }
-  .balance em {
-    font-style: normal;
-    font-size: var(--t-dato-sm);
-    font-weight: 500;
-    color: var(--on-tinta-mute);
-  }
-
-  /* ── Comprobantes apilados ──────────────────────────────────────────────── */
-  .stack { position: relative; flex: 1; }
-  .receipt {
-    position: absolute;
-    left: 0;
-    right: 0;
-    /* Anclado al centro del panel y desplazado desde ahí: el del medio queda
-       centrado y los otros dos reparten arriba y abajo. Con `top: 0` la pila
-       se apelotonaba contra el borde superior y dejaba el panel vacío debajo.
-       Cada comprobante baja un escalón y se estrecha un poco: la pila se lee
-       en perspectiva sin recurrir a una transformación 3D. */
-    top: 50%;
-    transform:
-      translateY(calc(-50% + (var(--i) - 1) * 26px))
-      scaleX(calc(1 - (2 - var(--i)) * .05));
-    z-index: var(--i);
-    padding: var(--s-3);
-    background: var(--w-surface);
-    border: 1px solid var(--w-line);
-    border-radius: var(--r-2);
-    box-shadow: 0 10px 20px -10px rgba(0, 0, 0, .6);
-  }
-  .receipt:nth-child(3) { background: var(--w-raised); border-color: var(--w-line-2); }
-  .r-top { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
-  .r-amount {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    margin-top: var(--s-2);
-    font-size: var(--t-h3-m);
-    font-weight: 600;
-    line-height: var(--lh-dato);
-    letter-spacing: var(--ls-dato);
-    color: var(--verde);
-  }
-  .r-amount em {
-    font-style: normal;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--on-tinta-mute);
-  }
-  .r-foot {
+    max-width: 460px;
+    height: auto;
     display: block;
-    height: 1px;
-    margin-top: var(--s-3);
-    background: var(--w-line);
-  }
-
-  /* ── Terminal ───────────────────────────────────────────────────────────── */
-  .rate {
-    font-size: var(--t-h2-m);
-    font-weight: 600;
-    line-height: var(--lh-dato);
-    letter-spacing: var(--ls-dato);
-    color: var(--on-tinta);
-  }
-  .legs { display: grid; gap: 6px; }
-  .leg {
-    display: flex;
-    align-items: center;
-    gap: var(--s-2);
-    padding: 9px var(--s-3);
-    background: var(--w-surface);
-    border: 1px solid var(--w-line);
-    border-radius: var(--r-2);
-    font-size: 11px;
-    color: var(--on-tinta-mute);
-  }
-  .chip {
-    padding: 2px 6px;
-    border-radius: var(--r-1);
-    background: var(--w-raised);
-    color: var(--on-tinta);
-    font-size: 10px;
-  }
-  .leg-val { margin-left: auto; color: var(--on-tinta); font-size: var(--t-dato-sm); }
-  /* El indicador de conversión: la cuña del sistema, girada al eje vertical. */
-  .swap { display: flex; justify-content: center; }
-  .swap i {
-    display: block;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: rgba(22, 199, 132, .14);
-    position: relative;
-  }
-  .swap i::before,
-  .swap i::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    width: 1.5px;
-    height: 6px;
-    background: var(--verde);
-    border-radius: 1px;
-  }
-  .swap i::before { top: 5px; transform: translateX(-50%) rotate(28deg); }
-  .swap i::after  { bottom: 5px; transform: translateX(-50%) rotate(28deg); }
-
-  @media (min-width: 900px) {
-    .emblem { padding: var(--s-5); }
-    .balance { font-size: var(--t-h2); }
-    .rate { font-size: var(--t-h2); }
-    .receipt {
-      transform:
-        translateY(calc(-50% + (var(--i) - 1) * 30px))
-        scaleX(calc(1 - (2 - var(--i)) * .05));
-    }
   }
 </style>
