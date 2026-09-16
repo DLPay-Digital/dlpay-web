@@ -299,6 +299,56 @@ console.log(drawer.contains(el) ? 'el cajón' : 'otra cosa');
 Y para confirmar que la causa es una animación, basta desactivarla y volver a medir:
 `el.style.animation = 'none'`. Si el orden cambia, ya está localizado.
 
+## El servidor de desarrollo envejece — y miente en silencio
+
+**Ya ha costado dos idas y vueltas. Es lo primero que hay que descartar** cuando alguien dice «lo
+veo mal» y el build se ve bien.
+
+Un `astro dev` de larga vida —días, no horas— puede acabar sirviendo **el HTML nuevo con el CSS
+viejo**. El HMR sigue recompilando las plantillas, pero su grafo de estilos se queda atrás. No hay
+error en consola, no hay aviso, y la página se ve rota de una forma que parece un fallo de
+maquetación.
+
+- **2026-09-15.** Un proceso huérfano (padre `launchd`, arrancado con `--json` por una herramienta,
+  sin terminal, así que Ctrl-C no lo tocaba) servía una versión anterior a un cambio de
+  `astro.config.mjs`, que además Astro **sólo lee al arrancar**.
+- **2026-09-16.** Un servidor de 27 horas servía `class="inner stacked"` sin una sola regla
+  `.stacked` cargada, y `--montaje` sin declarar. El encabezado de `/empresas` se veía alineado a
+  la izquierda con el portátil dentro de la banda: exactamente el diseño anterior.
+
+### Cómo se diagnostica en diez segundos
+
+Desde la consola del navegador, sobre la página sospechosa: se cuenta si la regla que debería
+aplicar existe siquiera en las hojas cargadas.
+
+```js
+let n = 0;
+for (const sh of document.styleSheets) {
+  let rs; try { rs = sh.cssRules } catch { continue }
+  for (const r of rs) {
+    if (r.cssText?.includes('LA-CLASE')) n++;
+    if (r.cssRules) for (const r2 of r.cssRules) if (r2.cssText?.includes('LA-CLASE')) n++;
+  }
+}
+n; // 0 con el marcado nuevo en pantalla = el servidor está viejo, no el código
+```
+
+Si la clase está en el DOM y el contador da **0**, no se toca el código: se reinicia el servidor.
+
+### La regla que sale de acá
+
+**Verificar sobre el build no basta.** `dist/` puede estar perfecto mientras la persona que reporta
+mira otra cosa. Cuando un cambio visual se da por terminado, conviene comprobarlo **en el mismo
+sitio donde lo va a mirar quien lo pidió**, y ante cualquier duda reiniciar el servidor primero:
+
+```sh
+lsof -nP -iTCP:4321 -sTCP:LISTEN     # quién lo tiene tomado
+ps -o pid,lstart,command -p <PID>    # desde cuándo lleva vivo
+kill <PID> && npx astro dev
+```
+
+---
+
 ## Verificación visual con Chrome headless
 
 **El MCP de Playwright conecta desde el 2026-09-10** (`npx` está en `/usr/local/bin/npx`,
