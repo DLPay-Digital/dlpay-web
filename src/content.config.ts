@@ -22,7 +22,7 @@ import { glob } from 'astro/loaders';
 
 const blog = defineCollection({
   loader: glob({ base: './src/content/blog', pattern: '**/*.md' }),
-  schema: ({ image }) =>
+  schema: () =>
     z.object({
       title: z.string(),
       description: z.string(),
@@ -42,12 +42,57 @@ const blog = defineCollection({
        */
       estado: z.enum(['borrador', 'publicado']).default('borrador'),
       /**
-       * Opcional a propósito: no todo artículo necesita portada, y el listado
-       * ya contempla las dos formas. `image()` resuelve la ruta relativa al
-       * propio archivo y entrega ancho, alto y formato, que es lo que permite
-       * a `<Image/>` reservar el espacio y evitar saltos de layout.
+       * La portada del artículo: una figura de DATO, no una imagen.
+       *
+       * Opcional a propósito — un artículo sin portada arranca por el titular y
+       * la página funciona. No todo artículo de categoría DLPay tiene un dato
+       * que mostrar.
+       *
+       * `fuente` es OBLIGATORIA, y no por formalismo: en cuanto hay una cifra
+       * hay que decir de dónde salió. Es el mismo criterio de
+       * `lib/config/alliances.ts`, donde el dato declara el alcance de su propio
+       * claim. Las cifras de una portada son contenido de mercado y las aprueba
+       * Compliance junto con el texto (CLAUDE.md §3 y §6), nunca ingeniería.
+       *
+       * Sustituye a `coverImage`, retirado el 2026-09-16. Lo que había era un
+       * PNG de cuñas diagonales sobre tinta usado dos veces en el mismo
+       * artículo: papel tapiz, que el Design System §6 prohíbe con esas
+       * palabras. El campo se elimina en vez de quedar reservado, siguiendo el
+       * precedente del proyecto —lo que no se usa se borra, como `ActivityFeed`
+       * (D18)—: la portada de dato es un componente, no un campo de imagen.
        */
-      coverImage: image().optional(),
+      portada: z
+        .object({
+          /** Un valor fuera de la lista rompe el build, igual que `category`. */
+          tipo: z.enum(['cifra', 'rango']),
+          etiqueta: z.string().min(1),
+          /** Sólo en `cifra`. */
+          valor: z.number().optional(),
+          /** Sólo en `rango`. */
+          min: z.number().optional(),
+          max: z.number().optional(),
+          unidad: z.string().min(1),
+          fecha: z.coerce.date(),
+          fuente: z.string().min(1),
+        })
+        /*
+          Los campos de cifra dependen del tipo, y eso Zod no lo expresa con un
+          objeto plano. El refinamiento convierte en ERROR DE BUILD lo que si no
+          sería una portada a medio dibujar: un `rango` sin `max` saldría con un
+          hueco, y nadie lo vería hasta mirar la página.
+        */
+        .superRefine((p, ctx) => {
+          if (p.tipo === 'cifra' && p.valor === undefined) {
+            ctx.addIssue({ code: 'custom', message: 'portada de tipo `cifra` necesita `valor`' });
+          }
+          if (p.tipo === 'rango' && (p.min === undefined || p.max === undefined)) {
+            ctx.addIssue({ code: 'custom', message: 'portada de tipo `rango` necesita `min` y `max`' });
+          }
+          if (p.tipo === 'rango' && p.min !== undefined && p.max !== undefined && p.min > p.max) {
+            ctx.addIssue({ code: 'custom', message: '`min` no puede ser mayor que `max`' });
+          }
+        })
+        .optional(),
     }),
 });
 

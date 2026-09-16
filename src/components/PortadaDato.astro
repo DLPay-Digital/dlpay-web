@@ -1,0 +1,220 @@
+---
+/**
+ * La portada de un artículo del blog: una figura de DATO, dibujada en el
+ * sistema. Sin archivos y sin imágenes.
+ *
+ * ── Por qué existe ─────────────────────────────────────────────────────────
+ *
+ * Lo que había antes era `coverImage`: un PNG de cuñas diagonales sobre tinta,
+ * usado dos veces en el mismo artículo —como portada y otra vez en el cuerpo—.
+ * Eso es papel tapiz, que el Design System §6 prohíbe con esas palabras. No
+ * faltaban imágenes: sobraban dos marcadores de posición.
+ *
+ * Tampoco entra foto de stock. El Principio 3 la prohíbe por identidad, y hay
+ * un motivo práctico que pesa igual: las licencias permisivas no entregan
+ * liberación de modelo ni de propiedad, así que con una persona, una marca o un
+ * edificio reconocible responde quien publica. Para una fintech eso es revisar
+ * la licencia de cada imagen, en cada artículo, para siempre.
+ *
+ * ── LA REGLA QUE ORDENA ESTO ───────────────────────────────────────────────
+ *
+ *   **La cuña no entra en las portadas.**
+ *
+ * La cuña es la marca del VALOR MOVIÉNDOSE (ADR-0001 §3, Design System §6): es
+ * la misma que dibuja pesos cruzando una frontera en `/empresas`. Una portada
+ * muestra un DATO, no un movimiento. En cuanto una portada usa esa marca,
+ * afirma un flujo — y entre dos cosas que no se mueven una hacia la otra, eso
+ * es una afirmación causal.
+ *
+ * Nace de un error real, y conviene que quede escrito: la primera versión de
+ * esta pieza traía un tercer tipo, `propagacion`, con dos marcadores rotulados
+ * FOMC y CLP unidos por un tramo con cuña. Con la gramática del sitio, ese
+ * dibujo dice que algo de valor va de la Fed al peso chileno — una relación
+ * causal justo en el artículo que se cuida de escribir «sin pronósticos». La
+ * portada contradecía al texto. Por eso son dos tipos y no tres.
+ *
+ * ── Por qué HTML y CSS, y no un SVG ────────────────────────────────────────
+ *
+ * La maqueta venía en SVG con un `viewBox` de 760 y las posiciones fijadas a
+ * mano. Dos problemas, los dos medidos:
+ *
+ * · **Ilegible en móvil.** Un SVG a `width: 100%` escala TODO su contenido. A
+ *   390 px el lienzo de 760 se dibuja a 0,46, así que la etiqueta, la fecha y
+ *   la fuente —13 y 14 px en el lienzo— se renderizaban a unos 6 px reales. Es
+ *   el mismo fallo que la auditoría externa encontró en los rótulos del globo.
+ * · **Frágil.** Las `x` estaban calculadas para «3,50» y «940,91»; con un
+ *   número de otro largo la unidad se montaba encima o quedaba flotando.
+ *
+ * En HTML los cuerpos son CSS y no escalan con el ancho, y el flujo coloca cada
+ * pieza sin que nadie calcule nada. Esto es tipografía con una barra entre dos
+ * cifras, no un dibujo: el SVG estaba resolviendo un problema que no tenía. En
+ * escritorio el resultado es el de la maqueta aprobada.
+ *
+ * La cifra y su fuente tienen que estar TAMBIÉN en el texto del artículo si son
+ * parte del argumento: una portada no puede ser el único sitio donde vive un
+ * dato.
+ *
+ * Sin movimiento: un dato no entra animado (Motion System §4, regla dura 3).
+ */
+import { formatRate } from '../lib/pricing/format.ts';
+
+interface Portada {
+  tipo: 'cifra' | 'rango';
+  etiqueta: string;
+  valor?: number | undefined;
+  min?: number | undefined;
+  max?: number | undefined;
+  unidad: string;
+  fecha: Date;
+  fuente: string;
+}
+
+interface Props {
+  portada: Portada;
+}
+const { portada } = Astro.props;
+
+/*
+  Las cifras se formatean con `lib/pricing/format.ts`, que ya sabe el formato
+  chileno: nunca se escriben a mano con separadores en el frontmatter. El
+  esquema recibe números y la conversión ocurre acá.
+*/
+const valorTexto = portada.valor !== undefined ? formatRate(portada.valor) : '';
+const minTexto = portada.min !== undefined ? formatRate(portada.min) : '';
+const maxTexto = portada.max !== undefined ? formatRate(portada.max) : '';
+
+/*
+  La fecha va `DD-MM-AAAA`, el mismo formato tabular que el índice de /blog. NO
+  lleva el separador «·» que traía la maqueta: el Design System lo prohíbe
+  expresamente como metadato decorativo.
+
+  `getUTC*` y no `get*`: en el frontmatter la fecha va sin hora, así que se
+  interpreta como medianoche UTC. Leída en la zona de Chile retrocedería un día.
+*/
+const dosDigitos = (n: number): string => String(n).padStart(2, '0');
+const fechaCorta = `${dosDigitos(portada.fecha.getUTCDate())}-${dosDigitos(portada.fecha.getUTCMonth() + 1)}-${portada.fecha.getUTCFullYear()}`;
+const fechaISO = portada.fecha.toISOString();
+---
+<div class:list={['portada', portada.tipo]}>
+  <div class="inner">
+    <p class="etiqueta">{portada.etiqueta}</p>
+
+    <p class="dato">
+      {portada.tipo === 'cifra' ? (
+        <>
+          <span class="valor">{valorTexto}</span>
+          <span class="unidad">{portada.unidad}</span>
+        </>
+      ) : (
+        <>
+          <span class="valor">{minTexto}</span>
+          {/*
+            El intervalo: un segmento con un tope en cada extremo. NO apunta a
+            ninguna parte, y ésa es la decisión — un rango no va a ningún lado, y
+            una punta de flecha afirmaría una dirección que el dato no tiene.
+          */}
+          <span class="intervalo" aria-hidden="true"></span>
+          <span class="valor">{maxTexto}</span>
+          <span class="unidad">{portada.unidad}</span>
+        </>
+      )}
+    </p>
+
+    <p class="pie">
+      <time datetime={fechaISO}>{fechaCorta}</time>
+      <span class="fuente">Fuente: {portada.fuente}</span>
+    </p>
+  </div>
+</div>
+
+<style>
+  /* Banda a sangre en tinta, con el dato dentro de la columna de lectura del
+     artículo. Ancha y corta: es una portada, no un héroe. Sin cuñas — ver la
+     regla en el bloque de arriba. */
+  .portada { background: var(--tinta); padding: var(--s-6) 0; }
+  .inner { max-width: 760px; margin: 0 auto; padding: 0 var(--pad-section-m); }
+
+  .etiqueta {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--on-tinta-mute);
+    margin-bottom: var(--s-2);
+  }
+
+  /*
+    La cifra manda (Design System §3.0). `--cuerpo` lo fija cada tipo: una cifra
+    sola puede ser mayor que las dos de un rango, que además comparten la línea
+    con la barra. Los dos cuerpos suben en escritorio.
+  */
+  .dato {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-family: var(--f-num);
+  }
+  .cifra { --cuerpo: 40px; }
+  .rango { --cuerpo: 30px; }
+  .valor {
+    font-size: var(--cuerpo);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--on-tinta);
+    /* Que una cifra larga no parta ni empuje la barra fuera de la caja. */
+    white-space: nowrap;
+  }
+  .unidad { font-size: var(--t-body-sm); color: var(--on-tinta-mute); }
+  /* En `cifra` la unidad respira: pegada a un número grande se leería como
+     parte de él. En `rango` cierra la línea y no necesita tanto aire. */
+  .cifra .unidad { margin-left: var(--s-3); }
+
+  /* El intervalo: barra con un tope en cada extremo, nunca una flecha. */
+  .intervalo {
+    flex: 1;
+    position: relative;
+    height: 8px;
+    min-width: var(--s-6);
+    background: var(--verde);
+    margin: 0 var(--s-3);
+  }
+  .intervalo::before,
+  .intervalo::after {
+    content: '';
+    position: absolute;
+    top: -11px;
+    width: 3px;
+    height: 30px;
+    background: var(--verde);
+  }
+  .intervalo::before { left: 0; }
+  .intervalo::after { right: 0; }
+
+  .pie {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--s-1) var(--s-4);
+    margin-top: var(--s-4);
+    padding-top: var(--s-3);
+    /* El mismo gris del texto secundario, diluido: es un filete de separación,
+       no un contorno de control (Design System §2.2). */
+    border-top: 1px solid rgba(157, 176, 170, 0.35);
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--on-tinta-mute);
+  }
+  /* La fuente puede ser larga; que envuelva en vez de desbordar. */
+  .fuente { min-width: 0; }
+
+  @media (min-width: 900px) {
+    .portada { padding: var(--s-7) 0; }
+    .inner { padding-inline: 0; }
+    .cifra { --cuerpo: 66px; }
+    .rango { --cuerpo: 48px; }
+    .unidad { font-size: 18px; }
+    .cifra .unidad { margin-left: var(--s-5); }
+    .intervalo { margin: 0 var(--s-5); }
+    .intervalo::before,
+    .intervalo::after { top: -12px; height: 32px; }
+  }
+</style>

@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propuesta — el blog sin portadas, texto primero</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+  @font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+
+  /* — andamio del board, no es parte de la propuesta — */
+  .board{max-width:var(--container);margin:0 auto;padding:var(--s-7) var(--pad-section) var(--s-4)}
+  .board p{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute)}
+  .board h2{font-size:var(--t-h3);margin-top:var(--s-2);padding-top:var(--s-3);border-top:1px solid var(--line)}
+  .scaffold{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
+    background:var(--papel-2);border:1px dashed var(--line);padding:var(--s-3);text-align:center}
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     BANDA DE ENCABEZADO — el mismo objeto que PageHero, con una línea de meta.
+     Es lo que sustituye a la portada: la superficie hace de imagen.
+     ───────────────────────────────────────────────────────────────────────── */
+  .band{background:var(--tinta);color:var(--on-tinta);position:relative;overflow:hidden;
+    padding:var(--s-7) 0 var(--s-8)}
+  .band .wedges{position:absolute;inset:0;pointer-events:none;background:var(--verde);opacity:.07;
+    clip-path:polygon(0 100%,46% 0,60% 0,15% 100%,20% 100%,66% 0,71% 0,26% 100%)}
+  .band .inner{position:relative;max-width:var(--container);margin:0 auto;padding:0 var(--pad-section-m)}
+  /* Sólo la del artículo se estrecha, para alinear con la columna de lectura. */
+  .band.articulo .inner{max-width:760px}
+  .band h1{font-size:var(--t-display-m);font-weight:700;line-height:var(--lh-display);
+    letter-spacing:var(--ls-display)}
+  .meta{display:flex;align-items:center;gap:var(--s-3);margin-bottom:var(--s-4);
+    font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--on-tinta-mute)}
+  .meta .cat{color:var(--verde);font-weight:600}
+  .band .lead{color:var(--on-tinta-mute);font-size:var(--t-h3-m);margin-top:var(--s-4);max-width:54ch}
+
+  /* ── LISTADO ───────────────────────────────────────────────────────────── */
+  .list{background:var(--papel);padding:var(--s-9) 0}
+  .list .inner{max-width:var(--container);margin:0 auto;padding:0 var(--pad-section-m)}
+  .posts{list-style:none;margin:0;padding:0}
+  .posts li{border-top:1px solid var(--line)}
+  .posts li:last-child{border-bottom:1px solid var(--line)}
+  .posts a{display:grid;gap:var(--s-2);padding:var(--s-6) 0;text-decoration:none;
+    transition:color var(--m-fast) var(--m-ease)}
+  .p-meta{display:flex;gap:var(--s-3);font-family:var(--f-num);font-size:var(--t-dato-sm);
+    color:var(--ink-mute)}
+  .p-meta .cat{color:var(--verde-deep);font-weight:600}
+  .p-title{font-size:var(--t-h3-m);font-weight:700;line-height:var(--lh-h3);color:var(--ink);
+    transition:color var(--m-fast) var(--m-ease)}
+  .p-desc{color:var(--ink-mute);font-size:var(--t-body-sm);max-width:62ch}
+  .posts a:hover .p-title{color:var(--verde-deep)}
+
+  /* ── CUERPO DEL ARTÍCULO ───────────────────────────────────────────────── */
+  .post{max-width:760px;margin:0 auto;padding:var(--s-8) var(--pad-section-m) var(--s-9)}
+  .prose h2{font-size:var(--t-h2-m);font-weight:700;line-height:var(--lh-h2);
+    letter-spacing:var(--ls-h2);margin:var(--s-7) 0 var(--s-3)}
+  .prose h3{font-size:var(--t-h3);font-weight:600;line-height:var(--lh-h3);margin:var(--s-6) 0 var(--s-2)}
+  .prose p{margin-bottom:var(--s-4)}
+  .prose ul{margin:0 0 var(--s-4) var(--s-5)}
+  .prose li{margin-bottom:var(--s-2)}
+  .prose a{color:var(--verde-deep)}
+  .prose blockquote{margin:var(--s-6) 0;padding-left:var(--s-5);border-left:2px solid var(--verde);
+    color:var(--ink-mute)}
+  .back{max-width:760px;margin:0 auto;padding:0 var(--pad-section-m) var(--s-9)}
+  .back a{color:var(--verde-deep);font-weight:600;font-size:var(--t-body-sm)}
+
+  @media (min-width:900px){
+    .band{padding:var(--s-8) 0 var(--s-9)}
+    .band h1{font-size:var(--t-h2)}
+    .list .inner{padding-inline:var(--pad-section)}
+    /* La fecha gana columna propia: tabular, alineada, como cualquier cifra
+       del sitio. Es el gesto que convierte una lista en un índice. */
+    .posts a{grid-template-columns:160px 1fr;column-gap:var(--s-7);row-gap:var(--s-2);align-items:start}
+    /* Colocación explícita: con tres hijos y dos columnas, el flujo automático
+       mandaba la bajada a la columna de la fecha. */
+    .p-meta{grid-column:1;grid-row:1/span 2}
+    .p-title{grid-column:2;grid-row:1}
+    .p-desc{grid-column:2;grid-row:2}
+    .p-meta{flex-direction:column;gap:var(--s-1)}
+    .p-title{font-size:var(--t-h2-m)}
+    .band .inner,.post,.back{padding-inline:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="board">
+  <p>cowork · 2026-09-16 · /blog</p>
+  <h2>1 · El listado</h2>
+</div>
+
+<section class="band">
+  <div class="wedges" aria-hidden="true"></div>
+  <div class="inner">
+    <h1>Blog</h1>
+    <p class="lead">Qué mueve el precio del dólar y cómo leerlo antes de operar.</p>
+  </div>
+</section>
+
+<section class="list">
+  <div class="inner">
+    <ul class="posts">
+      <li><a href="#">
+        <span class="p-meta"><span class="cat">Mercado</span><time datetime="2026-09-17">17-09-2026</time></span>
+        <span class="p-title">La Fed cerró su reunión de septiembre. Cómo llegó la señal al peso.</span>
+        <span class="p-desc">El FOMC se reunió el 15 y 16 de septiembre. Qué comunicó, con qué voto y
+          cómo se está traduciendo al mercado cambiario chileno, sin pronósticos.</span>
+      </a></li>
+      <li><a href="#">
+        <span class="p-meta"><span class="cat">Mercado</span><time datetime="2026-09-11">11-09-2026</time></span>
+        <span class="p-title">El dólar cerró la semana con menos volatilidad de la esperada</span>
+        <span class="p-desc">Qué movió al peso esta semana, qué mirar la próxima y por qué el precio
+          del cotizador es referencial hasta que un ejecutivo lo confirma.</span>
+      </a></li>
+    </ul>
+  </div>
+</section>
+
+<div class="board">
+  <h2>2 · El artículo</h2>
+</div>
+<div class="scaffold">andamio de la vista · en su sitio, arriba va Header.astro</div>
+
+<section class="band articulo">
+  <div class="wedges" aria-hidden="true"></div>
+  <div class="inner">
+    <span class="meta"><span class="cat">Mercado</span><time>11 de septiembre de 2026</time></span>
+    <h1>El dólar cerró la semana con menos volatilidad de la esperada</h1>
+    <p class="lead">Qué movió al peso esta semana, qué mirar la próxima y por qué el precio del
+      cotizador es referencial hasta que un ejecutivo lo confirma.</p>
+  </div>
+</section>
+
+<article class="post">
+  <div class="prose">
+    <p>REQUIERE VALIDACIÓN DE COMPLIANCE — este artículo es <strong>contenido de prueba</strong>
+      para verificar la infraestructura del blog. No describe el mercado real, no contiene análisis
+      verificado y no debe publicarse.</p>
+    <h2>Qué pasó esta semana</h2>
+    <p>El tipo de cambio se movió dentro de un rango estrecho durante la mayor parte de la semana.
+      Para quien cambia divisas, lo relevante no es el titular del día sino el rango: cuando el
+      precio se mueve poco, la diferencia entre cotizar hoy o mañana pesa menos que la diferencia
+      entre un canal y otro.</p>
+    <h3>Lo que sí conviene mirar</h3>
+    <ul>
+      <li>El rango de la semana, no el cierre de un día suelto.</li>
+      <li>Si tu operación es recurrente, el promedio del mes dice más que cualquier máximo.</li>
+      <li>El precio que ves en nuestro cotizador es <strong>referencial</strong>: un ejecutivo
+        confirma el precio final antes de cerrar.</li>
+    </ul>
+    <h2>Qué mirar la próxima semana</h2>
+    <p>Las publicaciones de datos económicos suelen concentrar el movimiento en pocas horas. Si tu
+      operación no es urgente, conviene evitar cotizar justo en esos tramos y conversarlo con tu
+      ejecutivo.</p>
+    <blockquote>El precio de referencia no es una promesa de ejecución. Lo confirma una persona
+      antes de cerrar la operación.</blockquote>
+    <p>Para entender el recorrido completo del dinero, desde tu transferencia hasta la entrega del
+      dólar digital en tu billetera, está la página de
+      <a href="#">cómo funciona una operación</a>.</p>
+  </div>
+</article>
+<div class="back"><a href="#">Ver todos los artículos</a></div>
+<div class="scaffold">andamio de la vista · en su sitio, abajo va Footer.astro</div>
+
+</body>
+</html>

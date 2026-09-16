@@ -22,18 +22,45 @@ PENDIENTE — actualizar el jueves 17-sep-2026 a primera hora con los cuatro dat
   4. Cierre intradía del DXY el miércoles y dólar observado del jueves en la apertura.
 Los tramos que dependen de esos datos están marcados en el cuerpo con [PENDIENTE — ...].
 
-PENDIENTE DE ASSET — portada:
-  Concepto: diagrama de propagación de una decisión monetaria. Dos marcadores en tinta rotulados
-  "FOMC" (izquierda) y "CLP" (derecha), conectados por un tramo angular en verde-deep con corte
-  diagonal ~30°. Un chevron intermedio indica sentido del flujo. Un rótulo de fecha "16 · 09 · 2026"
-  en Spline Sans Mono, abajo a la izquierda.
-  Paleta estricta: fondo --papel (#F6F5F1), marcadores y trazos en --tinta (#0B1320), conexión en
-  --verde-deep (#0B7A54).
-  Prohibido: --verde #16C784 en trazos con significado (contraste insuficiente), banderas, billetes,
-  monedas físicas, personas, curvas de mercado, red de nodos.
-  Formato: 1200×630 px (OG estándar), PNG optimizado. Guardar como
-  ./fed-septiembre-2026-que-senal-deja-para-el-peso-portada.png y añadir al frontmatter:
-      coverImage: './fed-septiembre-2026-que-senal-deja-para-el-peso-portada.png'
+PENDIENTE — portada del artículo:
+  REESCRITO EL 2026-09-16. Lo que había acá pedía un PNG de 1200×630 con un diagrama de
+  "propagación": dos marcadores rotulados "FOMC" y "CLP" unidos por un tramo con un chevron que
+  indicaba el sentido del flujo. Ese asset NO se debe producir, por dos motivos.
+
+  1 · El dibujo afirmaba lo que el artículo evita decir. La cuña es la marca del valor
+      moviéndose (ADR-0001 §3, Design System §6): es la misma que dibuja pesos cruzando una
+      frontera en /empresas. Dos marcadores unidos por una cuña dicen que algo de valor va de la
+      Fed al peso chileno — una relación causal, justo en el artículo que escribe "no pronostica
+      ni recomienda operar". La portada contradecía al texto.
+
+      De ahí sale la regla que hoy gobierna esto: LA CUÑA NO ENTRA EN LAS PORTADAS. Una portada
+      muestra un dato, no un movimiento. Está en el Design System §6.
+
+  2 · Ya no hay archivo que producir. Las portadas son SVG dibujado en la página por
+      `PortadaDato.astro`, y se declaran en el frontmatter. No se sube ningún PNG y no existe el
+      campo `coverImage`, retirado el 2026-09-16.
+
+  QUÉ HACER EN SU LUGAR. Este artículo cae en el tipo `rango`, porque la tasa objetivo de la Fed
+  es literalmente un rango, y con eso la portada pasa a ser EL DATO del que habla el artículo sin
+  afirmar ningún vínculo. Al cerrar el texto, añadir al frontmatter con las cifras de septiembre:
+
+      portada:
+        tipo: rango
+        etiqueta: 'Tasa de fondos federales'
+        min: 3.50            # REQUIERE VALIDACIÓN DE COMPLIANCE — cifra de mercado
+        max: 3.75            # REQUIERE VALIDACIÓN DE COMPLIANCE — cifra de mercado
+        unidad: '%'
+        fecha: 2026-09-16
+        fuente: 'comunicado del FOMC'
+
+  `fuente` es obligatoria: el esquema rompe el build sin ella. Las cifras las aprueba Compliance
+  junto con el texto, no ingeniería. Y si van en la portada tienen que estar TAMBIÉN en el cuerpo
+  del artículo: una portada no puede ser el único sitio donde vive un dato.
+
+  La paleta del bloque anterior también queda sin efecto. Pedía fondo --papel con trazos en
+  --tinta y --verde-deep, que era lo correcto para un PNG suelto sobre página clara. La portada es
+  una banda a sangre en tinta: sobre ella --verde rinde 8,45:1 y puede llevar el trazo, que es
+  justamente lo que --verde-deep venía a resolver sobre claro.
 -->
 
 Esta semana la Reserva Federal de Estados Unidos volvió a decidir qué hace con su tasa de

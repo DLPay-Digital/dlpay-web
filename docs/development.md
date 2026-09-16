@@ -625,6 +625,14 @@ cualquier servidor estático.** Lo que rompa esa afirmación necesita una enmien
 | `/blog/<slug>` | Un artículo. Una página por entrada de la colección | 0,5 KB |
 | `404` | La dirección no existe. **No es una ruta**: el host la sirve bajo cualquier URL | 0 |
 
+**Las portadas son figuras de dato, no imágenes** (2026-09-16). `coverImage` se retiró: lo que
+había era un PNG de cuñas diagonales usado dos veces en el mismo artículo, o sea papel tapiz, que
+el Design System §6 prohíbe. En su lugar el frontmatter declara `portada` —`cifra` o `rango`— y
+`PortadaDato.astro` la dibuja en HTML sobre una banda en tinta. `fuente` es obligatoria: ninguna
+figura publica un número sin decir de dónde salió, y esas cifras las aprueba Compliance junto con
+el texto. La regla que gobierna el dibujo —**la cuña no entra en las portadas**— está en el Design
+System §6.1.
+
 **La 404 se añadió el 2026-09-15** y no se cuenta entre las rutas: no tiene dirección propia. Reusa
 `PageHero` sin componentes nuevos, va con `noindex` y sin canónico, queda **excluida del sitemap**
 por nombre en `sitemap.xml.ts` y no importa `Motion.astro`, así que es la quinta página del sitio en
@@ -635,7 +643,7 @@ lo más probable que caiga aquí son URL de cuenta (`/auth/login/`, `/app/`), no
 
 **El blog se añadió el 2026-09-11** y es la novena ruta estática, más una por artículo. La
 colección vive en `src/content.config.ts` con un esquema cerrado —`title`, `description`,
-`pubDate`, `category` (sólo `DLPay` o `Mercado`) y `coverImage` opcional—: una categoría fuera de
+`pubDate`, `category` (sólo `DLPay` o `Mercado`) y `portada` opcional—: una categoría fuera de
 esa lista rompe el build. Sin paquetes nuevos, porque `sharp` ya viene como dependencia opcional
 de Astro. **Ningún artículo se publica sin pasar por Compliance** (CLAUDE.md §6): un análisis de
 mercado afirma algo sobre precios y cae de lleno en §3. El que existe hoy lleva su marcador y sólo

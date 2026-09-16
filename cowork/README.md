@@ -121,6 +121,8 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-16 | [`2026-09-16-blog-portada-de-dato`](2026-09-16-blog-portada-de-dato/ficha.md) — portada de dato y título debajo | **Integrada con cambios** | La estructura y los dos tipos, tal cual. El dibujo pasa de SVG a HTML: en móvil el SVG escalaba los rótulos a ~6 px |
+| 2026-09-16 | [`2026-09-16-blog-sin-portada`](2026-09-16-blog-sin-portada/ficha.md) — el blog sin portadas, texto primero | **Integrada** | El listado pasa a índice tal cual se propuso |
 | 2026-09-16 | [`2026-09-16-empresas-casos`](2026-09-16-empresas-casos/ficha.md) — lenguaje visual de «Para qué lo usan» (exploración) | **Integrada** | El diagnóstico de §1 es correcto y verificable; el tratamiento A es el único específico de DLPay |
 | 2026-09-16 | [`2026-09-16-empresas-casos` · propuesta](2026-09-16-empresas-casos/propuesta.html) — los cuatro casos en «plano recortado» | **Integrada** | Los cuatro SVG trasladados literalmente. Sin cambios de dibujo |
 
@@ -278,3 +280,48 @@ alguna vez se quiere cerrar ese canto — es la única página del sitio donde h
 **Sobre la carpeta `Claude outputs/`** en la raíz del repositorio: trae copias de `vista-390.png` y
 `vista-1280.png` que **no** son idénticas a las de la entrega. Queda sin versionar, fuera del
 contrato de §1. Conviene que las salidas terminen sólo dentro de `cowork/AAAA-MM-DD-slug/`.
+
+### Notas de la integración de las dos entregas del blog
+
+**El diagnóstico es correcto y lo verifiqué.** Los dos «bloques de imagen» del artículo eran el
+mismo archivo puesto dos veces, y ese archivo es una lámina de cuñas sobre tinta — papel tapiz, que
+el Design System §6 prohíbe con esas palabras. No faltaban imágenes: sobraban dos marcadores.
+
+**El listado va tal cual.** Índice de filas con filete, fecha tabular en columna propia, titular con
+el peso. Medido: a 1280 la bajada queda alineada con el titular (x=349) y no cae en la columna de la
+fecha (x=141) — la colocación explícita que avisaban era necesaria de verdad. Desborde 0 a 390 y
+1280, y no queda ninguna `.card` ni `.grid`.
+
+**El artículo va con la estructura propuesta** —portada arriba, y categoría, fecha, titular y bajada
+debajo sobre papel— y con los dos tipos, `cifra` y `rango`. Verifiqué los dos con un artículo
+temporal que ya borré.
+
+**Dos cambios sobre lo entregado, los dos con medición detrás:**
+
+1. **El dibujo pasa de SVG a HTML y CSS.** Un SVG a `width: 100%` escala TODO su contenido: a 390 px
+   el lienzo de 760 se dibuja a 0,46, así que la etiqueta, la fecha y la fuente —13 y 14 px en el
+   lienzo— se renderizaban a unos **6 px reales**. Está en la captura `articulo-390.png` de la
+   propia entrega: esos dos rótulos son manchas. Es el mismo fallo que la auditoría externa
+   encontró en los del globo, y no se podía repetir. En HTML los cuerpos son CSS y no escalan: hoy
+   miden 13 px a cualquier ancho. De paso desaparece el otro problema, que era de fondo: las `x`
+   estaban calculadas para «3,50» y «940,91», y con un número de otro largo la unidad se montaba
+   encima. En escritorio el resultado es el de la maqueta —la cifra a 66 px, la unidad donde
+   estaba— y lo comprobé contra las capturas.
+
+2. **La fecha de la portada pierde el separador «·».** La maqueta traía `29 · 07 · 2026` y el
+   Design System prohíbe expresamente «cadenas unidas con "·" como metadato decorativo». Pasa a
+   `29-07-2026`, que además es el formato tabular que la propia entrega eligió para el índice.
+
+**La decisión sobre `coverImage`: se borra.** Es lo que recomendaba la entrega y coincide con el
+precedente del proyecto —lo que no se usa se elimina, como `ActivityFeed`—. El campo, el PNG y las
+dos ramas condicionales de las plantillas se van enteros.
+
+**La regla queda anotada donde manda:** Design System **§6.1, «La cuña no entra en las portadas»**,
+con el porqué y con el error del que nace. El bloque `PENDIENTE DE ASSET` del borrador de la Fed se
+reescribió entero para que nadie produzca ese PNG, y en su lugar explica qué poner en el
+frontmatter cuando el artículo se cierre.
+
+**Medido:** desborde horizontal **0** a 360, 390 y 1280 en las dos páginas y en los dos tipos de
+portada. Cero JavaScript nuevo, cero imágenes, cero tokens nuevos, cero dependencias. El artículo de
+ejemplo sigue siendo borrador: el candado de `lib/blog.ts` lo deja fuera del build, así que nada de
+esto es público.

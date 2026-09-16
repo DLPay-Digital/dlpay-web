@@ -6,7 +6,6 @@
  * del sitio. Sin paginación: con el volumen actual sería infraestructura para
  * un problema que todavía no existe (Principio 5). Cuando haga falta, entra.
  */
-import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
@@ -18,18 +17,26 @@ import { publishedPosts } from '../../lib/blog.ts';
 const posts = await publishedPosts();
 
 /**
+ * La fecha del ÍNDICE va tabular y numérica (`17-09-2026`), no en prosa. Acá es
+ * una columna de datos: se alinea con las de arriba y abajo y nunca parte en
+ * dos líneas, que es justo lo que hacía «17 de septiembre de 2026» dentro de una
+ * columna estrecha. En el ARTÍCULO va larga, porque ahí es prosa. El
+ * `datetime` conserva la fecha ISO en los dos sitios, que es lo que leen las
+ * máquinas.
+ *
  * `timeZone: 'UTC'` NO es un detalle. En el frontmatter la fecha va sin hora,
  * así que `z.coerce.date()` la interpreta como medianoche UTC; formateada en la
  * zona local de Chile (−03:00) retrocedía un día y el artículo aparecía
- * publicado la víspera. Se fija la zona para que la fecha mostrada sea
- * exactamente la escrita.
+ * publicado la víspera.
  */
 const fecha = new Intl.DateTimeFormat('es-CL', {
-  day: 'numeric',
-  month: 'long',
+  day: '2-digit',
+  month: '2-digit',
   year: 'numeric',
   timeZone: 'UTC',
 });
+/* `es-CL` compone `17-09-2026` con guiones, que es la forma tabular buscada. */
+
 ---
 <Base
   title="Blog"
@@ -51,30 +58,18 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
         {posts.length === 0 ? (
           <p class="empty">Todavía no hay artículos publicados.</p>
         ) : (
-          <ul class="grid">
+          <ul class="posts">
             {posts.map((post) => (
-              <li class="card" data-enter>
+              <li>
                 <a href={`/blog/${post.id}/`}>
-                  {post.data.coverImage && (
-                    <Image
-                      class="cover"
-                      src={post.data.coverImage}
-                      alt=""
-                      widths={[400, 800]}
-                      sizes="(min-width: 900px) 340px, 100vw"
-                      loading="lazy"
-                    />
-                  )}
-                  <div class="body">
-                    <span class="meta">
-                      <span class="cat">{post.data.category}</span>
-                      <time datetime={post.data.pubDate.toISOString()}>
-                        {fecha.format(post.data.pubDate)}
-                      </time>
-                    </span>
-                    <h3>{post.data.title}</h3>
-                    <p>{post.data.description}</p>
-                  </div>
+                  <span class="p-meta">
+                    <span class="cat">{post.data.category}</span>
+                    <time datetime={post.data.pubDate.toISOString()}>
+                      {fecha.format(post.data.pubDate)}
+                    </time>
+                  </span>
+                  <span class="p-title">{post.data.title}</span>
+                  <span class="p-desc">{post.data.description}</span>
                 </a>
               </li>
             ))}
@@ -95,73 +90,78 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
   }
   .sr-only {
     position: absolute;
-    width: 1px; height: 1px;
-    padding: 0; margin: -1px;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
     overflow: hidden;
-    clip-path: inset(50%);
+    clip: rect(0, 0, 0, 0);
     white-space: nowrap;
+    border: 0;
   }
+
+  /*
+    Un ÍNDICE, no una rejilla de tarjetas.
+
+    La rejilla de tres columnas no era sólo una decisión estética que envejeció:
+    con uno o dos artículos —que es exactamente donde está el blog— dejaba una
+    tarjeta sola en el primer tercio y dos huecos. Y sin portada, cada tarjeta
+    era una caja oscura con texto dentro. Una lista de filas se ve igual de bien
+    con un artículo que con cincuenta.
+
+    El filete va arriba de cada fila y abajo de la última, así que no hay que
+    quitárselo a ninguna: no hay `:last-child` que arreglar un borde doble.
+  */
+  .posts { list-style: none; margin: 0; padding: 0; }
+  .posts li { border-top: 1px solid var(--line); }
+  .posts li:last-child { border-bottom: 1px solid var(--line); }
+  .posts a {
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-6) 0;
+    text-decoration: none;
+  }
+
+  /* La categoría y la fecha son metadato: tabulares y discretas. */
+  .p-meta {
+    display: flex;
+    gap: var(--s-3);
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+  }
+  .p-meta .cat { color: var(--verde-deep); font-weight: 600; }
+
+  /* El titular lleva el peso: es lo único que se lee en un barrido. */
+  .p-title {
+    font-size: var(--t-h3-m);
+    font-weight: 700;
+    line-height: var(--lh-h3);
+    color: var(--ink);
+    transition: color var(--m-fast) var(--m-ease);
+  }
+  .p-desc { color: var(--ink-mute); font-size: var(--t-body-sm); max-width: 62ch; }
+  /* M1 y nada más: el índice no necesita que nada entre ni se mueva. */
+  .posts a:hover .p-title { color: var(--verde-deep); }
+
   .empty { color: var(--ink-mute); }
 
-  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
-
-  /* Tarjeta en tinta sobre papel: el mismo contraste de banda que usa el resto
-     del sitio, no una tarjeta clara con sombra de plantilla. */
-  .card a {
-    display: block;
-    height: 100%;
-    background: var(--tinta-2);
-    border: 1px solid var(--line-on-tinta);
-    border-radius: var(--r-3);
-    overflow: hidden;
-    text-decoration: none;
-    transition: border-color var(--m-fast) var(--m-ease);
-  }
-  .card a:hover { border-color: var(--verde); }
-
-  /* La portada reserva su espacio con la proporción declarada: sin esto, la
-     imagen al cargar empuja el texto hacia abajo. */
-  .cover {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 40 / 21;
-    object-fit: cover;
-    border-bottom: 1px solid var(--line-on-tinta);
-  }
-
-  .body { padding: var(--s-5); }
-  .meta {
-    display: flex;
-    align-items: center;
-    gap: var(--s-3);
-    margin-bottom: var(--s-3);
-    font-size: 11px;
-    color: var(--on-tinta-mute);
-  }
-  .cat {
-    padding: 2px 8px;
-    border-radius: var(--r-1);
-    border: 1px solid var(--line-on-tinta);
-    color: var(--on-tinta);
-    font-weight: 600;
-    letter-spacing: var(--ls-label);
-  }
-  .card h3 {
-    font-size: var(--t-h3-m);
-    font-weight: 600;
-    line-height: var(--lh-h3);
-    color: var(--on-tinta);
-    margin-bottom: var(--s-2);
-  }
-  .card p { color: var(--on-tinta-mute); font-size: var(--t-body-sm); }
-
-  @media (min-width: 760px) {
-    .grid { grid-template-columns: repeat(2, 1fr); gap: var(--s-7); }
-  }
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
-    .grid { grid-template-columns: repeat(3, 1fr); }
-    .card h3 { font-size: var(--t-h3); }
+    /*
+      La fecha gana columna propia. La colocación va EXPLÍCITA y no al flujo
+      automático: con tres hijos y dos columnas, el flujo manda la bajada a la
+      columna de la fecha. `.p-meta` ocupa las dos filas para que el titular y
+      su bajada compartan la columna ancha.
+    */
+    .posts a {
+      grid-template-columns: 160px 1fr;
+      column-gap: var(--s-7);
+      row-gap: var(--s-2);
+      align-items: start;
+    }
+    .p-meta { grid-column: 1; grid-row: 1 / span 2; flex-direction: column; gap: var(--s-1); }
+    .p-title { grid-column: 2; grid-row: 1; font-size: var(--t-h2-m); }
+    .p-desc { grid-column: 2; grid-row: 2; }
   }
 </style>

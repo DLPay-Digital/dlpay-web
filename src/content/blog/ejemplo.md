@@ -3,7 +3,17 @@ title: 'El dólar cerró la semana con menos volatilidad de la esperada'
 description: 'Qué movió al peso esta semana, qué mirar la próxima y por qué el precio del cotizador es referencial hasta que un ejecutivo lo confirma.'
 pubDate: 2026-09-11
 category: 'Mercado'
-coverImage: './ejemplo-portada.png'
+# La portada del artículo de prueba usa el PRECIO DE MUESTRA del propio
+# cotizador (ConfigPriceSource, D7 abierta), no un dato de mercado: así ejercita
+# el componente sin publicar una cifra que nadie ha verificado. La `fuente` lo
+# dice de frente, que es justo para lo que el esquema la exige.
+portada:
+  tipo: cifra
+  etiqueta: 'Precio referencial del cotizador'
+  valor: 919.70
+  unidad: 'CLP'
+  fecha: 2026-09-11
+  fuente: 'valor de muestra de DLPay, no un precio de mercado'
 ---
 
 REQUIERE VALIDACIÓN DE COMPLIANCE — este artículo es **contenido de prueba**
@@ -25,8 +35,6 @@ o mañana pesa menos que la diferencia entre un canal y otro.
   máximo.
 - El precio que ves en nuestro cotizador es **referencial**: un ejecutivo
   confirma el precio final antes de cerrar.
-
-![Placeholder de una imagen dentro del cuerpo del artículo](./ejemplo-portada.png)
 
 ## Qué mirar la próxima semana
 

@@ -291,6 +291,28 @@ tarjeta": borde/fill/radio/sombra se gastan por rol, para levantar **una** cosa.
 | "Red de nodos" genérica estilo blockchain. |
 | Cualquier trazo que no represente movimiento o proceso. |
 | Geometría que compita visualmente con el cotizador. |
+| **La cuña en una portada de artículo.** Ver §6.1. |
+
+### 6.1 La cuña no entra en las portadas  ·  *añadido el 2026-09-16*
+
+La cuña significa **valor moviéndose**: es la misma marca que dibuja pesos cruzando una frontera en
+las figuras de `/empresas`. Una **portada de artículo muestra un dato**, no un movimiento. En cuanto
+una portada usa esa marca, afirma un flujo — y entre dos cosas que no se mueven una hacia la otra,
+eso es una **afirmación causal**.
+
+La regla nace de un error real, y se deja escrito porque el error era razonable. La primera versión
+de la portada del artículo de la Fed traía dos marcadores rotulados «FOMC» y «CLP» unidos por un
+tramo con cuña y un chevron que indicaba el sentido. Con la gramática de este sistema, ese dibujo
+dice que algo de valor va de la Reserva Federal al peso chileno — justo en el artículo que se cuida
+de escribir «no pronostica ni recomienda operar». **La portada contradecía al texto**, y el dibujo
+es lo que casi todo el mundo mira.
+
+Lo que sí puede llevar una portada: la cifra, su etiqueta, su unidad, su fecha y su fuente; y, para
+un intervalo, un segmento con un tope en cada extremo — **sin punta de flecha**, porque un rango no
+va a ninguna parte. Las dos formas están implementadas en `src/components/PortadaDato.astro`.
+
+Se aplica a portadas de artículo. El resto del sistema geométrico no cambia: las cuñas del héroe y
+las figuras de `/empresas` representan movimiento real y siguen siendo correctas.
 
 ---
 

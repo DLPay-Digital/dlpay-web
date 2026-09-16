@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propuesta — portada de dato y título debajo (v2)</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+  @font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+
+  .board{max-width:var(--container);margin:0 auto;padding:var(--s-7) var(--pad-section) var(--s-4)}
+  .board p{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute)}
+  .board h2{font-size:var(--t-h3);margin-top:var(--s-2);padding-top:var(--s-3);border-top:1px solid var(--line)}
+  .board .nota{font-family:var(--f-text);font-size:var(--t-body-sm);color:var(--ink-mute);max-width:64ch;margin-top:var(--s-2)}
+  .scaffold{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
+    background:var(--papel-2);border:1px dashed var(--line);padding:var(--s-3);text-align:center}
+
+  /* La portada: banda a sangre en tinta, la figura en la columna de lectura.
+     SIN cuña: esa marca significa valor moviéndose y una portada muestra un
+     dato, no un movimiento. */
+  .cover{background:var(--tinta);padding:var(--s-6) 0}
+  .cover .inner{max-width:760px;margin:0 auto;padding:0 var(--pad-section-m)}
+  .cover svg{width:100%;height:auto;display:block}
+
+  .head{max-width:760px;margin:0 auto;padding:var(--s-7) var(--pad-section-m) 0}
+  .head .meta{display:flex;align-items:center;gap:var(--s-3);margin-bottom:var(--s-4);
+    font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute)}
+  .head .cat{color:var(--verde-deep);font-weight:600}
+  .head h1{font-size:var(--t-display-m);font-weight:700;line-height:var(--lh-display);
+    letter-spacing:var(--ls-display)}
+  .head .lead{color:var(--ink-mute);font-size:var(--t-h3-m);margin-top:var(--s-4);max-width:54ch}
+
+  .post{max-width:760px;margin:0 auto;padding:var(--s-7) var(--pad-section-m) var(--s-9)}
+  .prose h2{font-size:var(--t-h2-m);font-weight:700;line-height:var(--lh-h2);
+    letter-spacing:var(--ls-h2);margin:var(--s-7) 0 var(--s-3)}
+  .prose p{margin-bottom:var(--s-4)}
+  .prose strong{font-weight:600}
+
+  @media (min-width:900px){
+    .cover{padding:var(--s-7) 0}
+    .head h1{font-size:var(--t-h2)}
+    .head,.post{padding-inline:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="board">
+  <p>cowork · 2026-09-16 · /blog/&lt;slug&gt; · v2</p>
+  <h2>Portada tipo «rango» — el dato del que habla el artículo</h2>
+  <p class="nota">Dos cifras y el intervalo entre ellas. <strong>Sin cuña y sin flecha:</strong> un
+    rango no tiene dirección, y la cuña es la marca del valor moviéndose. Las cifras son las de
+    julio, verificadas en el propio borrador; se reemplazan por las de septiembre cuando el
+    artículo se cierre.</p>
+</div>
+<div class="scaffold">andamio · arriba va Header.astro</div>
+
+<section class="cover">
+  <div class="inner">
+    <svg viewBox="0 0 760 150" aria-hidden="true">
+      <text x="0" y="28" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="14">Tasa de fondos federales</text>
+
+      <text x="0" y="94" fill="var(--on-tinta)" font-family="var(--f-num)" font-size="48"
+            font-weight="500" letter-spacing="-0.01em">3,50</text>
+      <!-- el intervalo: un segmento con tope en cada extremo. No apunta a
+           ninguna parte porque un rango no va a ninguna parte. -->
+      <path d="M146 78h404" stroke="var(--verde)" stroke-width="8"/>
+      <path d="M146 62v32M550 62v32" stroke="var(--verde)" stroke-width="3"/>
+      <text x="578" y="94" fill="var(--on-tinta)" font-family="var(--f-num)" font-size="48"
+            font-weight="500" letter-spacing="-0.01em">3,75</text>
+      <text x="700" y="94" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="20">%</text>
+
+      <path d="M0 118h760" stroke="var(--on-tinta-mute)" stroke-width="1" opacity=".35"/>
+      <text x="0" y="142" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="13">29 · 07 · 2026</text>
+      <text x="760" y="142" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="13"
+            text-anchor="end">Fuente: comunicado del FOMC</text>
+    </svg>
+  </div>
+</section>
+
+<header class="head">
+  <span class="meta"><span class="cat">Mercado</span><time datetime="2026-09-17">17 de septiembre de 2026</time></span>
+  <h1>La Fed cerró su reunión de septiembre. Cómo llegó la señal al peso.</h1>
+  <p class="lead">El FOMC se reunió el 15 y 16 de septiembre. Qué comunicó, con qué voto y cómo se
+    está traduciendo al mercado cambiario chileno, sin pronósticos.</p>
+</header>
+
+<article class="post">
+  <div class="prose">
+    <p>Esta semana la Reserva Federal de Estados Unidos volvió a decidir qué hace con su tasa de
+      interés. Se decidió en Washington y se leyó, casi al mismo minuto, en Santiago.</p>
+    <h2>Qué había en juego</h2>
+    <p>En su reunión del 28 y 29 de julio el FOMC mantuvo su tasa de fondos federales en el rango
+      de <strong>3,50% a 3,75%</strong>. Lo relevante no fue la decisión: fue el conteo del voto.</p>
+  </div>
+</article>
+
+<div class="board">
+  <h2>El otro tipo: «cifra»</h2>
+  <p class="nota">Un dato puntual, su fecha y su fuente. Para el artículo que se apoya en un solo
+    número.</p>
+</div>
+
+<section class="cover">
+  <div class="inner">
+    <svg viewBox="0 0 760 150" aria-hidden="true">
+      <text x="0" y="26" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="14">Dólar observado</text>
+      <text x="0" y="96" fill="var(--on-tinta)" font-family="var(--f-num)" font-size="66"
+            font-weight="500" letter-spacing="-0.01em">940,91</text>
+      <text x="278" y="96" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="18">CLP</text>
+      <path d="M0 118h760" stroke="var(--on-tinta-mute)" stroke-width="1" opacity=".35"/>
+      <text x="0" y="142" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="13">14 · 09 · 2026</text>
+      <text x="760" y="142" fill="var(--on-tinta-mute)" font-family="var(--f-num)" font-size="13"
+            text-anchor="end">Fuente: Banco Central de Chile</text>
+    </svg>
+  </div>
+</section>
+
+<div class="board">
+  <p class="nota"><strong>Y nada más.</strong> El tipo «propagación» —dos marcadores unidos por un
+    tramo— se retira: con la gramática del sitio, ese trazo dice que el valor va de uno a otro, y
+    entre una decisión de la Fed y el peso chileno eso es una afirmación causal que el propio
+    artículo se cuida de no hacer.</p>
+</div>
+<div class="scaffold">andamio · abajo va Footer.astro</div>
+
+</body>
+</html>
