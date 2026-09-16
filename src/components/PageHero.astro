@@ -25,8 +25,29 @@ interface Props {
   /** `page` (por omisión) usa --t-h2; `hero`, la misma escala que la Home. */
   titleSize?: 'page' | 'hero';
   sequence?: boolean;
+  /**
+   * Cómo se compone la ranura `aside`.
+   *
+   * · `split` (por omisión) — dos columnas en escritorio: texto a la izquierda,
+   *   ranura a la derecha. Es lo que había y no cambia para nadie.
+   * · `stacked` — una sola columna centrada, con la ranura cerrando el bloque.
+   *   Pensada para que la pieza del `aside` pueda **montarse sobre la costura**
+   *   con la sección siguiente: la banda deja de recortar y de poner relleno
+   *   inferior, y el saliente lo decide la página con `--montaje`.
+   *
+   * Es OPT-IN a propósito. `/como-funciona` y `/confianza` no pasan `aside` y
+   * `/empresas` es la única que pide `stacked`, así que el valor por omisión
+   * mantiene las tres exactamente como estaban.
+   */
+  layout?: 'split' | 'stacked';
 }
-const { title, lead, titleSize = 'page', sequence = false } = Astro.props;
+const {
+  title,
+  lead,
+  titleSize = 'page',
+  sequence = false,
+  layout = 'split',
+} = Astro.props;
 const hasCta = Astro.slots.has('cta');
 const hasAside = Astro.slots.has('aside');
 
@@ -59,9 +80,9 @@ const seqLead = lead ? step++ : 0;
 const seqCta = hasCta ? step++ : 0;
 const seqAside = hasAside ? step++ : 0;
 ---
-<section class="page-hero on-tinta-surface">
+<section class:list={['page-hero', 'on-tinta-surface', { stacked: hasAside && layout === 'stacked' }]}>
   <div class="wedges" aria-hidden="true"></div>
-  <div class:list={['inner', { split: hasAside }]}>
+  <div class:list={['inner', { split: hasAside && layout === 'split', stacked: hasAside && layout === 'stacked' }]}>
     <div class="copy">
       <h1 class:list={{ hero: titleSize === 'hero' }}>
         {sequence
@@ -131,6 +152,50 @@ const seqAside = hasAside ? step++ : 0;
   .aside { display: flex; justify-content: center; }
 
   /**
+   * ── Variante `stacked` ────────────────────────────────────────────────────
+   *
+   * Una columna centrada y la pieza del `aside` cerrando el bloque, montada
+   * sobre el borde inferior de la banda. Sólo se activa cuando la página lo
+   * pide; ver la prop `layout`.
+   *
+   * Cuánto sobresale lo decide la PÁGINA con `--montaje`, porque depende del
+   * alto de la pieza que ponga en la ranura y del aire que necesite la sección
+   * siguiente. Sin ese valor el saliente es cero y la variante se queda en «una
+   * columna centrada», que es una degradación sensata y no un layout roto.
+   */
+  .page-hero.stacked {
+    /* El recorte es lo que cortaba la pieza justo en el borde de la banda.
+       `.wedges` no se escapa al quitarlo: va en `position: absolute; inset: 0`
+       y además lleva su propio `clip-path`. */
+    overflow: visible;
+    /* El relleno inferior lo sustituye el propio montaje. */
+    padding-bottom: 0;
+  }
+  /*
+    `flow-root` no es decorativo. Sin él el margen negativo del `aside` se
+    colapsa a través del contenedor y la banda no se acorta: el saliente se
+    dibujaría encima, pero la tinta seguiría midiendo el alto completo.
+  */
+  .inner.stacked { display: flow-root; }
+  .inner.stacked .copy { text-align: center; }
+  /* Los topes en `ch` del titular y la bajada dejan cajas más estrechas que la
+     columna; sin el `auto` se quedarían pegadas a la izquierda y `text-align`
+     sólo centraría el texto dentro de ellas. */
+  .inner.stacked .copy h1,
+  .inner.stacked .copy p { margin-inline: auto; }
+  .inner.stacked .actions { justify-content: center; }
+  .inner.stacked .aside {
+    justify-content: center;
+    margin-top: var(--s-8);
+    margin-bottom: calc(-1 * var(--montaje, 0px));
+    /* Design System §4.5.1: todo lo superpuesto declara su capa. Acá además
+       hace falta de verdad, para que el saliente quede sobre la sección clara
+       y no debajo. */
+    position: relative;
+    z-index: 1;
+  }
+
+  /**
    * M6 · secuencia de carga (Motion System V1 §4). Animación CSS pura, no el
    * observador: el encabezado está sobre el pliegue y tiene que entrar al
    * cargar, no al hacer scroll. Sobre el eje diagonal de la marca —nunca un
@@ -173,6 +238,11 @@ const seqAside = hasAside ? step++ : 0;
     }
     .inner.split .copy { grid-column: 1; grid-row: 1; }
     .inner.split .aside { grid-column: 2; grid-row: 1; }
+    /* La variante apilada no toma la columna derecha: sigue centrada y sigue
+       montada. La regla de `.aside` de escritorio la empuja a la derecha, así
+       que acá se repone el centrado. */
+    .page-hero.stacked { padding-bottom: 0; }
+    .inner.stacked .aside { justify-content: center; }
     h1 { font-size: var(--t-h2); }
     /* Misma escala que el H1 del héroe de la Home (`Hero.astro`): el resto de
        la regla —peso, `--lh-display`, `--ls-display` y el tope de 18ch— ya

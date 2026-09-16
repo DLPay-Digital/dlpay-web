@@ -121,6 +121,49 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-16 | [`2026-09-16-empresas-encabezado`](2026-09-16-empresas-encabezado/ficha.md) — encabezado centrado y portátil en la costura | **Integrada** | Pasa el DoD. Ruta A, con la variante `layout="stacked"` opt-in en `PageHero`; sin cambios sobre lo propuesto |
+
+### Notas de la integración de `2026-09-16-empresas-encabezado`
+
+**Ruta A, como recomendaba la ficha.** `PageHero` gana una prop `layout` con dos valores: `split`
+—lo que había, y el valor por omisión— y `stacked`. Elegí una prop y no una clase suelta porque la
+variante cambia tres cosas a la vez (el recorte de la banda, su relleno inferior y la composición
+del `inner`), y así queda un único interruptor con su docblock en vez de tres reglas que alguien
+pueda separar. El aviso sobre `.inner.split` estaba bien visto y se respetó: en `stacked` esa clase
+no se pone, en vez de intentar ganarle por especificidad.
+
+**El reparto del CSS.** Lo que toca elementos de dentro del componente —`.page-hero`, `.inner`,
+`.copy`, `.actions`, `.aside`— vive en `PageHero`; lo que toca elementos de la página —`--montaje`
+en `main` y el `padding-top` de `.cases`— vive en `empresas.astro`. Escrito al revés no habría
+aplicado: con `scopedStyleStrategy: 'class'` una regla de la página no alcanza a un elemento del
+componente hijo, que es exactamente la trampa que documentó el addendum de la 404.
+
+**Un añadido mío:** `var(--montaje, 0px)` en vez de `var(--montaje)`. Si algún día otra página usa
+`stacked` sin declarar el valor, el saliente es cero y queda «una columna centrada» — una
+degradación sensata en lugar de un `calc()` inválido que rompe el margen.
+
+**Verificado en el navegador sobre el build, en ocho anchos** (360, 390, 430, 760, 899, 900, 1280,
+1440): desborde horizontal **0** en los ocho, el saliente es exactamente `--montaje` en todos, y el
+aire hasta «Para qué lo usan» es constante. El montaje representa entre el **41 % y el 53 %** del
+portátil bajo 900 px y **49,5 %** por encima, que es lo que la ficha declara y por la razón que
+declara: el portátil es fluido y su alto sale de su ancho.
+
+**Los cuatro puntos de §9, comprobados.** (1) Quitar el recorte no afecta a nadie más: la variante
+es opt-in y `/como-funciona`, `/confianza` y la 404 conservan `overflow: hidden`. (2) Esas tres
+páginas quedan idénticas —mismas clases, `padding-bottom: 96px`, `text-align: start`, banda de
+322 px—. (3) La banda se acorta exactamente el montaje; `flow-root` era necesario y se conservó con
+su explicación. (4) El foco dentro del encabezado sigue siendo los dos botones y nada más: el
+portátil va `aria-hidden="true"` y tiene cero elementos enfocables.
+
+**Una diferencia menor con las medidas de la ficha,** que no cambia nada y anoto por higiene: mis
+altos de banda salen 515/518/543/516/563 px donde la ficha da 520/528/540/488/561. Coinciden salvo
+en 760, donde hay 28 px de diferencia. Los invariantes que importan —desborde cero, saliente exacto,
+aire constante— se cumplen en los dos casos, así que lo atribuyo al entorno de medición y no lo
+persigo.
+
+**Lo de móvil que la ficha dejó abierto** —los dos botones centrados y apilados con anchos distintos
+porque el texto es de distinto largo— se ve bien y queda como está. Es decisión de diseño; si se
+quiere igualarlos, se pide.
 | 2026-09-15 | [`2026-09-15-404`](2026-09-15-404/ficha.md) — página 404 | **Integrada** | Pasa el DoD sin cambios visuales. Trasladada tal cual a `src/pages/404.astro` |
 | 2026-09-15 | [`2026-09-15-404` · addendum](2026-09-15-404/addendum-canto.md) — el canto de la banda contra el pie | **Integrada con cambios** | El diagnóstico es correcto y el filete entra, pero la regla propuesta no rendía lo que muestra la evidencia: hizo falta `background: var(--tinta)` en `main` |
 

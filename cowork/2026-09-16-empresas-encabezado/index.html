@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Board — encabezado de /empresas, tres proporciones de montaje</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+  @font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+
+  body{padding:var(--s-8) var(--s-5) var(--s-9)}
+  .wrap{max-width:1180px;margin:0 auto}
+
+  .board-head{max-width:70ch;margin-bottom:var(--s-8)}
+  .board-head h1{font-size:var(--t-h2);line-height:var(--lh-h2);letter-spacing:var(--ls-h2);margin-bottom:var(--s-3)}
+  .board-head p{color:var(--ink-mute);margin-bottom:var(--s-3)}
+  .kicker{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);margin-bottom:var(--s-4)}
+
+  .option{margin-bottom:var(--s-9);scroll-margin-top:var(--s-5)}
+  .option > header{
+    display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s-3);
+    border-top:1px solid var(--line);padding-top:var(--s-4);margin-bottom:var(--s-4);
+  }
+  .option h2{font-size:var(--t-h3);line-height:var(--lh-h3)}
+  .medida{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute)}
+  .marca{
+    font-size:var(--t-label);font-weight:600;letter-spacing:var(--ls-label);
+    color:var(--on-verde);background:var(--verde);
+    padding:var(--s-1) var(--s-2);border-radius:var(--r-1);
+  }
+  .nota{color:var(--ink-mute);max-width:62ch;margin-bottom:var(--s-4);font-size:var(--t-body-sm)}
+  figure{margin:0}
+  img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:var(--r-2)}
+
+  .movil{display:grid;gap:var(--s-5);grid-template-columns:1fr}
+  .movil img{max-width:390px}
+  @media (min-width:760px){ .movil{grid-template-columns:repeat(2,minmax(0,390px))} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="board-head">
+    <p class="kicker">cowork · 2026-09-16 · encabezado de /empresas</p>
+    <h1>Composición centrada con el portátil montado en la costura</h1>
+    <p>
+      Tres proporciones del montaje, para elegir mirando. Lo que cambia entre ellas es
+      <strong>cuánta parte del portátil queda sobre la superficie clara</strong>; todo lo demás es
+      idéntico.
+    </p>
+    <p>
+      Las imágenes <strong>no son una maqueta</strong>: son la página construida
+      (<code>dist/empresas/</code>) con el cambio aplicado encima, así que traen la cabecera, el
+      portátil y la sección de casos reales. Es lo que pide la regla de evidencia del README §4:
+      un montaje que depende del fondo que hay detrás no se puede juzgar en una vista aislada.
+    </p>
+  </div>
+
+  <section class="option">
+    <header>
+      <h2>Estado actual</h2>
+      <span class="medida">dos columnas · banda 493 px</span>
+    </header>
+    <p class="nota">
+      Texto a la izquierda, portátil a la derecha, ambos dentro de la banda. La sección que sigue
+      —«Para qué lo usan»— ya viene centrada, así que hoy el encabezado es la única pieza de la
+      página que no lo está.
+    </p>
+    <figure><img src="actual-1280.png" alt="Estado actual del encabezado de empresas a 1280 px"></figure>
+  </section>
+
+  <section class="option">
+    <header>
+      <h2>Un tercio abajo</h2>
+      <span class="medida">110 px sobre papel · banda 617 px</span>
+    </header>
+    <p class="nota">
+      El más conservador. La costura cae cerca de la bisagra, así que la pantalla queda entera en
+      la tinta y sobre el papel asoma casi sólo el chasis plateado. Se lee más como «la banda
+      termina donde empieza el portátil» que como un objeto que cruza.
+    </p>
+    <figure><img src="montaje-un-tercio-1280.png" alt="Montaje de un tercio a 1280 px"></figure>
+  </section>
+
+  <section class="option">
+    <header>
+      <h2>Mitad y mitad</h2>
+      <span class="medida">166 px sobre papel · banda 561 px</span>
+      <span class="marca">elegida</span>
+    </header>
+    <p class="nota">
+      La costura cruza el objeto por el medio y cae en el hueco entre dos filas de la pantalla, no
+      sobre una cifra. Es la proporción que hace legible el gesto —el portátil rompe el plano— sin
+      encoger la banda hasta que pierda peso. Es además la que pediste al describirlo. <strong>Elegida el 2026-09-16.</strong>
+    </p>
+    <figure><img src="montaje-mitad-1280.png" alt="Montaje de mitad y mitad a 1280 px"></figure>
+  </section>
+
+  <section class="option">
+    <header>
+      <h2>Dos tercios abajo</h2>
+      <span class="medida">220 px sobre papel · banda 507 px</span>
+    </header>
+    <p class="nota">
+      El más marcado. La pantalla completa queda sobre el papel y el objeto gana presencia, pero la
+      banda pierde 110 px y con ellos peso: la tinta pasa de ser el fondo del encabezado a ser una
+      franja detrás del titular. La costura además cae justo bajo la primera cifra.
+    </p>
+    <figure><img src="montaje-dos-tercios-1280.png" alt="Montaje de dos tercios a 1280 px"></figure>
+  </section>
+
+  <section class="option">
+    <header>
+      <h2>Móvil · 390 px</h2>
+      <span class="medida">antes y después, con la proporción recomendada</span>
+    </header>
+    <p class="nota">
+      En móvil la página ya apilaba, así que lo que cambia es el centrado y el montaje. Cero
+      desborde horizontal medido a 360, 390 y 430.
+    </p>
+    <div class="movil">
+      <figure><img src="actual-390.png" alt="Estado actual a 390 px"></figure>
+      <figure><img src="montaje-mitad-390.png" alt="Montaje de mitad y mitad a 390 px"></figure>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

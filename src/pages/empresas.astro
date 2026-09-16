@@ -53,6 +53,7 @@ const waPlain = contact.whatsappUrl();
       lead="Un solo precio, con el spread ya incluido. Sin comisiones que aparezcan después."
       titleSize="hero"
       sequence
+      layout="stacked"
     >
       <Fragment slot="cta">
         <a class="cta" href={waPlain} target="_blank" rel="noopener">
@@ -193,7 +194,34 @@ const waPlain = contact.whatsappUrl();
   }
   .head p { color: var(--ink-mute); }
 
-  .cases { background: var(--papel); padding: var(--s-9) 0; }
+  /*
+    El montaje del portátil: cuánto de él queda sobre la superficie clara. Es la
+    mitad de su alto, medido en el navegador — 332,8 px en escritorio y 262 px a
+    390, que es donde alcanza esa proporción.
+
+    Va como propiedad y no suelto en dos reglas porque los DOS sitios que lo usan
+    tienen que leer el mismo número: el saliente del portátil y el aire que la
+    sección siguiente tiene que recuperar. Si se separan, dejan de cuadrar.
+
+    Y va en `main` y no en `.page-hero`: `.cases` es su HERMANA, no su
+    descendiente, así que declarada en la banda no la heredaría.
+
+    El portátil es fluido bajo 900 px —su alto sale de su ancho—, así que un solo
+    valor representa entre el 53% y el 41% del objeto entre 360 y 760. En todo
+    ese rango se sigue leyendo como «cruza por la mitad», y es preferible a
+    inventar un tercer breakpoint que el sistema no tiene. Sobre 900 px el
+    portátil llega a su ancho máximo y la mitad es exacta.
+  */
+  main { --montaje: 131px; }
+  @media (min-width: 900px) { main { --montaje: 166px; } }
+
+  /* El aire propio de una sección de contenido (--s-9, Design System §4.3.1)
+     MÁS lo que invade el portátil. Sin el sumando, el saliente se comería el
+     titular de la sección. */
+  .cases {
+    background: var(--papel);
+    padding: calc(var(--montaje) + var(--s-9)) 0 var(--s-9);
+  }
 
   /* Una fila por caso, no una rejilla de tarjetas: cada operación pesa lo
      mismo que su emblema. La regla de acento verde que llevaban los titulares
