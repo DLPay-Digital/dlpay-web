@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El vocabulario de las figuras de DLPay</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:block;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+  @font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:block;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--papel);color:var(--ink);font-family:var(--f-texto,'Familjen Grotesk'),system-ui}
+  .hoja{max-width:1040px;margin:0 auto;padding:var(--s-8) var(--s-7) var(--s-9)}
+
+  .kicker{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
+    letter-spacing:var(--ls-label)}
+  h1{font-size:var(--t-h2);font-weight:700;line-height:var(--lh-h2);letter-spacing:var(--ls-h2);
+    margin:var(--s-2) 0 var(--s-3);max-width:24ch}
+  .entrada{color:var(--ink-mute);max-width:64ch}
+
+  .regla{margin:var(--s-7) 0;padding:var(--s-5) var(--s-6);background:var(--tinta);
+    color:var(--on-tinta);border-radius:0}
+  .regla b{color:var(--verde-hi)}
+  .regla p{max-width:70ch}
+
+  table{border-collapse:collapse;width:100%;margin-top:var(--s-6)}
+  th{font-family:var(--f-num);font-size:var(--t-dato-sm);font-weight:600;color:var(--ink-mute);
+    text-align:left;padding:0 var(--s-5) var(--s-3) 0;letter-spacing:var(--ls-label);
+    text-transform:uppercase}
+  td{border-top:1px solid var(--line);padding:var(--s-5) var(--s-5) var(--s-5) 0;
+    vertical-align:middle}
+  td:last-child,th:last-child{padding-right:0}
+  .col-marca{width:210px}
+  .nombre{font-weight:600;display:block;margin-bottom:2px}
+  .sig{color:var(--ink-mute);font-size:var(--t-body-sm)}
+  .tok{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);display:block;
+    margin-top:var(--s-2)}
+  .donde{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);line-height:1.7}
+
+  /* Las marcas, dibujadas a escala real sobre el fondo en el que viven. */
+  .caja{display:flex;align-items:center;justify-content:center;height:78px;padding:0 var(--s-4)}
+  .sobre-tinta{background:var(--tinta)}
+  /* --papel, no --papel-2: las cifras que esta lámina declara son las de papel,
+     y dibujarlas sobre otra superficie las haría falsas por medio punto. Lo cazó
+     la comprobación de la propia lámina, antes de publicarla. */
+  .sobre-papel{background:var(--papel)}
+
+  .punto{width:11px;height:11px;border-radius:50%;background:var(--verde)}
+  .punto.claro{background:var(--verde-deep)}
+  .tramo{position:relative;width:150px;border-top:1px solid var(--verde-deep)}
+  .tramo i{position:absolute;top:-5px;width:9px;height:9px;border-radius:50%;
+    background:var(--verde-deep)}
+  .tramo i:nth-child(1){left:0}
+  .tramo i:nth-child(2){left:70px}
+  .tramo i:nth-child(3){left:140px}
+  .filete{width:150px;border-top:1px solid var(--ink-mute)}
+  .separador{width:150px;border-top:1px solid var(--line)}
+  .barra{width:120px;height:14px;background:var(--verde)}
+  .cuna{width:60px;height:18px;color:var(--verde-deep)}
+
+  /* Bajo 760 la tabla deja de ser tabla: tres celdas no caben en 390 y el
+     desborde horizontal no se negocia. */
+  @media (max-width:759px){
+    table,tr,td,th{display:block;width:auto}
+    th{display:none}
+    tr{border-top:1px solid var(--line);padding:var(--s-5) 0}
+    tr:first-of-type{border-top:0;padding-top:0}
+    td{border-top:0;padding:0 0 var(--s-3) 0}
+    .col-marca{width:auto}
+    .caja{justify-content:flex-start;height:64px;padding:0 var(--s-4);
+      margin-bottom:var(--s-2)}
+    .tramo,.filete,.separador{width:min(150px,60vw)}
+  }
+
+  .pie{margin-top:var(--s-8);padding-top:var(--s-5);border-top:1px solid var(--line);
+    font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);line-height:1.8}
+  .pie b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="hoja">
+
+  <p class="kicker">cowork · 2026-09-17 · medido sobre el build</p>
+  <h1>El vocabulario de las figuras</h1>
+  <p class="entrada">Cinco familias de figura vivas en el sitio comparten estas marcas. Cada fila
+    sale del render, no de un recuerdo: el color es el color computado y la marca está dibujada
+    sobre el fondo en el que de verdad aparece.</p>
+
+  <div class="regla">
+    <p><b>El significado lo lleva la marca, no el color.</b> Un punto es un extremo; un tramo es un
+      recorrido, y un tramo verde es el nuestro. El verde sólo dice «esta marca carga significado».
+      Cuál de los dos verdes se usa lo decide <b>el fondo</b>: <b>--verde</b> sobre tinta,
+      <b>--verde-deep</b> sobre superficie clara, porque sobre claro el verde de marca da 2,02:1 y
+      no alcanza ni el 3:1 de un gráfico.</p>
+  </div>
+
+  <table>
+    <tr><th class="col-marca">La marca</th><th>Significa</th><th>Dónde vive</th></tr>
+
+    <tr>
+      <td><div class="caja sobre-tinta"><span class="punto"></span></div></td>
+      <td><span class="nombre">Punto lleno, sobre tinta</span>
+        <span class="sig">Un extremo de la operación: una contraparte o una unidad de valor.</span>
+        <span class="tok">--verde · 8,45:1</span></td>
+      <td class="donde">los cuatro emblemas de /empresas (rotulado CLP)<br>los tres usos de la Home<br>la malla de la banda de empresas</td>
+    </tr>
+
+    <tr>
+      <td><div class="caja sobre-papel"><span class="punto claro"></span></div></td>
+      <td><span class="nombre">Punto lleno, sobre claro</span>
+        <span class="sig">Lo mismo. Cambia el token, no el sentido: sobre papel el verde de marca no
+          alcanza contraste.</span>
+        <span class="tok">--verde-deep · 5,44:1 sobre papel · 4,93 sobre papel-2</span></td>
+      <td class="donde">los emblemas, fuera del plano (rotulado USD)<br>los hitos del eje de alcance</td>
+    </tr>
+
+    <tr>
+      <td><div class="caja sobre-papel"><span class="tramo"><i></i><i></i><i></i></span></div></td>
+      <td><span class="nombre">Tramo verde</span>
+        <span class="sig"><b>El tramo que es nuestro.</b> Con sus hitos encima.</span>
+        <span class="tok">--verde-deep · 5,44:1 sobre papel · 4,93 sobre papel-2</span></td>
+      <td class="donde">el eje de alcance, en Home, /como-funciona y /empresas<br>la línea de tenencia de /confianza</td>
+    </tr>
+
+    <tr>
+      <td><div class="caja sobre-papel"><svg class="cuna" viewBox="0 0 40 12" fill="none" aria-hidden="true"><path d="M0 6h12l6-5 6 10 6-5h10" stroke="currentColor" stroke-width="1.5"/></svg></div></td>
+      <td><span class="nombre">Cuña</span>
+        <span class="sig">Valor moviéndose · el trabajo cambia de manos. <b>No entra en las portadas
+          del blog</b>: entre dos cosas que no se mueven una hacia la otra, afirma una causa.</span>
+        <span class="tok">--verde-deep · DS §6.1</span></td>
+      <td class="donde">los tres traspasos del carril de /como-funciona<br>la costura del eje de alcance</td>
+    </tr>
+
+    <tr>
+      <td><div class="caja sobre-tinta"><span class="barra"></span></div></td>
+      <td><span class="nombre">Barra llena</span>
+        <span class="sig">Una magnitud: un rango, un dato.</span>
+        <span class="tok">--verde · 8,45:1</span></td>
+      <td class="donde">las portadas de dato del blog</td>
+    </tr>
+
+    <tr>
+      <td><div class="caja sobre-papel"><span class="filete"></span></div></td>
+      <td><span class="nombre">Filete neutro</span>
+        <span class="sig">Existe, es real y <b>no es nuestro</b>. El tramo del cliente, después de la
+          costura.</span>
+        <span class="tok">--ink-mute · 5,50:1 sobre papel · 4,98 sobre papel-2</span></td>
+      <td class="donde">el eje de alcance, a la derecha de la cuña</td>
+    </tr>
+
+    <tr>
+      <td><div class="caja sobre-papel"><span class="separador"></span></div></td>
+      <td><span class="nombre">Separador</span>
+        <span class="sig">Nada. Organiza la lectura y no afirma: por eso puede bajar de 3:1.</span>
+        <span class="tok">--line · α .14 · 1,35:1 sobre papel</span></td>
+      <td class="donde">todo el sitio</td>
+    </tr>
+  </table>
+
+  <p class="pie">
+    <b>Antes de dibujar una figura nueva:</b><br>
+    1 · Quítale los rótulos. Lo que quede es lo que afirma por su cuenta.<br>
+    2 · Comprueba que cada marca signifique lo mismo que en las demás figuras.<br>
+    3 · La forma sale del dato. Si la estructura no está en <b>content/</b>, la figura la inventa.
+  </p>
+
+</div>
+</body>
+</html>

@@ -347,6 +347,50 @@ va a ninguna parte. Las dos formas están implementadas en `src/components/Porta
 Se aplica a portadas de artículo. El resto del sistema geométrico no cambia: las cuñas del héroe y
 las figuras de `/empresas` representan movimiento real y siguen siendo correctas.
 
+### 6.2 El significado lo lleva la marca, no el color  ·  *añadido el 2026-09-17*
+
+Con cinco familias de figura vivas —los cuatro casos de `/empresas`, la línea de tenencia de
+`/confianza`, el carril de `/como-funciona`, el eje de alcance y las portadas de dato del blog— el
+vocabulario geométrico ya no cabe en la regla dura de §6. Ésta es la semántica que las figuras
+**usan hoy**, medida sobre el build y no recordada.
+
+| Marca | Significa |
+|---|---|
+| Punto lleno verde | un extremo de la operación: una contraparte o una unidad de valor |
+| Tramo o línea verde | el tramo que es nuestro |
+| Cuña | valor moviéndose · el trabajo cambia de manos |
+| Barra llena verde | una magnitud |
+| Filete `--ink-mute` | existe, es real, **no** es nuestro |
+| `--line` | separador sin significado |
+
+**El color no es el portador del significado.** El verde dice «esta marca carga significado»; cuál
+de los dos verdes se usa lo decide **el fondo**: `--verde` sobre tinta y `--verde-deep` sobre
+superficie clara, porque sobre claro `--verde` da 2,02:1 y no alcanza ni el 3:1 de un gráfico
+(§2.4). Por eso un punto verde y una línea verde en la misma página no se contradicen: **son dos
+palabras distintas**, no dos usos del mismo color.
+
+Sin esta regla, quien compare los emblemas de `/empresas` —donde los nodos verdes rotulan CLP y
+USD, los dos extremos de la operación— con el eje de alcance —donde el tramo verde es el nuestro—
+concluirá, razonablemente, que el verde se usa de dos maneras incompatibles, y «arreglará» una.
+
+**Cómo se comprueba una figura nueva, antes de dibujarla:**
+
+1. **Quítale los rótulos.** Lo que quede es lo que la figura afirma por su cuenta. Si eso es más de
+   lo que el sitio puede afirmar, la figura no sirve por mucho que el texto la corrija. *El globo
+   falla esta prueba: sin rótulos, ocho arcos saliendo de Chile dicen «entregamos en ocho países»,
+   y por eso lleva el eje de alcance al lado.* Si sólo funciona con los rótulos puestos, es una
+   lista con adornos.
+2. **Comprueba que cada marca signifique lo mismo que en las demás figuras.** Si necesitas que el
+   verde signifique algo nuevo, no dibujes: escribe antes acá por qué.
+3. **La forma sale del dato, no al revés.** Si la estructura que quieres dibujar no está en
+   `content/`, la figura la está inventando. *El proceso de incorporación de `/empresas` no se
+   dibujó por esto: es un `string[]` de cuatro frases, sin reparto de quién hace qué, y deducirlo
+   de los verbos habría sido fabricar el dato para que encajara con el dibujo.*
+
+> Esta sección **describe**, no corrige. La medición que la originó no encontró ninguna figura que
+> incumpla la gramática que se deduce de ellas mismas: ningún verde sobre un fondo que no lo
+> aguante, ninguna cuña fuera de sitio y ningún nodo con otro sentido.
+
 ---
 
 ## 7. Iconografía

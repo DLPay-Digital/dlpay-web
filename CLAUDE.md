@@ -32,8 +32,18 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   esquivaba con `astro build` directo y sólo comprobaba presencia —`.env.example` traía
   `localhost`—, y no existía forma de evitar que Staging fuera indexado. Ver
   `docs/auditoria-preproduccion.md`.
-- **El proyecto técnico está terminado. No queda ingeniería para publicar.** Lo que falta es de
-  Compliance. Tres decisiones **bloquean** los textos legales: D9 (razón social), D19 (correo
+- **No queda ingeniería para publicar, y el proyecto está en mejora continua.** Las dos cosas a la
+  vez, y conviene no leer sólo la primera. Desde el 2026-09-08 no hay ninguna tarea técnica que
+  bloquee una salida a producción: lo que falta es de Compliance. Pero el proyecto **no se detuvo
+  ahí** — entre el 10 y el 17 de septiembre entraron el globo del héroe, el blog con su candado de
+  publicación, la 404, cinco familias de figura y el rediseño de tres páginas, además de la
+  corrección de una auditoría externa. Eso es mejora continua, no ingeniería pendiente, y la
+  diferencia importa: **nada de eso bloquea publicar, y ninguna de esas piezas nació de una
+  carencia funcional.** Quien lea esta línea buscando «¿podemos salir?» tiene su respuesta arriba;
+  quien la lea buscando «¿está el proyecto quieto?» no debe concluir que sí. *Redactado el
+  2026-09-17: la versión anterior decía sólo que el proyecto técnico estaba terminado, y era cierta
+  pero incompleta.*
+- **Lo que falta para publicar es de Compliance.** Tres decisiones **bloquean** los textos legales: D9 (razón social), D19 (correo
   oficial) y D20 (alcance de los T&C). Pero no son lo único que necesita firma: hay además
   **claims ya publicados** con marcador `REQUIERE VALIDACIÓN DE COMPLIANCE` —el banco por nombre,
   el tiempo de ~5 minutos, los 10 días hábiles, «Precio garantizado», «la mesa de dinero» y «el
@@ -85,6 +95,8 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
 | `docs/design-system/cotizador-spec.md` | El elemento central de la web. |
 | `docs/design-system/motion-system-v1.md` | Los seis movimientos permitidos y dónde va cada uno. |
 | `docs/research/phase-2.5-definicion-experiencia.md` | Experiencia, arquitectura de información, estructura de la Home, principios UX. **El documento operativo más útil para construir.** |
+| `docs/research/phase-3-arquitectura.md` | Las cuatro decisiones de arquitectura y el esqueleto. Registro escrito a posteriori. |
+| `docs/research/phase-4-construccion.md` | **Qué se construyó, qué se retiró y qué se aprendió.** En curso: se actualiza. Incluye las cinco trampas de medición que costaron tiempo real. |
 | Este archivo | Principios, límites, Definition of Done. |
 | `docs/development.md` | Cómo levantar el proyecto, estructura, dependencias y verificaciones. |
 | `docs/legal-brief.md` | Qué falta en las páginas legales y qué decisiones lo bloquean. Para Compliance. |
@@ -93,6 +105,9 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
 | `docs/auditoria-preproduccion.md` | Auditoría técnica previa a producción y qué falta para desplegar. |
 | `docs/arquitectura-produccion.md` | Qué corre dónde, mapa de integración, modos de fallo y configuración de host pendiente. |
 | `docs/design-system/board-tipografia.html` | Board que sustentó la elección de tipografía. Se abre en el navegador. |
+
+**Las Fases 3 y 4 ya tienen registro** (2026-09-17). Hasta entonces la serie de `docs/research/`
+se cortaba en la 2.5 y todo lo posterior vivía sólo en los commits y los ADR.
 
 **De consulta (no rehacer, sí citar):** `docs/research/phase-0-findings.md` (hechos técnicos,
 riesgos, pendientes I1–I19) · `phase-1-visual-ux.md` (§6, §17 y §18 son el filtro para decidir

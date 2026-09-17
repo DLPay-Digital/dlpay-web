@@ -152,7 +152,12 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     siguen siendo dos columnas y una frontera. El eje de alcance **pasa**: una línea que se
     interrumpe. Es barata y detecta el error que sale caro — una figura que afirma por su cuenta.
     Su corolario: si la figura sólo funciona con los rótulos puestos, es una lista con adornos.
-17. **Ninguna cifra se escribe sin haberla calculado.** «Un 4 % de luminancia» no salió de ningún
+17. **«Misma gramática que X» obliga a medir X, no la copia de X.** Cuarto caso del patrón, el
+    2026-09-17: la ficha de J7 decía que la FAQ reutilizaba `Faq.astro` y daba 73 px de objetivo
+    táctil, medidos sobre una maqueta con `padding: var(--s-5)` cuando el componente real usa
+    `--s-4`: **56 px**. Si la vista autónoma no puede importar el componente, la ficha da las
+    medidas del componente o no da ninguna.
+18. **Ninguna cifra se escribe sin haberla calculado.** «Un 4 % de luminancia» no salió de ningún
     cálculo: la caída real era 13,3 % en luminancia relativa y 6,3 % en L\*. Una cifra inventada
     en una ficha vale menos que no poner ninguna.
 
@@ -182,6 +187,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-17 | [`2026-09-17-gramatica-de-las-figuras`](2026-09-17-gramatica-de-las-figuras/gramatica.md) — el vocabulario de las cinco familias de figura, medido, y sección candidata para el DS §6.2 | **En revisión** | — |
 | 2026-09-17 | [`2026-09-17-empresas-j7`](2026-09-17-empresas-j7/ficha.md) — J7: la columna que faltaba y la FAQ propia | **Integrada** | Las dos piezas. `Faq.astro` pasa a props en vez de duplicarse, y las preguntas viven en `business.ts` |
 | 2026-09-17 | [`2026-09-17-eje-de-remesas`](2026-09-17-eje-de-remesas/ficha.md) — J5 y J6: el tramo que sí hacemos | **Integrada con cambios** | Las tres piezas. El eje sale como componente y la salvedad baja de 66ch a 47ch |
 | 2026-09-17 | [`2026-09-17-como-funciona`](2026-09-17-como-funciona/ficha.md) — J2 y J3: los seis pasos en dos carriles | **Integrada** | Token, pieza y lote B. Un número de la ficha no cuadró y se corrigió la nota |

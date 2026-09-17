@@ -180,7 +180,17 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 
 ---
 
-## 5. Dónde se aplicaría, página por página
+## 5. Dónde se aplica, página por página
+
+> **Este capítulo dice el ESTADO, no el plan** *(aclarado el 2026-09-17)*. Nació el 2026-09-07 en
+> condicional —«dónde se aplicaría»— como propuesta, y se fue corrigiendo a medida que se
+> implementaba, así que a los diez días era mitad plan y mitad estado sin que el lector pudiera
+> saber cuál era cuál. Peor: contradecía al §4, que sí está medido.
+>
+> Ahora manda §4 para **qué es cada movimiento** y este capítulo para **dónde está**, los dos
+> contrastados con el build. Lo que se planeó y no se hizo no se borra: vive en el registro de
+> enmiendas de §0 y en el historial. Tres asignaciones de M3 de la propuesta original se corrigen
+> abajo, porque `data-draw` no existe en ninguna de esas zonas.
 
 ### Home
 
@@ -188,10 +198,10 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 |---|---|---|
 | Cabecera | M1 en enlaces y WhatsApp | Hoy saltan |
 | Héroe | **M6**: la tarjeta del cotizador ya está; entra el titular palabra por palabra, y detrás subtítulo y franja | El instrumento primero, las palabras después |
-| Cuñas del héroe | **M3**, una vez, al cargar | Es el vector de la marca dibujándose |
+| Cuñas del héroe | **M6**, una vez, al cargar | *Corregido el 2026-09-17.* La propuesta decía M3, pero son un `<div>` con `clip-path` y entran con un fundido de opacidad: no hay trazo que recorrer, así que M3 ahí no está mal implementado, es imposible. Entran con la secuencia de carga y comparten su regla de `prefers-reduced-motion` |
 | Cotizador | **M1** en opciones y botón · **M2** al recalcular | Acuse de recibo y dato que cambió |
-| Tres usos | **M4** en el titular + **M5** en las tres tarjetas · **M3** en las reglas de acento | 3 hermanos: dentro del máximo |
-| Cómo funciona | **M3** en las cuñas entre pasos, en secuencia | La cuña apunta al paso siguiente: dibujarla *es* explicar |
+| Tres usos | **M4** en el titular + **M5** en las tres tarjetas | 3 hermanos: dentro del máximo. *Corregido el 2026-09-17:* la propuesta añadía M3 en las reglas de acento y nunca se implementó — `UseCaseFigure` no lleva `data-draw` |
+| Cómo funciona | **M4** en el titular | *Corregido el 2026-09-17:* la propuesta pedía M3 en las cuñas entre pasos y ese bloque de la Home no las tiene. La idea sí se cumplió, pero en `/como-funciona`, donde las cuñas de traspaso sí se dibujan |
 | Confianza | **M4** sólo en el titular de sección | Los tres bloques **no** escalonan: son afirmaciones, no una secuencia |
 | Banda empresas | **M1** en el botón | Nada más |
 | FAQ | **M1** en el marcador `+` | Hoy salta |
@@ -221,7 +231,7 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 | Zona | Movimiento | Por qué |
 |---|---|---|
 | Encabezado | **M6** en titular, bajada, botones y el portátil | *Añadido el 2026-09-10.* Está sobre el pliegue: entra al cargar y sin depender del observador, igual que el héroe de la Home. Cuatro elementos en secuencia, justo en el tope de 4. El portátil **no** es el instrumento —es un mockup sin controles, hermano del teléfono de la Home—, así que la regla dura 2 no le aplica y sí entra |
-| Casos de uso | **M3** en las reglas de acento + **M5** en las 4 tarjetas | Justo en el máximo |
+| Casos de uso | **M5** en los 4 casos | Justo en el máximo. *Corregido el 2026-09-17:* la regla de acento se retiró el 2026-09-16 con el rediseño de las figuras, y su M3 nunca llegó a existir |
 | Tabla comparativa | **Nada** | Son datos: se leen, no se presentan |
 | Incorporación | **M4** en el titular | |
 | Contacto | **M1** | |

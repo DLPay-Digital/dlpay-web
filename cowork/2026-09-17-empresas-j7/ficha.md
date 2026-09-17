@@ -165,3 +165,62 @@ Una respuesta honesta sin cifra vale más que una cifra inventada para que la se
    Puede ir en commit aparte.
 5. **La lista `.onboarding` de esta sección es de las que quedan sin `role="list"`.** Como
    acordamos: ésta la toca mi entrega, así que va aquí; las demás las cierras tú.
+
+---
+
+## 9. Post-integración (commit `f548ea2`) — y un cuarto error del mismo patrón
+
+### 9.1 La medición que no cuadró
+
+§6 decía que los `<summary>` miden **73 px**. En el build miden **56**. La causa la encontró el
+agente y es exacta: mi maqueta usa `padding: var(--s-5) 0` y el `Faq.astro` real usa
+`var(--s-4) 0` — 24 px contra 16. Comprobado: el `padding` computado en producción es `16px 0px`.
+
+Los cuatro siguen muy por encima del piso de 44, así que **no cambia ninguna decisión**. Pero es la
+cuarta vez en tres entregas que caigo en la misma trampa, y ésta tiene un nombre nuevo: **mi ficha
+decía «misma gramática que `Faq.astro`» y luego no copié su `padding`.** Escribí que reutilizaba un
+componente y medí mi reconstrucción de ese componente.
+
+| # | Medí | Contra qué |
+|---|---|---|
+| 1 | el verde sobre el chip | una lámina pintada por mí, con el color equivocado |
+| 2 | el verde sobre papel | una copia de `tokens.css` de dos días antes |
+| 3 | el alto de la banda | un andamio en lugar del globo |
+| 4 | el objetivo táctil | mi copia del componente en vez del componente |
+
+Regla 18 del README: **cuando una entrega dice «misma gramática que X», las medidas que valen son
+las de X.** Si la maqueta no puede importar X, la ficha da las medidas de X o no las da.
+
+### 9.2 Lo que verifiqué del build
+
+- **Superficies de `/empresas`:** tinta · papel · papel-2 · papel · papel-2 · papel · tinta. La
+  alternancia quedó entera; el fallo que señalé en §5 está corregido.
+- **FAQ:** cuatro preguntas, título «Preguntas de una empresa», ningún `<details>` abierto por
+  omisión, `padding` del componente.
+- **`role="list"`** en la lista nueva (`.check`, 3 ítems) y en `.onboarding`.
+- **El marcador de D6 no llega al HTML construido:** vive junto a la respuesta en `business.ts`,
+  que es donde sirve.
+- `/empresas` pasa de 441 a **499 palabras** y de 5.204 a 5.755 px. Desborde 0.
+
+### 9.3 La condición que el agente añadió, y es mejor que mi propuesta
+
+Yo pedí props para `Faq.astro`. Él las hizo **obligatorias y sin valor por omisión**, con este
+motivo: un `<Faq />` sin props que cayera de vuelta al contenido de la Home publicaría las preguntas
+equivocadas **en silencio**. Ése es el modo de fallo caro —el que no se ve— y mi versión lo dejaba
+abierto.
+
+### 9.4 Respuesta a la fila de M3 que quedaba sin resolver
+
+El agente señaló que la tabla del Motion System tiene una fila que no se sabe dónde va: las cuñas
+del héroe. **Medido en el build, la respuesta es clara: no son M3.**
+
+`.wedges` es un `<div>` con `clip-path` y `background: var(--verde)`, animado con un fundido de
+opacidad de 0 a 0,07. **No tiene trazo**: `tieneTrazo: false`, `stroke-dasharray: none`. M3 se
+define como *«la geometría se dibuja en la dirección que apunta (`stroke-dashoffset`)»*, y sobre un
+relleno recortado eso no es que esté mal implementado — **es imposible**. No hay trazo que recorrer.
+
+Dónde van: **M6**. Su definición es «secuencia de carga del héroe, una sola vez», que es
+literalmente lo que hacen, y la implementación ya las trata así — `.seq`, `.w` y `.wedges` comparten
+la misma regla de `prefers-reduced-motion`. Con eso, el inventario real de M3 queda en **un solo
+sitio**: las tres cuñas de traspaso de `/como-funciona`, más la del eje de alcance en cada página
+donde vive.
