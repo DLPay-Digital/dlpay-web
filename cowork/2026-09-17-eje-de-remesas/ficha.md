@@ -117,10 +117,19 @@ versiones que puedan desincronizarse.
 
 ## 6. `/empresas` · la variante, y un hallazgo propio
 
-**`/empresas` no declara el límite en ninguna parte.** Lo medí sobre el build: «no depositamos»,
-«cuenta bancaria», «moneda local» y «billetera» **no aparecen** en la página. Y es la página cuyo
-lector —una empresa que paga a un proveedor en el exterior— es el más propenso a dar por hecho que
-hay una transferencia bancaria de por medio.
+**`/empresas` nunca declara el límite de forma explícita.** Medido sobre el build: «no
+depositamos», «cuenta bancaria», «moneda local» y «billetera» **no aparecen** en la página. Y es la
+página cuyo lector —una empresa que paga a un proveedor en el exterior— es el más propenso a dar por
+hecho que hay una transferencia bancaria de por medio.
+
+> **Esta frase decía «no declara el límite en ninguna parte», y era pasarse de rosca.** El agente lo
+> marcó y tiene razón: la página **no está muda**. «Si tu proveedor sólo recibe por banco,
+> conversémoslo antes» es una salvedad real, aunque indirecta, y «sin abrir una cuenta en el
+> extranjero» aparece en el caso de tesorería. Lo llamativo es que **la refutación estaba en el
+> párrafo siguiente de esta misma sección**, donde yo citaba esa frase como copia existente. Escribí
+> la afirmación y su desmentido con cuatro líneas de distancia y no lo vi. Lo exacto —que nunca lo
+> dice de forma explícita— basta de sobra para justificar la pieza; la versión exagerada no hacía
+> falta.
 
 La frase que lo corrige **ya existe en el proyecto**: está en `business.ts`, dentro del cuerpo del
 primer caso de uso — *«Si tu proveedor sólo recibe por banco, conversémoslo antes.»* La variante la
@@ -159,9 +168,24 @@ efectivo por ancestros; no filtrado por color:
 
 Gráficos (piso 3:1 de WCAG 1.4.11): línea verde y cuña y nodos **5,44:1**, línea gris **5,50:1**.
 
-**Alto de la banda:** 1.060 → **941 px** a 1280 (−119 px) y 803 → **1.218 px** a 390 (+415 px). En
-móvil crece, y es el precio honesto de que la banda diga algo: hoy son 803 px de titular, bajada,
-dos botones y el globo.
+**Alto de la banda:** medido sobre el build integrado (`f99a49b`), **1.060 → 1.247 px** a 1280 y
+**803 → 1.186 px** a 390. La banda **engorda 187 px en escritorio y 383 en móvil**.
+
+> **CORREGIDO DESPUÉS DE INTEGRAR, y es el tercer error del mismo tipo.** Esta línea decía
+> «1.060 → 941 px (−119)». Lo cazó el agente de Claude Code. La maqueta tiene un `.globo-hueco` de
+> andamio donde el sitio tiene el globo de verdad, que es **514 px** de alto a 1280 y bastante más
+> alto que mi marcador. **Medí la geometría de una página contra un relleno.** Un andamio no es una
+> aproximación del objeto: es una dependencia que miente sobre el tamaño.
+>
+> **Esto tumba la premisa de densidad de J5** —«1.060 px que hoy no trabajan»— y hay que decirlo
+> así. La jugada entra igual, pero por las otras dos razones, que no dependen del alto:
+>
+> 1. El dibujo y el texto de la banda hablaban de cosas distintas, y el dibujo hacía la afirmación
+>    más grande (§1). Éste es el argumento de peso y es independiente de cuántos píxeles mida.
+> 2. Los dos botones eran un duplicado y un enlace hacia atrás (§2). Se van por no aportar.
+>
+> **Si alguien defiende esta jugada citando densidad, estará citando un número que no es.** Anotado
+> también en el estudio, que es donde nació la premisa.
 
 ## 8. Auditoría WCAG 2.1 AA
 
@@ -238,3 +262,61 @@ El código candidato es `index.html`; `.board`, `.scaffold` y `.globo-hueco` son
    depositamos», «cuenta bancaria», «moneda local» y «billetera» en el `main` del build.
 6. `GloboRotativo.astro` **no se toca**. Si algo de la integración te obliga a tocarlo, para y
    dilo: es instrucción de Sebastián, no preferencia mía.
+
+---
+
+## 13. Post-integración (2026-09-17, commit `f99a49b`)
+
+Integrada **con cambios**, y los cambios son mejoras. Verifiqué el resultado sobre el build.
+
+### 13.1 Lo que el agente cambió, y por qué tiene razón
+
+**El eje sale como componente** (`EjeDeAlcance.astro` + `content/scope.ts`). Yo dejé la decisión
+abierta «porque dónde vive es tuyo». Su argumento es mejor que mi indecisión: **no es ahorro de CSS,
+es que la figura hace una afirmación de compliance.** Tres copias de un botón son fealdad; tres
+copias de esto serían tres versiones de hasta dónde llega el servicio, y la regla dura de
+`CLAUDE.md` §1 dejaría de tener una sola fuente. Debí proponerlo yo.
+
+**`.suyo.solo .salvedad` bajó de 66ch a 47ch.** Y esto es directamente un descuido mío: **escribí
+`66ch` dos días después de cerrar el lote B de J4, que consistía exactamente en cambiar un `66ch`
+por `47ch` en `/como-funciona`.** Son ~91 caracteres reales. Corregir la regla y volver a cometerla
+en la entrega siguiente es peor que no haberla encontrado nunca.
+
+### 13.2 Sus tres respuestas
+
+1. **`/empresas`**: confirmado con matiz; ver §6, ya corregido.
+2. **Colisión con `/confianza`**: coincide en que no la hay, y añade el argumento que a mí me
+   faltaba. Yo lo defendí por las preguntas que responde cada figura. Él lo cierra por el **color**:
+   *el verde significa lo mismo en las dos — el tramo que es nuestro*. Compartir «banco» y
+   «billetera» como extremos no es repetir; es que una empieza donde la otra termina. Si el verde
+   significara cosas distintas en cada figura, **ahí** sí habría problema. Ése es el criterio bueno
+   y me lo apunto para las próximas.
+3. **Componente**: ver 13.1.
+
+### 13.3 Verificación independiente sobre el build
+
+Barrido completo de contraste, todos los nodos de texto, fondo efectivo compuesto por ancestros, sin
+filtrar por color:
+
+| Página | 1280 | 390 | Ratio mínimo | Incumplimientos |
+|---|---|---|---|---|
+| `/` | 150 nodos | 153 | 4,93 | 0 |
+| `/como-funciona` | 76 | 83 | 4,93 | 0 |
+| `/empresas` | 101 | 104 | 4,98 | 0 |
+| `/confianza` | 72 | 75 | 4,98 | 0 |
+
+**814 nodos, cero incumplimientos.** Los dos botones de la banda ya no existen. `GloboRotativo.astro`
+sin tocar. Y en producción la figura hace lo que tenía que hacer: el globo deja de leerse como la
+red de entrega de DLPay y pasa a leerse como **lo que hay al otro lado de la costura**.
+
+### 13.4 Tres errores míos en dos entregas, y todos son el mismo
+
+| # | Qué medí | Contra qué | Consecuencia |
+|---|---|---|---|
+| 1 | `--verde-deep` sobre el chip | una lámina con el fondo escrito a mano, y con el color equivocado | 4,59 en vez de 4,35 |
+| 2 | el verde sobre papel | una copia de `tokens.css` de dos días antes | 4,90 en vez de 5,44 |
+| 3 | el alto de la banda | un `.globo-hueco` de andamio en lugar del globo | −119 px en vez de **+187** |
+
+El patrón es uno solo: **cuando mido contra algo que construí yo, me equivoco; cuando mido contra el
+build, acierto.** Las tres veces el número del estado actual estaba bien y el del estado propuesto
+mal, por la misma razón. La regla que faltaba está ahora en el README como la 14.

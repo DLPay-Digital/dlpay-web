@@ -131,7 +131,21 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     ancla no falla: no hace nada, y uno se queda mirando una maqueta sin estilos buscándole un
     problema de diseño. Ocurrió dos veces —las cuñas de `/como-funciona` y el CSS del eje— y las dos
     se habrían evitado con una línea.
-13. **Ninguna cifra se escribe sin haberla calculado.** «Un 4 % de luminancia» no salió de ningún
+13. **Un andamio no aproxima el objeto que sustituye.** Un marcador de `<GloboRotativo />` en una
+    maqueta no mide lo que mide el globo: el 2026-09-17 el relleno era mucho más bajo y la ficha
+    afirmó que la banda bajaba de 1.060 a 941 px cuando en el build **sube a 1.247**. Ninguna
+    medida de geometría de página —altos, densidades, porcentajes— sale de una vista con andamios:
+    sale del build, o no se da.
+14. **La regla que las engloba: si el número describe el estado PROPUESTO, se mide contra el build.**
+    Tres errores en dos entregas y los tres iguales — el chip pintado a mano, la copia vieja de
+    `tokens.css` y el andamio del globo. Las tres veces la cifra del estado actual estaba bien,
+    porque salía del build, y la del propuesto mal, porque salía de algo que había construido yo.
+    **Medir contra material propio no es medir: es comprobar que uno es consistente consigo mismo.**
+15. **Una afirmación y su desmentido no caben en la misma sección.** En la misma §6 escribí que
+    `/empresas` «no declara el límite en ninguna parte» y, cuatro líneas después, cité la frase de
+    `business.ts` que sí lo declara. Antes de dar por buena una afirmación absoluta —«ninguno»,
+    «nunca», «en ninguna parte»— se relee el párrafo siguiente.
+16. **Ninguna cifra se escribe sin haberla calculado.** «Un 4 % de luminancia» no salió de ningún
     cálculo: la caída real era 13,3 % en luminancia relativa y 6,3 % en L\*. Una cifra inventada
     en una ficha vale menos que no poner ninguna.
 

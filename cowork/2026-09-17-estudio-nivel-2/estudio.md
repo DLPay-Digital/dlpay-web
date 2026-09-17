@@ -189,6 +189,14 @@ Los dos hallazgos del §3.1. Son reglas del propio sistema que hoy no se cumplen
 ### Nivel 2 · El salto de verdad
 
 **J5 · La banda del globo se convierte en «el tramo que sí hacemos».**
+
+> **CORRECCIÓN 2026-09-17, tras integrar.** La premisa de densidad de este párrafo es falsa y la
+> midió mal quien la escribió. Con la pieza puesta, la banda **no adelgaza: sube de 1.060 a 1.247 px
+> a 1280 y de 803 a 1.186 a 390**. Los «1 060 px que hoy no trabajan» siguen ahí y ahora son más.
+> La jugada se sostiene por la otra razón —que el dibujo y el texto de la banda hablaban de cosas
+> distintas, y el dibujo hacía la afirmación más grande— y por los dos botones, que eran un
+> duplicado y un enlace hacia atrás. Detalle en `2026-09-17-eje-de-remesas/ficha.md` §7.
+
 Es la pieza de peor densidad del sitio: **1 060 px —el 13 % de la Home— para un titular, dos líneas
 y dos botones**. Y es, además, la que ya tiene aire de remesas. Jugada: que esa banda deje de decir
 una frase genérica y pase a dibujar el tramo —origen, conversión, entrega en tu billetera, y el
