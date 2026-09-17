@@ -541,7 +541,7 @@ gestos táctiles, ni lectores de pantalla, ni el comportamiento de fuentes bajo 
 `matchMedia('(prefers-reduced-motion: reduce)').matches` dentro de la sonda, en vez de suponer el
 valor por defecto.
 
-## `scripts/` y `Blogs/` — dos carpetas que no entran al build
+## `scripts/` y `Blogs/` — lo que no entra al build
 
 Ninguna de las dos la toca Astro. Se documentan acá porque hasta el 2026-09-15 no estaban en
 ningún documento y una auditoría externa las marcó, con razón: quien las encuentre no tiene forma
@@ -566,18 +566,21 @@ algo regenerable.
 > arquitectura de contenido* y no dice nada de esto. Las decisiones que sí lo cubren son
 > **ADR-0007** (paleta cartográfica) y **ADR-0009** (runtime del globo).
 
-### `Blogs/` — borradores fuera de la colección
+### `Blogs/` — **eliminada el 2026-09-17**
 
-Una sola entrada hoy: el borrador del análisis de la Fed, versionado el 2026-09-14 **sólo para
-respaldarlo**, con marcadores `PENDIENTE` sin resolver.
+Existió entre el 2026-09-14 y el 2026-09-17 para guardar un borrador fuera del alcance de Astro: el
+análisis de la Fed, versionado sólo para respaldarlo mientras tenía marcadores `PENDIENTE` sin
+resolver.
 
-Está **fuera** de `src/content/blog/` a propósito: ahí dentro el esquema lo validaría y, desde el
-candado de publicación (`lib/blog.ts`), necesitaría además `estado: publicado` para salir. Mientras
-siga en `Blogs/` no existe para Astro en absoluto.
+Ya no hace falta, y el motivo es que el problema que resolvía se resolvió mejor. **El candado de
+`lib/blog.ts` hace ahora ese trabajo desde dentro de la colección**: un artículo sin
+`estado: publicado` no entra al build, ni al listado, ni a su ruta, ni al sitemap, y sí se ve con
+`astro dev` para poder redactarlo. Un borrador ya no necesita vivir fuera.
 
-Dos cosas que conviene resolver cuando toque, y que no resuelve este documento: el nombre en plural
-y con mayúscula choca con `src/content/blog/`, y el propósito se solapa con `cowork/`, que es el
-banco de trabajo del otro agente. Hoy son dos sitios distintos donde dejar material sin publicar.
+Con el artículo publicado, la carpeta quedó vacía y se eliminó. De paso se van las dos pegas que
+tenía anotadas: el nombre en plural y con mayúscula que chocaba con `src/content/blog/`, y el
+solape con `cowork/`. **Los borradores del blog van en `src/content/blog/` con `estado: borrador`**,
+que es el único sitio donde el esquema los valida.
 
 ---
 
