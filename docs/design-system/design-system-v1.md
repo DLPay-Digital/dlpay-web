@@ -134,6 +134,21 @@ modificar y usar comercialmente. Conservar el archivo de licencia junto a las fu
 | Dato pequeño (desglose, timestamp) | 12–13 px | 500 | 1.4 | tabular |
 
 - Longitud de línea de texto corrido: **< 65–70 caracteres**.
+
+  > **Cómo se escribe eso en CSS, y por qué no es obvio** *(medido el 2026-09-17)*
+  >
+  > **`1ch` NO es un carácter.** Es el ancho del glifo **cero**, y en Familjen Grotesk el cero es
+  > ancho: a 16 px mide **9,07 px**, mientras que el carácter medio de un texto en español mide
+  > **6,64 px**. El factor es **1,37**, así que toda medida escrita en `ch` sale **un 37 % más
+  > ancha** de lo que creyó quien la escribió. `max-width: 66ch` no da 66 caracteres por línea: da
+  > unos 90.
+  >
+  > **El tope de 65 caracteres se escribe `max-width: 47ch`** (65 × 6,64 ÷ 9,07 = 47,6).
+  >
+  > **Si cambia la tipografía de texto, este factor se vuelve a medir.** Por eso no existe un token
+  > `--medida`: un token escondería la dependencia y el número seguiría ahí, equivocado, cuando la
+  > fuente cambiara. Se mide contando los caracteres de la primera línea con
+  > `Range.getClientRects()` sobre el build, nunca a ojo.
 - `text-wrap: balance` en titulares; `text-wrap: pretty` en párrafos.
 
 ### 3.2 Antipatrones tipográficos (prohibidos)

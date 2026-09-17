@@ -121,6 +121,8 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-17 | [`2026-09-17-j4-medida-y-objetivos`](2026-09-17-j4-medida-y-objetivos/ficha.md) — J4: la medida de lectura y los objetivos táctiles | **Integrada (lote A)** | Las 9 declaraciones, los 2 objetivos y el atributo. Las 7 de lote B viajan con el rediseño |
+| 2026-09-17 | [`2026-09-17-estudio-nivel-2`](2026-09-17-estudio-nivel-2/estudio.md) — estudio del sitio y plan para subir de nivel | **Registrado** | Documento de análisis, no una entrega a trasladar. Origina la J4 |
 | 2026-09-16 | [`2026-09-16-blog-portada-de-dato`](2026-09-16-blog-portada-de-dato/ficha.md) — portada de dato y título debajo | **Integrada con cambios** | La estructura y los dos tipos, tal cual. El dibujo pasa de SVG a HTML: en móvil el SVG escalaba los rótulos a ~6 px |
 | 2026-09-16 | [`2026-09-16-blog-sin-portada`](2026-09-16-blog-sin-portada/ficha.md) — el blog sin portadas, texto primero | **Integrada** | El listado pasa a índice tal cual se propuso |
 | 2026-09-16 | [`2026-09-16-empresas-casos`](2026-09-16-empresas-casos/ficha.md) — lenguaje visual de «Para qué lo usan» (exploración) | **Integrada** | El diagnóstico de §1 es correcto y verificable; el tratamiento A es el único específico de DLPay |
@@ -325,3 +327,46 @@ frontmatter cuando el artículo se cierre.
 portada. Cero JavaScript nuevo, cero imágenes, cero tokens nuevos, cero dependencias. El artículo de
 ejemplo sigue siendo borrador: el candado de `lib/blog.ts` lo deja fuera del build, así que nada de
 esto es público.
+
+### Notas de la integración de `2026-09-17-j4-medida-y-objetivos` (lote A)
+
+**El hallazgo de fondo es correcto y lo medí por mi cuenta antes de tocar nada**, porque todo lo
+demás cuelga de ese número. Con la fuente real del proyecto: el glifo cero —que es lo que vale
+`1ch`— mide **9,07 px** a 16 px, y el carácter medio de un texto en español del propio sitio mide
+**6,64 px**. Factor **1,367**, y el tope de 65 caracteres sale en **47,6ch**. La ficha da 1,38 y
+47ch; la diferencia es la muestra de texto usada y no cambia la conclusión.
+
+La evidencia del `.scope-box` también se sostiene: declara 66ch, mide **598 px** en pantalla y su
+primera línea lleva **101 caracteres** contados con `Range.getClientRects()` (la ficha dice 113;
+depende del párrafo y del ancho, y en los dos casos está muy por encima del 65–70 que fija el
+Design System §3.1).
+
+**Lote A aplicado entero:** las 9 declaraciones a 47ch, los dos objetivos táctiles y el atributo.
+Verificado después del cambio, otra vez con `Range` y sobre el servidor al día: los párrafos caen
+ahora entre **59 y 70 caracteres** —antes iban de 75 a 99— y el `max-width` resuelve a **426,1 px**,
+que es exactamente 47ch. Ningún `max-width` de texto corrido queda por encima de 47ch salvo los
+**7 del lote B**, que son justo los de `como-funciona.astro` y `confianza.astro`: el reparto de la
+ficha cuadra.
+
+**Los dos objetivos táctiles miden ahora 44,0 px** (antes 17,5 y 31,0, idénticos en los cuatro
+anchos que comprobé). Se resolvieron como los del pie: `inline-flex` más `min-height`, porque sobre
+un enlace que se dimensiona por su línea de texto el `min-height` solo no hace nada.
+
+**Dos precisiones sobre lo pedido:**
+
+1. **El `<svg class="wedge">` ya estaba oculto para tecnología asistiva.** Vive en
+   `MacbookMockup.astro` y su raíz es `<figure class="mac" aria-hidden="true">`, que lo cubre por
+   herencia. No había defecto de accesibilidad: añadir el atributo es consistencia, no arreglo, y
+   así queda dicho. Los otros SVG «sin `aria-hidden`» del sitio son los isotipos de cabecera y pie,
+   que llevan `role="img"` a propósito porque sí significan algo.
+2. **El punto 5 ya estaba hecho, y con más detalle del pedido.** ADR-0007, 0008 y 0009 pasaron a
+   **Aceptada el 2026-09-15** (commit `9ae2aba`). Y ADR-0007 no lista cuatro colores del globo:
+   lista **siete**, con nombre semántico, hex y uso, más un apartado que explica su relación con
+   ADR-0001. Comprobé contra el componente que los siete se usan y que **ninguno** está en
+   `tokens.css`, que es justo lo que el ADR declara.
+
+**El factor queda escrito en el Design System §3.1**, pegado a la regla de los 65–70 caracteres, con
+los tres números, la equivalencia `65 caracteres = 47ch` y la condición de recalcularlo si cambia la
+tipografía — con el porqué de no crear un token `--medida`, que es el argumento de la ficha y es
+bueno: un token escondería la dependencia y el número seguiría ahí, equivocado, el día que cambie la
+fuente.
