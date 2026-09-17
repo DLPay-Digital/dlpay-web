@@ -121,6 +121,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-17 | [`2026-09-17-confianza`](2026-09-17-confianza/ficha.md) — J1: la página de confianza gana su pieza | **Integrada** | La figura, la mención institucional y el lote B de J4. Las tres fases salen a `content/trust.ts` |
 | 2026-09-17 | [`2026-09-17-j4-medida-y-objetivos`](2026-09-17-j4-medida-y-objetivos/ficha.md) — J4: la medida de lectura y los objetivos táctiles | **Integrada (lote A)** | Las 9 declaraciones, los 2 objetivos y el atributo. Las 7 de lote B viajan con el rediseño |
 | 2026-09-17 | [`2026-09-17-estudio-nivel-2`](2026-09-17-estudio-nivel-2/estudio.md) — estudio del sitio y plan para subir de nivel | **Registrado** | Documento de análisis, no una entrega a trasladar. Origina la J4 |
 | 2026-09-16 | [`2026-09-16-blog-portada-de-dato`](2026-09-16-blog-portada-de-dato/ficha.md) — portada de dato y título debajo | **Integrada con cambios** | La estructura y los dos tipos, tal cual. El dibujo pasa de SVG a HTML: en móvil el SVG escalaba los rótulos a ~6 px |
@@ -370,3 +371,39 @@ los tres números, la equivalencia `65 caracteres = 47ch` y la condición de rec
 tipografía — con el porqué de no crear un token `--medida`, que es el argumento de la ficha y es
 bueno: un token escondería la dependencia y el número seguiría ahí, equivocado, el día que cambie la
 fuente.
+
+### Notas de la integración de `2026-09-17-confianza`
+
+**El diagnóstico se sostiene:** una página que se llama «Confianza que se comprueba» explicaba su
+mecanismo sólo en prosa. La línea de tiempo de **tenencia** —no de pasos— es el acierto de la
+entrega: el eje deja de ser «qué ocurre» y pasa a ser «de quién es la cuenta donde está la plata»,
+que es exactamente lo que la página necesita mostrar en vez de afirmar.
+
+**Las tres reglas, respetadas y comprobadas:**
+
+1. **HTML y no SVG.** Comparto el argumento y ya lo habíamos pagado dos veces: los rótulos del globo
+   y los de la portada del blog. Verificado en el render: a 390 px las tres fases apilan, el
+   corchete se convierte en el canto izquierdo del bloque y **todo el texto se lee a su tamaño
+   real**. La figura no lleva `aria-hidden` ni `aria-label` —el texto es texto— y lo único oculto
+   son las tres barras, que sí son decorativas. La regla general queda escrita en el componente.
+2. **La palabra retirada no aparece**, ni en el copy ni en el código: comprobado con un grep sobre
+   `src/` entero y sobre el HTML construido. Las clases van en inglés como manda ADR-0003.
+3. **La mención institucional se importa.** `institutionalStatement` y el `relationship` de
+   FinteChile salen de `lib/config/alliances.ts` sin reescribirse. Aquí me equivoqué en el primer
+   intento —escribí «Socio de FinteChile» a mano, que es justo lo que la entrega prohíbe— y lo
+   corregí antes de construir. De paso queda colgada del candado `verified`: si la alianza deja de
+   estar verificada, la frase desaparece sola.
+
+**Acepté la sugerencia de la ficha:** las tres fases salen a `content/trust.ts` junto a
+`mechanisms`, con su propio tipo `Phase`. Son datos, no maquetación, y el día que cambie el banco o
+el recorrido se toca un solo sitio. El marcador de Compliance de la mención del banco viaja con el
+dato, como en `mechanisms`.
+
+**Lote B de J4, la parte de esta página:** las cuatro declaraciones a 47ch. Quedan sólo las tres de
+`como-funciona.astro`, que van con su entrega.
+
+**Medido:** desborde horizontal **0** a 390 y 1280. Contrastes recalculados, los cuatro coinciden
+al segundo decimal con la ficha: `--ink` 16,00:1 · `--ink-mute` 5,50:1 · `--verde-deep` **4,90:1**,
+que es el que llevan la barra, el corchete y «Lo tenemos nosotros». Ningún verde de marca sobre
+claro — sobre papel daría 2,02:1 y la barra carga significado (DS §2.4). Cero componentes nuevos,
+cero tokens nuevos, cero JavaScript nuevo, cero imágenes, cero movimiento nuevo.

@@ -33,6 +33,44 @@ export const mechanisms: Mechanism[] = [
 ];
 
 /**
+ * Dónde está el dinero en cada momento, y quién lo tiene.
+ *
+ * Es una línea de tiempo de TENENCIA, no de pasos: el eje no es «qué ocurre»
+ * sino «de quién es la cuenta donde está la plata». Sólo un tramo es nuestro, y
+ * eso es exactamente lo que la página necesita mostrar en vez de afirmar.
+ *
+ * Va acá y no escrito en la página porque son DATOS, igual que `mechanisms`:
+ * el día que cambie el banco o el recorrido, se cambia en un sitio.
+ *
+ * Nada de esto es un claim nuevo. Que la transferencia llega a la cuenta de
+ * DLPay en BCI ya lo publica `mechanisms`, con su marcador; «lo tenemos
+ * nosotros» es la misma afirmación dicha en primera persona.
+ */
+export interface Phase {
+  /** Dónde está el dinero. */
+  place: string;
+  /** Quién lo tiene. */
+  who: string;
+  /** `true` sólo en el tramo que está en una cuenta de DLPay. */
+  ours?: boolean;
+  /** Hito colgado del tramo, cuando hay algo que marcar. */
+  note?: string;
+}
+
+export const phases: readonly Phase[] = [
+  { place: 'En tu cuenta bancaria', who: 'Lo tienes tú' },
+  {
+    // REQUIERE VALIDACIÓN DE COMPLIANCE — mención del banco por nombre, la
+    // misma que ya lleva `mechanisms`.
+    place: 'En la cuenta de DLPay en BCI',
+    who: 'Lo tenemos nosotros',
+    ours: true,
+    note: 'Acá confirmamos que llegó, antes de mover nada',
+  },
+  { place: 'En tu billetera', who: 'Lo tienes tú' },
+];
+
+/**
  * Lo que NO afirmamos. Una web que dice lo que no puede probar es menos creíble,
  * no más. Esta sección es una decisión de marca, no un descargo legal.
  */

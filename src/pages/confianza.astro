@@ -13,8 +13,19 @@ import PageHero from '../components/PageHero.astro';
 import Motion from '../components/Motion.astro';
 import IconBadge from '../components/ui/IconBadge.astro';
 import Icon from '../components/Icon.astro';
-import { mechanisms, honesty, requirements } from '../content/trust.ts';
+import { mechanisms, honesty, phases, requirements } from '../content/trust.ts';
 import { site, contact } from '../lib/config/site.ts';
+/*
+  La mención institucional se IMPORTA, nunca se teclea. `alliances.ts` declara
+  que cualquier cambio de redacción es un claim nuevo que vuelve a necesitar
+  aprobación; si la frase se escribiera otra vez acá, el día que Compliance
+  cambie una palabra habría dos verdades en el sitio.
+*/
+import { institutionalStatement, publishedAlliances } from '../lib/config/alliances.ts';
+
+/* Si la alianza deja de estar verificada, la frase desaparece sola: el mismo
+   candado `verified` que gobierna los emblemas del pie. */
+const fintechile = publishedAlliances.find((a) => a.id === 'fintechile');
 
 const wa = contact.whatsappUrl();
 ---
@@ -37,6 +48,40 @@ const wa = contact.whatsappUrl();
           <h2 id="mech-title" data-enter>Qué pasa con tu plata</h2>
           <p>Tres cosas que puedes verificar tú mismo en tu próxima operación.</p>
         </header>
+        {/*
+          La línea de tiempo de TENENCIA. No es un SVG y es una decisión medida:
+          el texto de un SVG escala con el `viewBox`, así que a 390 px estos
+          rótulos caían a unos 5 px. En HTML usan la escala tipográfica del
+          sistema, en móvil las tres fases apilan —que además es la lectura
+          correcta de una secuencia— y el corchete del tramo nuestro se
+          convierte en el canto izquierdo del bloque.
+
+          Efecto lateral que importa: la figura no necesita `aria-hidden` ni un
+          `aria-label` que reescriba lo que dice. El texto es texto. Lo único
+          decorativo son las tres barras, y ésas sí van ocultas.
+
+          La regla general: si una figura es texto más rectángulos, es HTML. El
+          SVG es para trazos que una caja no puede hacer —planos recortados,
+          cuñas, `clip-path`—, como las cuatro figuras de /empresas.
+        */}
+        <figure class="track">
+          <ol class="phases">
+            {phases.map((phase) => (
+              <li class:list={['phase', { 'is-ours': phase.ours }]}>
+                <p class="phase-place">{phase.place}</p>
+                <span class:list={['phase-bar', { 'is-ours-bar': phase.ours }]} aria-hidden="true"></span>
+                <p class:list={['phase-who', { 'is-ours-who': phase.ours }]}>{phase.who}</p>
+                {phase.note && <p class="phase-note">{phase.note}</p>}
+              </li>
+            ))}
+          </ol>
+          <figcaption>
+            Tu dinero no pasa por ningún intermediario fuera de Chile ni por cuentas de terceros:
+            <strong> de tu banco a una cuenta de DLPay en BCI, y de ahí a tu billetera</strong>. El
+            tramo verde es el único que es nuestro.
+          </figcaption>
+        </figure>
+
         <ul class="list">
           {mechanisms.map((item) => (
             <li class="item">
@@ -65,6 +110,21 @@ const wa = contact.whatsappUrl();
             </li>
           ))}
         </ul>
+
+        {/*
+          La mención institucional va acá y no en otro sitio porque acá informa:
+          esta sección explica por qué se piden documentos, y la supervisión de
+          la UAF es la razón. En cualquier otro lugar de la página sería un sello
+          disfrazado de frase. Los emblemas siguen en el pie.
+
+          Las dos frases salen de `lib/config/alliances.ts` sin reescribirse. La
+          de la UAF fija su alcance con precisión —«registrada y supervisada», ni
+          «autorizada» ni «avalada»— y ampliarla es un claim distinto.
+        */}
+        <p class="institutional">
+          {site.legalName} {institutionalStatement}
+          {fintechile && ` ${fintechile.relationship}.`}
+        </p>
       </div>
     </section>
 
@@ -137,13 +197,65 @@ const wa = contact.whatsappUrl();
 
   /* El bloque tiene medida propia: sin ella la composición flota perdida en un
      contenedor de 1112px y el icono queda huérfano a la izquierda. */
+  /* ── La línea de tiempo de tenencia ──────────────────────────────────────
+     Texto y tres rectángulos: por eso es HTML y no un SVG. Ver la nota del
+     marcado. */
+  .track { margin: 0 0 var(--s-8); }
+  .phases { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
+  .phase-place {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  /* La barra es lo único decorativo de la figura, y va `aria-hidden`. */
+  .phase-bar {
+    display: block;
+    height: 20px;
+    border-radius: var(--r-1);
+    background: var(--ink);
+    margin: var(--s-3) 0;
+  }
+  /* `--verde-deep` y no `--verde`: la barra CARGA significado —marca el único
+     tramo que es nuestro— y sobre papel el verde de marca no llega (DS §2.4).
+     4,90:1 frente a 2,02:1. */
+  .phase-bar.is-ours-bar { background: var(--verde-deep); }
+  .phase-who { font-family: var(--f-num); font-size: var(--t-dato-sm); color: var(--ink-mute); }
+  .phase-who.is-ours-who { color: var(--verde-deep); font-weight: 600; }
+  /* El corchete marca el punto exacto donde el dinero pasa a estar en nuestra
+     cuenta. En móvil se convierte en el canto del bloque: misma función, dos
+     formatos. */
+  .phase.is-ours { border-left: 2px solid var(--verde-deep); padding-left: var(--s-4); }
+  .phase-note {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+    margin-top: var(--s-2);
+  }
+  .track figcaption {
+    margin-top: var(--s-6);
+    color: var(--ink-mute);
+    font-size: var(--t-body-sm);
+    max-width: 47ch;
+  }
+  .track figcaption strong { color: var(--ink); font-weight: 600; }
+
+  /* La mención institucional cierra la sección de requisitos. Discreta a
+     propósito: informa por qué se piden documentos, no hace de sello. */
+  .institutional {
+    margin-top: var(--s-7);
+    color: var(--ink-mute);
+    font-size: var(--t-body-sm);
+    max-width: 47ch;
+  }
+
   .list {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
     gap: var(--s-7);
-    max-width: 66ch;
+    max-width: 47ch;
   }
 
   /* Columna fija para el icono: proximidad de 12px con SU mensaje frente a 48px
@@ -184,7 +296,7 @@ const wa = contact.whatsappUrl();
     line-height: var(--lh-h3);
     margin-bottom: var(--s-2);
   }
-  .req-list p { color: var(--ink-mute); max-width: 52ch; }
+  .req-list p { color: var(--ink-mute); max-width: 47ch; }
 
   /* La sección más honesta del sitio: va sobre tinta, con peso propio */
   .honesty { background: var(--tinta); color: var(--on-tinta); padding: var(--s-9) 0; }
@@ -202,11 +314,11 @@ const wa = contact.whatsappUrl();
     margin-bottom: var(--s-2);
     max-width: 40ch;
   }
-  .honesty-list p { color: var(--on-tinta-mute); max-width: 54ch; }
+  .honesty-list p { color: var(--on-tinta-mute); max-width: 47ch; }
 
   .who { background: var(--papel); padding: var(--s-9) 0; }
   .who-grid { display: grid; gap: var(--s-7); }
-  .who p { color: var(--ink-mute); max-width: 52ch; margin-bottom: var(--s-3); }
+  .who p { color: var(--ink-mute); max-width: 47ch; margin-bottom: var(--s-3); }
   .who strong { color: var(--ink); font-weight: 600; }
   .who .note { font-size: var(--t-body-sm); }
 
@@ -240,6 +352,9 @@ const wa = contact.whatsappUrl();
 
   @media (min-width: 760px) {
     .req-list { grid-template-columns: repeat(3, 1fr); gap: var(--s-6); }
+    /* Las tres fases en fila: el recorrido se lee de izquierda a derecha, que
+       es como se lee una línea de tiempo. En móvil apilan. */
+    .phases { grid-template-columns: repeat(3, 1fr); gap: var(--s-5); align-items: start; }
     .honesty-list { grid-template-columns: repeat(2, 1fr); gap: var(--s-6) var(--s-7); }
     .who-grid { grid-template-columns: 1.4fr 1fr; gap: var(--s-8); align-items: start; }
   }
