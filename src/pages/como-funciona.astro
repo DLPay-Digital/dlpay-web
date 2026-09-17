@@ -11,7 +11,6 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
 import Motion from '../components/Motion.astro';
-import FlowDiagram from '../components/FlowDiagram.astro';
 import Icon from '../components/Icon.astro';
 import { detailedSteps, checklist } from '../content/process.ts';
 import { contact, platform } from '../lib/config/site.ts';
@@ -31,13 +30,6 @@ const wa = contact.whatsappUrl();
       lead="El recorrido es el mismo cambies pesos por dólares o al revés. La web te deja listo y una persona cierra. Acá está todo, en orden y con los tiempos reales."
     />
 
-    <section class="diagram-band" aria-labelledby="flow-title">
-      <div class="inner">
-        <h2 id="flow-title" class="sr-only">Recorrido del dinero</h2>
-        <FlowDiagram />
-      </div>
-    </section>
-
     <section class="detail" aria-labelledby="detail-title">
       <div class="inner">
         <header class="head">
@@ -45,25 +37,48 @@ const wa = contact.whatsappUrl();
           <p>Marcamos quién hace qué, para que no quede ninguna zona gris.</p>
         </header>
 
-        <ol class="steps">
-          {detailedSteps.map((step) => (
-            <li class="step">
-              <div class="marker">
-                <span class="n num">{step.n}</span>
-              </div>
-              <div class="body">
-                <div class="line">
-                  <h3>{step.title}</h3>
-                  <span class:list={['who', step.who === 'tú' ? 'you' : 'us']}>
-                    {step.who === 'tú' ? 'Lo haces tú' : 'Lo hacemos nosotros'}
-                  </span>
-                </div>
-                <p>{step.body}</p>
-                <span class="time num">{step.time}</span>
-              </div>
-            </li>
-          ))}
-        </ol>
+        <div class="lanes">
+          {/* Los rótulos de carril son redundantes para quien no ve la página:
+              cada paso ya lleva su `.who`. Por eso van `aria-hidden`. */}
+          <div class="lane-heads" aria-hidden="true">
+            <p class="you">Lo haces tú</p>
+            <p class="us">Lo hacemos nosotros</p>
+          </div>
+
+          {/*
+            `role="list"` viaja con la pieza: con `list-style: none` WebKit deja
+            de anunciar la lista, y acá «seis pasos, y éste es el tercero» ES el
+            contenido.
+          */}
+          <ol class="steps" role="list">
+            {detailedSteps.map((step, i) => {
+              const us = step.who !== 'tú';
+              /* El traspaso es el CAMBIO de manos: se marca cuando este paso no
+                 lo hace quien hizo el anterior. Se calcula, no se lista a mano:
+                 si mañana cambia el reparto en `process.ts`, las cuñas se mueven
+                 solas. Hoy da los pasos 03, 04 y 05. */
+              const anterior = detailedSteps[i - 1];
+              const cambia = anterior !== undefined && (anterior.who !== 'tú') !== us;
+              return (
+                <li class:list={['step', us ? 'us' : 'you', { handoff: cambia }]}>
+                  {cambia && (
+                    <svg class="handoff-mark" viewBox="0 0 40 12" fill="none" aria-hidden="true"
+                         preserveAspectRatio="none">
+                      <path d="M0 6h12l6-5 6 10 6-5h10" stroke="currentColor" stroke-width="1.5" data-draw />
+                    </svg>
+                  )}
+                  <div class="step-top">
+                    <span class="n num">{String(step.n).padStart(2, '0')}</span>
+                    <h3>{step.title}</h3>
+                  </div>
+                  <p>{step.body}</p>
+                  <span class="who">{us ? 'Lo hacemos nosotros' : 'Lo haces tú'}</span>
+                  <span class="time num">{step.time}</span>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
       </div>
     </section>
 
@@ -151,7 +166,6 @@ const wa = contact.whatsappUrl();
     padding: 0 var(--pad-section-m);
   }
 
-  .diagram-band { background: var(--papel); padding: var(--s-9) 0; }
 
   .detail { background: var(--papel-2); padding: var(--s-9) 0; }
   .head { max-width: 46ch; margin-bottom: var(--s-7); }
@@ -164,39 +178,45 @@ const wa = contact.whatsappUrl();
   }
   .head p { color: var(--ink-mute); }
 
-  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
-  .step { display: flex; gap: var(--s-4); align-items: flex-start; }
-  .marker { flex: none; }
-  .n {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border: 1px solid var(--line);
-    border-radius: var(--r-2);
-    font-size: var(--t-body-sm);
-    font-weight: 600;
-    background: var(--papel);
-  }
-  .line {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--s-2) var(--s-3);
-    margin-bottom: var(--s-2);
-  }
-  .step h3 { font-size: var(--t-h3-m); font-weight: 600; line-height: var(--lh-h3); }
-  .who {
+  /* ── La secuencia en dos carriles ─────────────────────────────────────────
+     Los seis pasos dejan de ser una lista y pasan a un recorrido con un eje: a
+     la izquierda lo que hace el usuario, a la derecha lo que hace DLPay. La
+     alternancia real es tú·tú·nosotros·tú·nosotros·nosotros, así que el trabajo
+     CAMBIA DE MANOS tres veces, y eso es lo que la página tiene que mostrar.
+     Debajo de 900px no hay carriles: es una lista y el reparto viaja en el pie
+     de cada paso. */
+  .lanes { position: relative; }
+  .handoff-mark { display: none; }
+  .lane-heads { display: none; }
+  .lane-heads p {
+    font-family: var(--f-num);
     font-size: var(--t-dato-sm);
     font-weight: 600;
-    padding: 2px var(--s-2);
-    border-radius: var(--r-1);
-    white-space: nowrap;
+    letter-spacing: var(--ls-label);
   }
-  .who.you { background: rgba(11, 19, 32, 0.07); color: var(--ink-mute); }
-  .who.us { background: rgba(11, 122, 84, 0.1); color: var(--verde-deep); }
-  .step p { color: var(--ink-mute); max-width: 58ch; }
+  .lane-heads .you { color: var(--ink); }
+  .lane-heads .us { color: var(--verde-deep); }
+
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
+  .step { padding-top: var(--s-4); border-top: 1px solid var(--line); position: relative; }
+  .step-top { display: flex; align-items: baseline; gap: var(--s-3); margin-bottom: var(--s-2); }
+  .n { font-family: var(--f-num); font-size: var(--t-dato-sm); color: var(--ink-mute); }
+  .step h3 { font-size: var(--t-h3-m); font-weight: 600; line-height: var(--lh-h3); }
+  .step p { color: var(--ink-mute); max-width: 47ch; margin-bottom: var(--s-2); }
+
+  /* En móvil no hay carriles, así que quién y cuándo viajan juntos en un solo
+     pie mono: dos datos del mismo orden, una sola línea. */
+  .who, .time { display: inline; font-family: var(--f-num); font-size: var(--t-dato-sm); }
+  .who { font-weight: 600; }
+  .who + .time::before {
+    content: '·';
+    margin: 0 .55em;
+    font-weight: 400;
+    color: var(--ink-mute);
+  }
+  .step.you .who { color: var(--ink-mute); }
+  .step.us { border-top-color: var(--verde-deep); }
+  .step.us .who { color: var(--verde-deep); }
   .time {
     display: inline-block;
     margin-top: var(--s-2);
@@ -216,7 +236,7 @@ const wa = contact.whatsappUrl();
   }
   .tick { width: 17px; height: 17px; color: var(--verde-deep); flex: none; margin-top: 3px; }
 
-  .kyc p { color: var(--ink-mute); max-width: 52ch; margin-bottom: var(--s-3); }
+  .kyc p { color: var(--ink-mute); max-width: 47ch; margin-bottom: var(--s-3); }
   .kyc .note { font-size: var(--t-body-sm); }
   .kyc-actions { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
   .ghost {
@@ -239,7 +259,7 @@ const wa = contact.whatsappUrl();
      y con un borde de aviso: es información que protege, no letra chica. */
   .scope { background: var(--papel-2); padding: var(--s-9) 0; }
   .scope-box {
-    max-width: 66ch;
+    max-width: 47ch;
     border-left: 2px solid var(--aviso-deep);
     padding-left: var(--s-5);
   }
@@ -271,6 +291,67 @@ const wa = contact.whatsappUrl();
     .inner { padding-inline: var(--pad-section); }
     h2 { font-size: var(--t-h2); }
     .step h3 { font-size: var(--t-h3); }
-    .steps { grid-template-columns: repeat(2, 1fr); gap: var(--s-7) var(--s-8); }
+
+    /* El eje: la línea que separa los dos carriles. No es adorno — es la
+       frontera que el trabajo cruza tres veces. */
+    .lanes::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 1px;
+      background: var(--line);
+    }
+    .lane-heads {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-8);
+      margin-bottom: var(--s-5);
+    }
+    .lane-heads .us { text-align: right; }
+
+    .steps { grid-template-columns: 1fr 1fr; gap: var(--s-5) var(--s-8); align-items: start; }
+    /* Colocación EXPLÍCITA. Con seis hijos y dos columnas el flujo automático
+       los reparte por orden de llegada y el carril deja de significar nada: es
+       el mismo error que ya mordió en el listado del blog. */
+    .step:nth-child(1) { grid-column: 1; grid-row: 1; }
+    .step:nth-child(2) { grid-column: 1; grid-row: 2; }
+    .step:nth-child(3) { grid-column: 2; grid-row: 3; }
+    .step:nth-child(4) { grid-column: 1; grid-row: 4; }
+    .step:nth-child(5) { grid-column: 2; grid-row: 5; }
+    .step:nth-child(6) { grid-column: 2; grid-row: 6; }
+
+    /* En escritorio el carril dice quién hace qué **a la vista**. Pero la
+       posición en una columna NO llega al árbol de accesibilidad: con
+       `display:none` el dato desaparecería para quien no ve la página. Se oculta
+       visualmente y SIGUE ahí. Misma definición que el `.sr-only` de esta misma
+       hoja. */
+    .who {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .who + .time::before { content: none; }
+    .time { display: block; margin-top: var(--s-2); }
+
+    /* La cuña marca el momento en que el trabajo cambia de manos: el marcador de
+       paso del Design System §6, con el mismo trazo que usaba el diagrama de
+       flujo. Es lo único que se dibuja en la página. */
+    .handoff-mark {
+      display: block;
+      position: absolute;
+      top: -7px;
+      width: 40px;
+      height: 12px;
+      color: var(--verde-deep);
+    }
+    .step.us .handoff-mark { left: calc(-1 * var(--s-8) / 2 - 20px); }
+    .step.you .handoff-mark { right: calc(-1 * var(--s-8) / 2 - 20px); transform: scaleX(-1); }
   }
 </style>

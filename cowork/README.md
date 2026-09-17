@@ -94,6 +94,21 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
 2. **Si una regla se mueve de un elemento a otro, la evidencia se rehace.** El píxel cambia aunque
    la regla se vea igual: el fondo de un elemento pinta bajo su propio borde, y el de su padre no.
 3. **Ninguna captura se genera sin mirarla.** Una captura sin abrir no es una verificación.
+4. **Un color opaco también declara su superficie.** Salió de un segundo error, el 2026-09-17:
+   `--verde-deep` no tiene alfa y aun así incumplía AA, porque el DS lo documenta sólo contra
+   `--papel` y la pieza iba sobre `--papel-2`. `--papel` y `--papel-2` **no son intercambiables**:
+   4,90:1 y 4,44:1. La evidencia se calcula contra el fondo **efectivo** —subiendo por los
+   ancestros y componiendo—, no contra el que uno supone.
+5. **Si un número del DS no cuadra con la medición, se va a comprobar al build antes de tocar la
+   maqueta.** En ese caso el hueco estaba en el sistema y había seis rótulos incumpliendo en
+   producción; ajustar la maqueta lo habría tapado (`2026-09-17-como-funciona/ficha.md` §4).
+6. **Si una pieza dice algo con la posición, tiene que decirlo también con texto.** Un carril, una
+   columna o un lado del eje son información que sólo existe para quien mira. `display:none` sobre
+   la etiqueta equivalente no la esconde: la borra del árbol de accesibilidad. Se oculta
+   visualmente y se deja presente (`2026-09-17-como-funciona/ficha.md` §13.1).
+7. **Toda entrega pasa por `design:accessibility-review` antes de darse por cerrada**, y la ficha
+   lleva el resultado, incluidos los criterios que pasan limpios. Lo que no se pueda medir en este
+   entorno se marca como no medido, no como correcto.
 
 ---
 
@@ -121,6 +136,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-17 | [`2026-09-17-como-funciona`](2026-09-17-como-funciona/ficha.md) — J2 y J3: los seis pasos en dos carriles | **Integrada** | Token, pieza y lote B. Un número de la ficha no cuadró y se corrigió la nota |
 | 2026-09-17 | [`2026-09-17-confianza`](2026-09-17-confianza/ficha.md) — J1: la página de confianza gana su pieza | **Integrada** | La figura, la mención institucional y el lote B de J4. Las tres fases salen a `content/trust.ts` |
 | 2026-09-17 | [`2026-09-17-j4-medida-y-objetivos`](2026-09-17-j4-medida-y-objetivos/ficha.md) — J4: la medida de lectura y los objetivos táctiles | **Integrada (lote A)** | Las 9 declaraciones, los 2 objetivos y el atributo. Las 7 de lote B viajan con el rediseño |
 | 2026-09-17 | [`2026-09-17-estudio-nivel-2`](2026-09-17-estudio-nivel-2/estudio.md) — estudio del sitio y plan para subir de nivel | **Registrado** | Documento de análisis, no una entrega a trasladar. Origina la J4 |
@@ -407,3 +423,51 @@ al segundo decimal con la ficha: `--ink` 16,00:1 · `--ink-mute` 5,50:1 · `--ve
 que es el que llevan la barra, el corchete y «Lo tenemos nosotros». Ningún verde de marca sobre
 claro — sobre papel daría 2,02:1 y la barra carga significado (DS §2.4). Cero componentes nuevos,
 cero tokens nuevos, cero JavaScript nuevo, cero imágenes, cero movimiento nuevo.
+
+### Notas de la integración de `2026-09-17-como-funciona`
+
+**El token: cinco de seis números coinciden, el sexto no.** Recalculé las seis razones componiendo
+capa a capa. Coinciden exactamente `#0B7A54` sobre papel (4,90), sobre papel-2 (**4,44**) y sobre el
+chip (**3,92**), y `#0A7250` sobre papel (**5,44**) y sobre papel-2 (**4,93**). Hasta el chip
+compuesto sale idéntico: `rgb(214,223,213)`.
+
+**El sexto no.** La ficha afirma que `#0A7250` sobre el chip da **4,59** y **da 4,31** —4,35 si el
+literal `rgba(11,122,84,.1)` no se toca, que es lo que ocurre, porque es un valor escrito a mano y
+no el token—. Sigue **por debajo de AA**. Acepté el token igual, y conviene decir por qué: el caso
+del chip **desaparece con esta misma entrega**, porque la pieza retira las pastillas `.who`. De los
+otros dos consumidores del literal, `IconBadge` lleva un icono dentro y el cotizador lo usa como
+anillo de foco: los dos son gráficos, con piso de 3:1. Así que el token arregla todo lo que queda
+en pie, pero **no por la razón que daba la ficha**. La nota de límite quedó escrita en el DS §2.4
+para que nadie vuelva a poner texto verde sobre un chip verde.
+
+**Otra medición que no cuadra:** la ficha dice que la diferencia con `#0B7A54` es «un 4 % de
+luminancia». La luminancia relativa cae un **13,3 %** y la claridad perceptual (L\*) un **6,3 %**.
+Ninguna de las dos da 4. El cambio sigue siendo pequeño y la conclusión no se mueve, pero el número
+no es ése.
+
+**Un fallo que la ficha no listó:** las pastillas `.who.you` daban **4,32:1** (`--ink-mute` sobre
+`rgba(11,19,32,.07)` encima de papel-2), también bajo AA. Eran seis rótulos incumpliendo, no tres
+más tres: nueve en total. Los seis de `/como-funciona` se van con la pieza y los tres de la Home
+los arregla el token.
+
+**La pieza va tal cual, con un cambio de implementación.** Las cuñas de traspaso **no se listan a
+mano**: se calculan comparando el `who` de cada paso con el del anterior. Da exactamente los pasos
+03, 04 y 05 —verificado en el build—, y si mañana cambia el reparto en `process.ts` las cuñas se
+mueven solas en vez de quedarse donde estaban. La colocación en grid sí va explícita, como pedía la
+ficha y por la razón que da.
+
+**Los dos puntos de accesibilidad, respetados y comprobados:** `.who` está en el DOM en los tres
+anchos y **nunca** con `display:none` —oculto-pero-presente en escritorio—, y el `<ol>` lleva
+`role="list"`. El orden del DOM coincide con el orden visual (1 a 6) también en dos columnas.
+
+**Medido sobre el build:** desborde horizontal **0** a 390, 900 y 1280 · seis pasos · tres cuñas,
+las tres con `data-draw` · ocultas bajo 900 px y visibles encima · el eje sólo en escritorio · la
+banda del diagrama ya no existe. `FlowDiagram.astro` eliminado en el mismo commit, sin referencias
+huérfanas.
+
+**Lote B cerrado:** las tres declaraciones a 47ch. Ya no queda ningún `max-width` de texto corrido
+por encima de 47ch en todo `src/`.
+
+**Los dos hallazgos que exceden la entrega quedan sin tocar,** como pedías: las 41 listas sin `role`
+y el `.sr-only` definido cuatro veces con dos implementaciones. Los dos son reales y los dejo
+anotados acá para no perderlos.

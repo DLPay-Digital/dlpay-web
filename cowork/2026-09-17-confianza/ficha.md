@@ -23,7 +23,7 @@ tiene.
 > digital, y es un pendiente abierto de Compliance. Usarla en la web habría chocado con él. Queda
 > fuera del copy **y del código**: la pieza se llama `track`, no `custody`.
 
-| Fase | Lugar | Custodia |
+| Fase | Lugar | Quién lo tiene |
 |---|---|---|
 | 1 | En tu cuenta bancaria | Lo tienes tú |
 | 2 | En la cuenta de DLPay en BCI | **Lo tenemos nosotros** |
@@ -100,7 +100,7 @@ Desborde horizontal **0** a 390 y a 1280.
 | Par | Ratio | Mínimo |
 |---|---|---|
 | `--ink` sobre papel (lugares, titulares) | 16,00:1 | 4,5 |
-| `--ink-mute` sobre papel (custodia, hito, pie de figura) | 5,50:1 | 4,5 |
+| `--ink-mute` sobre papel (quién lo tiene, hito, pie de figura) | 5,50:1 | 4,5 |
 | `--verde-deep` sobre papel (barra, «Lo tenemos nosotros», corchete) | 4,90:1 | 4,5 texto · 3,0 gráfico |
 
 Ningún verde de marca sobre claro: la barra y el corchete llevan significado, así que van en

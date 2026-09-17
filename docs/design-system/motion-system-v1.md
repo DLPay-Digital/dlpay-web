@@ -140,7 +140,7 @@ Seis, numerados y contables. Si algo no está acá, no se mueve.
 |---|---|---|---|---|
 | **M1** | `press` | Respuesta de un control al puntero o al foco: color, borde, fondo | `--m-fast` | Botones, enlaces, opciones del cotizador, marcador de FAQ |
 | **M2** | `settle` | Una cifra que **cambió**: opacidad + 2 px, sólo sobre el valor nuevo | 160 ms | Precio referencial y "recibes" del cotizador |
-| **M3** | `draw` | La geometría se dibuja **en la dirección que apunta** (`stroke-dashoffset`) | `--m-slow` | Cuñas del héroe, cuñas de los pasos, conectores del diagrama de flujo |
+| **M3** | `draw` | La geometría se dibuja **en la dirección que apunta** (`stroke-dashoffset`) | `--m-slow` | Cuñas del héroe y **cuñas de traspaso de `/como-funciona`**. *Los conectores del diagrama de flujo salieron el 2026-09-17 con el componente* |
 | **M4** | `enter` | Entrada sobre el eje diagonal: opacidad + `translate(-6px, 9px)` | `--m-base` | Ver §5. **Requiere enmienda del DS §9.** |
 | **M5** | `stagger` | Desfase de 60 ms entre hermanos, **máximo 4** | — | Ver §5. **Requiere enmienda.** |
 | **M6** | `sequence` | Secuencia de carga del héroe, una sola vez | 320 ms total | Home. **Ya permitido por DS §9.** |
@@ -197,8 +197,9 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 
 | Zona | Movimiento | Por qué |
 |---|---|---|
-| Diagrama de flujo | **M3 en secuencia**: los tramos se dibujan de Tú → Banco → DLPay → Tu billetera | **El momento de movimiento del sitio.** El dinero moviéndose, dibujado en el orden en que se mueve. Es información pura |
-| Pasos | **M4 sólo en el titular.** La lista **no** entra | *Corregido al implementar:* son **seis** pasos y el tope es cuatro. En dos columnas, escalonar seis se lee como el revelado de tarjetas de cualquier plantilla. El tope gana sobre el argumento de "es una secuencia real" |
+| ~~Diagrama de flujo~~ | *Retirado el 2026-09-17* | La banda entera salió de la página, y con ella `FlowDiagram.astro`. El motivo no fue densidad: su pie decía «Dónde está tu dinero en cada momento», que es el título exacto de la figura de `/confianza`. No era riesgo de duplicación, era una colisión ya ocurrida |
+| Cuñas de traspaso | **M3 en secuencia**: se dibujan las tres cuñas que marcan dónde el trabajo cambia de manos | **El momento de movimiento del sitio, trasladado, no perdido.** No hubo que inventar dónde ponerlo: la fila de M3 ya nombraba dos sitios, «cuñas del héroe, **cuñas de los pasos**, conectores del diagrama de flujo». Se retiró uno y quedó el otro. La secuencia sale gratis: el observador las dispara a alturas distintas, así que se dibujan 03 → 04 → 05 conforme se lee, y sin una línea de JavaScript nueva |
+| Pasos | **M4 sólo en el titular.** La lista **no** entra | *Corregido al implementar:* son **seis** pasos y el tope es cuatro. En dos columnas, escalonar seis se lee como el revelado de tarjetas de cualquier plantilla. El tope gana sobre el argumento de "es una secuencia real". **Sigue vigente con los carriles** (2026-09-17): lo que se dibuja son las tres cuñas, no los seis pasos |
 | Límite del servicio | **Nada** | Su fuerza está en la quietud |
 | Cierre | **M1** | |
 

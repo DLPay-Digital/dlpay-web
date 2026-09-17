@@ -74,7 +74,7 @@ src/
 │   ├── BusinessEmblem.astro # los cuatro widgets de los casos de uso B2B
 │   ├── hero/GloboRotativo.astro # el globo de la Home (SVG + datos en línea)
 │   ├── Header · Footer · Hero · PageHero · Trust · UseCases
-│   ├── Business · Faq · Alliances · FlowDiagram · AnnouncementBar
+│   ├── Business · Faq · Alliances · AnnouncementBar · PortadaDato
 │   ├── Icon · Logo · UseCaseFigure · PendingNotice
 │   └── ui/                # IconBadge, ArrowLink — sólo donde corresponden
 ├── content.config.ts # esquema de la colección del blog (Content Layer)

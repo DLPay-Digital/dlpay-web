@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propuesta — /como-funciona: la secuencia en dos carriles</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+  @font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     ESTA MAQUETA SUPONE UN CAMBIO DE TOKEN. Medido sobre el build real:
+     --verde-deep #0B7A54 da 4.44:1 sobre --papel-2 y 3.92:1 sobre el chip
+     verde .10 — por debajo del piso AA de 4.5:1 que el propio token promete
+     ("verde sobre superficie clara donde --verde no da AA"). Hoy fallan seis
+     rótulos en producción, tres de ellos en esta misma página. El valor
+     propuesto cumple en papel (5.44), papel-2 (4.93) y chip (4.59).
+     Ver ficha.md §4. Si el cambio se rechaza, ahí está la alternativa.
+     ───────────────────────────────────────────────────────────────────────── */
+  :root{--verde-deep:#0A7250}
+
+  .board{max-width:var(--container);margin:0 auto;padding:var(--s-7) var(--pad-section) var(--s-4)}
+  .board p{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute)}
+  .board h2{font-size:var(--t-h3);margin-top:var(--s-2);padding-top:var(--s-3);border-top:1px solid var(--line)}
+  .scaffold{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
+    background:var(--papel-2);border:1px dashed var(--line);padding:var(--s-3);text-align:center}
+
+  .inner{max-width:var(--container);margin:0 auto;padding:0 var(--pad-section-m)}
+  .head{max-width:46ch;margin-bottom:var(--s-8)}
+  h2{font-size:var(--t-h2-m);font-weight:700;line-height:var(--lh-h2);letter-spacing:var(--ls-h2);
+     margin-bottom:var(--s-3)}
+  .head p{color:var(--ink-mute)}
+
+  .band{background:var(--tinta);color:var(--on-tinta);position:relative;overflow:hidden;
+    padding:var(--s-7) 0 var(--s-8)}
+  .band .wedges{position:absolute;inset:0;pointer-events:none;background:var(--verde);opacity:.07;
+    clip-path:polygon(0 100%,46% 0,60% 0,15% 100%,20% 100%,66% 0,71% 0,26% 100%)}
+  .band .inner{position:relative}
+  .band h1{font-size:var(--t-display-m);font-weight:700;line-height:var(--lh-display);
+    letter-spacing:var(--ls-display);max-width:18ch}
+  .band p{color:var(--on-tinta-mute);max-width:47ch;margin-top:var(--s-4)}
+
+    /* La sección hereda el fondo que hoy tiene `.detail` en la página real
+     (--papel-2). Al retirarse `.diagram-band` la alternancia sigue entera:
+     tinta · papel-2 · papel · papel-2 · tinta. */
+  .steps{background:var(--papel-2);padding:var(--s-9) 0}
+
+  /* ── LA PIEZA: dos carriles y un eje ─────────────────────────────────────── */
+  .lanes{position:relative}
+  .handoff-mark{display:none}
+  .lane-heads{display:none}
+  .lane-heads p{font-family:var(--f-num);font-size:var(--t-dato-sm);font-weight:600;
+    letter-spacing:var(--ls-label)}
+  .lane-heads .you{color:var(--ink)}
+  .lane-heads .us{color:var(--verde-deep)}
+
+  .list{list-style:none;margin:0;padding:0;display:grid;gap:var(--s-6)}
+  .step{padding-top:var(--s-4);border-top:1px solid var(--line);position:relative}
+  .step-top{display:flex;align-items:baseline;gap:var(--s-3);margin-bottom:var(--s-2)}
+  .n{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute)}
+  .step h3{font-size:var(--t-h3-m);font-weight:600;line-height:var(--lh-h3)}
+  .step p{color:var(--ink-mute);max-width:47ch}
+  /* En móvil no hay carriles, así que quién y cuándo viajan juntos en un solo
+     pie mono: dos datos del mismo orden, una sola línea. */
+  .who,.time{display:inline;font-family:var(--f-num);font-size:var(--t-dato-sm)}
+  .time{color:var(--ink-mute)}
+  .who{font-weight:600}
+  .who + .time::before{content:'·';margin:0 .55em;font-weight:400;color:var(--ink-mute)}
+  .step p{margin-bottom:var(--s-2)}
+  .step.you .who{color:var(--ink-mute)}
+  .step.us{border-top-color:var(--verde-deep)}
+  .step.us .who{color:var(--verde-deep)}
+
+  @media (min-width:900px){
+    .inner{padding-inline:var(--pad-section)}
+    h2{font-size:var(--t-h2)}
+    .band h1{font-size:var(--t-h2)}
+    .band{padding:var(--s-8) 0 var(--s-9)}
+
+    /* El eje: la línea que separa los dos carriles. No es adorno — es la
+       frontera que el trabajo cruza tres veces. */
+    .lanes::before{content:'';position:absolute;top:0;bottom:0;left:50%;
+      width:1px;background:var(--line)}
+    .lane-heads{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-8);
+      margin-bottom:var(--s-5)}
+    .lane-heads .us{text-align:right}
+
+    .list{grid-template-columns:1fr 1fr;gap:var(--s-5) var(--s-8);align-items:start}
+    /* Colocación EXPLÍCITA: con seis hijos y dos columnas el flujo automático
+       los reparte por orden de llegada y el carril deja de significar nada. */
+    .step:nth-child(1){grid-column:1;grid-row:1}
+    .step:nth-child(2){grid-column:1;grid-row:2}
+    .step:nth-child(3){grid-column:2;grid-row:3}
+    .step:nth-child(4){grid-column:1;grid-row:4}
+    .step:nth-child(5){grid-column:2;grid-row:5}
+    .step:nth-child(6){grid-column:2;grid-row:6}
+    /* En escritorio el carril ya dice quién hace qué **a la vista**. Pero la
+       posición en una columna no llega al árbol de accesibilidad: con
+       `display:none` el dato desaparecía para quien no ve la página. La
+       etiqueta se oculta visualmente y SIGUE ahí. Misma definición que el
+       `.sr-only` que ya usa esta página. */
+    .who{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+      overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+    .who + .time::before{content:none}
+    .time{display:block;margin-top:var(--s-2)}
+
+    /* La cuña marca el momento en que el trabajo cambia de manos: es el
+       marcador de paso del Design System §6 y el mismo trazo que ya usa el
+       diagrama de flujo. Es lo único que se dibuja en la página. */
+    .handoff-mark{display:block;position:absolute;top:-7px;width:40px;height:12px;
+      color:var(--verde-deep)}
+    .step.us .handoff-mark{left:calc(-1 * var(--s-8) / 2 - 20px)}
+    .step.you .handoff-mark{right:calc(-1 * var(--s-8) / 2 - 20px);transform:scaleX(-1)}
+  }
+</style>
+</head>
+<body>
+
+<div class="board">
+  <p>cowork · 2026-09-17 · /como-funciona</p>
+  <h2>La secuencia en dos carriles: qué haces tú y qué hacemos nosotros</h2>
+  <p style="margin-top:var(--s-3)">supone <b>--verde-deep #0A7250</b> en lugar de #0B7A54 · ficha.md §4</p>
+</div>
+<div class="scaffold">andamio · arriba va Header.astro</div>
+
+<section class="band">
+  <div class="wedges" aria-hidden="true"></div>
+  <div class="inner">
+    <h1>Cómo funciona una operación</h1>
+    <p>El recorrido es el mismo cambies pesos por dólares o al revés. La web te deja listo y una
+      persona cierra. Acá está todo, en orden y con los tiempos reales.</p>
+  </div>
+</section>
+
+<section class="steps">
+  <div class="inner">
+    <header class="head">
+      <h2>Paso a paso</h2>
+      <p>Marcamos quién hace qué, para que no quede ninguna zona gris. El trabajo cambia de manos
+        tres veces.</p>
+    </header>
+
+    <div class="lanes">
+      <div class="lane-heads" aria-hidden="true">
+        <p class="you">Lo haces tú</p>
+        <p class="us">Lo hacemos nosotros</p>
+      </div>
+
+      <!-- role="list": con `list-style:none` WebKit deja de anunciar la lista, y
+           aquí «seis pasos, y este es el tercero» ES el contenido. -->
+      <ol class="list" role="list">
+        <li class="step you">
+          <div class="step-top"><span class="n">01</span><h3>Dices qué necesitas</h3></div>
+          <p>Pasar pesos a dólares o volver a pesos. Escribes el monto y ves al instante el precio
+            referencial y cuánto recibes. No necesitas cuenta para esto.</p>
+          <span class="who">Lo haces tú</span>
+          <span class="time">ahora mismo</span>
+        </li>
+        <li class="step you">
+          <div class="step-top"><span class="n">02</span><h3>Escribes por WhatsApp</h3></div>
+          <p>El botón abre el chat con tu operación ya escrita. No tienes que repetir nada: el
+            ejecutivo ve el contexto de entrada.</p>
+          <span class="who">Lo haces tú</span>
+          <span class="time">un toque</span>
+        </li>
+        <li class="step us handoff">
+          <svg class="handoff-mark" viewBox="0 0 40 12" fill="none" aria-hidden="true" preserveAspectRatio="none"><path d="M0 6h12l6-5 6 10 6-5h10" stroke="currentColor" stroke-width="1.5" data-draw/></svg>
+          <div class="step-top"><span class="n">03</span><h3>Un ejecutivo confirma el precio</h3></div>
+          <p>El precio de la web es referencial porque el mercado se mueve. Una persona te confirma
+            el precio final, te pide la billetera de destino y te da los datos para transferir.</p>
+          <span class="who">Lo hacemos nosotros</span>
+          <span class="time">minutos</span>
+        </li>
+        <li class="step you handoff">
+          <svg class="handoff-mark" viewBox="0 0 40 12" fill="none" aria-hidden="true" preserveAspectRatio="none"><path d="M0 6h12l6-5 6 10 6-5h10" stroke="currentColor" stroke-width="1.5" data-draw/></svg>
+          <div class="step-top"><span class="n">04</span><h3>Transfieres en pesos</h3></div>
+          <p>Desde tu banco a la cuenta de DLPay. Si es tu primera operación, antes te pedimos
+            registro y verificación de identidad.</p>
+          <span class="who">Lo haces tú</span>
+          <span class="time">según tu banco</span>
+        </li>
+        <li class="step us handoff">
+          <svg class="handoff-mark" viewBox="0 0 40 12" fill="none" aria-hidden="true" preserveAspectRatio="none"><path d="M0 6h12l6-5 6 10 6-5h10" stroke="currentColor" stroke-width="1.5" data-draw/></svg>
+          <div class="step-top"><span class="n">05</span><h3>Verificamos la transferencia</h3></div>
+          <p>Confirmamos que el dinero está acreditado antes de ejecutar nada. Es el paso que no se
+            salta nunca.</p>
+          <span class="who">Lo hacemos nosotros</span>
+          <span class="time">al acreditarse</span>
+        </li>
+        <li class="step us">
+          <div class="step-top"><span class="n">06</span><h3>Recibes el dólar digital</h3></div>
+          <p>Enviamos el dólar digital a la billetera que nos indicaste y te confirmamos por el
+            mismo chat. Ahí termina nuestra operación: desde ese punto decides tú.</p>
+          <span class="who">Lo hacemos nosotros</span>
+          <span class="time">~5 min desde el pago</span>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<div class="scaffold">andamio · debajo siguen «Ten esto a mano», «Dónde termina nuestra operación» y el cierre, sin cambios · después Footer.astro</div>
+
+</body>
+</html>
