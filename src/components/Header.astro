@@ -84,7 +84,7 @@ const infoIsCurrent = navInfo.some((item) => isCurrent(item.href));
     </a>
 
     <nav class="desktop-nav" aria-label="Principal">
-      <ul>
+      <ul role="list">
         {navMain.map((item) => (
           <li>
             <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
@@ -122,7 +122,7 @@ const infoIsCurrent = navInfo.some((item) => isCurrent(item.href));
           </button>
 
           <div class="dropdown">
-            <ul>
+            <ul role="list">
               {navInfo.map((item) => (
                 <li>
                   <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
@@ -149,7 +149,7 @@ const infoIsCurrent = navInfo.some((item) => isCurrent(item.href));
             cuelgan indentados debajo. Un desplegable dentro de un desplegable
             obligaría a dos gestos para llegar a una página. */}
         <nav class="drawer" aria-label="Principal, móvil">
-          <ul>
+          <ul role="list">
             {navMain.map((item) => (
               <li>
                 <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>

@@ -48,7 +48,7 @@ const trustStrip = [
         Recibes dólar digital: en minutos, a cualquier hora, sin los tiempos de una
         operación bancaria tradicional.
       </p>
-      <ul class="strip seq" style={`--seq:${seqStrip}`}>
+      <ul class="strip seq" role="list" style={`--seq:${seqStrip}`}>
         {trustStrip.map((item) => (
           <li>
             <Icon name={item.icon} class="strip-icon" />

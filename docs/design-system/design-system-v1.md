@@ -435,7 +435,37 @@ Cada uno se construye sólo cuando una página real lo necesita (Principio 5, CL
 | **Header** | Navegación | Isotipo + "DLPay" · nav corta (`Personas · Empresas · Información ▾`, donde el desplegable agrupa `Cómo funciona`, `Confianza` y `Blog`) · `WhatsApp` + `Crear cuenta` (secundario). Móvil: isotipo + WhatsApp + menú, con «Información» como rótulo estático y sus enlaces indentados. **Actualizado el 2026-09-11:** `/cotizar` se eliminó el 2026-09-09 y el desplegable sustituyó a la lista plana. |
 | **Footer** | Cierre + legal | Producto · Contacto · **Legal** (Términos, Privacidad, Tarifas, Canal de denuncias) · `DLPZ INCZ SpA · opera bajo la marca DLPay`. |
 | **FAQ item** | Objeciones | Acordeón; sólo objeciones reales pre-primera-operación. |
-| **Diagrama de flujo** | Explicar la operación | Sistema geométrico §6. |
+| ~~**Diagrama de flujo**~~ | ~~Explicar la operación~~ | **Retirado el 2026-09-17.** Su pie decía «Dónde está tu dinero en cada momento», el título exacto de la figura de `/confianza`: no era riesgo de duplicación, era una colisión ya ocurrida. `FlowDiagram.astro` se eliminó. |
+
+### 8.1 Las piezas que la Fase 4 añadió  ·  *inventario al 2026-09-17*
+
+La tabla de arriba es de la Fase 2.5 y describe lo que se **iba a** construir. Todo lo de abajo
+nació después, al construirlo, y no estaba en ningún inventario. Se registra acá y no en una tabla
+nueva porque es el mismo documento: **lo que existe**.
+
+La gramática que comparten las cinco familias de figura está en **§6.2**; esta tabla dice dónde vive
+cada una, no qué significa.
+
+| Componente | Propósito | Notas |
+|---|---|---|
+| **Héroe con cotizador** | El primer viewport de la Home | El cotizador **no entra** animado: es el instrumento y tiene que estar encendido al llegar. Lo que entra es el texto (M6) |
+| **Encabezado de página** | Las ocho rutas que no son la Home | `PageHero`. Dos composiciones: a dos columnas y **apilada y centrada**, ésta con la pieza del `aside` montada sobre la costura con la sección siguiente |
+| **Teléfono y portátil en CSS** | Mostrar la conversación y la operación, sin imágenes | Cero archivos. Las cifras **se derivan** de `lib/pricing`, nunca se teclean |
+| **Emblema de caso** | Las cuatro operaciones de `/empresas` | El canto del isotipo como frontera; el dinero es un canal hueco dentro del plano y macizo fuera |
+| **Línea de tenencia** | `/confianza`: de quién es la cuenta donde está el dinero | HTML, no SVG. Un solo tramo es nuestro |
+| **Carril de dos columnas** | `/como-funciona`: qué hace cada parte y dónde cambia de manos | La colocación en rejilla va **explícita**: el flujo automático deshace el carril |
+| **Eje de alcance** | Hasta dónde llega el servicio | `EjeDeAlcance`, en tres páginas. Es la regla dura de `CLAUDE.md` §1 dibujada, y por eso es un componente y no CSS repetido |
+| **Portada de dato** | La cifra de la que habla un artículo | Dos tipos: `cifra` y `rango`. **La cuña no entra** (§6.1). `fuente` es obligatoria |
+| **Índice del blog** | `/blog` | Filas con filete y fecha tabular en columna propia. Se ve igual con un artículo que con cincuenta |
+| **Globo rotativo** | El alcance del dólar digital, en la Home | Tres excepciones autorizadas: ADR-0007, 0008 y 0009. **Va con el eje de alcance al lado**, porque sin él el dibujo afirma de más |
+| **Franja de notificación** | Aviso a todo el ancho | ADR-0006. Se oculta sola en la página que enlaza |
+| **404** | Dirección inexistente | Reusa `PageHero`. `noindex`, fuera del sitemap y en cero bytes de JavaScript |
+| **Bloque institucional** | Los emblemas de FinteChile y la UAF, en el pie | `Alliances.astro`. El claim regulatorio se dice **con palabras**, no colgado de un emblema, y el dato declara el alcance de su propio claim |
+| **Motor de movimiento** | Encender el Motion System en las páginas que lo usan | `Motion.astro`. No es una pieza visual: es el `IntersectionObserver` y su interruptor. Las cuatro legales y la 404 no lo llevan y siguen en cero JavaScript |
+
+> **Cómo se mantiene esta tabla.** Se escribió midiendo `src/components/` contra el build, no de
+> memoria. Si aparece un componente que no está acá, la tabla está vieja — y eso ha pasado: entre
+> el 10 y el 17 de septiembre entraron nueve piezas sin que este inventario se enterara.
 
 ---
 

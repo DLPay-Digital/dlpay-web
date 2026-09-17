@@ -41,7 +41,7 @@ const year = new Date().getFullYear();
 
       <div class="col">
         <h2>Producto</h2>
-        <ul>
+        <ul role="list">
           {product.map((item) => (
             <li><a href={item.href}>{item.label}</a></li>
           ))}
@@ -50,7 +50,7 @@ const year = new Date().getFullYear();
 
       <div class="col">
         <h2>Contacto</h2>
-        <ul>
+        <ul role="list">
           <li>
             <a class="wa" href={wa} target="_blank" rel="noopener">
               <Icon name="whatsapp" class="wa-icon" />
@@ -62,7 +62,7 @@ const year = new Date().getFullYear();
 
       <div class="col">
         <h2>Legal</h2>
-        <ul>
+        <ul role="list">
           {legal.map((item) => (
             <li><a href={item.href}>{item.label}</a></li>
           ))}

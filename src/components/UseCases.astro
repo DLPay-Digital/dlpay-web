@@ -58,7 +58,7 @@ import UseCaseFigure from './UseCaseFigure.astro';
       role="group"
       aria-labelledby="uses-title"
     >
-      <ul class="track">
+      <ul class="track" role="list">
         {useCases.map((item) => (
           <li class="use" data-enter>
             <UseCaseFigure kind={item.figure} />

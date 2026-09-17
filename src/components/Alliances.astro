@@ -15,7 +15,7 @@ import { site } from '../lib/config/site.ts';
 {publishedAlliances.length > 0 && (
   <section class="alliances" aria-labelledby="alianzas-titulo">
     <h2 id="alianzas-titulo">{alliancesHeading}</h2>
-    <ul class="row">
+    <ul class="row" role="list">
       {/* Enlazado: el propósito del enlace ES la relación, va en aria-label y
           la imagen queda decorativa. Sin enlace: el alt identifica el logo y la
           relación la dice la frase de abajo — repetirla sería oírla dos veces. */}

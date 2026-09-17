@@ -157,7 +157,15 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     táctil, medidos sobre una maqueta con `padding: var(--s-5)` cuando el componente real usa
     `--s-4`: **56 px**. Si la vista autónoma no puede importar el componente, la ficha da las
     medidas del componente o no da ninguna.
-18. **Ninguna cifra se escribe sin haberla calculado.** «Un 4 % de luminancia» no salió de ningún
+18. **Una cifra correcta con la forma equivocada induce una conclusión falsa.** El 2026-09-17
+    reporté las listas sin `role` por página —«11 en la Home, 8 en `/como-funciona`, 9 en
+    `/empresas`»—. Las tres cifras eran correctas y **no son sumables**: la cabecera y el pie
+    repiten sus listas en las diez páginas. El agente sumó, escribió 28, midió y encontró **84
+    instancias**. El número que sirve no era ninguno de los dos: son **15 orígenes distintos en
+    `src/`**, y tres de ellos explican 70 instancias. Antes de dar un recuento hay que decir
+    **de qué** es el recuento —instancias renderizadas o sitios que hay que tocar— y si se puede
+    sumar.
+19. **Ninguna cifra se escribe sin haberla calculado.** «Un 4 % de luminancia» no salió de ningún
     cálculo: la caída real era 13,3 % en luminancia relativa y 6,3 % en L\*. Una cifra inventada
     en una ficha vale menos que no poner ninguna.
 

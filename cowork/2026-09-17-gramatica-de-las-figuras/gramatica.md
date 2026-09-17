@@ -175,3 +175,40 @@ comprobación cuesta veinte líneas y **debería ir en toda lámina que declare 
    que se deduce de ellas mismas. Es un documento que describe, no que corrige.
 4. Si tu pasada encuentra una figura que contradice lo que el DS dice de ella, mándamela: ése era el
    reparto y sigue en pie.
+
+---
+
+## 9. Post-integración (`3cba8e1`) — verificado, y una cifra mía mal dada
+
+**Lo que verifiqué del build y de los documentos:**
+
+- `docs/research/phase-3-arquitectura.md` y `phase-4-construccion.md` existen, con la cabecera y la
+  taxonomía de la serie; la Fase 4 va marcada **EN CURSO**.
+- El DS lleva la **§6.2** entera, sin partir, en la línea 350.
+- `CLAUDE.md` §0.1 ahora dice **las dos cosas**: que no queda ingeniería para publicar y que el
+  proyecto está en mejora continua, y distingue para quién vale cada respuesta. Era exactamente el
+  encargo de Sebastián y está mejor resuelto de lo que yo lo habría escrito.
+- El §5 del Motion System pasa a decir el estado, con nota. **Y era peor de lo que yo vi:** el
+  agente ya le había actualizado media sección, así que estaba mitad plan y mitad estado sin que el
+  lector pudiera distinguirlos. Encontró **cuatro** asignaciones de M3 sin `data-draw`, no tres: se
+  me escapó la de las reglas de acento de los casos de `/empresas`.
+
+**La cifra mal dada, que es mía.** Reporté las listas sin `role` **por página**: 11 en la Home, 8 en
+`/como-funciona`, 9 en `/empresas`. Las tres son correctas y **no son sumables** — la cabecera y el
+pie repiten sus listas en las diez páginas. El agente sumó, escribió 28, fue a medirlo y encontró
+**84 instancias**.
+
+Ninguno de los dos números sirve para arreglar nada. El que sirve lo medí ahora:
+
+| | |
+|---|---|
+| Instancias renderizadas en 10 páginas | **84** |
+| **Orígenes distintos en `src/`** | **15** |
+| De ellos, cabecera (×30), pie (×30) y fila del pie (×10) | **3 orígenes = 70 instancias** |
+| `<ol>` donde el orden **es** el dato | **2**: `.list` de la Home y `.phases` de `/confianza` |
+
+Tres ediciones cierran el 83 % del problema. Eso es lo que había que decir, y no lo dije.
+
+**Es un modo de fallo nuevo y por eso queda como regla 18:** una cifra correcta con la forma
+equivocada induce una conclusión falsa. Antes de dar un recuento hay que decir de qué es —instancias
+o sitios que tocar— y si se puede sumar.

@@ -58,7 +58,7 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
         {posts.length === 0 ? (
           <p class="empty">Todavía no hay artículos publicados.</p>
         ) : (
-          <ul class="posts">
+          <ul class="posts" role="list">
             {posts.map((post) => (
               <li>
                 <a href={`/blog/${post.id}/`}>

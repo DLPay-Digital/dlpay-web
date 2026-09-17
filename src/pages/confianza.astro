@@ -65,7 +65,7 @@ const wa = contact.whatsappUrl();
           cuñas, `clip-path`—, como las cuatro figuras de /empresas.
         */}
         <figure class="track">
-          <ol class="phases">
+          <ol class="phases" role="list">
             {phases.map((phase) => (
               <li class:list={['phase', { 'is-ours': phase.ours }]}>
                 <p class="phase-place">{phase.place}</p>
@@ -82,7 +82,7 @@ const wa = contact.whatsappUrl();
           </figcaption>
         </figure>
 
-        <ul class="list">
+        <ul class="list" role="list">
           {mechanisms.map((item) => (
             <li class="item">
               <IconBadge name={item.icon} size="sm" />
@@ -102,7 +102,7 @@ const wa = contact.whatsappUrl();
           <h2 id="req-title" data-enter>Qué te pedimos, y por qué</h2>
           <p>Los requisitos no son burocracia: son lo que permite operar con un banco de por medio.</p>
         </header>
-        <ul class="req-list">
+        <ul class="req-list" role="list">
           {requirements.map((item) => (
             <li>
               <h3>{item.title}</h3>
@@ -137,7 +137,7 @@ const wa = contact.whatsappUrl();
             las cosas que decidimos no decir.
           </p>
         </header>
-        <ul class="honesty-list">
+        <ul class="honesty-list" role="list">
           {honesty.map((item) => (
             <li>
               <h3>{item.claim}</h3>
