@@ -12,6 +12,8 @@ import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
 import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
+import EjeDeAlcance from '../components/EjeDeAlcance.astro';
+import { hinge, options } from '../content/scope.ts';
 import { detailedSteps, checklist } from '../content/process.ts';
 import { contact, platform } from '../lib/config/site.ts';
 
@@ -124,19 +126,30 @@ const wa = contact.whatsappUrl();
 
     <section class="scope" aria-labelledby="scope-title">
       <div class="inner">
-        <div class="scope-box">
-          <h2 id="scope-title">Dónde termina nuestra operación</h2>
-          <p>
-            DLPay hace el cambio de divisas y te entrega dólar digital en tu billetera.
-            <strong>No depositamos dinero en cuentas bancarias en el extranjero.</strong>
-          </p>
-          <p>
-            Desde tu billetera decides: lo mantienes, se lo envías a otra persona o lo
-            conviertes a moneda local en destino. Ese último paso es un proceso distinto,
-            con otros servicios, y no lo realiza DLPay. Lo decimos acá para que no haya
-            sorpresas después.
-          </p>
-        </div>
+        <h2 id="scope-title">Dónde termina nuestra operación</h2>
+        {/*
+          El cierre deja de ser una caja con borde y pasa a ser la MITAD DERECHA
+          del mismo eje que abre la Home: línea gris, cuña en su arranque,
+          bisagra y las tres opciones. No es figura nueva — es la misma
+          gramática, para que el carril de los seis pasos y este cierre se lean
+          como un solo recorrido.
+
+          Sin `milestones` a propósito: la página acaba de contar los seis pasos
+          justo encima, así que repetir la mitad izquierda sería decir dos veces
+          lo mismo.
+
+          La bisagra REPITE literalmente la frase del paso 06. Es deliberado:
+          mismo texto, una vez dentro del recorrido y otra como conclusión. No
+          son dos versiones que puedan desincronizarse.
+        */}
+        <EjeDeAlcance hinge={hinge} options={options}>
+          <Fragment slot="caveat">
+            Ese último paso es un proceso distinto, con otros servicios, y
+            <strong>no lo realiza DLPay</strong>. Nosotros hacemos el cambio de divisas y te
+            entregamos dólar digital en tu billetera:
+            <strong>no depositamos dinero en cuentas bancarias en el extranjero</strong>.
+          </Fragment>
+        </EjeDeAlcance>
       </div>
     </section>
 
@@ -258,14 +271,6 @@ const wa = contact.whatsappUrl();
   /* El límite del servicio, dicho antes de que el usuario opere. Va sobre papel-2
      y con un borde de aviso: es información que protege, no letra chica. */
   .scope { background: var(--papel-2); padding: var(--s-9) 0; }
-  .scope-box {
-    max-width: 47ch;
-    border-left: 2px solid var(--aviso-deep);
-    padding-left: var(--s-5);
-  }
-  .scope-box p { color: var(--ink-mute); margin-bottom: var(--s-3); }
-  .scope-box p:last-child { margin-bottom: 0; }
-  .scope-box strong { color: var(--ink); font-weight: 600; }
 
   .close { background: var(--tinta); color: var(--on-tinta); padding: var(--s-8) 0; }
   .close h2 { color: var(--on-tinta); }

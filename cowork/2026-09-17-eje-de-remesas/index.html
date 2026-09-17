@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propuesta — J5+J6: el eje de remesas</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+  @font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+
+  .board{max-width:var(--container);margin:0 auto;padding:var(--s-7) var(--pad-section) var(--s-4)}
+  .board p{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute)}
+  .board h2{font-size:var(--t-h3);margin-top:var(--s-2);padding-top:var(--s-3);border-top:1px solid var(--line)}
+  .scaffold{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
+    background:var(--papel-2);border:1px dashed var(--line);padding:var(--s-3);text-align:center}
+  .globo-hueco{border:1px dashed var(--line);background:var(--papel-2);text-align:center;
+    padding:var(--s-9) var(--s-5);font-family:var(--f-num);font-size:var(--t-dato-sm);
+    color:var(--ink-mute);line-height:1.7}
+
+  .banda{background:var(--papel);padding:var(--s-9) 0}
+  .inner{max-width:var(--container);margin:0 auto;padding:0 var(--pad-section-m)}
+
+  .cabeza{max-width:44ch;margin:0 auto var(--s-8);text-align:center}
+  .cabeza h2{font-size:var(--t-h2-m);font-weight:700;line-height:var(--lh-h2);
+    letter-spacing:var(--ls-h2);margin-bottom:var(--s-4)}
+  .cabeza p{color:var(--ink-mute)}
+
+  /* ── EL EJE ───────────────────────────────────────────────────────────────
+     UNA sola línea que se interrumpe. El tramo de DLPay va en --verde-deep y
+     tiene tres nodos; en la costura hay UNA cuña —el único punto donde algo
+     cambia de manos— y a partir de ahí la línea sigue en --ink-mute: existe,
+     es real, y no es nuestra. Debajo, el globo: es lo que hay al otro lado.
+
+     ADR-0001 §3: cada trazo representa movimiento, flujo de valor o un paso.
+     Aquí el trazo ES el recorrido y su interrupción ES el límite del servicio.
+     Por eso NO hay cuñas entre los tres nodos de la izquierda: dentro de
+     nuestro tramo no cambia nada de manos, y una cuña ahí mentiría. */
+  .eje{margin-bottom:var(--s-8)}
+  .nuestro,.suyo{position:relative;padding-left:var(--s-5)}
+  .nuestro{border-left:1px solid var(--verde-deep);padding-bottom:var(--s-6)}
+  .suyo{border-left:1px solid var(--ink-mute);padding-top:var(--s-6)}
+
+  .hitos{list-style:none;margin:0;padding:0;display:grid;gap:var(--s-5)}
+  .hito{position:relative}
+  .hito::before{content:'';position:absolute;left:calc(-1 * var(--s-5) - 5px);top:7px;
+    width:9px;height:9px;border-radius:50%;background:var(--verde-deep)}
+  .hito .que{font-weight:600;display:block}
+  .hito .dato{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
+    display:block;margin-top:2px}
+
+  /* La costura. Va en --ink, no en --aviso-deep: no es una advertencia, es una
+     frontera — el color de lo que se afirma, no el de lo que se advierte. */
+  .sello{position:absolute;color:var(--verde-deep);width:40px;height:12px;
+    left:-20px;top:-6px;transform:rotate(90deg)}
+  /* La bisagra, palabra por palabra como la escribe `content/process.ts` en el
+     paso 06. Dos mitades y dos colores: lo que afirmamos de nosotros en --ink,
+     lo que pasa a ser tuyo en --ink-mute. */
+  .bisagra{font-family:var(--f-num);font-size:var(--t-dato-sm);margin-bottom:var(--s-5)}
+  .hasta{font-weight:600;color:var(--ink)}
+  .desde{color:var(--ink-mute)}
+
+  .opciones{list-style:none;margin:0;padding:0;display:grid;gap:var(--s-3)}
+  .opciones li{position:relative;padding-left:var(--s-5);color:var(--ink-mute)}
+  .opciones li::before{content:'';position:absolute;left:0;top:11px;width:9px;height:1px;
+    background:var(--ink-mute)}
+  .salvedad{margin-top:var(--s-4);font-size:var(--t-body-sm);color:var(--ink-mute);max-width:47ch}
+  .salvedad strong{color:var(--ink);font-weight:600}
+
+  @media (min-width:900px){
+    .cabeza h2{font-size:var(--t-h2)}
+
+    /* En escritorio el eje se tumba: los tres hitos en fila sobre la línea
+       verde, la cuña en la costura, y el tramo del cliente abriéndose a la
+       derecha, justo encima del globo. */
+    .eje{display:grid;grid-template-columns:1.35fr 1fr;align-items:start}
+    .nuestro,.suyo{border-left:0;border-top:1px solid;padding-left:0;padding-top:var(--s-5)}
+    .nuestro{border-top-color:var(--verde-deep);padding-bottom:0;padding-right:var(--s-8)}
+    .suyo{border-top-color:var(--ink-mute);padding-left:var(--s-8)}
+    .hitos{grid-template-columns:repeat(3,1fr);gap:var(--s-5)}
+    .hito::before{left:0;top:calc(-1 * var(--s-5) - 5px)}
+    .hito .que{max-width:18ch}
+    /* La cuña se centra en la costura: sobre una línea horizontal es colineal
+       con ella, así que la línea no se corta — se le hace una punta justo
+       donde deja de ser nuestra. */
+    .sello{left:-20px;top:-6px;transform:none}
+    .bisagra{max-width:34ch}
+    .salvedad{max-width:38ch}
+
+    /* Variante suelta: el tramo del cliente sin mitad izquierda, para cuando
+       la página entera ya contó el tramo nuestro. La cuña se queda en el
+       arranque, que es donde cae la costura. */
+    .suyo.solo{padding-left:0}
+    .suyo.solo .sello{left:0}
+    .suyo.solo .bisagra,.suyo.solo .salvedad{max-width:none}
+    .suyo.solo .opciones{grid-template-columns:repeat(3,1fr);gap:var(--s-6)}
+    .suyo.solo .salvedad{max-width:66ch}
+  }
+
+  .suyo.solo .sello{left:-20px}
+  .seccion-var{background:var(--papel-2);padding:var(--s-9) 0}
+  .seccion-var + .seccion-var{background:var(--papel)}
+  .seccion-var h2{font-size:var(--t-h2-m);font-weight:700;line-height:var(--lh-h2);
+    letter-spacing:var(--ls-h2);margin-bottom:var(--s-7);max-width:24ch}
+</style>
+</head>
+<body>
+
+<div class="board">
+  <p>cowork · 2026-09-17 · Home, banda del globo · J5 + J6</p>
+  <h2>El eje de remesas: el tramo que sí hacemos, y el que es tuyo</h2>
+</div>
+<div class="scaffold">andamio · arriba va Hero.astro con el cotizador, sin cambios</div>
+
+<section class="banda">
+  <div class="inner">
+    <header class="cabeza">
+      <h2>Nuestro tramo termina en tu billetera</h2>
+      <p>Recibes dólar digital en tu billetera y desde ahí lo mueves en minutos, a cualquier
+        hora y sin depender de días hábiles.</p>
+    </header>
+
+    <div class="eje">
+      <div class="nuestro">
+        <ol class="hitos" role="list">
+          <li class="hito">
+            <span class="que">Tus pesos, en tu banco en Chile</span>
+            <span class="dato">CLP</span>
+          </li>
+          <li class="hito">
+            <span class="que">Cambiamos y verificamos</span>
+            <span class="dato">una persona cierra</span>
+          </li>
+          <li class="hito">
+            <span class="que">Dólar digital en tu billetera</span>
+            <span class="dato">USD · ~5 min desde el pago</span>
+          </li>
+        </ol>
+      </div>
+
+      <div class="suyo">
+        <svg class="sello" viewBox="0 0 40 12" fill="none" aria-hidden="true" preserveAspectRatio="none"><path d="M0 6h12l6-5 6 10 6-5h10" stroke="currentColor" stroke-width="1.5" data-draw/></svg>
+        <p class="bisagra"><span class="hasta">Ahí termina nuestra operación:</span>
+          <span class="desde">desde ese punto decides tú</span></p>
+        <ul class="opciones" role="list">
+          <li>Lo mantienes</li>
+          <li>Se lo envías a otra persona</li>
+          <li>Lo conviertes a moneda local en destino</li>
+        </ul>
+        <p class="salvedad">Ese último paso es un proceso distinto, con otros servicios, y
+          <strong>no lo realiza DLPay</strong>.</p>
+      </div>
+    </div>
+
+    <div class="globo-hueco">
+      andamio · aquí va &lt;GloboRotativo /&gt; EXACTAMENTE como está hoy<br>
+      no se toca ni una línea del componente
+    </div>
+  </div>
+</section>
+
+<div class="scaffold">andamio · debajo siguen UseCases, Steps, Process, Trust, Business y Faq, sin cambios</div>
+
+<div class="board">
+  <h2>J6 · el cierre de /como-funciona</h2>
+  <p>reemplaza la caja «Dónde termina nuestra operación» · misma gramática, sin figura nueva</p>
+</div>
+<div class="scaffold">andamio · arriba termina el carril de los seis pasos (commit 69e8bfc)</div>
+
+<section class="seccion-var">
+  <div class="inner">
+    <h2>Dónde termina nuestra operación</h2>
+    <div class="suyo solo">
+      <svg class="sello" viewBox="0 0 40 12" fill="none" aria-hidden="true" preserveAspectRatio="none"><path d="M0 6h12l6-5 6 10 6-5h10" stroke="currentColor" stroke-width="1.5" data-draw/></svg>
+      <p class="bisagra"><span class="hasta">Ahí termina nuestra operación:</span>
+        <span class="desde">desde ese punto decides tú</span></p>
+      <ul class="opciones" role="list">
+        <li>Lo mantienes</li>
+        <li>Se lo envías a otra persona</li>
+        <li>Lo conviertes a moneda local en destino</li>
+      </ul>
+      <p class="salvedad">Ese último paso es un proceso distinto, con otros servicios, y
+        <strong>no lo realiza DLPay</strong>. Nosotros hacemos el cambio de divisas y te entregamos
+        dólar digital en tu billetera: <strong>no depositamos dinero en cuentas bancarias en el
+        extranjero</strong>.</p>
+    </div>
+  </div>
+</section>
+
+<div class="board">
+  <h2>J5 · la variante de /empresas</h2>
+  <p>la página hoy no declara el límite en ninguna parte · la frase que lo declara ya existe, dentro del cuerpo de un caso de uso</p>
+</div>
+
+<section class="seccion-var">
+  <div class="inner">
+    <h2>Hasta dónde llega nuestra parte</h2>
+    <div class="eje">
+      <div class="nuestro">
+        <ol class="hitos" role="list">
+          <li class="hito">
+            <span class="que">Los pesos de tu empresa</span>
+            <span class="dato">CLP</span>
+          </li>
+          <li class="hito">
+            <span class="que">Cambiamos y verificamos</span>
+            <span class="dato">tu ejecutivo cierra</span>
+          </li>
+          <li class="hito">
+            <span class="que">Dólar digital en la billetera que indiques</span>
+            <span class="dato">USD</span>
+          </li>
+        </ol>
+      </div>
+      <div class="suyo">
+        <svg class="sello" viewBox="0 0 40 12" fill="none" aria-hidden="true" preserveAspectRatio="none"><path d="M0 6h12l6-5 6 10 6-5h10" stroke="currentColor" stroke-width="1.5" data-draw/></svg>
+        <p class="bisagra"><span class="hasta">Ahí termina nuestra parte:</span>
+          <span class="desde">desde ese punto decide tu empresa</span></p>
+        <ul class="opciones" role="list">
+          <li>Pagas a un proveedor que opera con dólar digital</li>
+          <li>Lo mantienes en tesorería</li>
+          <li>Lo conviertes de vuelta a pesos cuando lo necesitas</li>
+        </ul>
+        <p class="salvedad"><strong>Si tu proveedor sólo recibe por banco, conversémoslo antes.</strong>
+          No depositamos dinero en cuentas bancarias en el extranjero.</p>
+      </div>
+    </div>
+    <div class="globo-hueco">
+      andamio · opcional · aquí cabe &lt;GloboRotativo /&gt; tal cual, si se decide reutilizarlo
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

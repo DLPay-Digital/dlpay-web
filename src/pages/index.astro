@@ -8,6 +8,8 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import GloboRotativo from '../components/hero/GloboRotativo.astro';
+import EjeDeAlcance from '../components/EjeDeAlcance.astro';
+import { hinge, options, ourLeg } from '../content/scope.ts';
 import UseCases from '../components/UseCases.astro';
 import Steps from '../components/Steps.astro';
 import Process from '../components/Process.astro';
@@ -16,7 +18,6 @@ import Business from '../components/Business.astro';
 import Faq from '../components/Faq.astro';
 import Footer from '../components/Footer.astro';
 import Motion from '../components/Motion.astro';
-import { platform } from '../lib/config/site.ts';
 ---
 <Base
   title="DLPay"
@@ -49,16 +50,33 @@ import { platform } from '../lib/config/site.ts';
             ya tiene su propio movimiento y superponerle un fundido sería
             animar dos veces la misma cosa. */}
         <header class="globo-head">
-          <h2 id="globo-title" data-enter>Tu dinero, listo para moverse donde y cuando quieras</h2>
+          {/*
+            El titular nombra el límite en vez de prometer alcance. La bajada ya
+            traía el encuadre correcto —«desde ahí lo mueves»—, sólo que quedaba
+            300 px por encima del globo y con dos botones en medio.
+          */}
+          <h2 id="globo-title" data-enter>Nuestro tramo termina en tu billetera</h2>
           <p data-enter>
             Recibes dólar digital en tu billetera y desde ahí lo mueves en minutos, a
             cualquier hora y sin depender de días hábiles.
           </p>
-          <div class="acciones" data-enter>
-            <a class="cta" href={platform.registerUrl}>Crea tu cuenta</a>
-            <a class="ghost" href="/#cotizador">Cotiza tu operación</a>
-          </div>
         </header>
+
+        {/*
+          El eje va ENTRE el texto y el globo, que es donde hace falta: el globo
+          dibuja ocho arcos saliendo de Chile, y ésta es la pieza que dice hasta
+          dónde de ese dibujo es nuestro. CLAUDE.md §1 no prohíbe sólo afirmar:
+          prohíbe «afirmar o SUGERIR», y una figura sin con qué desambiguarla es
+          exactamente lo segundo.
+        */}
+        <div data-enter>
+          <EjeDeAlcance milestones={ourLeg} hinge={hinge} options={options}>
+            <Fragment slot="caveat">
+              Ese último paso es un proceso distinto, con otros servicios, y
+              <strong>no lo realiza DLPay</strong>.
+            </Fragment>
+          </EjeDeAlcance>
+        </div>
 
         <GloboRotativo />
       </div>
@@ -102,45 +120,6 @@ import { platform } from '../lib/config/site.ts';
   }
   .globo-head p { color: var(--ink-mute); }
 
-  .acciones {
-    margin-top: var(--s-6);
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--s-3);
-  }
-  /* Misma pareja de acciones que el resto del sitio, adaptada a superficie
-     clara: el relleno verde funciona igual (--on-verde da 8,58:1), pero el
-     fantasma no puede usar --line, que sobre papel da 1,4:1 y no llega al 3:1
-     que WCAG 1.4.11 pide al contorno de un control. Va en --ink-mute: 5,50:1. */
-  .acciones .cta {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: var(--s-4) var(--s-6);
-    background: var(--verde);
-    color: var(--on-verde);
-    border-radius: var(--r-2);
-    font-size: var(--t-body);
-    font-weight: 700;
-    text-decoration: none;
-    transition: background-color var(--m-fast) var(--m-ease);
-  }
-  .acciones .cta:hover { background: var(--verde-hi); }
-  .acciones .ghost {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: var(--s-4) var(--s-5);
-    border: 1px solid var(--ink-mute);
-    border-radius: var(--r-2);
-    color: var(--ink);
-    font-size: var(--t-body-sm);
-    font-weight: 600;
-    text-decoration: none;
-    transition: border-color var(--m-fast) var(--m-ease);
-  }
-  .acciones .ghost:hover { border-color: var(--ink); }
 
   /* El globo se dibuja sobre un viewBox 700×500 y escala al ancho disponible.
      El tope evita que en pantallas anchas se coma la banda entera. */

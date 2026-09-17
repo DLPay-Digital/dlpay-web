@@ -122,7 +122,16 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     al recortar la sección: el recorte desplaza el elemento a la vista, dispara el
     `IntersectionObserver` y fotografía el milisegundo cero de M3. Con movimiento por scroll, la
     captura recorre la página y espera antes de disparar.
-11. **Ninguna cifra se escribe sin haberla calculado.** «Un 4 % de luminancia» no salió de ningún
+11. **Las dependencias de la maqueta también caducan.** Una vista autónoma enlaza `tokens.css`; si
+    la copia del entorno de medición es de otro día, se está midiendo contra un token que ya no
+    existe. Pasó el 2026-09-17 con `--verde-deep`: la copia era del día 15 y devolvía 4,90 donde
+    debía dar 5,44. Antes de medir se re-sincronizan las dependencias y **se comprueba un valor
+    conocido** para saber que la copia es la buena.
+12. **Toda sustitución de texto en un archivo lleva `assert`.** Un `replace` que no encuentra su
+    ancla no falla: no hace nada, y uno se queda mirando una maqueta sin estilos buscándole un
+    problema de diseño. Ocurrió dos veces —las cuñas de `/como-funciona` y el CSS del eje— y las dos
+    se habrían evitado con una línea.
+13. **Ninguna cifra se escribe sin haberla calculado.** «Un 4 % de luminancia» no salió de ningún
     cálculo: la caída real era 13,3 % en luminancia relativa y 6,3 % en L\*. Una cifra inventada
     en una ficha vale menos que no poner ninguna.
 
@@ -152,6 +161,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-17 | [`2026-09-17-eje-de-remesas`](2026-09-17-eje-de-remesas/ficha.md) — J5 y J6: el tramo que sí hacemos | **Integrada con cambios** | Las tres piezas. El eje sale como componente y la salvedad baja de 66ch a 47ch |
 | 2026-09-17 | [`2026-09-17-como-funciona`](2026-09-17-como-funciona/ficha.md) — J2 y J3: los seis pasos en dos carriles | **Integrada** | Token, pieza y lote B. Un número de la ficha no cuadró y se corrigió la nota |
 | 2026-09-17 | [`2026-09-17-confianza`](2026-09-17-confianza/ficha.md) — J1: la página de confianza gana su pieza | **Integrada** | La figura, la mención institucional y el lote B de J4. Las tres fases salen a `content/trust.ts` |
 | 2026-09-17 | [`2026-09-17-j4-medida-y-objetivos`](2026-09-17-j4-medida-y-objetivos/ficha.md) — J4: la medida de lectura y los objetivos táctiles | **Integrada (lote A)** | Las 9 declaraciones, los 2 objetivos y el atributo. Las 7 de lote B viajan con el rediseño |
@@ -487,3 +497,58 @@ por encima de 47ch en todo `src/`.
 **Los dos hallazgos que exceden la entrega quedan sin tocar,** como pedías: las 41 listas sin `role`
 y el `.sr-only` definido cuatro veces con dos implementaciones. Los dos son reales y los dejo
 anotados acá para no perderlos.
+
+### Notas de la integración de `2026-09-17-eje-de-remesas`
+
+**El hallazgo de fondo es correcto y lo reproduje entero.** Sobre el build, a 1280: la banda del
+globo en `y=977` con **1.060 px** (13,4 % de la página), la FAQ que nombra el límite al **88,8 %** y
+**plegada**, y los dos botones a 16,6 % — con `auth/register` repetido desde el **10,3 %**, unos 500
+px más arriba, y `/#cotizador` mandando hacia atrás. Todo coincide. El argumento de que el dibujo
+hace la afirmación más grande y el texto que lo acota está 300 px por encima se sostiene.
+
+**Las tres cosas que pediste:**
+
+1 · **`/empresas` sí tenía el hueco, con un matiz.** Comprobado sobre el `main` del build:
+«billetera», «cuenta bancaria», «moneda local» y «no depositamos» daban **cero**. Pero la página no
+estaba muda: el primer caso de uso lleva «**Si tu proveedor sólo recibe por banco, conversémoslo
+antes**», que es una salvedad real aunque indirecta, y «sin abrir una cuenta en el extranjero»
+aparece en tesorería. Así que «no declara el límite **en ninguna parte**» está un punto pasado de
+rosca; lo exacto es que **nunca lo declara de forma explícita**, y eso basta para justificar la
+pieza en la página cuyo lector es el más propenso a suponer una transferencia bancaria.
+
+2 · **No colisiona con la figura de `/confianza`, y comparto tu razón con un argumento más.** Aquella
+responde *quién tiene mi dinero en cada momento* con tres lugares discretos; ésta responde *hasta
+dónde llega el servicio* con una línea continua que cambia de dueño en una costura. Y el verde
+significa **lo mismo en las dos**: el tramo que es nuestro. Que compartan «banco» y «billetera» como
+extremos no es repetición, es que una empieza donde la otra termina. Si el verde significara cosas
+distintas en cada una, entonces sí habría problema.
+
+3 · **Sí, va como componente.** `EjeDeAlcance.astro`, con `milestones` opcional —omitirlo deja sólo
+el tramo del cliente, que es el caso de `/como-funciona`— y la salvedad por `slot`, porque lleva
+`<strong>`. Tres consumidores dejan atrás el Principio 5 de sobra, pero la razón de peso es otra:
+**no es decoración, es la regla dura de §1 dibujada**. Tres copias de una figura que afirma algo es
+peor que tres copias de un botón: si una deriva, el sitio deja de coincidir consigo mismo sobre
+hasta dónde llega el servicio. Los literales viajan a `content/scope.ts` por lo mismo.
+
+**Una medición tuya que no cuadra, y es del mismo tipo que la de `tokens.css`.** La ficha §7 dice
+que la banda baja de 1.060 a **941 px** a 1280. Medida sobre el build real, **sube a 1.247** — y a
+390, de 803 a 1.175. La diferencia es que tu maqueta tiene un `.globo-hueco` de andamio donde el
+sitio tiene el globo de verdad, que es mucho más alto. **Es otra dependencia de la maqueta que
+caduca**, igual que la copia vieja de los tokens.
+
+Lo digo porque tumba la premisa de densidad de J5: la banda **no adelgaza, engorda 187 px**. La
+pieza entra igual, y entra por la razón que tú misma pusiste primero — que el dibujo y el texto
+hablaban de cosas distintas—. Esa no depende del alto. Y los dos botones se van por no aportar, que
+también se sostiene solo.
+
+**Un cambio sobre la maqueta:** `.suyo.solo .salvedad` estaba en `max-width: 66ch`, que son unos 91
+caracteres reales y es justo lo que cerramos ayer con el lote B. Baja a **47ch**. Cuesta que en la
+variante suelta el párrafo quede estrecho bajo tres columnas anchas; la medida de lectura gana.
+
+**Medido tras integrar,** con barrido completo de nodos de texto y fondo efectivo compuesto por
+ancestros, en las tres páginas y a 390 y 1280: **269 nodos, cero incumplimientos**. Desborde
+horizontal 0 en las seis combinaciones. Una sola cuña por figura, con `data-draw` y `aria-hidden`.
+Las dos listas con `role="list"`. Desvío de la costura **0,0 px** a 1280 en la Home y en `/empresas`
+—en la variante suelta la cuña arranca en el borde, así que ahí esa medida no aplica—.
+
+**`GloboRotativo.astro` no se tocó: cero líneas.**

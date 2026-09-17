@@ -11,6 +11,8 @@ import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
 import MacbookMockup from '../components/MacbookMockup.astro';
 import BusinessEmblem from '../components/BusinessEmblem.astro';
+import EjeDeAlcance from '../components/EjeDeAlcance.astro';
+import { hingeBusiness, optionsBusiness, ourLegBusiness } from '../content/scope.ts';
 import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
 import { businessUseCases, differences, onboarding } from '../content/business.ts';
@@ -150,6 +152,30 @@ const waPlain = contact.whatsappUrl();
             ))}
           </ol>
         </div>
+      </div>
+    </section>
+
+    {/*
+      /empresas NO declaraba el límite en ninguna parte. Comprobado sobre el
+      build: en todo el `main` no aparecían «billetera», «cuenta bancaria»,
+      «moneda local» ni «no depositamos». Lo único que se acercaba era la
+      salvedad de un caso de uso —«si tu proveedor sólo recibe por banco,
+      conversémoslo antes»—, que es una advertencia indirecta y no una
+      declaración del alcance.
+
+      Y es la página cuyo lector es el MÁS propenso a dar por supuesta una
+      transferencia bancaria: una empresa que paga a un proveedor fuera de Chile.
+    */}
+    <section class="scope" aria-labelledby="scope-title">
+      <div class="inner">
+        <h2 id="scope-title">Hasta dónde llega nuestra parte</h2>
+        <EjeDeAlcance milestones={ourLegBusiness} hinge={hingeBusiness} options={optionsBusiness}>
+          <Fragment slot="caveat">
+            Convertir el dólar digital a moneda local en destino es un proceso distinto, con
+            otros servicios, y <strong>no lo realiza DLPay</strong>. Si tu proveedor sólo
+            recibe por banco, conversémoslo antes.
+          </Fragment>
+        </EjeDeAlcance>
       </div>
     </section>
 
@@ -297,6 +323,18 @@ const waPlain = contact.whatsappUrl();
     font-size: var(--t-dato-sm);
     font-weight: 600;
     color: var(--ink);
+  }
+
+  /* Hereda `--papel` para que la alternancia de fondos siga entera y la
+     sección de alcance no parezca una caja pegada al final. */
+  .scope { background: var(--papel); padding: var(--s-9) 0; }
+  .scope h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: var(--s-7);
+    max-width: 24ch;
   }
 
   .contact { background: var(--tinta-2); color: var(--on-tinta); padding: var(--s-8) 0; }

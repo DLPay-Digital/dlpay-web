@@ -1,0 +1,175 @@
+---
+/**
+ * El eje de alcance: hasta dónde llega el servicio y dónde deja de ser nuestro.
+ *
+ * Una sola línea que se interrumpe. El tramo de la izquierda va en
+ * `--verde-deep` con sus hitos —lo que hacemos nosotros—; en la costura hay
+ * **una** cuña; y a partir de ahí la línea sigue en `--ink-mute`: existe, es
+ * real y no es nuestra.
+ *
+ * ── Por qué una sola cuña, y por qué ahí ───────────────────────────────────
+ *
+ * La cuña marca el punto donde algo **cambia de manos**, que es la misma regla
+ * que gobierna las tres cuñas de `/como-funciona`. Dentro de nuestro tramo no
+ * cambia nada de manos, así que una cuña entre los hitos mentiría. Va en la
+ * costura y en ningún otro sitio.
+ *
+ * Sobre una línea horizontal la cuña es **colineal** con ella: la línea no se
+ * corta, se le hace una punta justo donde deja de ser nuestra. En móvil el eje
+ * se pone de pie y la cuña gira 90°, que es la misma figura leída en vertical.
+ *
+ * ── Por qué es un componente y no CSS repetido en tres páginas ─────────────
+ *
+ * Porque no es decoración: es la regla dura de CLAUDE.md §1 dibujada. La Home,
+ * `/como-funciona` y `/empresas` declaran el mismo límite, y si una derivara el
+ * sitio dejaría de coincidir consigo mismo sobre hasta dónde llega el servicio.
+ * Con tres consumidores reales el Principio 5 está cumplido de sobra, y el coste
+ * de la alternativa —tres copias de una figura que afirma algo— es mayor que el
+ * de un componente.
+ *
+ * ── Accesibilidad ──────────────────────────────────────────────────────────
+ *
+ * **Nada se transmite sólo con la posición.** A diferencia del carril de
+ * `/como-funciona`, acá izquierda y derecha refuerzan lo que la bisagra ya dice
+ * con palabras, así que no hace falta ninguna etiqueta oculta. Las dos listas
+ * llevan `role="list"`, porque con `list-style: none` WebKit deja de anunciarlas
+ * y acá el número de opciones es parte del contenido. La cuña va `aria-hidden`.
+ */
+import type { Hinge, Milestone } from '../content/scope.ts';
+
+interface Props {
+  /**
+   * El tramo nuestro. **Omitirlo deja sólo el tramo del cliente**, que es lo que
+   * necesita `/como-funciona`: esa página ya contó los seis pasos justo encima,
+   * así que repetir la mitad izquierda sería decir dos veces lo mismo.
+   */
+  milestones?: readonly Milestone[] | undefined;
+  hinge: Hinge;
+  options: readonly string[];
+}
+const { milestones, hinge, options } = Astro.props;
+const alone = milestones === undefined;
+---
+<div class:list={['eje', { alone }]}>
+  {milestones && (
+    <div class="ours">
+      <ol class="milestones" role="list">
+        {milestones.map((m) => (
+          <li class="milestone">
+            <span class="what">{m.what}</span>
+            {m.data && <span class="data num">{m.data}</span>}
+          </li>
+        ))}
+      </ol>
+    </div>
+  )}
+
+  <div class:list={['theirs', { alone }]}>
+    {/* La costura. Es el único punto de la figura donde algo cambia de manos. */}
+    <svg class="seam" viewBox="0 0 40 12" fill="none" aria-hidden="true" preserveAspectRatio="none">
+      <path d="M0 6h12l6-5 6 10 6-5h10" stroke="currentColor" stroke-width="1.5" data-draw />
+    </svg>
+    <p class="hinge">
+      <span class="until">{hinge.until}</span>
+      <span class="from">{hinge.from}</span>
+    </p>
+    <ul class="options" role="list">
+      {options.map((o) => <li>{o}</li>)}
+    </ul>
+    <p class="caveat"><slot name="caveat" /></p>
+  </div>
+</div>
+
+<style>
+  .eje { margin-bottom: var(--s-8); }
+  .ours,
+  .theirs { position: relative; padding-left: var(--s-5); }
+  .ours { border-left: 1px solid var(--verde-deep); padding-bottom: var(--s-6); }
+  .theirs { border-left: 1px solid var(--ink-mute); padding-top: var(--s-6); }
+
+  .milestones { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-5); }
+  .milestone { position: relative; }
+  .milestone::before {
+    content: '';
+    position: absolute;
+    left: calc(-1 * var(--s-5) - 5px);
+    top: 7px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--verde-deep);
+  }
+  .what { font-weight: 600; display: block; }
+  .data {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* En móvil el eje está de pie, así que la cuña gira 90°. */
+  .seam {
+    position: absolute;
+    color: var(--verde-deep);
+    width: 40px;
+    height: 12px;
+    left: -20px;
+    top: -6px;
+    transform: rotate(90deg);
+  }
+
+  /* Dos mitades y dos colores: lo que afirmamos de nosotros en `--ink`, lo que
+     pasa a ser del cliente en `--ink-mute`. */
+  .hinge { font-family: var(--f-num); font-size: var(--t-dato-sm); margin-bottom: var(--s-5); }
+  .until { font-weight: 600; color: var(--ink); }
+  .from { color: var(--ink-mute); }
+
+  .options { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  .options li { position: relative; padding-left: var(--s-5); color: var(--ink-mute); }
+  .options li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 9px;
+    height: 1px;
+    background: var(--ink-mute);
+  }
+  .caveat {
+    margin-top: var(--s-4);
+    font-size: var(--t-body-sm);
+    color: var(--ink-mute);
+    max-width: 47ch;
+  }
+  .caveat :global(strong) { color: var(--ink); font-weight: 600; }
+
+  @media (min-width: 900px) {
+    /* El eje se tumba: los hitos en fila sobre la línea verde y el tramo del
+       cliente abriéndose a la derecha. */
+    .eje { display: grid; grid-template-columns: 1.35fr 1fr; align-items: start; }
+    .eje.alone { display: block; }
+    .ours,
+    .theirs {
+      border-left: 0;
+      border-top: 1px solid;
+      padding-left: 0;
+      padding-top: var(--s-5);
+    }
+    .ours { border-top-color: var(--verde-deep); padding-bottom: 0; padding-right: var(--s-8); }
+    .theirs { border-top-color: var(--ink-mute); padding-left: var(--s-8); }
+    .milestones { grid-template-columns: repeat(3, 1fr); gap: var(--s-5); }
+    .milestone::before { left: 0; top: calc(-1 * var(--s-5) - 5px); }
+    .what { max-width: 18ch; }
+    /* Sobre una línea horizontal la cuña es colineal: la línea no se corta, se
+       le hace una punta justo donde deja de ser nuestra. */
+    .seam { left: -20px; top: -6px; transform: none; }
+    .hinge { max-width: 34ch; }
+
+    /* Sin mitad izquierda la costura cae en el arranque del tramo del cliente. */
+    .theirs.alone { padding-left: 0; }
+    .theirs.alone .seam { left: 0; }
+    .theirs.alone .hinge { max-width: none; }
+    .theirs.alone .options { grid-template-columns: repeat(3, 1fr); gap: var(--s-6); }
+  }
+</style>
