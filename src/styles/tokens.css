@@ -11,7 +11,7 @@
   /* ── Marca (verificados por muestreo de logos/ · ADR-0001 §2) ───────────── */
   --verde:#16C784;        /* acción primaria, dato vivo. NUNCA como wash */
   --verde-hi:#3DD69A;     /* hover; líneas del motivo geométrico sobre tinta */
-  --verde-deep:#0B7A54;   /* verde sobre superficie clara donde --verde no da AA */
+  --verde-deep:#0A7250;   /* verde sobre superficie clara donde --verde no da AA. Ver DS §2.4 */
   --tinta:#0B1320;        /* héroes, footer, bandas */
   --tinta-2:#101A2B;      /* banda secundaria, capas sobre tinta */
 

@@ -28,12 +28,24 @@
 |---|---|---|
 | `--verde` | `#16C784` | Acción primaria, el dato vivo (precio), acentos estructurales. **Nunca** como wash/degradado. |
 | `--verde-hi` | `#3DD69A` | Hover del verde, líneas del motivo geométrico sobre tinta. |
-| `--verde-deep` | `#0B7A54` | Verde sobre superficie clara donde `#16C784` no alcanza contraste AA (texto-enlace, iconos). |
+| `--verde-deep` | `#0A7250` | Verde sobre superficie clara donde `#16C784` no alcanza contraste AA (texto-enlace, iconos). **5,44:1 sobre `--papel` · 4,93:1 sobre `--papel-2`.** Ver la nota de abajo: sobre un chip translúcido del propio verde **no** llega a AA. **Ajustado el 2026-09-17** desde `#0B7A54`, que daba 4,90 sobre papel pero **4,44 sobre `--papel-2`** y dejaba tres rótulos del sitio por debajo del piso. |
 | `--tinta` | `#0B1320` | Fondo de héroes, footer, bandas. Superficie profunda. |
 | `--tinta-2` | `#101A2B` | Banda secundaria / capas sobre tinta. |
 
 `--verde` y `--tinta` están **verificados** contra `logos/` por muestreo de píxeles: son colores
 planos, sin antialias intermedio. Son los oficiales (ver ADR-0001 §2, enmienda 2026-09-03).
+
+> **El límite de `--verde-deep`, medido el 2026-09-17.** El token cumple AA sobre las dos
+> superficies claras del sistema, y ahí termina su garantía. Compuesto sobre un **chip translúcido
+> del propio verde** —`rgba(11,122,84,.10)` sobre `--papel-2`, que resuelve a `rgb(214,223,213)`—
+> el texto en `--verde-deep` da **4,31:1** y **no alcanza el 4,5 de AA**. Con el valor anterior daba
+> 3,92:1, así que el ajuste mejora el caso pero no lo salva.
+>
+> Regla práctica: **`--verde-deep` sobre chip verde no es un par válido para texto.** Si hace falta
+> una pastilla verde con texto, el texto va en `--ink`; el verde se reserva para el fondo, que es
+> superficie y no tiene piso de contraste. Sobre un chip así sí valen los **gráficos** (piso 3:1):
+> iconos, bordes y trazos, que es justo lo que hacen `IconBadge` (`rgba(11,122,84,.12)`, con un
+> icono dentro) y el anillo de foco del cotizador (`rgba(11,122,84,.18)`, que es una sombra).
 
 ### 2.2 Neutros (tintados hacia la tinta — H≈216, no gris puro)
 
