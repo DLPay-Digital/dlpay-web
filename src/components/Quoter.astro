@@ -260,7 +260,9 @@ const intents = [
   }
   .input-box:focus-within {
     border-color: var(--verde-deep);
-    box-shadow: 0 0 0 3px rgba(11, 122, 84, 0.18);
+    /* `--verde-deep` al 18%, a mano por la misma razón que en `IconBadge`:
+       `color-mix()` está por debajo del `cssTarget` del proyecto. */
+    box-shadow: 0 0 0 3px rgba(10, 114, 80, 0.18);
   }
   .input-box.invalid { border-color: var(--baja); }
 

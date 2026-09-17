@@ -41,7 +41,11 @@ const px = size === 'sm' ? 20 : 22;
   }
   .md { width: 48px; height: 48px; }
   .sm { width: 36px; height: 36px; }
-  .light { background: rgba(11, 122, 84, .12); }
+  /* El verde de `--verde-deep` al 12%. Va escrito a mano porque `color-mix()`
+     queda por debajo del objetivo de CSS del proyecto (`cssTarget` en
+     `astro.config.mjs`), así que este literal hay que moverlo si el token se
+     mueve — como pasó el 2026-09-17, cuando se quedó en el valor anterior. */
+  .light { background: rgba(10, 114, 80, .12); }
   .tinta { background: rgba(22, 199, 132, .14); }
 
   .icon { display: block; }

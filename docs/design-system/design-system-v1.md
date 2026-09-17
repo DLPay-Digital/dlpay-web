@@ -37,15 +37,21 @@ planos, sin antialias intermedio. Son los oficiales (ver ADR-0001 §2, enmienda 
 
 > **El límite de `--verde-deep`, medido el 2026-09-17.** El token cumple AA sobre las dos
 > superficies claras del sistema, y ahí termina su garantía. Compuesto sobre un **chip translúcido
-> del propio verde** —`rgba(11,122,84,.10)` sobre `--papel-2`, que resuelve a `rgb(214,223,213)`—
-> el texto en `--verde-deep` da **4,31:1** y **no alcanza el 4,5 de AA**. Con el valor anterior daba
-> 3,92:1, así que el ajuste mejora el caso pero no lo salva.
+> del propio verde** —el token al 10% sobre `--papel-2`, que resuelve a `rgb(213,222,212)`— el texto
+> en `--verde-deep` da **4,31:1** y **no alcanza el 4,5 de AA**. Con el valor anterior daba 3,92:1,
+> así que el ajuste mejora el caso pero no lo salva: **ningún verde suficientemente oscuro para leer
+> sobre su propio chip seguiría siendo el verde de la marca.**
 >
 > Regla práctica: **`--verde-deep` sobre chip verde no es un par válido para texto.** Si hace falta
 > una pastilla verde con texto, el texto va en `--ink`; el verde se reserva para el fondo, que es
 > superficie y no tiene piso de contraste. Sobre un chip así sí valen los **gráficos** (piso 3:1):
-> iconos, bordes y trazos, que es justo lo que hacen `IconBadge` (`rgba(11,122,84,.12)`, con un
-> icono dentro) y el anillo de foco del cotizador (`rgba(11,122,84,.18)`, que es una sombra).
+> iconos, bordes y trazos, que es justo lo que hacen `IconBadge` —el token al 12%, con un icono
+> dentro— y el anillo de foco del cotizador, que es una sombra al 18%.
+>
+> Esos dos alfas van **escritos a mano** en sus componentes, no derivados del token: `color-mix()`
+> queda por debajo del `cssTarget` del proyecto. Es deuda conocida y tiene una consecuencia
+> concreta: **al mover el token hay que moverlos también**, y el 2026-09-17 se quedaron atrás una
+> jornada.
 
 ### 2.2 Neutros (tintados hacia la tinta — H≈216, no gris puro)
 
@@ -77,7 +83,7 @@ planos, sin antialias intermedio. Son los oficiales (ver ADR-0001 §2, enmienda 
   carguen significado** (WCAG pide 3:1 para estos últimos). Sólo para fills/CTA con texto oscuro
   encima y para líneas decorativas. Un conector de diagrama que indica el flujo del dinero **sí**
   carga significado: va en `--verde-deep`.
-- `#0B7A54` (`--verde-deep`) sobre `#F6F5F1`: **4.90:1** — sirve para texto, foco y gráficos.
+- `#0A7250` (`--verde-deep`) sobre `#F6F5F1`: **5.44:1**, y sobre `#ECEAE3` **4.93:1** — sirve para texto, foco y gráficos sobre las dos superficies claras. *Antes del 2026-09-17 era `#0B7A54`, que daba 4.90 sobre papel pero sólo 4.44 sobre papel-2.*
 - `#16C784` sobre `#0B1320`: **8.45:1** — sirve para todo.
 - `#B5852A` (`--aviso`) sobre `#F6F5F1`: **3.03:1**, y sobre `#ECEAE3` sólo **2.75:1** — no alcanza
   ni para un borde. Sobre superficie clara se usa siempre `--aviso-deep` (5.40:1 / 4.90:1), texto y

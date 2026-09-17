@@ -109,6 +109,22 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
 7. **Toda entrega pasa por `design:accessibility-review` antes de darse por cerrada**, y la ficha
    lleva el resultado, incluidos los criterios que pasan limpios. Lo que no se pueda medir en este
    entorno se marca como no medido, no como correcto.
+8. **Un valor candidato se evalúa sustituyéndolo en el build, no en una lámina hecha a mano.**
+   Salió del tercer error, el 2026-09-17: medí bien el estado actual —porque lo saqué del build— y
+   mal el valor propuesto, porque lo calculé sobre una muestra donde el fondo lo había escrito yo,
+   y lo escribí con `--verde` en vez del `rgba(11,122,84,.1)` que dice el CSS. Corolario de la
+   regla 3: **mirar una captura con una cifra mal escrita no detecta la cifra mal escrita.** Una
+   captura verifica una forma, nunca un número.
+9. **Los barridos se hacen por criterio, no por color.** Mi auditoría de contraste filtraba por
+   `--verde-deep`, y por eso se le escaparon tres rótulos que fallaban en otro color. Se recorren
+   **todos** los nodos de texto y se compara cada uno contra su piso.
+10. **No se reporta un fallo visto en una captura sin medirlo antes.** Las cuñas salían como puntos
+    al recortar la sección: el recorte desplaza el elemento a la vista, dispara el
+    `IntersectionObserver` y fotografía el milisegundo cero de M3. Con movimiento por scroll, la
+    captura recorre la página y espera antes de disparar.
+11. **Ninguna cifra se escribe sin haberla calculado.** «Un 4 % de luminancia» no salió de ningún
+    cálculo: la caída real era 13,3 % en luminancia relativa y 6,3 % en L\*. Una cifra inventada
+    en una ficha vale menos que no poner ninguna.
 
 ---
 

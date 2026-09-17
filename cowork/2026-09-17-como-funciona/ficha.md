@@ -90,19 +90,44 @@ compuesto subiendo por los ancestros:
 | `/confianza` | `.phase-who` «Lo tenemos nosotros» | `rgb(246,245,241)` | 4,90:1 | ✓ |
 | `/`, `/empresas`, `/confianza` | enlaces `.arrow` sobre papel | `rgb(246,245,241)` | 4,90:1 | ✓ |
 
-**Seis rótulos por debajo del piso, tres de ellos en esta página.** La pieza que entregué ayer en
+> **Faltaba una fila, y también la encontró el agente:** `.who.you` ×3 en esta misma página daba
+> **4,32:1** — `--ink-mute` sobre `rgba(11,19,32,.07)` encima de papel-2. No la vi porque mi
+> barrido **filtraba por `--verde-deep`**: buscaba un color concreto en vez de auditar todo el
+> texto. Eran **nueve** rótulos incumpliendo, no seis.
+
+**Nueve rótulos por debajo del piso, seis de ellos en esta página.** La pieza que entregué ayer en
 `/confianza` pasa —está sobre papel—, así que esto no es una regresión mía; es un hueco del sistema
 que la maqueta destapó.
 
 **Recomendación: `--verde-deep: #0A7250`** en lugar de `#0B7A54`. Un token, una línea.
 
-| | sobre `--papel` | sobre `--papel-2` | sobre chip verde .10 |
+| | sobre `--papel` | sobre `--papel-2` | sobre el chip |
 |---|---|---|---|
 | `#0B7A54` (hoy) | 4,90 | **4,44** ✗ | **3,92** ✗ |
-| `#0A7250` (propuesto) | 5,44 | 4,93 ✓ | 4,59 ✓ |
+| `#0A7250` (propuesto) | 5,44 | 4,93 ✓ | **4,35** ✗ |
 
-Es un 4 % de luminancia: lado a lado casi no se distingue, pero cruza el umbral en las tres
-superficies. Ver `verde-deep-evidencia.png`. **No toca la identidad**: `--verde` `#16C784` y
+> **CORREGIDO EL 2026-09-17, DESPUÉS DE INTEGRAR.** Esta tabla decía 4,59 en la casilla del chip y
+> afirmaba que el token cumplía en las tres superficies. Era falso, y el agente de Claude Code lo
+> cazó. Dos errores míos encadenados:
+>
+> 1. **Compuse el chip con el color equivocado.** El CSS dice `rgba(11, 122, 84, .1)` —eso es
+>    `--verde-deep` al 10 %, no `--verde`. Yo usé `#16C784` al 10 %, que da `rgb(215,230,218)`; el
+>    real es `rgb(214,223,213)`. Sobre el correcto, `#0A7250` da **4,35** (4,31 si el literal
+>    pasara a seguir al token), o sea **sigue bajo AA**.
+> 2. **«Un 4 % de luminancia» me lo inventé.** La luminancia relativa cae **13,3 %** y la claridad
+>    perceptual L\* un **6,3 %**. Ninguna de las dos es 4. El cambio sigue siendo pequeño, pero el
+>    número no era ése.
+>
+> Lo que **sí** estaba bien medido era el estado actual (4,90 / 4,44 / 3,92), porque salió del
+> build. Lo que estaba mal era el candidato, porque salió de una lámina que dibujé a mano. Ver la
+> regla 8 del README.
+
+**El token se aceptó igual, y por un motivo mejor que el mío:** el caso del chip **desaparece con
+esta misma entrega**, porque la pieza retira las pastillas `.who`. Los otros dos consumidores del
+literal —`IconBadge` y el anillo de foco del cotizador— son gráficos, piso 3:1. El agente dejó
+anotado el límite en DS §2.4 para que nadie vuelva a poner **texto verde sobre chip verde**.
+
+Ver `verde-deep-evidencia.png`, rehecha con el chip correcto. **No toca la identidad**: `--verde` `#16C784` y
 `--tinta` `#0B1320` quedan exactamente igual; `--verde-deep` es un token derivado cuyo trabajo
 declarado es, literalmente, dar AA sobre superficie clara. Y deja el verde documentado en **las dos
 superficies claras**, igual que ya lo está `--aviso-deep` (5,40 / 4,90) — el mismo desdoblamiento,
@@ -363,3 +388,46 @@ golpe. Afecta igual al `FlowDiagram` actual; no es un bloqueo.
 `blog/index.astro` y `como-funciona.astro`— y **con dos implementaciones distintas**: tres usan
 `clip-path: inset(50%)` y el globo usa el `clip: rect(0,0,0,0)` antiguo. Es una utilidad, no un
 estilo de componente. Lo digo y no lo toco: es decisión del agente y de ADR-0004.
+
+---
+
+## 14. Post-integración — verificación del build (2026-09-17, después de `69e8bfc`)
+
+La entrega se integró en dos commits: `b11450f` el token, `69e8bfc` la pieza y el lote B. Verifiqué
+el resultado sobre el build, sin dar nada por bueno.
+
+**Barrido de contraste rehecho como debía hacerse desde el principio**: todos los nodos de texto
+visibles de las diez páginas, a 1280 y a 390, componiendo el fondo efectivo por ancestros. No
+filtrado por color, que es lo que me falló antes.
+
+| Página | Nodos de texto evaluados | Ratio mínimo | Incumplen |
+|---|---|---|---|
+| `/` | 139 | 4,93 | 0 |
+| `/como-funciona` | 71 | 4,93 | 0 |
+| `/confianza` | 72 | 4,98 | 0 |
+| `/empresas` | 87 | 4,98 | 0 |
+| `/blog` | 32 | 5,44 | 0 |
+| las otras cinco | — | — | 0 |
+
+**Cero.** Los nueve rótulos cerrados: los seis de esta página se fueron con la pieza, los tres de la
+Home los arregló el token.
+
+**La pieza, medida en producción:** seis pasos en `<ol role="list">`; tres cuñas en 03, 04 y 05,
+con `data-draw` y `aria-hidden="true"`, **desvío 0,0 px del eje** a 1280 y a 900, ocultas por
+debajo; `.who` presente en el DOM en los tres anchos y **nunca** con `display:none` —1 px en
+escritorio, en línea en móvil—; orden del DOM igual al visual también en dos columnas; eje
+`rgba(11,19,32,.14)` sólo en escritorio; desborde 0. El pie «Dónde está tu dinero en cada momento»
+ya no existe en la página.
+
+**Un falso positivo que estuve a punto de reportar.** Al recortar la sección para mirarla, las tres
+cuñas salían como puntos de 4 px. Parecía un fallo de implementación. No lo era: el recorte
+desplaza el elemento a la vista, eso dispara el `IntersectionObserver` y la captura sale en el
+milisegundo cero de M3. Medido en su lugar: `--draw-len` 50 sobre un trazo de 49,3 —Motion lo mide
+bien— y `stroke-dashoffset` llega a **0 px** en las tres. Recorriendo la página antes de capturar,
+la sección se ve entera. Quedó como regla 10 del README.
+
+**El cambio de implementación del agente es mejor que mi versión.** Yo listé las cuñas a mano en los
+pasos 03, 04 y 05. El agente las calcula comparando el `who` de cada paso con el del anterior. Da
+exactamente lo mismo hoy —verificado— y mañana, si el reparto cambia en `process.ts`, las cuñas se
+mueven solas en vez de quedarse mintiendo donde estaban. Es la misma razón por la que el carril
+sale del dato y no de una lista: **lo que describe un dato tiene que derivarse del dato.**

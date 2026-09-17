@@ -140,10 +140,23 @@ Seis, numerados y contables. Si algo no está acá, no se mueve.
 |---|---|---|---|---|
 | **M1** | `press` | Respuesta de un control al puntero o al foco: color, borde, fondo | `--m-fast` | Botones, enlaces, opciones del cotizador, marcador de FAQ |
 | **M2** | `settle` | Una cifra que **cambió**: opacidad + 2 px, sólo sobre el valor nuevo | 160 ms | Precio referencial y "recibes" del cotizador |
-| **M3** | `draw` | La geometría se dibuja **en la dirección que apunta** (`stroke-dashoffset`) | `--m-slow` | Cuñas del héroe y **cuñas de traspaso de `/como-funciona`**. *Los conectores del diagrama de flujo salieron el 2026-09-17 con el componente* |
+| **M3** | `draw` | La geometría se dibuja **en la dirección que apunta** (`stroke-dashoffset`) | `--m-slow` | **Las tres cuñas de traspaso de `/como-funciona`, y nada más.** Ver la nota de abajo: el inventario real es de uno, no de tres |
 | **M4** | `enter` | Entrada sobre el eje diagonal: opacidad + `translate(-6px, 9px)` | `--m-base` | Ver §5. **Requiere enmienda del DS §9.** |
 | **M5** | `stagger` | Desfase de 60 ms entre hermanos, **máximo 4** | — | Ver §5. **Requiere enmienda.** |
 | **M6** | `sequence` | Secuencia de carga del héroe, una sola vez | 320 ms total | Home. **Ya permitido por DS §9.** |
+
+> **El inventario real de M3, medido el 2026-09-17.** `data-draw` aparece hoy en **un solo sitio**
+> de `src/`: las tres cuñas de traspaso de `/como-funciona`. Esta fila listaba tres consumidores y
+> dos ya no lo son. Los conectores del diagrama salieron con `FlowDiagram.astro`; y **las cuñas del
+> héroe nunca fueron M3**: son un `div` con `clip-path` cuya entrada es un fundido de opacidad
+> (`0 → 0.07`, `@keyframes wedgeIn` en `Hero.astro` y `PageHero.astro`). No hay `stroke` que
+> recorrer, así que la definición de M3 —«se dibuja en la dirección que apunta,
+> `stroke-dashoffset`»— no puede describir lo que hacen.
+>
+> **Queda una decisión abierta y no la toma este documento:** o la definición de M3 se amplía para
+> cubrir dos técnicas de revelado, o las cuñas del héroe se catalogan donde corresponda. Lo que no
+> puede seguir es la tabla afirmando una técnica que esos elementos no usan. Se anota acá en vez de
+> resolverse por cuenta propia porque cambia el catálogo del sistema, que es decisión de diseño.
 
 **Aclaración sobre el eje (2026-09-07).** M4 entra sobre la diagonal de la marca porque es
 contenido que llega a la página. La **barra fija móvil** es la excepción razonada: no entra en la
@@ -278,7 +291,7 @@ El riesgo de un sistema de movimiento es que crezca por acumulación. Tres compr
 |---|---|
 | **M1** `press` | Cabecera, pie, cotizador, FAQ, botones de todas las páginas |
 | **M2** `settle` | Precio del cotizador, sólo cuando el valor **cambia** |
-| **M3** `draw` | Cuñas del héroe, cuñas entre pasos, conectores del diagrama |
+| **M3** `draw` | **Un solo sitio: las tres cuñas de traspaso de `/como-funciona`.** Los conectores del diagrama salieron el 2026-09-17 con el componente, y las cuñas del héroe no son M3 — ver la nota de la fila M3 |
 | **M4** `enter` | 3 titulares en Home, 3 en `/empresas`, 2 en `/confianza`, 1 en `/como-funciona` |
 | **M5** `stagger` | 3 tarjetas de usos (Home) y 4 casos (`/empresas`). Nada más |
 | **M6** `sequence` | Héroe de la Home: la tarjeta ya está, entra el texto. Encabezado de `/empresas`: titular, bajada, botones y el portátil. En los dos, el titular entra **palabra por palabra** (enmienda del 2026-09-10) |
