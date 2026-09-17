@@ -2,14 +2,30 @@
 /**
  * FAQ — sólo objeciones reales previas a la primera operación (phase-2.5 §2).
  * Acordeón con <details>: sin JavaScript, accesible por teclado de fábrica.
+ *
+ * Las preguntas llegan por prop y no se importan acá. Sirve a dos páginas con
+ * públicos distintos —las cinco de la Home son enteras de persona; las cuatro de
+ * `/empresas` son de empresa— y duplicar el componente habría duplicado algo más
+ * caro que un acordeón: el criterio de qué es una objeción real.
+ *
+ * `items` y `title` son OBLIGATORIAS a propósito, sin valor por omisión. Un
+ * `<Faq />` que cayera de vuelta al contenido de la Home publicaría las
+ * preguntas equivocadas en silencio, que es exactamente la clase de fallo que ya
+ * nos ha costado antes.
  */
-import { faq } from '../content/home.ts';
+import type { FaqItem } from '../content/home.ts';
+
+interface Props {
+  items: readonly FaqItem[];
+  title: string;
+}
+const { items, title } = Astro.props;
 ---
 <section class="faq" aria-labelledby="faq-title">
   <div class="inner">
-    <h2 id="faq-title" data-enter>Antes de tu primera operación</h2>
+    <h2 id="faq-title" data-enter>{title}</h2>
     <div class="items">
-      {faq.map((item) => (
+      {items.map((item) => (
         <details class="item">
           <summary>
             <span>{item.q}</span>

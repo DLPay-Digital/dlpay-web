@@ -16,6 +16,7 @@ import Process from '../components/Process.astro';
 import Trust from '../components/Trust.astro';
 import Business from '../components/Business.astro';
 import Faq from '../components/Faq.astro';
+import { faq } from '../content/home.ts';
 import Footer from '../components/Footer.astro';
 import Motion from '../components/Motion.astro';
 ---
@@ -87,7 +88,7 @@ import Motion from '../components/Motion.astro';
     <Process />
     <Trust />
     <Business />
-    <Faq />
+    <Faq items={faq} title="Antes de tu primera operación" />
   </main>
   <Footer />
 </Base>

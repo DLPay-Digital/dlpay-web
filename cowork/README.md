@@ -145,7 +145,14 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     `/empresas` «no declara el límite en ninguna parte» y, cuatro líneas después, cité la frase de
     `business.ts` que sí lo declara. Antes de dar por buena una afirmación absoluta —«ninguno»,
     «nunca», «en ninguna parte»— se relee el párrafo siguiente.
-16. **Ninguna cifra se escribe sin haberla calculado.** «Un 4 % de luminancia» no salió de ningún
+16. **La prueba sin texto: antes de dibujar, qué dice la figura si le quitas los rótulos.**
+    Aportada por el agente de Claude Code el 2026-09-17 y es de las buenas. El globo **falla**: sin
+    rótulos, ocho arcos saliendo de Chile dicen «entregamos en ocho países», que es justo lo que la
+    regla dura de `CLAUDE.md` §1 prohíbe sugerir. El carril de `/como-funciona` **pasa**: sin texto
+    siguen siendo dos columnas y una frontera. El eje de alcance **pasa**: una línea que se
+    interrumpe. Es barata y detecta el error que sale caro — una figura que afirma por su cuenta.
+    Su corolario: si la figura sólo funciona con los rótulos puestos, es una lista con adornos.
+17. **Ninguna cifra se escribe sin haberla calculado.** «Un 4 % de luminancia» no salió de ningún
     cálculo: la caída real era 13,3 % en luminancia relativa y 6,3 % en L\*. Una cifra inventada
     en una ficha vale menos que no poner ninguna.
 
@@ -175,6 +182,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-17 | [`2026-09-17-empresas-j7`](2026-09-17-empresas-j7/ficha.md) — J7: la columna que faltaba y la FAQ propia | **Integrada** | Las dos piezas. `Faq.astro` pasa a props en vez de duplicarse, y las preguntas viven en `business.ts` |
 | 2026-09-17 | [`2026-09-17-eje-de-remesas`](2026-09-17-eje-de-remesas/ficha.md) — J5 y J6: el tramo que sí hacemos | **Integrada con cambios** | Las tres piezas. El eje sale como componente y la salvedad baja de 66ch a 47ch |
 | 2026-09-17 | [`2026-09-17-como-funciona`](2026-09-17-como-funciona/ficha.md) — J2 y J3: los seis pasos en dos carriles | **Integrada** | Token, pieza y lote B. Un número de la ficha no cuadró y se corrigió la nota |
 | 2026-09-17 | [`2026-09-17-confianza`](2026-09-17-confianza/ficha.md) — J1: la página de confianza gana su pieza | **Integrada** | La figura, la mención institucional y el lote B de J4. Las tres fases salen a `content/trust.ts` |
@@ -566,3 +574,46 @@ Las dos listas con `role="list"`. Desvío de la costura **0,0 px** a 1280 en la 
 —en la variante suelta la cuña arranca en el borde, así que ahí esa medida no aplica—.
 
 **`GloboRotativo.astro` no se tocó: cero líneas.**
+
+### Notas de la integración de `2026-09-17-empresas-j7`
+
+**Que el onboarding no se dibuje es la mejor decisión de la entrega.** Confirmé el dato y el matiz:
+`onboarding` es un `string[]` de cuatro frases, sin `who` ni ninguna otra estructura. Deducir el
+reparto de los verbos habría sido fabricar el dato para que encajara con el dibujo, que es
+exactamente el error del diagrama de propagación. Aplicar la prueba sin texto y **aceptar que la
+respuesta era «no dibujes»** cuesta más que dibujar.
+
+**Las tres decisiones que dejaste abiertas, resueltas:**
+
+1 · **`Faq.astro` pasa a props, no a un componente nuevo.** Tu argumento es el correcto: duplicar el
+acordeón es barato, duplicar el criterio de qué es una objeción real no lo es. Añado una condición:
+`items` y `title` van **obligatorias, sin valor por omisión**. Un `<Faq />` que cayera de vuelta al
+contenido de la Home publicaría las preguntas equivocadas en silencio, y ése es justo el modo de
+fallo que ya nos costó dos veces.
+
+2 · **Las cuatro preguntas y la lista viven en `content/business.ts`.** De acuerdo sin reservas: son
+contenido.
+
+3 · **`.onboarding` con `role="list"`,** más la `.check` nueva.
+
+**El marcador de D6 viaja y está comprobado que no se pierde:** vive como comentario junto a la
+respuesta en `business.ts`, y verifiqué que **no llega al HTML construido**. Tu lectura de mi aviso
+era la correcta — la pregunta toca condiciones comerciales, así que es §3 y no sólo visto bueno de
+Sebastián—, y la respuesta sin cifra admite la cifra sin reescribirse.
+
+**El fallo de alternancia era mío y va corregido en este mismo commit.** `scope` pasa a `--papel-2`.
+La secuencia queda tinta · papel · papel-2 · papel · papel-2 · papel · tinta, verificada sobre el
+build leyendo el fondo computado de las siete secciones. No lo separé en otro commit porque sin él
+la sección nueva llegaba a una página con el fallo puesto.
+
+**Una medición tuya que no reproduje, y no es error tuyo:** das 73 px de alto para los `<summary>` y
+mido **56 a 1280** y 52–73 a 390. La diferencia es que tu maqueta usa `padding: var(--s-5)` y el
+`Faq.astro` real usa `--s-4`. Al reutilizar el componente manda el componente. Los cuatro siguen
+por encima del piso de 44, así que no cambia nada — pero es otra forma de la misma trampa: **la
+maqueta y el componente no son el mismo objeto**.
+
+**Medido tras integrar,** a 390 y 1280: **83 nodos de texto, cero incumplimientos** de contraste con
+fondo efectivo compuesto. Desborde 0. Cuatro preguntas, ninguna abierta por omisión, cero elementos
+interactivos más allá de los `<summary>` nativos. `align-content: start` en `.onboarding` hizo falta
+de verdad: con la columna izquierda ahora más alta, sin él la rejilla repartía el sobrante entre las
+cuatro filas.

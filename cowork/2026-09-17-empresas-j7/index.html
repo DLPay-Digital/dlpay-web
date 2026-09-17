@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propuesta — J7: /empresas gana su FAQ y lo que hay que tener a mano</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+  @font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+
+  .board{max-width:var(--container);margin:0 auto;padding:var(--s-7) var(--pad-section) var(--s-4)}
+  .board p{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute)}
+  .board h2{font-size:var(--t-h3);margin-top:var(--s-2);padding-top:var(--s-3);border-top:1px solid var(--line)}
+  .scaffold{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
+    background:var(--papel-2);border:1px dashed var(--line);padding:var(--s-3);text-align:center}
+  .marca{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--aviso-deep);
+    border-left:2px solid var(--aviso-deep);padding-left:var(--s-3);margin-top:var(--s-4);display:block}
+
+  .inner{max-width:var(--container);margin:0 auto;padding:0 var(--pad-section-m)}
+  h2.sec{font-size:var(--t-h2-m);font-weight:700;line-height:var(--lh-h2);
+    letter-spacing:var(--ls-h2);margin-bottom:var(--s-3)}
+  .lead{color:var(--ink-mute);max-width:47ch}
+  .sub{font-size:var(--t-h3-m);font-weight:600;line-height:var(--lh-h3);margin-top:var(--s-6)}
+
+  /* ── A · «Cómo empezamos» gana la columna que le faltaba ──────────────────
+     La sección ya existe con sus cuatro pasos. Lo que no existía en toda la
+     página es el equivalente de «Ten esto a mano» que /como-funciona sí tiene
+     para una persona: 473 px y 89 palabras de qué preparar. Una empresa que
+     llega aquí no necesita que le dibujen cuatro cajas; necesita saber qué
+     juntar antes de escribir. */
+  .empezamos{background:var(--papel);padding:var(--s-9) 0}
+  .split{display:grid;gap:var(--s-8)}
+  .check{list-style:none;margin:var(--s-6) 0 0;padding:0;display:grid;gap:var(--s-3)}
+  .check li{display:flex;gap:var(--s-3);align-items:flex-start;color:var(--ink-mute)}
+  .tick{width:17px;height:17px;color:var(--verde-deep);flex:none;margin-top:3px}
+  /* align-content:start — sin esto la rejilla reparte el alto sobrante entre
+     las cuatro filas y los pasos se separan 120 px unos de otros. */
+  .pasos{list-style:none;margin:0;padding:0;display:grid;gap:var(--s-5);align-content:start}
+  .pasos li{display:flex;gap:var(--s-4);align-items:flex-start;color:var(--ink-mute)}
+  .n{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);flex:none;
+    padding-top:2px}
+
+  /* ── B · la FAQ propia ────────────────────────────────────────────────────
+     Misma gramática que Faq.astro: <details>, cero JavaScript, teclado de
+     fábrica. Lo único que cambia son las preguntas — y que la página no tenía
+     ninguna. */
+  .faq{background:var(--papel-2);padding:var(--s-9) 0}
+  .faq .inner{max-width:760px}
+  .items{margin-top:var(--s-6);border-top:1px solid var(--line)}
+  .item{border-bottom:1px solid var(--line)}
+  .item summary{display:flex;align-items:center;justify-content:space-between;gap:var(--s-4);
+    padding:var(--s-5) 0;cursor:pointer;font-weight:600;list-style:none;min-height:44px}
+  .item summary::-webkit-details-marker{display:none}
+  .item .mark{width:14px;height:14px;color:var(--verde-deep);flex:none;
+    transition:transform var(--m-fast) var(--m-ease)}
+  .item[open] .mark{transform:rotate(45deg)}
+  .item p{color:var(--ink-mute);padding-bottom:var(--s-5);max-width:47ch}
+
+  @media (min-width:900px){
+    h2.sec{font-size:var(--t-h2)}
+    .split{grid-template-columns:1fr 1fr;gap:var(--s-9)}
+  }
+</style>
+</head>
+<body>
+
+<div class="board">
+  <p>cowork · 2026-09-17 · /empresas · J7</p>
+  <h2>La FAQ que la página no tiene, y lo que hay que tener a mano</h2>
+  <p>el onboarding NO se dibuja: cuatro cajas sin rótulos no dicen nada que la lista numerada no diga ya</p>
+</div>
+<div class="scaffold">andamio · arriba siguen el encabezado, «Para qué lo usan» y «Qué cambia respecto de una persona», sin cambios</div>
+
+<section class="empezamos">
+  <div class="inner">
+    <div class="split">
+      <div>
+        <h2 class="sec">Cómo empezamos</h2>
+        <p class="lead">No hay formulario que llenar a ciegas. Se parte conversando y seguimos
+          desde ahí.</p>
+        <h3 class="sub">Ten esto a mano</h3>
+        <ul class="check" role="list">
+          <li><svg class="tick" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Los documentos de la sociedad y de quienes la representan legalmente</li>
+          <li><svg class="tick" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Una cuenta bancaria a nombre de la empresa</li>
+          <li><svg class="tick" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>La dirección de la billetera donde quieres recibir el dólar digital</li>
+        </ul>
+      </div>
+      <ol class="pasos" role="list">
+        <li><span class="n">1</span><span>Nos escribes y conversamos qué necesita tu empresa: a dónde paga, con qué frecuencia y en qué montos</span></li>
+        <li><span class="n">2</span><span>Nos envías los documentos de la sociedad y de quienes la representan</span></li>
+        <li><span class="n">3</span><span>Revisamos y habilitamos la cuenta</span></li>
+        <li><span class="n">4</span><span>Operas con tu ejecutivo asignado</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<div class="scaffold">andamio · aquí va «Hasta dónde llega nuestra parte» (el eje de alcance, commit f99a49b) · PROPUESTA: pasa a --papel-2, ver ficha §4</div>
+
+<section class="faq">
+  <div class="inner">
+    <h2 class="sec">Lo que nos preguntan las empresas</h2>
+    <div class="items">
+      <details class="item">
+        <summary><span>¿Quién atiende mi cuenta?</span><svg class="mark" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></summary>
+        <p>Un ejecutivo asignado, el mismo cada vez. Conoce a dónde paga tu empresa, con qué
+          frecuencia y en qué montos, así que no tienes que volver a explicar la operación cada mes.
+          Somos un equipo en Chile y se atiende por WhatsApp.</p>
+      </details>
+      <details class="item">
+        <summary><span>¿Qué documentos necesito?</span><svg class="mark" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></summary>
+        <p>Los documentos de la sociedad y de quienes la representan legalmente. Además, la cuenta
+          desde la que transfieres tiene que estar a nombre de la empresa: recibimos transferencias
+          sólo desde cuentas del titular de la operación y no operamos con fondos de terceros.</p>
+      </details>
+      <details class="item">
+        <summary><span>¿Qué pasa si mi proveedor sólo recibe por banco?</span><svg class="mark" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></summary>
+        <p>Conversémoslo antes. Nosotros entregamos dólar digital en la billetera que nos indiques
+          y no depositamos dinero en cuentas bancarias en el extranjero. Si tu proveedor sólo recibe
+          por banco, ese último tramo es un proceso distinto que no realizamos, y conviene verlo
+          antes de operar y no después.</p>
+      </details>
+      <details class="item">
+        <summary><span>¿Desde qué volumen conviene?</span><svg class="mark" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></summary>
+        <p>Las condiciones se conversan según volumen y frecuencia: no publicamos una tabla por
+          tramos. La operación pesa donde el spread de un banco pesa de verdad y una app retail no
+          alcanza. Tu ejecutivo te confirma el precio final antes de cerrar.</p>
+      </details>
+    </div>
+    <span class="marca">andamio · la cuarta respuesta va sin cifra a propósito · PENDIENTE DE DECISIÓN — D6 (monto mínimo real) · CLAUDE.md §3</span>
+  </div>
+</section>
+
+<div class="scaffold">andamio · debajo sigue «Hablemos de tu operación», sin cambios</div>
+
+</body>
+</html>

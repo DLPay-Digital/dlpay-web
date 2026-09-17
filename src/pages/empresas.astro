@@ -15,7 +15,8 @@ import EjeDeAlcance from '../components/EjeDeAlcance.astro';
 import { hingeBusiness, optionsBusiness, ourLegBusiness } from '../content/scope.ts';
 import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
-import { businessUseCases, differences, onboarding } from '../content/business.ts';
+import Faq from '../components/Faq.astro';
+import { businessUseCases, checklist, differences, faq, onboarding } from '../content/business.ts';
 import { contact, platform } from '../lib/config/site.ts';
 
 const wa = contact.whatsappUrl(
@@ -142,8 +143,27 @@ const waPlain = contact.whatsappUrl();
             <p class="lead">
               No hay formulario que llenar a ciegas. Se parte conversando y seguimos desde ahí.
             </p>
+
+            {/*
+              La columna que faltaba. `/como-funciona` tiene su «Ten esto a mano»
+              para una persona y esta página no tenía equivalente: una empresa
+              que llega acá no necesita que le dibujen los cuatro pasos —la lista
+              numerada ya los dice—, necesita saber qué juntar antes de escribir.
+            */}
+            <h3 class="sub">Ten esto a mano</h3>
+            <ul class="check" role="list">
+              {checklist.map((item) => (
+                <li>
+                  <svg class="tick" viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M3 8.5l3.5 3.5L13 4.5" fill="none" stroke="currentColor"
+                          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ol class="onboarding">
+          <ol class="onboarding" role="list">
             {onboarding.map((step, i) => (
               <li>
                 <span class="n num">{i + 1}</span>
@@ -178,6 +198,12 @@ const waPlain = contact.whatsappUrl();
         </EjeDeAlcance>
       </div>
     </section>
+
+    {/*
+      La página no tenía FAQ, y las cinco de la Home son enteras de persona. Las
+      cuatro preguntas viven en `content/business.ts`, no acá: son contenido.
+    */}
+    <Faq items={faq} title="Preguntas de una empresa" />
 
     <section class="contact on-tinta-surface" aria-labelledby="contact-title">
       <div class="inner">
@@ -301,7 +327,17 @@ const waPlain = contact.whatsappUrl();
   .steps-band { background: var(--papel); padding: var(--s-9) 0; }
   .split { display: grid; gap: var(--s-6); }
   .lead { color: var(--ink-mute); max-width: 40ch; }
-  .onboarding { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-4); }
+  /* `align-content: start` no es cosmético: ahora que la columna izquierda es
+     más alta, sin él la rejilla reparte el sobrante entre las cuatro filas y los
+     pasos se separan más de 100 px unos de otros. */
+  .onboarding {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-4);
+    align-content: start;
+  }
   .onboarding li {
     display: flex;
     gap: var(--s-3);
@@ -327,7 +363,7 @@ const waPlain = contact.whatsappUrl();
 
   /* Hereda `--papel` para que la alternancia de fondos siga entera y la
      sección de alcance no parezca una caja pegada al final. */
-  .scope { background: var(--papel); padding: var(--s-9) 0; }
+  .scope { background: var(--papel-2); padding: var(--s-9) 0; }
   .scope h2 {
     font-size: var(--t-h2-m);
     font-weight: 700;
@@ -336,6 +372,18 @@ const waPlain = contact.whatsappUrl();
     margin-bottom: var(--s-7);
     max-width: 24ch;
   }
+
+  /* «Ten esto a mano»: la columna izquierda gana su propia lista. */
+  .sub {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    margin-top: var(--s-6);
+    margin-bottom: var(--s-4);
+  }
+  .check { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  .check li { display: flex; gap: var(--s-3); align-items: flex-start; color: var(--ink-mute); }
+  .tick { width: 17px; height: 17px; color: var(--verde-deep); flex: none; margin-top: 3px; }
 
   .contact { background: var(--tinta-2); color: var(--on-tinta); padding: var(--s-8) 0; }
   .contact h2 { color: var(--on-tinta); }
