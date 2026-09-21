@@ -1,10 +1,11 @@
 # Ficha — portada mínima para el artículo de activos tokenizados
 
 **Entrega:** `2026-09-21-portada-capa` · **Autor:** Claude Cowork · **Estado:** En revisión
-**Pieza final:** `moneda.html` · **Capturas:** `final-banda-1280.png`, `final-banda-390.png`,
-`final-ctx-1280.png`, `a11y-forced.png`
+**Pieza final:** `moneda.html` — **v2, un solo nodo** tras el rechazo por §1 (§3.e)
+**Capturas:** `final-banda-1280.png`, `final-banda-390.png`, `final-ctx-1280.png`, `a11y-forced.png`
 **Cotejos:** `cotejo-1280.png` (canto liso / 24 marcas / 12 marcas),
-`cotejo2-1280.png` (alturas y alineación), `cotejo3-390.png` (alturas en móvil)
+`cotejo2-1280.png` (alturas y alineación), `cotejo3-390.png` (alturas en móvil),
+`cotejo4-1280.png` (las dos salidas al rechazo por §1)
 **Descartadas, por orden:** `opciones.html` (planos rellenos) · `index.html` (cuatro trazos) ·
 `tokenizando.html` (el plano que se parte en unidades)
 **Origen:** Sebastián pidió portada para el artículo publicado hoy (`5a298e5`).
@@ -79,7 +80,7 @@ en la figura de `/confianza`: allí el problema era el texto escalando a 6 px, n
 
 ---
 
-## 3.c La tercera corrección: el icono, con una T
+## 3.c La tercera corrección: el icono, con una T  ·  *(describe la v1, rechazada)*
 
 `tokenizando.html` —un plano con el canto de la marca, partiéndose en unidades hacia la derecha—
 tampoco enganchó. Sebastián mandó un icono de referencia (dos monedas dentro de un bucle de
@@ -112,7 +113,7 @@ como «líneas del motivo geométrico sobre tinta». **No** va en `--verde`: por
 significa *el tramo que es nuestro*, y un activo tokenizado de terceros no es nuestro. El dólar y
 el bucle van en `--on-tinta-mute`.
 
-## 3.d La prueba sin texto, y el §1 de CLAUDE.md
+## 3.d La prueba sin texto, y el §1 de CLAUDE.md  ·  *(mi lectura, que resultó equivocada)*
 
 La regla 16 obliga a preguntar qué afirma la figura si le quitas los rótulos. Aquí no hay rótulos
 que quitar, así que la pregunta es directa: **un bucle cerrado entre una moneda T y una moneda $
@@ -139,6 +140,60 @@ local:
 línea donde el valor cambia de manos; el galón marca la **dirección** de un recorrido. Son
 distintos, pero los dos hablan de valor moviéndose y el DS no dice nada del segundo. **Queda
 anotado como pregunta para el DS, no decidido aquí.**
+
+## 3.e El rechazo por §1, y la corrección
+
+El agente de Claude Code comprobó todas las cifras de §3.c y §6 —coinciden sin excepción— y aun
+así **no la integró**. Tenía razón, y las dos afirmaciones medibles de su rechazo las verifiqué
+yo antes de aceptarlas:
+
+| lo que dijo | comprobado |
+|---|---|
+| La portada se dibuja antes del titular | `[slug].astro`: `{post.data.portada && <PortadaDato …/>}` está **fuera de `<article>`**, antes del `<header>` que lleva el `<h1>` |
+| «No participamos en la tokenización de acciones, bonos ni fondos» está al 86 % del artículo | palabra **1.497 de 1.736** del cuerpo = **86 %** |
+
+*(Mi `grep` inicial de esa frase no devolvió nada porque busqué en minúscula y la frase abre
+oración. El error fue mío, no de su cita.)*
+
+**El argumento.** En una página de DLPay, la moneda `$` no se lee como «el dólar» en abstracto:
+se lee como **nuestro** dólar digital. Con eso el bucle afirmaba que cambiamos activos
+tokenizados por él, que es justo lo que el artículo niega — y lo niega al 86 %, mientras la
+portada se ve antes del titular. Mi §3.d resolvía eso diciendo que la categoría «Mercado» enmarca
+la pieza como reportaje; eso es un encuadre que llega tarde y por debajo, y no aguanta la medición.
+
+**Por qué quitar un galón no bastaba.** Era la salida que yo mismo ofrecía y es insuficiente: con
+una sola dirección el intercambio se sigue afirmando, sólo que en un sentido. El problema no es la
+marca de dirección — **es qué dos cosas une el bucle.**
+
+**La corrección: quitar el segundo nodo.** Un bucle con un solo nodo no puede ser un intercambio,
+porque no hay con qué. Lo que queda dice una propiedad de la cosa dibujada —esta ficha circula, y
+está hecha de unidades— y no menciona a nadie más. Es además la versión más mínima de las cuatro,
+que es la dirección que Sebastián pidió dos veces.
+
+**Lo que se pierde, dicho y no disimulado.** La relación 0,673 vivía en la anchura de la elipse, y
+con un solo nodo el bucle no tiene motivo para ser ancho: **la elipse se va y el número con ella.**
+No le busqué otro sitio. Reubicar una cifra para conservarla es una cifra correcta con la forma
+equivocada, que es la regla 18 del propio README.
+
+**Lo que se gana.** La T deja de ser una letra dibujada a ojo: su travesaño mide **0,7041** de su
+alto, que es la proporción **medida** de la T de Spline Sans Mono (207/294). Es identidad de
+verdad —la letra toma su forma de nuestra tipografía— y no es el 0,673 del isotipo, ni se escribe
+como si lo fuera.
+
+**Una salida que descarté, y conviene que quede anotada para otro día.** El agente propuso cambiar
+la moneda izquierda por el peso chileno: el bucle dibujaría CLP ↔ dólar digital, que es exactamente
+nuestro servicio y es §1 limpio. **Es una buena portada — para otro artículo.** Éste no trata de
+nuestro servicio.
+
+## 3.f Dónde me equivoqué en el encargo anterior
+
+Escribí en la ficha y en el prompt que «el blog lo publica el otro agente de Cowork» y que había
+coordinación pendiente. El agente de Claude Code responde que el artículo lo publicó él (`5a298e5`)
+y que el comentario del frontmatter lo escribió él. **No puedo dirimirlo desde aquí:** los 40
+commits recientes del repositorio están todos a nombre de Sebastián, así que git no distingue quién
+los originó. Mi creencia venía de una instrucción de Sebastián en esta misma sesión, sobre otro
+trabajo. Lo dejo escrito para que lo corrija quien sepa, y retiro el punto de coordinación del
+prompt.
 
 ## 4. La versión de cuatro trazos, descartada
 
@@ -173,7 +228,17 @@ contra el 0,673 del canto (202:300). Deducirlo en vez de trazarlo es más limpio
   No es que estuviera mal medido —el sesgo daba 0,673 y el contraste 10,0— es que una notación no
   engancha. Se conserva en la carpeta.
 
-**De esta tanda, y está fotografiado**
+**De la ronda del pictograma, tras el rechazo por §1** (`cotejo4-1280.png`)
+
+- **La ficha T frente a un dólar** (la v1). Rechazada: §3.e.
+- **Quitar un solo galón.** Insuficiente: una sola dirección sigue afirmando el intercambio.
+- **La misma ficha a dos tamaños** unida por el bucle, que diría fraccionamiento sin contraparte
+  (panel E). Funciona de gramática y falla de lectura: la ficha pequeña parece un duplicado
+  encogido, las dos T compiten y la pieza deja de ser mínima.
+- **Cambiar la T por el peso chileno**, propuesta del agente. §1 limpio y buena portada —
+  para otro artículo.
+
+**De la ronda del icono, y está fotografiado**
 
 - **Canto liso en las dos monedas** (`cotejo-1280.png`, panel A). Limpio, y podría ser el icono de
   cualquier exchange: las dos caras dicen lo mismo y el artículo trata de lo que las diferencia.
@@ -205,7 +270,7 @@ Todo contra el build de hoy (`dist/`, 2026-09-21 15:26) servido en un puerto ef�
 | | 320 | 390 | 1280 | zoom 200 % |
 |---|---|---|---|---|
 | Alto de la banda | 196 px | 196 px | **256 px** | 392 px |
-| Alto de la figura | 132 px | 132 px | **160 px** | 264 px |
+| Figura (cuadrada) | 132 px | 132 px | **160 px** | 264 px |
 | Desborde horizontal | 0 | 0 | 0 | 0 |
 | Scroll horizontal | no | no | no | no |
 | Texto dentro de la portada | 0 | 0 | 0 | 0 |
@@ -219,17 +284,21 @@ escritorio. No es «la misma altura» y no conviene escribir que lo es.
 
 | | valor | referencia | desvío |
 |---|---|---|---|
-| `ry/rx` de la elipse | 0,6730 | 0,6733 (202:300) | 0,0003 |
-| Apertura del galón superior | 68,01° | 67,90° | 0,11° |
-| Apertura del galón inferior | 68,01° | 67,90° | 0,11° |
+| Semiángulo del galón superior | 34,000° | 33,954° — canto del isotipo `atan(202/300)` | 0,046° |
+| Semiángulo del galón inferior | 34,000° | 33,954° | 0,046° |
+| Travesaño / alto de la T | 0,7041 | 0,7041 — la T de Spline Sans Mono, 207/294, medida en el navegador | 0,0000 |
+| Marcas del canto | 24 | — | — |
+
+**El bucle es una circunferencia, no una elipse**, así que aquí no hay relación 0,673 que medir.
+Desapareció con el segundo nodo y no se le buscó otro sitio (§3.e).
 
 **Contraste**, con el fondo efectivo compuesto recorriendo los ancestros —`rgb(11,19,32)`, que es
 `--tinta`, no heredado de nada más:
 
 | trazo | token | ratio |
 |---|---|---|
-| Moneda T, sus 24 marcas y su signo | `--verde-hi` | **10,00:1** |
-| Moneda $, su signo, el bucle y los galones | `--on-tinta-mute` | **8,18:1** |
+| La ficha, sus 24 marcas y su T | `--verde-hi` | **10,00:1** |
+| Los dos arcos y los dos galones | `--on-tinta-mute` | **8,18:1** |
 
 Piso de 3:1 para un gráfico no textual. Para comparar: `--verde` sobre tinta da 8,45 y **no se usa
 aquí a propósito** — no por contraste, por significado (§3.c).
@@ -268,9 +337,11 @@ Pasada completa, no una casilla:
 4. **Es el único punto donde me separo del componente hermano:** la banda mide 256 / 196 y la del
    dato 226 / 174. Está medido, fotografiado y razonado en §5; si preferís forzar los 226, la
    captura del panel D muestra lo que se pierde.
-5. **El galón frente a la cuña** (§3.d) es una pregunta para el DS, no una decisión mía.
-6. **El §1 de CLAUDE.md** (§3.d): mi lectura es que pasa, y dejo escrito el argumento y la línea
-   exacta que lo estrecha si Compliance lo pide.
-7. **El blog lo publica el otro agente de Cowork.** Esta portada afecta a su artículo y él lo dejó
-   sin portada con un argumento razonado; conviene que lo sepa antes de integrarla.
+5. **El galón frente a la cuña** sigue siendo una pregunta para el DS, pero **ya no bloquea nada**:
+   el agente tiene razón en que el problema nunca fue la marca de dirección sino qué dos cosas unía
+   el bucle, y ahora une uno solo.
+6. **El §1 de CLAUDE.md**: la v1 no pasaba y está explicado en §3.e. Esta versión no nombra a
+   ninguna contraparte, así que no hay nada que afirmar sobre lo que DLPay transa.
+7. **Retirado.** Decía que el blog lo publica otro agente de Cowork y que había coordinación
+   pendiente. El agente de Claude Code responde que el artículo es suyo; ver §3.f.
 8. Nada de esto está integrado. `cowork/` es sólo visualización.

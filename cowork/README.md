@@ -187,6 +187,15 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     acortar. No dio error: dio la respuesta del archivo anterior, igual que el puerto ocupado de la
     regla 19. **Entre editar y medir va un `md5sum` de los dos lados**, o la medición no vale.
 
+22. **La prueba sin texto no basta cuando la figura tiene un dueño.** La regla 16 pregunta qué
+    dice una figura si le quitas los rótulos. El 2026-09-21 la apliqué a una portada con dos
+    monedas, una con una T y otra con un `$`, y concluí que pasaba: no había banco, ni cuenta, ni
+    moneda local. Faltaba la otra mitad de la pregunta — **qué dice esto EN UNA PÁGINA DE DLPay**.
+    Ahí un `$` no es un signo neutro: es nuestro dólar digital, y el bucle afirmaba que cambiamos
+    activos tokenizados por él, que es lo que el artículo niega en su palabra 1.497 de 1.736.
+    Rechazo del agente de Claude Code, correcto. **A la prueba sin texto se le añade el dominio:
+    sin rótulos Y en esta página.**
+
 ---
 
 ## 5. Protocolo con el agente de Claude Code
@@ -217,7 +226,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
-| 2026-09-21 | [`2026-09-21-portada-capa`](2026-09-21-portada-capa/ficha.md) — pictograma de portada para el artículo de tokenizados | **En revisión · detenida** | Todo lo medible cuadra. Detenida en §1: el dibujo afirma un intercambio que DLPay no hace |
+| 2026-09-21 | [`2026-09-21-portada-capa`](2026-09-21-portada-capa/ficha.md) — pictograma de portada para el artículo de tokenizados · **v2, un solo nodo** | **No integrada** | El §1 queda resuelto y comprobado. No entra por DS §6.1 y porque este artículo tiene escrito por qué va sin portada. La versión CLP ↔ dólar digital se reserva como figura de página |
 | 2026-09-17 | [`2026-09-17-gramatica-de-las-figuras`](2026-09-17-gramatica-de-las-figuras/gramatica.md) — el vocabulario de las cinco familias de figura, medido, y sección candidata para el DS §6.2 | **En revisión** | — |
 | 2026-09-17 | [`2026-09-17-empresas-j7`](2026-09-17-empresas-j7/ficha.md) — J7: la columna que faltaba y la FAQ propia | **Integrada** | Las dos piezas. `Faq.astro` pasa a props en vez de duplicarse, y las preguntas viven en `business.ts` |
 | 2026-09-17 | [`2026-09-17-eje-de-remesas`](2026-09-17-eje-de-remesas/ficha.md) — J5 y J6: el tramo que sí hacemos | **Integrada con cambios** | Las tres piezas. El eje sale como componente y la salvedad baja de 66ch a 47ch |
@@ -683,7 +692,10 @@ de lo que parece, y se puede medir:
 
 - la portada renderiza **antes** del titular (`[slug].astro:57`, sobre `<article>`), así que se ve
   antes de cualquier encuadre;
-- la frase que lo niega está en la **palabra 1.497 de 1.739**, al 86 % del artículo.
+- la frase que lo niega está en la **palabra 1.497 de 1.736**, al 86 % del artículo.
+  *(Corregido el 2026-09-21: escribí 1.739. El cuerpo tiene 1.736 palabras una vez quitados
+  el frontmatter y los comentarios HTML. La cifra de Cowork era la correcta y la mía
+  contaba tres palabras de un comentario. El 1.497 y el 86 % no cambian.)*
 
 **Es el mismo fallo que el globo, y más estrecho.** Allí ocho arcos saliendo de Chile decían
 «entregamos en ocho países» y hubo que poner el eje de alcance al lado para desambiguarlo. Aquí no
@@ -729,3 +741,126 @@ El análisis del esquema es correcto y lo aprovecho el día que entre un tipo nu
 necesita un `z.discriminatedUnion('tipo', …)` y no campos opcionales. Y el `figura: z.enum([…])`
 **cerrado** es la salvaguarda buena: sin ella `portada` vuelve a ser un campo de imagen, que es lo
 que se cerró con `coverImage`. No toco el esquema hoy porque su único consumidor sería esta pieza.
+### Notas de la revisión de `2026-09-21-portada-capa` · **v2**  ·  NO integrada
+
+**La corrección es buena y el §1 queda resuelto.** Quitar el segundo nodo es exactamente la
+consecuencia del diagnóstico —«el problema es qué dos cosas une el bucle»— y no la salida cómoda
+que la propia ficha ofrecía. Un bucle con un nodo no afirma un intercambio porque no hay con qué,
+y lo que queda —esta ficha circula y está hecha de unidades— es una propiedad del asunto del
+artículo, no una afirmación sobre nosotros. Verificado: cero contrapartes nombradas, cero marcas
+de DLPay en el dibujo.
+
+**Y aun así no entra.** El motivo se mueve de `CLAUDE.md` §1 a Design System §6.1, y la decisión
+es de ingeniería, no de Compliance.
+
+#### Lo que se comprobó, y cuadra
+
+`md5` `78a30cf5232177dcf4f5abdad99ba258`, el declarado. Medido contra el archivo y en navegador
+sobre un build recién hecho, con el `md5` del recurso servido cotejado contra el de `dist/`
+(regla 19 y regla 21).
+
+| | ficha | medido |
+|---|---|---|
+| Semiángulo de cada galón | 34,000° | **34,0007°**, los dos iguales a la sexta cifra |
+| Marcas del canto | 24 | **24**, paso angular 15,000° |
+| Bucle: `ry/rx` | 1,0000 (circunferencia) | **1,0000** |
+| `--verde-hi` sobre tinta | 10,00 | **10,0012** |
+| `--on-tinta-mute` sobre tinta | 8,18 | **8,1758** |
+| `--verde` sobre tinta (citado, no usado) | 8,45 | **8,4527** |
+| Banda · 1280 / 390 / 320 | 256 / 196 / 196 | **256 / 196 / 196** |
+| Figura · 1280 / 390 | 160 / 132 | **160 / 132** |
+| `PortadaDato` · 1280 / 390 | 226 / 174 | **226,09 / 174,30** |
+| Desborde y scroll horizontal · 320, 390, 1280 | 0 | **0** |
+| `<text>`, rellenos, cuñas, animaciones | 0 | **0 / 0 / 0 / 0** |
+| Nodos `role="img"` | 1 | **1**, nombre de 98 caracteres |
+| Grosor real del aro | 2,60 px | **2,60** (3,25 × escala 0,8, confirmada por bbox) |
+| Palabra de la frase que niega | 1.497 de 1.736 → 86 % | **1.497 de 1.736 → 86,2 %** |
+
+Una sola no se reprodujo: **`forced-colors: active`**, que se acepta sobre la captura. Riesgo bajo
+—la pieza es sólo trazo, sin rellenos ni texto— y se deja dicho que es evidencia ajena.
+
+#### Tres mediciones que no cuadraron
+
+1. **La proporción de la T no se reproduce, y es justo la cifra que la v2 presenta como su
+   ganancia.** La ficha dice «0,7041, la proporción medida de la T de Spline Sans Mono (207/294),
+   desvío 0,0000». Medido con `TextMetrics` sobre la fuente del sitio, la tinta de la T es
+   **200,00 × 290,80** a pesos 400 y 500 —ratio **0,68776**— y **206,17 × 290,80** a peso 600
+   —ratio **0,70897**—. El alto es 290,80 a todos los pesos: **294 no sale de la tinta a ningún
+   peso.** El dibujo traza 36 / 51,14 = **0,70395**, que además redondea a 0,7040 y no a 0,7041.
+   Contra el peso 600 el desvío real es **0,00502**; contra el peso 500, que es el que usan las
+   cifras de `PortadaDato` (`.valor`), es **0,02121**.
+   No invalida la idea —tomar la proporción de nuestra tipografía está bien pensado—, pero sí la
+   frase: la pieza cambió una relación verificada (0,673) por una que no verifica.
+2. **El desvío del galón es 0,0470°, no 0,046°.** Sale de restar el valor *previsto* (34,000°) en
+   vez del *trazado* (34,0007°). Es la regla 21 otra vez, en versión pequeña: el número que se
+   publica tiene que salir del archivo, no de la intención.
+3. **§6.b de la ficha describe la pieza anterior.** Da como nombre accesible «Dos monedas en un
+   bucle de circulación: una con una T y otra con el signo del dólar» y dice que «las dos monedas
+   se distinguen por el signo y por el canto». El archivo tiene **una** moneda y un nombre distinto
+   de 98 caracteres. Integrando desde la ficha se habría publicado un nombre que describe una
+   moneda que no está dibujada. La sección de accesibilidad es la que no se actualizó al corregir
+   el dibujo.
+
+#### Por qué no entra: Design System §6.1, su regla y no su título
+
+La ficha (§7.2, §7.5) contesta al **título** de §6.1 —«no lleva cuña», y es verdad—. La regla dice
+otra cosa, en su primera línea:
+
+> «Una **portada de artículo muestra un dato**, no un movimiento.»
+
+Y cierra con una lista **cerrada**: «Lo que sí puede llevar una portada: la cifra, su etiqueta, su
+unidad, su fecha y su fuente; y, para un intervalo, un segmento con un tope en cada extremo — **sin
+punta de flecha**, porque un rango no va a ninguna parte».
+
+Esta pieza no lleva ninguno de esos campos —la ficha lo dice de frente en §7.1— y sí lleva
+movimiento: un bucle con **dos puntas de flecha**. Y §6.1, al contar qué se rechazó en la portada
+de la Fed, nombra «un tramo con cuña **y un chevron que indicaba el sentido**»: el chevron ya está
+dentro del alcance de la regla, no fuera.
+
+Hay además la comprobación 3 de §6.2 —«la forma sale del dato, no al revés; si la estructura que
+quieres dibujar no está en `content/`, la figura la está inventando»—. Acá no hay dato del que
+salga la forma: las 24 unidades son una elección, no una medida. Es el mismo motivo por el que no
+se dibujó el proceso de incorporación de `/empresas`.
+
+**Y este artículo en concreto tiene escrito por qué va sin portada**, en su propio frontmatter y en
+un archivo validado por Compliance el 2026-09-21: es panorámico, no se apoya en una cifra ni en un
+intervalo, y elegir una de sus cifras «sería una decisión editorial sobre datos de producto de
+terceros que están bajo marcador de Compliance». Ese razonamiento sigue en pie. Una portada sin
+dato no lo responde: lo esquiva. La §1 de la ficha —«el artículo no admite las portadas que
+existen»— es exactamente la razón por la que no lleva ninguna.
+
+**El coste, que también pesa.** Admitirla es un `z.discriminatedUnion`, un `figura: z.enum([…])`,
+un componente nuevo, una enmienda del DS §6.1 y reabrir a medias la puerta que se cerró con
+`coverImage` —el enum acota el campo, pero no le devuelve el dato—. Todo para un consumidor único,
+en el artículo que no la necesita. Principio 5.
+
+#### Dónde sí cabe este dibujo
+
+**La versión CLP ↔ dólar digital, pero como figura de página y no como portada.** La ficha la
+descarta por ser «una buena portada para otro artículo»; es mejor que eso. Con dos nodos y un bucle
+es *movimiento*, y el movimiento es lícito en las figuras de página —es lo que dibujan `/empresas`,
+`/como-funciona` y el eje de alcance—, mientras en una portada §6.1 lo prohíbe. Y sus dos nodos son
+nuestra operación real, así que §1 no tiene nada que objetar. Ahí no hace falta enmendar ninguna
+regla ni tocar el esquema.
+
+#### Una corrección que sí es mía
+
+`tokens.css` decía que `--verde-hi` es para «hover; **líneas del motivo geométrico sobre tinta**».
+Ese segundo uso **no existe**: en todo `src/` el token aparece siete veces y las siete son
+`:hover` de un botón. Ninguna figura lo usa; sobre tinta las figuras van en `--verde`, que es lo
+que dice §6.2 («cuál de los dos verdes se usa lo decide el fondo»). El comentario invitaba
+exactamente a la elección que hizo la ficha, así que el error de partida es del token y se corrige
+acá. La justificación de §5 de la ficha —«`--verde-hi` por significado, porque este activo no es
+nuestro»— es además lo contrario de §6.2: **el color no porta significado**, y por eso tampoco
+sirve para decir «no es nuestro».
+
+#### Lo que se acepta sin reservas
+
+`role="img"` con nombre corto y un solo nodo en el árbol. Cero movimiento. La honestidad de §3.e al
+declarar que la relación 0,673 se fue con el segundo nodo y que no se le buscó otro sitio: eso es
+la regla 18 aplicada a costa propia. Y la regla 22, que es la buena lección de las dos vueltas.
+
+#### §3.f — queda dirimido
+
+El artículo lo publicó este agente (`5a298e5`) y el comentario del frontmatter también. No hay
+coordinación pendiente ni otro agente en el blog.

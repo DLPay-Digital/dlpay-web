@@ -1,0 +1,42 @@
+<!doctype html><html lang="es-CL"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>cotejo · después del rechazo por §1</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css"><style>
+@font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+body{background:var(--papel);margin:0}
+.rot{font-family:var(--f-num);font-size:12px;color:var(--ink-mute);padding:12px 24px 6px}
+.portada{background:var(--tinta);padding:var(--s-6) 0}
+@media(min-width:900px){.portada{padding:var(--s-7) 0}}
+.portada svg{display:block;margin:0 auto;height:132px;width:auto;max-width:100%}
+@media(min-width:900px){.portada svg{height:160px}}
+.token{fill:none;stroke:var(--verde-hi)}
+.fiat,.flujo{fill:none;stroke:var(--on-tinta-mute)}
+.aro{stroke-width:1.9}.signo{stroke-width:2.3}.unidad{stroke-width:1.5}
+.flujo{stroke-width:1.9;stroke-linejoin:miter}
+/* D vive en un lienzo de 200; los trazos se compensan para llegar al mismo grosor real */
+.cuadro .aro{stroke-width:2.4}.cuadro .signo{stroke-width:2.9}
+.cuadro .unidad{stroke-width:1.9}.cuadro .flujo{stroke-width:2.4}
+</style></head><body>
+<p class="rot">D · una sola ficha dentro del bucle. Un solo nodo no puede ser un intercambio.</p>
+<div class="portada cuadro"><svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" role="img"
+     aria-label="Una moneda marcada con una T, con el canto dividido en unidades, dentro de un bucle de circulación.">
+  <path class="flujo" d="M175.18 72.64 A80.0 80.0 0 0 0 24.82 72.64"/>
+  <path class="flujo" d="M34.53 65.58 L24.82 72.64 L21.92 60.99"/>
+  <path class="flujo" d="M24.82 127.36 A80.0 80.0 0 0 0 175.18 127.36"/>
+  <path class="flujo" d="M165.47 134.42 L175.18 127.36 L178.08 139.01"/>
+  <circle class="token aro" cx="100.0" cy="100.0" r="46.0"/>
+  <circle class="token aro" cx="100.0" cy="100.0" r="38.0"/>
+  <path class="token unidad" d="M138.00 100.00 L146.00 100.00 M136.71 109.84 L144.43 111.91 M132.91 119.00 L139.84 123.00 M126.87 126.87 L132.53 132.53 M119.00 132.91 L123.00 139.84 M109.84 136.71 L111.91 144.43 M100.00 138.00 L100.00 146.00 M90.16 136.71 L88.09 144.43 M81.00 132.91 L77.00 139.84 M73.13 126.87 L67.47 132.53 M67.09 119.00 L60.16 123.00 M63.29 109.84 L55.57 111.91 M62.00 100.00 L54.00 100.00 M63.29 90.16 L55.57 88.09 M67.09 81.00 L60.16 77.00 M73.13 73.13 L67.47 67.47 M81.00 67.09 L77.00 60.16 M90.16 63.29 L88.09 55.57 M100.00 62.00 L100.00 54.00 M109.84 63.29 L111.91 55.57 M119.00 67.09 L123.00 60.16 M126.87 73.13 L132.53 67.47 M132.91 81.00 L139.84 77.00 M136.71 90.16 L144.43 88.09"/>
+  <path class="token signo" d="M80.0 79.0 H120.0"/>
+  <path class="token signo" d="M100.0 79.0 V121.0"/>
+</svg></div>
+<p class="rot">E · la misma ficha a dos tamaños. El bucle une el activo con una de sus unidades: sin contraparte.</p>
+<div class="portada"><svg viewBox="0 0 304 220" preserveAspectRatio="xMidYMid meet" role="img"
+     aria-label="La misma ficha marcada con una T a dos tamaños, dentro de un bucle: el activo y una de sus unidades.">
+  <path class="flujo" d="M272.28 80.54 A128.0 86.144 0 0 0 31.72 80.54"/>
+  <path class="flujo" d="M45.01 73.59 L31.72 80.54 L30.26 65.61"/>
+  <path class="flujo" d="M31.72 139.46 A128.0 86.144 0 0 0 272.28 139.46"/>
+  <path class="flujo" d="M258.99 146.41 L272.28 139.46 L273.74 154.39"/>
+  <circle class="token aro" cx="92.0" cy="110.0" r="48.0"/><circle class="token aro" cx="92.0" cy="110.0" r="40.0"/><path class="token unidad" d="M132.00 110.00 L140.00 110.00 M130.64 120.35 L138.36 122.42 M126.64 130.00 L133.57 134.00 M120.28 138.28 L125.94 143.94 M112.00 144.64 L116.00 151.57 M102.35 148.64 L104.42 156.36 M92.00 150.00 L92.00 158.00 M81.65 148.64 L79.58 156.36 M72.00 144.64 L68.00 151.57 M63.72 138.28 L58.06 143.94 M57.36 130.00 L50.43 134.00 M53.36 120.35 L45.64 122.42 M52.00 110.00 L44.00 110.00 M53.36 99.65 L45.64 97.58 M57.36 90.00 L50.43 86.00 M63.72 81.72 L58.06 76.06 M72.00 75.36 L68.00 68.43 M81.65 71.36 L79.58 63.64 M92.00 70.00 L92.00 62.00 M102.35 71.36 L104.42 63.64 M112.00 75.36 L116.00 68.43 M120.28 81.72 L125.94 76.06 M126.64 90.00 L133.57 86.00 M130.64 99.65 L138.36 97.58"/><path class="token signo" d="M70.9 87.9 H113.1"/><path class="token signo" d="M92.0 87.9 V132.1"/>
+  <circle class="token aro" cx="216.0" cy="110.0" r="26.0"/><circle class="token aro" cx="216.0" cy="110.0" r="21.0"/><path class="token unidad" d="M237.00 110.00 L242.00 110.00 M234.92 119.11 L239.43 121.28 M229.09 126.42 L232.21 130.33 M220.67 130.47 L221.79 135.35 M211.33 130.47 L210.21 135.35 M202.91 126.42 L199.79 130.33 M197.08 119.11 L192.57 121.28 M195.00 110.00 L190.00 110.00 M197.08 100.89 L192.57 98.72 M202.91 93.58 L199.79 89.67 M211.33 89.53 L210.21 84.65 M220.67 89.53 L221.79 84.65 M229.09 93.58 L232.21 89.67 M234.92 100.89 L239.43 98.72"/><path class="token signo" d="M204.6 98.0 H227.4"/><path class="token signo" d="M216.0 98.0 V122.0"/>
+</svg></div>
+</body></html>

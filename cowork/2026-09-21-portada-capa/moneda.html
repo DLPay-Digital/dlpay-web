@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Propuesta — portada: la moneda tokenizada</title>
+<title>Propuesta — portada: la ficha tokenizada</title>
 <link rel="stylesheet" href="../../src/styles/tokens.css">
 <style>
   @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;
@@ -19,43 +19,51 @@
   .scaffold{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
     background:var(--papel-2);border:1px dashed var(--line);padding:var(--s-3);text-align:center}
 
-  /* ── LA PORTADA: un pictograma ─────────────────────────────────────────────
-     Un activo tokenizado (la moneda T) y un dólar digital (la moneda $) dentro
-     de un bucle de circulación. Es la composición del icono que pidió
-     Sebastián, dibujada con nuestra geometría y nuestro color.
+  /* ── LA PORTADA: un pictograma de UN SOLO NODO ────────────────────────────
+     Una ficha marcada con una T, con el canto dividido en 24 unidades, dentro
+     de un bucle de circulación. Nada más.
 
-     NO es una figura de dato: no hay cifra, no hay eje, no hay nada que medir.
-     Es una imagen de enganche, y el artículo no lleva ninguna cifra en el
-     cuerpo — por eso este artículo no podía usar PortadaDato.
+     POR QUÉ NO HAY SEGUNDA MONEDA, que es lo único importante de esta versión.
+     La versión anterior ponía enfrente un dólar. El agente de Claude Code la
+     rechazó por CLAUDE.md §1 y tenía razón: en una página de DLPay ese dólar se
+     lee como NUESTRO dólar digital, así que el bucle afirmaba que cambiamos
+     activos tokenizados por él — justo lo que el artículo niega en su palabra
+     1.497 de 1.736 («No participamos en la tokenización de acciones, bonos ni
+     fondos»). Y la portada se dibuja ANTES del titular ([slug].astro, fuera de
+     <article>), así que ningún encuadre posterior la alcanza.
 
-     Qué la hace nuestra, y está medido en el archivo:
-     · La elipse del bucle tiene la relación del canto del isotipo:
-       ry/rx = 86,144/128 = 0,6730. El isotipo es 202:300 = 0,6733.
-     · El semiángulo de cada galón es 34,00°; el canto del isotipo es
-       33,95° (atan 202/300). Desvío 0,05°, no son el mismo número.
-     · Sin relleno en ninguna parte: sobre tinta un relleno da 1,07:1 y no se ve.
-     · La moneda T va en --verde-hi (10,0:1 sobre tinta), que el DS define como
-       «líneas del motivo geométrico sobre tinta». NO --verde, que por DS §6.2
-       significa «el tramo que es nuestro»: este activo no es nuestro. El dólar
-       y el bucle van en --on-tinta-mute (8,18:1).
-     · Las 24 marcas del canto son la única diferencia entre las dos monedas, y
-       dicen lo único que el artículo define como propio del token: que está
-       hecho de unidades. El dólar tiene el canto liso.
-     · Sin cuña (DS §6.1). El galón no es la cuña: la cuña marca el punto de una
-       línea donde el valor cambia de manos; el galón marca la dirección de un
-       recorrido. Queda anotado para el DS, no decidido aquí.
-     · Sin los glifos sueltos del icono de referencia: no significan nada, y el
-       DS §6 prohíbe el trazo que no dice nada.
+     La corrección no es quitar un galón: con una sola dirección el intercambio
+     se sigue afirmando. Es quitar el segundo nodo. **Un bucle con un solo nodo
+     no puede ser un intercambio**: no hay con qué. Lo que queda es una
+     propiedad de la cosa dibujada —esta ficha circula, y está hecha de
+     unidades—, que es exactamente el asunto del artículo y no dice nada de
+     nosotros.
+
+     Lo medible:
+     · El semiángulo de cada galón es 34,00°; el canto del isotipo es 33,95°
+       (atan 202/300). Desvío 0,05°.
+     · El travesaño de la T mide 0.7041 de su alto, que es la proporción
+       MEDIDA de la T de Spline Sans Mono (207/294 = 0,7041). No es el 0,673 del
+       isotipo y no se finge que lo sea: la T es una letra y toma su proporción
+       de nuestra tipografía, no del isotipo.
+     · **La relación 0,673 de la elipse desapareció con el segundo nodo**, y no
+       se le buscó otro sitio. Con un nodo el bucle no tiene motivo para ser
+       ancho, y reubicar la cifra para conservarla sería una cifra correcta con
+       la forma equivocada (README regla 18).
+     · Sin relleno: sobre tinta un relleno da 1,07:1 y no se ve.
+     · `--verde-hi` (10,0:1) y no `--verde`: DS §6.2 reserva el verde para «el
+       tramo que es nuestro», y este activo no es nuestro. El bucle va en
+       `--on-tinta-mute` (8,18:1).
+     · Sin cuña (DS §6.1).
+
+     El lienzo es de 200 y la banda fija el alto en 160 (132 en móvil), así que
+     todo se dibuja a 0,8. Los grosores van compensados para llegar a los mismos
+     píxeles reales que el resto de las figuras del sitio: 3,25 en el lienzo son
+     2,60 px en pantalla.
 
      La banda: mismo fondo y mismo relleno vertical que PortadaDato
-     (--s-6 / --s-7 a partir de 900), y la figura centrada, no a ras de la
-     columna. El dato va a ras porque es tipografía y se alinea con el título;
-     una marca no tiene línea base que alinear, y a ras queda huérfana en una
-     columna de 760 vacía — medido, está en la ficha.
-     Alturas: 132 px en móvil y 160 px desde 900. La banda queda en 196 y 256,
-     contra 174 y 226 de PortadaDato medidas en el build del 2026-09-21. Son
-     22 px más (12,6 %) en móvil y 30 px más (13,3 %) en escritorio: a 130 px
-     la marca se pierde en la banda, y está fotografiado en la ficha. */
+     (--s-6 / --s-7 desde 900), figura centrada. Queda en 196 y 256 contra los
+     174 y 226 de PortadaDato medidos en el build; el porqué está en la ficha. */
   .portada{background:var(--tinta);padding:var(--s-6) 0}
   .portada svg{display:block;margin:0 auto;height:132px;width:auto;max-width:100%}
   @media (min-width:900px){
@@ -64,11 +72,11 @@
   }
 
   .token{fill:none;stroke:var(--verde-hi)}
-  .fiat,.flujo{fill:none;stroke:var(--on-tinta-mute)}
-  .aro{stroke-width:1.9}
-  .signo{stroke-width:2.3}
-  .unidad{stroke-width:1.5}
-  .flujo{stroke-width:1.9;stroke-linejoin:miter}
+  .flujo{fill:none;stroke:var(--on-tinta-mute);stroke-linejoin:miter}
+  .aro{stroke-width:3.25}
+  .signo{stroke-width:3.9}
+  .unidad{stroke-width:2.55}
+  .flujo{stroke-width:3.25}
 
   .titulo{max-width:760px;margin:var(--s-6) auto var(--s-9);padding:0 var(--pad-section-m)}
   .titulo .meta{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
@@ -81,39 +89,27 @@
 
 <div class="board">
   <p>cowork · 2026-09-21 · blog · portada del artículo de activos tokenizados</p>
-  <h2>La moneda tokenizada</h2>
-  <p>pictograma · dos monedas en un bucle de circulación · sin cifra · sin cuña · sin texto</p>
+  <h2>La ficha tokenizada</h2>
+  <p>pictograma de un solo nodo · sin contraparte · sin cifra · sin cuña · sin texto</p>
 </div>
 <div class="scaffold">andamio · arriba va Header.astro · la portada va a sangre, fuera del artículo</div>
 
 <div class="portada">
-  <svg viewBox="0 0 304 220" preserveAspectRatio="xMidYMid meet" role="img"
-       aria-label="Dos monedas en un bucle de circulación: una con una T y el canto dividido en unidades, otra con el signo del dólar.">
+  <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" role="img"
+       aria-label="Una ficha marcada con una T, con el canto dividido en unidades, dentro de un bucle de circulación.">
 
-    <!-- el bucle: elipse rx 128 · ry 86,144 → 0,6730, el canto del isotipo -->
-    <path class="flujo" d="M272.28 80.54 A128 86.144 0 0 0 31.72 80.54"/>
-    <path class="flujo" d="M30.35 66.61 L31.72 80.54 L44.13 74.05"/>
-    <path class="flujo" d="M31.72 139.46 A128 86.144 0 0 0 272.28 139.46"/>
-    <path class="flujo" d="M273.65 153.39 L272.28 139.46 L259.87 145.95"/>
+    <!-- el bucle: dos arcos y dos galones. Un solo nodo: no hay intercambio -->
+    <path class="flujo" d="M175.18 72.64 A80 80 0 0 0 24.82 72.64"/>
+    <path class="flujo" d="M34.533 65.585 L24.825 72.638 L21.922 60.995"/>
+    <path class="flujo" d="M24.82 127.36 A80 80 0 0 0 175.18 127.36"/>
+    <path class="flujo" d="M165.467 134.415 L175.175 127.362 L178.078 139.005"/>
 
-    <!-- la moneda T: el activo tokenizado. 24 marcas = está hecho de unidades -->
-    <circle class="token aro" cx="92" cy="110" r="48"/>
-    <circle class="token aro" cx="92" cy="110" r="40"/>
-    <path class="token unidad" d="M132.00 110.00 L140.00 110.00 M130.64 120.35 L138.36 122.42 M126.64 130.00 L133.57 134.00 M120.28 138.28 L125.94 143.94 M112.00 144.64 L116.00 151.57 M102.35 148.64 L104.42 156.36 M92.00 150.00 L92.00 158.00 M81.65 148.64 L79.58 156.36 M72.00 144.64 L68.00 151.57 M63.72 138.28 L58.06 143.94 M57.36 130.00 L50.43 134.00 M53.36 120.35 L45.64 122.42 M52.00 110.00 L44.00 110.00 M53.36 99.65 L45.64 97.58 M57.36 90.00 L50.43 86.00 M63.72 81.72 L58.06 76.06 M72.00 75.36 L68.00 68.43 M81.65 71.36 L79.58 63.64 M92.00 70.00 L92.00 62.00 M102.35 71.36 L104.42 63.64 M112.00 75.36 L116.00 68.43 M120.28 81.72 L125.94 76.06 M126.64 90.00 L133.57 86.00 M130.64 99.65 L138.36 97.58"/>
-    <path class="token signo" d="M71 88 H113"/>
-    <path class="token signo" d="M92 88 V132"/>
-
-    <!-- la moneda $: el dólar digital. Canto liso -->
-    <circle class="fiat aro" cx="212" cy="110" r="48"/>
-    <circle class="fiat aro" cx="212" cy="110" r="40"/>
-    <path class="fiat signo" d="M212 84 V136"/>
-    <path class="fiat signo" d="M223 100
-      C223 95 218.2 92 212 92
-      C205.8 92 201 95 201 100
-      C201 105 205.4 107.5 212 110
-      C218.6 112.5 223 115 223 120
-      C223 125 218.2 128 212 128
-      C205.8 128 201 125 201 120"/>
+    <!-- la ficha: 24 marcas en el canto = está hecha de unidades -->
+    <circle class="token aro" cx="100" cy="100" r="46"/>
+    <circle class="token aro" cx="100" cy="100" r="38"/>
+    <path class="token unidad" d="M138.00 100.00 L146.00 100.00 M136.71 109.84 L144.43 111.91 M132.91 119.00 L139.84 123.00 M126.87 126.87 L132.53 132.53 M119.00 132.91 L123.00 139.84 M109.84 136.71 L111.91 144.43 M100.00 138.00 L100.00 146.00 M90.16 136.71 L88.09 144.43 M81.00 132.91 L77.00 139.84 M73.13 126.87 L67.47 132.53 M67.09 119.00 L60.16 123.00 M63.29 109.84 L55.57 111.91 M62.00 100.00 L54.00 100.00 M63.29 90.16 L55.57 88.09 M67.09 81.00 L60.16 77.00 M73.13 73.13 L67.47 67.47 M81.00 67.09 L77.00 60.16 M90.16 63.29 L88.09 55.57 M100.00 62.00 L100.00 54.00 M109.84 63.29 L111.91 55.57 M119.00 67.09 L123.00 60.16 M126.87 73.13 L132.53 67.47 M132.91 81.00 L139.84 77.00 M136.71 90.16 L144.43 88.09"/>
+    <path class="token signo" d="M82.00 74.43 H118.00"/>
+    <path class="token signo" d="M100 74.43 V125.57"/>
   </svg>
 </div>
 

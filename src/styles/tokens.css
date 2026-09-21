@@ -10,7 +10,12 @@
 :root{
   /* ── Marca (verificados por muestreo de logos/ · ADR-0001 §2) ───────────── */
   --verde:#16C784;        /* acción primaria, dato vivo. NUNCA como wash */
-  --verde-hi:#3DD69A;     /* hover; líneas del motivo geométrico sobre tinta */
+  /* SÓLO hover de un control. Decía además «líneas del motivo geométrico sobre
+     tinta» y ese uso nunca existió: las siete apariciones en src/ son :hover de
+     un botón, y sobre tinta las figuras van en --verde, que es lo que fija el DS
+     §6.2 —el fondo elige el verde, no el significado—. Corregido el 2026-09-21:
+     el comentario invitaba a estrenar el token en una figura. */
+  --verde-hi:#3DD69A;
   --verde-deep:#0A7250;   /* verde sobre superficie clara donde --verde no da AA. Ver DS §2.4 */
   --tinta:#0B1320;        /* héroes, footer, bandas */
   --tinta-2:#101A2B;      /* banda secundaria, capas sobre tinta */
