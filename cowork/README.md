@@ -180,11 +180,22 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     cálculo: la caída real era 13,3 % en luminancia relativa y 6,3 % en L\*. Una cifra inventada
     en una ficha vale menos que no poner ninguna.
 
+21. **El archivo que mido no es el que escribí hasta que lo compruebo.** El 2026-09-21 corregí tres
+    frases de `moneda.html` en la carpeta del proyecto y acto seguido corrí la auditoría de
+    accesibilidad — contra la copia subida al contenedor **antes** de corregir. El árbol de
+    accesibilidad devolvió la etiqueta vieja, de 154 caracteres, que era justo la que acababa de
+    acortar. No dio error: dio la respuesta del archivo anterior, igual que el puerto ocupado de la
+    regla 19. **Entre editar y medir va un `md5sum` de los dos lados**, o la medición no vale.
+
 ---
 
 ## 5. Protocolo con el agente de Claude Code
 
 1. Cowork deja la entrega y la anota en el registro de abajo como `En revisión`.
+   **El prompt para el agente va siempre como archivo `.md` dentro de la carpeta de la entrega**
+   —`prompt-agente.md`—, nunca sólo pegado en el chat: así queda versionado junto a la pieza que
+   describe y el agente lo lee del repositorio en vez de recibirlo de segunda mano.
+   Convención del 2026-09-21, a petición de Sebastián.
 2. Claude Code la revisa contra el Definition of Done (`CLAUDE.md` §9).
 3. Si la aprueba, **él** la traslada a `src/`, la ajusta y la commitea. Cowork no toca `src/`.
 4. El veredicto se anota en la fila: `Integrada`, `Integrada con cambios` o `Rechazada`, con el
@@ -206,6 +217,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-21 | [`2026-09-21-portada-capa`](2026-09-21-portada-capa/ficha.md) — pictograma de portada para el artículo de tokenizados | **En revisión · detenida** | Todo lo medible cuadra. Detenida en §1: el dibujo afirma un intercambio que DLPay no hace |
 | 2026-09-17 | [`2026-09-17-gramatica-de-las-figuras`](2026-09-17-gramatica-de-las-figuras/gramatica.md) — el vocabulario de las cinco familias de figura, medido, y sección candidata para el DS §6.2 | **En revisión** | — |
 | 2026-09-17 | [`2026-09-17-empresas-j7`](2026-09-17-empresas-j7/ficha.md) — J7: la columna que faltaba y la FAQ propia | **Integrada** | Las dos piezas. `Faq.astro` pasa a props en vez de duplicarse, y las preguntas viven en `business.ts` |
 | 2026-09-17 | [`2026-09-17-eje-de-remesas`](2026-09-17-eje-de-remesas/ficha.md) — J5 y J6: el tramo que sí hacemos | **Integrada con cambios** | Las tres piezas. El eje sale como componente y la salvedad baja de 66ch a 47ch |
@@ -642,3 +654,78 @@ fondo efectivo compuesto. Desborde 0. Cuatro preguntas, ninguna abierta por omis
 interactivos más allá de los `<summary>` nativos. `align-content: start` en `.onboarding` hizo falta
 de verdad: con la columna izquierda ahora más alta, sin él la rejilla repartía el sobrante entre las
 cuatro filas.
+
+### Notas de la revisión de `2026-09-21-portada-capa`  ·  NO integrada
+
+**Es la entrega mejor medida que ha pasado por acá, y lo digo antes de lo demás.** Comprobé todas
+las cifras de la ficha y **coinciden todas, sin excepción**: `ry/rx` 0,6730 contra el 0,6733 del
+canto del isotipo (desvío 0,0003), los dos galones a 68,01° e iguales entre sí al centésimo, 24
+marcas, `--verde-hi` 10,00:1 y `--on-tinta-mute` 8,18:1 sobre tinta, cero `<text>`, cero rellenos,
+cero cuñas, `role="img"` con nombre corto. El `md5` del archivo es el declarado. Nada que corregir
+en la ejecución.
+
+**Y no se integra, por §1.** El motivo no está en la ficha: está en los comentarios del propio SVG.
+
+```
+<!-- la moneda T: el activo tokenizado. 24 marcas = está hecho de unidades -->
+<!-- la moneda $: el dólar digital. Canto liso -->
+```
+
+Con eso el pictograma afirma **activo tokenizado ↔ dólar digital, en ambas direcciones**, y el
+`$` no es «el dólar» en abstracto: es **nuestro producto**. La figura dice que cambiamos activos
+tokenizados por nuestro dólar digital, y eso es justo lo que el artículo niega con sus palabras:
+«no participamos en la tokenización de acciones, bonos ni fondos: nuestro servicio es el cambio de
+divisas entre pesos chilenos y dólar digital».
+
+La §7.1 de la ficha contiene la admisión —«pero DLPay no transa activos tokenizados»— y la resuelve
+diciendo que la categoría y el titular enmarcan la pieza como reportaje. Ese argumento es más débil
+de lo que parece, y se puede medir:
+
+- la portada renderiza **antes** del titular (`[slug].astro:57`, sobre `<article>`), así que se ve
+  antes de cualquier encuadre;
+- la frase que lo niega está en la **palabra 1.497 de 1.739**, al 86 % del artículo.
+
+**Es el mismo fallo que el globo, y más estrecho.** Allí ocho arcos saliendo de Chile decían
+«entregamos en ocho países» y hubo que poner el eje de alcance al lado para desambiguarlo. Aquí no
+es geografía: es **qué transamos**, que es el punto que Sebastián marcó como condición de parada al
+encargar este artículo.
+
+La prueba sin texto (regla 16) no salva la pieza: no hay rótulos que quitar, así que lo que la
+figura afirma por su cuenta **es todo lo que afirma**.
+
+**El galón sobra en la discusión.** No hace falta resolver si un galón es una cuña (§7.2): el
+problema no es la marca de dirección, es **qué dos cosas** une el bucle.
+
+### Lo que sí la desbloquearía, sin rehacer el dibujo
+
+Tres caminos, y ninguno es mío:
+
+1. **Cambiar qué es la moneda de la izquierda.** Si en vez del activo tokenizado fuera **el peso
+   chileno**, el bucle dibuja CLP ↔ dólar digital, que es exactamente nuestro servicio y es §1
+   limpio. Pierde relación con el tema del artículo, así que serviría como portada de otro.
+2. **Quitar el bucle y dejar las dos monedas.** Describe el asunto —un activo tokenizado y el
+   dólar— sin afirmar que alguien los intercambie. Toca la identidad de la pieza, que Sebastián
+   pidió con bucle.
+3. **Aceptarlo como está**, con el criterio de que la categoría «Mercado» basta para leerlo como
+   reportaje. Es una decisión de Compliance, no de ingeniería ni de diseño.
+
+Quitar **un** galón, que es lo que propone la ficha, no alcanza: deja el intercambio en una sola
+dirección y sigue diciendo que ocurre.
+
+### Dos correcciones menores a la ficha
+
+**El trabajo del blog es mío, no del «otro agente de Cowork».** El artículo lo publiqué yo
+(`5a298e5`) y el comentario del frontmatter que razona por qué va sin portada lo escribí yo. No hay
+coordinación pendiente: quien decidió y quien integra son la misma persona.
+
+**Sobre accesibilidad, de acuerdo y sin reservas.** `role="img"` con nombre corto es lo correcto
+para la portada de un artículo, y acortar el nombre de 154 caracteres fue un acierto. Si la pieza
+entra, entra así.
+
+### Lo que sí queda hecho de esta entrega
+
+El análisis del esquema es correcto y lo aprovecho el día que entre un tipo nuevo: `etiqueta`,
+`unidad`, `fecha` y `fuente` son obligatorias a nivel de objeto, así que un tercer tipo sin datos
+necesita un `z.discriminatedUnion('tipo', …)` y no campos opcionales. Y el `figura: z.enum([…])`
+**cerrado** es la salvaguarda buena: sin ella `portada` vuelve a ser un campo de imagen, que es lo
+que se cerró con `coverImage`. No toco el esquema hoy porque su único consumidor sería esta pieza.

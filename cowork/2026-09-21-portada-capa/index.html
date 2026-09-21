@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propuesta — portada mínima para el artículo de activos tokenizados</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+  @font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+
+  body{background:var(--papel)}
+  .board{max-width:var(--container);margin:0 auto;padding:var(--s-7) var(--pad-section) var(--s-4)}
+  .board p{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute)}
+  .board h2{font-size:var(--t-h3);margin-top:var(--s-2);padding-top:var(--s-3);
+    border-top:1px solid var(--line)}
+  .scaffold{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
+    background:var(--papel-2);border:1px dashed var(--line);padding:var(--s-3);text-align:center}
+
+  /* ── LA PORTADA ───────────────────────────────────────────────────────────
+     Cuatro trazos y nada más. Sin rótulos: el titular va justo debajo y dice
+     de qué trata; la portada engancha, no explica.
+
+     TODO son LÍNEAS y ningún plano relleno, y es una decisión medida:
+     --tinta-2 sobre --tinta da **1,07:1**. Un plano sobre el fondo de la banda
+     no se ve. --on-tinta-mute a plena opacidad da **8,18:1**.
+
+     La geometría no es adorno (DS §6, regla dura): tres estratos apoyados
+     sobre una base continua es la tesis del artículo —varios frentes de
+     tokenización sobre una sola capa de settlement— y el tramo verde corto es
+     la parte que hace DLPay, que es lo único nuestro que hay en esa capa
+     (DS §6.2: un tramo verde es el tramo que es nuestro).
+
+     El ángulo es el del isotipo y NO se dibuja: los extremos izquierdos de los
+     tres estratos caen sobre él. 44 px de corrimiento por cada 66 de alto es
+     0,667 — el canto de la marca es 202:300 = 0,673. Medido en el render.
+
+     Sin cuña: DS §6.1, la cuña no entra en las portadas. */
+  .portada{background:var(--tinta);overflow:hidden;position:relative;height:280px}
+  .marco{position:absolute;inset:0;max-width:760px;margin:0 auto}
+  .estrato{position:absolute;height:1px;background:var(--on-tinta-mute);right:0}
+  .e1{top:52px;  left:132px}
+  .e2{top:118px; left:88px}
+  .e3{top:184px; left:44px}
+  .base{position:absolute;height:1px;left:0;right:0;top:232px;background:var(--on-tinta-mute)}
+  .mio{position:absolute;height:1px;left:0;width:96px;top:232px;background:var(--verde)}
+
+  @media (max-width:820px){
+    .portada{height:230px}
+    .marco{margin:0 var(--pad-section-m)}
+    /* El corrimiento se recalcula con el alto de aquí: 0,673 × 54 = 36. Con los
+       29 px que puse primero el ángulo caía a 0,537 y dejaba de ser el de la
+       marca. La diagonal es la identidad; tiene que aguantar en los dos anchos. */
+    .e1{top:40px;  left:102px}
+    .e2{top:94px;  left:66px}
+    .e3{top:148px; left:30px}
+    .base,.mio{top:190px}
+    .mio{width:72px}
+  }
+
+  .titulo{max-width:760px;margin:var(--s-6) auto var(--s-9);padding:0 var(--pad-section-m)}
+  .titulo .meta{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
+    margin-bottom:var(--s-3)}
+  .titulo h1{font-size:var(--t-h2-m);font-weight:700;line-height:var(--lh-h2);
+    letter-spacing:var(--ls-h2)}
+</style>
+</head>
+<body>
+
+<div class="board">
+  <p>cowork · 2026-09-21 · blog · portada del artículo de activos tokenizados</p>
+  <h2>Cuatro trazos: tres estratos sobre una capa</h2>
+  <p>sin rótulos · sin cuña · el único verde es el tramo de DLPay</p>
+</div>
+<div class="scaffold">andamio · arriba va Header.astro · la portada va a sangre, fuera del artículo</div>
+
+<div class="portada">
+  <div class="marco" aria-hidden="true">
+    <div class="estrato e1"></div>
+    <div class="estrato e2"></div>
+    <div class="estrato e3"></div>
+    <div class="base"></div>
+    <div class="mio"></div>
+  </div>
+</div>
+
+<div class="titulo">
+  <p class="meta">Mercado · 21 sep 2026</p>
+  <h1>Activos tokenizados: qué son, quién los está construyendo y por qué la conversación se aceleró.</h1>
+</div>
+
+<div class="scaffold">andamio · debajo sigue el cuerpo del artículo, sin cambios</div>
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portada mínima — segunda tanda</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+  @font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+
+  body{background:var(--papel)}
+  .board{max-width:var(--container);margin:0 auto;padding:var(--s-7) var(--pad-section) var(--s-3)}
+  .board p{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute)}
+  .board h2{font-size:var(--t-h3);margin-top:var(--s-2);padding-top:var(--s-3);
+    border-top:1px solid var(--line)}
+  .nota{max-width:760px;margin:0 auto;padding:var(--s-6) var(--pad-section-m) 0;
+    font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);line-height:1.7}
+  .nota b{color:var(--ink)}
+  .titulo{max-width:760px;margin:var(--s-6) auto var(--s-8);padding:0 var(--pad-section-m)}
+  .titulo h1{font-size:var(--t-h2-m);font-weight:700;line-height:var(--lh-h2);
+    letter-spacing:var(--ls-h2)}
+
+  /* Por qué todo lo que sigue son LÍNEAS y no planos: --tinta-2 sobre --tinta
+     da 1,07:1. Medido. Un plano relleno sobre el fondo de la banda no se ve, y
+     una portada que no se ve no engancha. Las líneas en --on-tinta-mute dan
+     8,18:1 a plena opacidad.
+
+     El ángulo es el del isotipo: dx 202 : dy 300 ≈ 34°, o sea 0,673 de
+     corrimiento horizontal por cada unidad de alto. No hay ninguna diagonal
+     inventada. */
+  .portada{background:var(--tinta);overflow:hidden;position:relative;height:300px}
+  .marco{position:absolute;inset:0;max-width:760px;margin:0 auto}
+
+  .estrato{position:absolute;height:1px;background:var(--on-tinta-mute)}
+  .base{position:absolute;height:1px;left:0;right:0;background:var(--on-tinta-mute)}
+  .mio{position:absolute;height:1px;background:var(--verde)}
+
+  /* ── D · ESTRATOS EN LA DIAGONAL ─────────────────────────────────────────
+     Tres estratos apoyados sobre una base continua. Sus extremos izquierdos
+     caen sobre la diagonal de la marca: 44 px de corrimiento por cada 66 px de
+     alto es exactamente 0,673. La diagonal no se dibuja — se deduce, que es
+     más difícil de conseguir y más limpio de mirar. */
+  .d .e1{top:72px;  left:132px; right:0}
+  .d .e2{top:138px; left:88px;  right:0}
+  .d .e3{top:204px; left:44px;  right:0}
+  .d .base{top:252px}
+  .d .mio{top:252px;left:0;width:96px}
+
+  /* ── E · LA DIAGONAL DIBUJADA ────────────────────────────────────────────
+     Igual, pero la diagonal sí se traza: el canto de la marca cruzando los
+     tres estratos. Más explícita, menos sutil. */
+  .e .e1{top:72px;  left:132px; right:0}
+  .e .e2{top:138px; left:88px;  right:0}
+  .e .e3{top:204px; left:44px;  right:0}
+  .e .base{top:252px}
+  .e .mio{top:252px;left:0;width:96px}
+  .e .canto{position:absolute;left:44px;top:72px;width:1px;height:181px;
+    background:var(--on-tinta-mute);opacity:.55;
+    transform-origin:bottom left;transform:rotate(-26.9deg)}
+
+  /* ── F · SÓLO DOS NIVELES ────────────────────────────────────────────────
+     Lo más reducido que sigue diciendo algo: lo de arriba y lo de abajo. Tres
+     trazos cortos arriba, uno entero abajo. Sin diagonal. */
+  .f .e1{top:110px; left:44px;  width:190px}
+  .f .e2{top:110px; left:268px; width:190px}
+  .f .e3{top:110px; left:492px; right:44px}
+  .f .base{top:196px;left:44px;right:44px}
+  .f .mio{top:196px;left:44px;width:112px}
+</style>
+</head>
+<body>
+
+<div class="board">
+  <p>cowork · 2026-09-21 · portada mínima · segunda tanda, ya con contraste</p>
+  <h2>La primera tanda no se veía: --tinta-2 sobre --tinta da 1,07:1</h2>
+</div>
+
+<div class="nota"><b>D · Estratos en la diagonal.</b> Tres estratos sobre una base. Sus extremos
+  caen sobre el canto de la marca, que no se dibuja: se deduce.</div>
+<div class="portada d"><div class="marco">
+  <div class="estrato e1"></div><div class="estrato e2"></div><div class="estrato e3"></div>
+  <div class="base"></div><div class="mio"></div>
+</div></div>
+
+<div class="nota"><b>E · La diagonal dibujada.</b> Lo mismo, con el canto trazado cruzando los tres.
+  Más explícita.</div>
+<div class="portada e"><div class="marco">
+  <div class="canto"></div>
+  <div class="estrato e1"></div><div class="estrato e2"></div><div class="estrato e3"></div>
+  <div class="base"></div><div class="mio"></div>
+</div></div>
+
+<div class="nota"><b>F · Sólo dos niveles.</b> Lo más reducido que sigue diciendo algo: tres arriba,
+  uno entero abajo.</div>
+<div class="portada f"><div class="marco">
+  <div class="estrato e1"></div><div class="estrato e2"></div><div class="estrato e3"></div>
+  <div class="base"></div><div class="mio"></div>
+</div></div>
+
+<div class="titulo">
+  <h1>Activos tokenizados: qué son, quién los está construyendo y por qué la conversación se aceleró.</h1>
+</div>
+
+</body>
+</html>

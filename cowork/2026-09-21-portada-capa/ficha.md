@@ -1,0 +1,276 @@
+# Ficha — portada mínima para el artículo de activos tokenizados
+
+**Entrega:** `2026-09-21-portada-capa` · **Autor:** Claude Cowork · **Estado:** En revisión
+**Pieza final:** `moneda.html` · **Capturas:** `final-banda-1280.png`, `final-banda-390.png`,
+`final-ctx-1280.png`, `a11y-forced.png`
+**Cotejos:** `cotejo-1280.png` (canto liso / 24 marcas / 12 marcas),
+`cotejo2-1280.png` (alturas y alineación), `cotejo3-390.png` (alturas en móvil)
+**Descartadas, por orden:** `opciones.html` (planos rellenos) · `index.html` (cuatro trazos) ·
+`tokenizando.html` (el plano que se parte en unidades)
+**Origen:** Sebastián pidió portada para el artículo publicado hoy (`5a298e5`).
+
+---
+
+## 1. El artículo no admite las portadas que existen
+
+**No tiene ni una cifra en el cuerpo.** Lo leí entero: nombres, mecanismos y estado regulatorio.
+Y las dos portadas del sitio son **una cifra puesta en grande** —`etiqueta`, el número en mono de
+66 px, `fecha` y `fuente`—. Sin cifra no hay portada de ese tipo.
+
+El otro agente lo dejó sin portada a propósito y su argumento, escrito en el frontmatter, es
+correcto: elegir una de las cifras de producto de terceros para que fuera *la* cifra de la portada
+sería una decisión editorial sobre datos bajo marcador de Compliance.
+
+## 2. La primera versión estaba mal planteada, y el error es de encuadre
+
+Propuse una portada con los tres frentes rotulados, sus emisores y la capa nombrada. Sebastián:
+*«el fondo que propusiste contiene mucho texto para ser un fondo nada más, el texto ya está en el
+contenido»*. Tiene razón y no es un ajuste: **diseñé una figura de información donde hacía falta
+una imagen.** El titular va justo debajo y ya dice de qué trata; la portada engancha, no explica.
+
+**Pero hay un límite que no depende de mí.** El DS §6 tiene como regla dura que cada trazo
+representa movimiento, flujo de valor o un paso, **nunca decoración** — y es la regla que eliminó
+`coverImage`, que era «un PNG de cuñas diagonales sobre tinta… papel tapiz». Así que la salida no
+es una imagen bonita: es una imagen **mínima cuya geometría sea la idea**.
+
+## 3. Por qué son líneas y no planos: 1,07:1
+
+La primera tanda de opciones eran planos de `--tinta-2` sobre `--tinta` con el canto de la marca.
+No se veía nada, y el número dice por qué:
+
+| | ratio sobre `--tinta` |
+|---|---|
+| `--tinta-2` | **1,07:1** |
+| `--verde` al .07 (la textura del héroe) | 1,11:1 |
+| `--on-tinta-mute` | **8,18:1** |
+| `--verde` | 8,45:1 |
+
+Un plano relleno sobre el fondo de la banda **no se ve**, y una portada que no se ve no engancha.
+De paso queda medido que la textura del héroe es textura y no puede ser el enganche de nada.
+
+## 3.b La segunda corrección: hacía falta un activo, no una abstracción
+
+Con la versión de cuatro trazos Sebastián insistió: *«sigue estando lejos de que pueda transmitirle
+algo al lector, utiliza un activo en fase de tokenización como lo hace binance y demosle una
+identidad propia de nosotros»*. Tenía razón otra vez: cuatro líneas son una notación, no una
+imagen. Un lector que llega al blog no descodifica una notación.
+
+**La pieza final —`tokenizando.html`— dibuja un activo entrando en tokenización.** A la izquierda,
+el activo entero: un plano con el canto del isotipo. A la derecha, unidades que se desprenden de
+él, y que a medida que avanzan **se separan más y se hacen más pequeñas**. La forma no cambia;
+cambia en cuántas piezas está.
+
+No es una metáfora inventada: es la propiedad que el propio artículo nombra —«posibilidad de
+fraccionar hasta niveles imposibles en el sistema tradicional»—, así que cumple la regla dura del
+DS §6, que exige que cada trazo represente algo.
+
+**El token que me faltaba.** El verde de las unidades es `--verde-hi`, que el DS define
+literalmente como *«líneas del motivo geométrico sobre tinta»* y da **10,0:1**. No es `--verde`,
+que por DS §6.2 significaría «el tramo que es nuestro» — y en esta portada no hay nada nuestro. Ese
+token existía y yo no lo estaba usando; es el que permite tener motivo geométrico en verde sin
+afirmar propiedad.
+
+**SVG y no HTML, y esta vez toca.** Mi propia regla dice que si la figura es texto más rectángulos
+va en HTML, y que el SVG se reserva para trazos que una caja no puede hacer. Aquí hay un sesgo de
+34° que una caja no puede hacer, y **no hay una sola palabra dentro**, que era lo que hundió al SVG
+en la figura de `/confianza`: allí el problema era el texto escalando a 6 px, no el SVG.
+
+**El sesgo es el canto de la marca:** 156,1 px sobre 232 de alto = **0,673**, que es 202:300.
+
+---
+
+## 3.c La tercera corrección: el icono, con una T
+
+`tokenizando.html` —un plano con el canto de la marca, partiéndose en unidades hacia la derecha—
+tampoco enganchó. Sebastián mandó un icono de referencia (dos monedas dentro de un bucle de
+flechas, con glifos sueltos entre medio) y una instrucción concreta: *«Haz que sea algo como la
+imagen adjunta pero que en vez de una B en la moneda haya una T»*.
+
+Eso cierra la discusión de **qué se dibuja**, y deja abierta sólo la de *«demosle una identidad
+propia de nosotros»*. Es el encargo que se entrega aquí.
+
+**Lo que quité de la referencia, y por qué.** Los glifos sueltos —nodos, llavecitas— rellenan
+espacio y no significan nada. El DS §6 prohíbe con esas palabras el trazo que no dice nada, y es
+la regla que borró `coverImage`. La marca queda en dos monedas y el bucle, que es su esqueleto.
+
+**Lo que puse de nuestro, y está medido en el archivo:**
+
+| | valor | referencia | desvío |
+|---|---|---|---|
+| Relación de la elipse del bucle `ry/rx` | **0,6730** | canto del isotipo 202:300 = 0,6733 | 0,0003 |
+| Semiángulo de cada galón | **34,00°** | canto del isotipo `atan(202/300)` = 33,95° | 0,05° |
+
+No son el mismo número y no conviene escribir que lo son: son el mismo ángulo redondeado a un
+grado entero, que es lo que se puede dibujar sin decimales absurdos.
+
+**La única diferencia entre las dos monedas son 24 marcas en el canto de la T.** Es lo único que
+el artículo define como propio del token —que está hecho de unidades divisibles— y el dólar tiene
+el canto liso. No es textura: es la frase del artículo dibujada una vez.
+
+**El color dice a quién pertenece cada cosa.** La moneda T va en `--verde-hi`, que el DS define
+como «líneas del motivo geométrico sobre tinta». **No** va en `--verde`: por DS §6.2 el verde
+significa *el tramo que es nuestro*, y un activo tokenizado de terceros no es nuestro. El dólar y
+el bucle van en `--on-tinta-mute`.
+
+## 3.d La prueba sin texto, y el §1 de CLAUDE.md
+
+La regla 16 obliga a preguntar qué afirma la figura si le quitas los rótulos. Aquí no hay rótulos
+que quitar, así que la pregunta es directa: **un bucle cerrado entre una moneda T y una moneda $
+afirma que las dos se intercambian.**
+
+Contra el §1, que prohíbe afirmar o sugerir que DLPay deposita en una cuenta bancaria en el
+extranjero, que hace una transferencia bancaria internacional, o que el destinatario recibe moneda
+local:
+
+- No hay banco, ni cuenta, ni billete, ni bandera, ni edificio. Las dos caras son **fichas**, y
+  una ficha es justo lo contrario de una cuenta bancaria.
+- El §1 permite comunicar «el cambio de divisas y el movimiento internacional de valor mediante
+  dólar digital». La moneda `$` se lee como el dólar digital porque está dibujada en la misma
+  familia que la otra: mismo radio, mismo grosor, mismo trazo.
+- **Lo que sí conviene decir en voz alta:** DLPay no transa activos tokenizados. La portada ilustra
+  el asunto del artículo —un mercado que existe y que el artículo describe—, no un servicio
+  nuestro. Va en categoría «Mercado» y bajo un titular que dice «qué son, quién los está
+  construyendo». Yo creo que pasa; no soy quien firma.
+- **Si Compliance lo quiere más estrecho, es una línea.** Quitando el galón de abajo el bucle deja
+  de ser intercambio y pasa a ser una sola dirección. Está en el archivo como dos `<path>`
+  separados justamente para que se pueda borrar uno sin tocar nada más.
+
+**El galón no es la cuña.** La cuña (DS §6.1, prohibida en portadas) marca el **punto** de una
+línea donde el valor cambia de manos; el galón marca la **dirección** de un recorrido. Son
+distintos, pero los dos hablan de valor moviéndose y el DS no dice nada del segundo. **Queda
+anotado como pregunta para el DS, no decidido aquí.**
+
+## 4. La versión de cuatro trazos, descartada
+
+Tres estratos apoyados sobre una base continua, y en la base un tramo corto en verde.
+
+**Cero texto dentro de la portada.** Medido: `innerText` de longitud 0.
+
+**La geometría es la idea, no el adorno.** Tres frentes de tokenización sobre una sola capa de
+settlement es la tesis que el artículo pone en negrita; el tramo verde es lo único nuestro que hay
+en esa capa, que es exactamente lo que el texto dice que hacemos. Y respeta el DS §6.2: un tramo
+verde es **el tramo que es nuestro** — por eso la capa **no** va en verde, sino en
+`--on-tinta-mute`, que sobre tinta significa «existe, es real y no es nuestro».
+
+**El ángulo de la marca está y no se dibuja.** Los extremos izquierdos de los tres estratos caen
+sobre el canto del isotipo. Medido en el render: **0,667** de corrimiento por unidad de alto,
+contra el 0,673 del canto (202:300). Deducirlo en vez de trazarlo es más limpio de mirar.
+
+**Sin cuña**, DS §6.1.
+
+## 5. Lo que descarté, y por qué
+
+**De las tandas anteriores**
+
+- **Planos rellenos** (tanda 1, tres variantes): invisibles. §3.
+- **La diagonal trazada** cruzando los estratos: una diagonal que sube sobre horizontales **se lee
+  como línea de tendencia**, y eso afirma un crecimiento que el artículo no dice. Es el mismo error
+  que la portada de propagación, con otra forma.
+- **Tres trazos cortos en fila sobre uno largo**: se lee como barra de progreso o indicador de
+  pasos. Sin profundidad y con un significado que no es el suyo.
+- **Reutilizar la textura de cuñas del héroe**: es literalmente lo que se eliminó como papel tapiz.
+- **`tokenizando.html`**, el plano que se parte en unidades: correcto de gramática y frío de leer.
+  No es que estuviera mal medido —el sesgo daba 0,673 y el contraste 10,0— es que una notación no
+  engancha. Se conserva en la carpeta.
+
+**De esta tanda, y está fotografiado**
+
+- **Canto liso en las dos monedas** (`cotejo-1280.png`, panel A). Limpio, y podría ser el icono de
+  cualquier exchange: las dos caras dicen lo mismo y el artículo trata de lo que las diferencia.
+- **12 marcas en vez de 24** (panel C). Doce divisiones en un círculo se leen como esfera de reloj,
+  y las marcas quedan tan separadas que parecen separadores en vez de canto.
+- **La figura a ras de la columna de lectura**, como va el dato (`cotejo2-1280.png`, panel G). El
+  dato va a ras porque es tipografía y se alinea con el titular; una marca no tiene línea base que
+  alinear y queda huérfana con 570 px de columna vacía a su derecha. **Centrada no es un capricho:**
+  `.inner` de `PortadaDato` es `max-width:760px; margin:0 auto`, así que el centro de la columna y
+  el centro de la banda son el mismo punto. La marca va centrada **en esa misma columna**.
+- **La figura a 130 px de alto**, que dejaría la banda en los 226 px exactos de `PortadaDato`
+  (panel D). Medido y fotografiado: se pierde. **Éste es el único punto en que me separo del
+  componente que ya existe, y es a propósito** — el alto del dato lo fijan tres líneas de texto, y
+  una imagen a ese alto mide 184 px de ancho sobre una columna de 760.
+- **La figura a 190 px** (panel F): funciona, y deja la banda en 286 px. No gana nada sobre 160 y
+  se aleja 60 px del componente hermano.
+
+## 6. Evidencia medida
+
+Todo contra el build de hoy (`dist/`, 2026-09-21 15:26) servido en un puerto efímero, y contra el
+`tokens.css` puesto al día hoy mismo — no contra una lámina hecha a mano.
+
+**El componente hermano, medido primero** (regla 17: «misma gramática que X» obliga a medir X).
+`PortadaDato` en el artículo de la Fed: banda **226 px** en 1280 y **174 px** en 390, relleno
+`--s-7` / `--s-6`, `.inner` de 760 px, contenido **a ras** de la columna.
+
+**La pieza**
+
+| | 320 | 390 | 1280 | zoom 200 % |
+|---|---|---|---|---|
+| Alto de la banda | 196 px | 196 px | **256 px** | 392 px |
+| Alto de la figura | 132 px | 132 px | **160 px** | 264 px |
+| Desborde horizontal | 0 | 0 | 0 | 0 |
+| Scroll horizontal | no | no | no | no |
+| Texto dentro de la portada | 0 | 0 | 0 | 0 |
+| Rellenos (`fill` ≠ `none`) | 0 | 0 | 0 | 0 |
+| Cuñas | 0 | 0 | 0 | 0 |
+
+La banda queda **22 px (12,6 %)** más alta que la del dato en móvil y **30 px (13,3 %)** en
+escritorio. No es «la misma altura» y no conviene escribir que lo es.
+
+**Geometría, leída del propio archivo**
+
+| | valor | referencia | desvío |
+|---|---|---|---|
+| `ry/rx` de la elipse | 0,6730 | 0,6733 (202:300) | 0,0003 |
+| Apertura del galón superior | 68,01° | 67,90° | 0,11° |
+| Apertura del galón inferior | 68,01° | 67,90° | 0,11° |
+
+**Contraste**, con el fondo efectivo compuesto recorriendo los ancestros —`rgb(11,19,32)`, que es
+`--tinta`, no heredado de nada más:
+
+| trazo | token | ratio |
+|---|---|---|
+| Moneda T, sus 24 marcas y su signo | `--verde-hi` | **10,00:1** |
+| Moneda $, su signo, el bucle y los galones | `--on-tinta-mute` | **8,18:1** |
+
+Piso de 3:1 para un gráfico no textual. Para comparar: `--verde` sobre tinta da 8,45 y **no se usa
+aquí a propósito** — no por contraste, por significado (§3.c).
+
+## 6.b Accesibilidad
+
+Pasada completa, no una casilla:
+
+- **Árbol de accesibilidad:** un solo nodo `image` con nombre —«Dos monedas en un bucle de
+  circulación: una con una T y el canto dividido en unidades, otra con el signo del dólar»—. Es
+  una portada, no un adorno: el lector de pantalla debe saber que hay una y qué muestra, como el
+  `alt` de cualquier imagen de cabecera. Se dejó **corta a propósito**: la primera versión tenía
+  154 caracteres y explicaba de más.
+- **Movimiento:** 0 animaciones y 0 transiciones dentro de la banda. Motion System §4, regla dura 3
+  —un dato no entra animado—, y esto tampoco.
+- **320 px y zoom 200 %:** sin desborde y sin scroll horizontal en ninguno de los dos.
+- **`forced-colors: active`:** sobrevive. Los trazos SVG no se fuerzan y el dibujo sigue legible
+  sobre el negro del sistema (`a11y-forced.png`).
+- **Nada se dice sólo con el color.** Las dos monedas se distinguen por el signo y por el canto,
+  no por ser verde y gris. En escala de grises la pieza sigue diciendo lo mismo.
+
+## 7. Para el agente de Claude Code
+
+1. Es **un tipo nuevo sin campos de dato**: no lleva cifra, ni unidad, ni fecha, ni fuente. Al no
+   afirmar ningún dato, no hay nada que citar. `content.config.ts` tiene
+   `tipo: z.enum(['cifra','rango'])` y un `superRefine` que exige `valor` o `min`/`max`; un tercer
+   valor sin campos obliga a que ese refinamiento lo exceptúe explícitamente.
+2. El comentario de `PortadaDato.astro` que dice «por eso son dos tipos y no tres» hay que
+   reescribirlo **sin borrar el motivo**: la regla de la cuña sigue viva y es la que hace admisible
+   a éste. El tipo nuevo no la rompe — no lleva cuña.
+3. **Aquí sí es SVG, y no contradice el motivo por el que el dato es HTML.** `PortadaDato` pasó a
+   HTML porque su SVG escalaba el *texto* con el ancho y a 390 px los rótulos caían a ~6 px reales.
+   Esta pieza **no tiene texto**: `innerText` de longitud 0, medido. Lo que escala es el dibujo, que
+   es lo que tiene que escalar, y el alto está fijado en CSS (132 / 160) en vez de depender del
+   ancho.
+4. **Es el único punto donde me separo del componente hermano:** la banda mide 256 / 196 y la del
+   dato 226 / 174. Está medido, fotografiado y razonado en §5; si preferís forzar los 226, la
+   captura del panel D muestra lo que se pierde.
+5. **El galón frente a la cuña** (§3.d) es una pregunta para el DS, no una decisión mía.
+6. **El §1 de CLAUDE.md** (§3.d): mi lectura es que pasa, y dejo escrito el argumento y la línea
+   exacta que lo estrecha si Compliance lo pide.
+7. **El blog lo publica el otro agente de Cowork.** Esta portada afecta a su artículo y él lo dejó
+   sin portada con un argumento razonado; conviene que lo sepa antes de integrarla.
+8. Nada de esto está integrado. `cowork/` es sólo visualización.
