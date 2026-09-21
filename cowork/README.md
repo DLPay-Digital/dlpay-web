@@ -165,7 +165,18 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     `src/`**, y tres de ellos explican 70 instancias. Antes de dar un recuento hay que decir
     **de qué** es el recuento —instancias renderizadas o sitios que hay que tocar— y si se puede
     sumar.
-19. **Ninguna cifra se escribe sin haberla calculado.** «Un 4 % de luminancia» no salió de ningún
+19. **Un puerto ocupado no da error: da la respuesta de otro.** Aportada por el agente de Claude
+    Code el 2026-09-17, y es la tercera forma distinta de que la herramienta de medición mienta,
+    después del servidor de desarrollo que envejece y de las maquetas con andamio. La suya es la
+    peor de las tres porque el proceso viejo **era suyo**: un `http.server` de un turno anterior
+    seguía tomando el puerto y servía un `dist/` que ya ni existía, así que la medición daba 84
+    listas sin `role` después de haberlas corregido las 18. Estuvo a punto de ir a buscar el fallo
+    al código.
+    **Cómo se evita, y así lo hago desde ahora:** el servidor de medición se levanta en un
+    **puerto efímero** que elige el sistema, nunca en uno fijo; y cuando el número sorprende, lo
+    primero es **contrastar el archivo del `dist/` contra lo que devuelve el navegador**. Si no
+    coinciden, el fallo está en la tubería, no en el código.
+20. **Ninguna cifra se escribe sin haberla calculado.** «Un 4 % de luminancia» no salió de ningún
     cálculo: la caída real era 13,3 % en luminancia relativa y 6,3 % en L\*. Una cifra inventada
     en una ficha vale menos que no poner ninguna.
 

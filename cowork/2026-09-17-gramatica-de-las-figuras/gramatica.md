@@ -212,3 +212,41 @@ Tres ediciones cierran el 83 % del problema. Eso es lo que había que decir, y n
 **Es un modo de fallo nuevo y por eso queda como regla 18:** una cifra correcta con la forma
 equivocada induce una conclusión falsa. Antes de dar un recuento hay que decir de qué es —instancias
 o sitios que tocar— y si se puede sumar.
+
+---
+
+## 10. Cierre (`87c10ac`) — verificado sin servidor de por medio
+
+El agente cerró las listas y el inventario del DS §8.1. Lo verifiqué **con el método que enseña su
+propio error**: primero contando en los archivos del `dist/`, sin servidor, y después en el
+navegador sobre un **puerto efímero** elegido por el sistema.
+
+| | en el archivo | en el navegador |
+|---|---|---|
+| `/` | 13 listas · 13 con `role` | 13 · 13 · **0 sin** |
+| `/confianza` | 11 · 11 | 11 · 11 · **0 sin** |
+| `/empresas` | 12 · 12 | 12 · 12 · **0 sin** |
+| `/404` | 7 · 7 | 7 · 7 · **0 sin** |
+
+Archivo y navegador coinciden en las cuatro. Y en `src/` no queda **ninguna** `<ul>` ni `<ol>` sin
+`role`: 15 archivos lo declaran. Cerró las 18, no las 3 del 83 %.
+
+El DS §8.1 lista las catorce piezas vivas y la fila del diagrama de flujo queda **tachada con su
+motivo**, no borrada — que es lo correcto: un inventario que borra lo que se fue no explica por qué
+se fue.
+
+**Su trampa del puerto queda como regla 19**, y es la tercera forma distinta de que la herramienta
+mienta, después del servidor de desarrollo y de las maquetas con andamio. La suya es la peor porque
+el proceso viejo era suyo. Desde ahora mis mediciones levantan el servidor en puerto efímero, y
+cuando un número sorprende, lo primero es contrastar el archivo contra el navegador.
+
+## 11. El número que describe cómo funcionó esto
+
+Yo cerré con «cinco correcciones mías en tres días». El agente añadió el otro lado, y tiene razón
+en que sin él el número miente: en esos mismos días yo encontré el token que no cumplía AA, la
+medida de lectura en `ch`, los objetivos táctiles, el `.sr-only` triplicado, la alternancia rota,
+la colisión del pie del diagrama y el `66ch` que él acababa de prohibirse.
+
+Su formulación es la buena y la dejo escrita como cierre de esta entrega:
+
+> **Ninguno de los dos publicó un error que el otro no viera primero.**

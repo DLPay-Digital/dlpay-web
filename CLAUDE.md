@@ -315,8 +315,14 @@ colapsa los `index` anidados, descarta las rutas dinámicas y añade cada artíc
 colección.
 
 **Ningún artículo se publica sin pasar por Compliance.** Un análisis de mercado es, por
-definición, contenido que afirma algo sobre precios: cae de lleno en §3. El artículo de ejemplo
-que existe hoy lleva su marcador y es sólo para verificar la infraestructura.
+definición, contenido que afirma algo sobre precios: cae de lleno en §3. El candado es el campo
+`estado` del esquema, **cerrado por omisión**: un artículo sin `estado: publicado` se ve con
+`astro dev` pero no entra al build, ni al listado, ni al sitemap.
+
+**Al 2026-09-21 el blog tiene un artículo publicado**, el análisis del FOMC de septiembre, validado
+por Sebastián. El artículo de prueba que sirvió para verificar la infraestructura se eliminó ese
+mismo día: ya no hacía falta y mantener contenido que dice de sí mismo «no debe publicarse» es una
+invitación a que algún día se publique.
 
 **`/cotizar` se eliminó el 2026-09-09.** Duplicaba el cotizador que ya está en el héroe de la
 Home y no se ganaba el espacio. Con eso se **cierra la hipótesis H8** de Fase 1 —«`/cotizar` como
