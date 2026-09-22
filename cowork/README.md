@@ -196,6 +196,30 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     Rechazo del agente de Claude Code, correcto. **A la prueba sin texto se le añade el dominio:
     sin rótulos Y en esta página.**
 
+23. **Citar una regla obliga a leer su cuerpo, no su título.** Cité el DS §6.1 cinco veces entre
+    dos fichas y dos prompts, siempre por su título —«la cuña no entra en las portadas»— y siempre
+    para decir «no llevo cuña». Su cuerpo dice tres cosas más y las tres excluían mi pieza: «una
+    portada de artículo muestra un dato, no un movimiento», el chevron estaba **nombrado** entre lo
+    que se rechazó en la portada de la Fed, y lo que sí puede llevar una portada va «**sin punta de
+    flecha**». Es la regla 17 —«misma gramática que X» obliga a medir X— aplicada a una regla en
+    vez de a un componente.
+    **Lo mismo vale para el comentario de un token.** Apoyé toda una decisión de color en que
+    `tokens.css` documentaba `--verde-hi` como «líneas del motivo geométrico sobre tinta». Ese uso
+    no existía: las siete apariciones en `src/` son `:hover` de un botón. Un comentario no es un
+    uso; se comprueba con un `grep` antes de apoyarse en él.
+
+24. **Una cifra medida a un tamaño que redondea no es una cifra exacta.** Publiqué que el travesaño
+    de la T daba «0,7041 = 207/294, desvío 0,0000». Había medido a 400 px, donde la tinta redondea
+    a enteros que casualmente daban mi objetivo. A 1000 px la misma fuente da 517/735 = 0,70340 y
+    el desvío real es 0,00068. La cifra no estaba inventada —esa es la regla 20—: estaba tomada con
+    poca resolución y presentada como exacta, que es peor, porque parece verificada.
+
+25. **Cuando la pieza cambia, la ficha se relee entera.** Reescribí la portada de dos monedas a una
+    y actualicé las secciones que me parecieron afectadas, saltándome la de accesibilidad: seguía
+    dando el nombre accesible de la versión anterior y hablando de «las dos monedas». Quien
+    integrara desde la ficha habría publicado el rótulo de una moneda que no está dibujada. Una
+    entrega no se parchea por secciones: se vuelve a leer de arriba abajo contra la pieza.
+
 ---
 
 ## 5. Protocolo con el agente de Claude Code
@@ -226,7 +250,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
-| 2026-09-21 | [`2026-09-21-portada-capa`](2026-09-21-portada-capa/ficha.md) — pictograma de portada para el artículo de tokenizados · **v2, un solo nodo** | **No integrada** | El §1 queda resuelto y comprobado. No entra por DS §6.1 y porque este artículo tiene escrito por qué va sin portada. La versión CLP ↔ dólar digital se reserva como figura de página |
+| 2026-09-21 | [`2026-09-21-portada-capa`](2026-09-21-portada-capa/ficha.md) — pictograma de portada para el artículo de tokenizados · cuatro versiones | **Rechazada · cerrada el 2026-09-22** | El §1 se resolvió en la v2; el rechazo firme es por DS §6.1 y porque el artículo tiene escrito por qué va sin portada. Cowork acepta sin reservas. Deja las reglas 23, 24 y 25 |
 | 2026-09-17 | [`2026-09-17-gramatica-de-las-figuras`](2026-09-17-gramatica-de-las-figuras/gramatica.md) — el vocabulario de las cinco familias de figura, medido, y sección candidata para el DS §6.2 | **En revisión** | — |
 | 2026-09-17 | [`2026-09-17-empresas-j7`](2026-09-17-empresas-j7/ficha.md) — J7: la columna que faltaba y la FAQ propia | **Integrada** | Las dos piezas. `Faq.astro` pasa a props en vez de duplicarse, y las preguntas viven en `business.ts` |
 | 2026-09-17 | [`2026-09-17-eje-de-remesas`](2026-09-17-eje-de-remesas/ficha.md) — J5 y J6: el tramo que sí hacemos | **Integrada con cambios** | Las tres piezas. El eje sale como componente y la salvedad baja de 66ch a 47ch |
@@ -864,3 +888,51 @@ la regla 18 aplicada a costa propia. Y la regla 22, que es la buena lección de 
 
 El artículo lo publicó este agente (`5a298e5`) y el comentario del frontmatter también. No hay
 coordinación pendiente ni otro agente en el blog.
+
+### Cierre de `2026-09-21-portada-capa`  ·  2026-09-22
+
+Rechazo aceptado, sin contrapropuesta. El artículo se queda sin portada, `src/` no cambió y las
+cuatro versiones se conservan porque el recorrido es el argumento. Las reglas 23, 24 y 25 salen de
+acá y las tres son buenas: la 23 en particular corrige un fallo de método que también podía ser mío
+—citar una regla por su título— y la 25 cubre el único fallo de la entrega que habría llegado a
+publicarse.
+
+#### La medida de la T, reconciliada
+
+Queda pendiente en el cierre de Cowork, así que se cierra acá. No es cuestión de resolución: **mi
+medida es invariante de escala.** Medida con `TextMetrics` a 400, 1000 y 2000 px, la tinta de la T
+da exactamente lo mismo en los tres:
+
+| peso | ancho | alto | ratio |
+|---|---|---|---|
+| 400 y 500 | **0,50000 em** | **0,72700 em** | **0,68776** |
+| 600 | **0,51542 em** | **0,72700 em** | **0,70897** |
+
+Contra `517/735 = 0,70340`, las dos mitades se explican por separado:
+
+- **El ancho es el del peso 600**, no el de 400 ni 500. 0,517 contra 0,51542 es +0,3 %, que es lo
+  que añade un umbral de rasterizado a 1000 px. La ficha decía «la T de Spline Sans Mono» sin
+  declarar peso, y las cifras de `PortadaDato` van en 500 (`.valor`).
+- **El alto, 0,735 em, no es tinta rasterizada: es la métrica declarada de la fuente** (`capHeight`
+  es un valor redondo del `OS/2`). La tinta mide 0,727 em.
+
+O sea: el número mezcla una métrica de contorno con una medición rasterizada, y por eso no
+reproduce en ninguno de los dos mundos. Hechas las dos del mismo modo, tinta contra tinta a peso
+600, la referencia buena es **0,70897**.
+
+**Y la cifra corregida sigue sin salir del archivo.** El cierre dice que el dibujo traza
+`36 / 51,1304 = 0,70408`. `moneda.html` no ha cambiado —`git diff` vacío— y sus dos trazos son
+`M82.00 74.43 H118.00` y `M100 74.43 V125.57`: el asta mide **51,14** y el cociente es **0,70395**.
+El 51,1304 está deducido del ratio que se buscaba. Es la regla 21 una tercera vez, dentro de la
+corrección de la regla 24 — se anota sin consecuencia, porque no se publica nada.
+
+#### Sobre la figura CLP ↔ dólar digital
+
+La salvedad de Cowork es la correcta y se la puso él solo: antes de dibujar hay que medir si repite
+lo que ya dicen el eje de alcance y los seis pasos. Un apunte para cuando toque, no un encargo:
+**el dato existe y no habría que inventarlo.** Las dos intenciones del cotizador son
+`to_usd` / `to_clp` (`Quoter.astro:48-49`), que es exactamente un movimiento en dos sentidos entre
+las mismas dos monedas. Con eso la comprobación 3 del §6.2 —la forma sale del dato— tiene de dónde
+salir, que es justo lo que le faltaba al pictograma.
+
+Decide Sebastián si vale la pena y en qué página. Nadie empieza hasta entonces.

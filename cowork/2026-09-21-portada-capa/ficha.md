@@ -1,6 +1,6 @@
 # Ficha — portada mínima para el artículo de activos tokenizados
 
-**Entrega:** `2026-09-21-portada-capa` · **Autor:** Claude Cowork · **Estado:** En revisión
+**Entrega:** `2026-09-21-portada-capa` · **Autor:** Claude Cowork · **Estado:** **Rechazada** por DS §6.1 · el artículo se queda sin portada (§8)
 **Pieza final:** `moneda.html` — **v2, un solo nodo** tras el rechazo por §1 (§3.e)
 **Capturas:** `final-banda-1280.png`, `final-banda-390.png`, `final-ctx-1280.png`, `a11y-forced.png`
 **Cotejos:** `cotejo-1280.png` (canto liso / 24 marcas / 12 marcas),
@@ -303,22 +303,23 @@ Desapareció con el segundo nodo y no se le buscó otro sitio (§3.e).
 Piso de 3:1 para un gráfico no textual. Para comparar: `--verde` sobre tinta da 8,45 y **no se usa
 aquí a propósito** — no por contraste, por significado (§3.c).
 
-## 6.b Accesibilidad
+## 6.b Accesibilidad  ·  *reescrita el 2026-09-22*
 
-Pasada completa, no una casilla:
+**Esta sección describía la v1 y no me di cuenta al cambiar la pieza.** Daba como nombre accesible
+«Dos monedas… otra con el signo del dólar» y decía que «las dos monedas se distinguen por el signo
+y por el canto», cuando la v2 tiene **una sola** ficha y un nombre distinto. Quien integrara desde
+la ficha habría publicado el rótulo de una moneda que no está dibujada. Lo encontró el agente de
+Claude Code; es la regla 25.
 
-- **Árbol de accesibilidad:** un solo nodo `image` con nombre —«Dos monedas en un bucle de
-  circulación: una con una T y el canto dividido en unidades, otra con el signo del dólar»—. Es
-  una portada, no un adorno: el lector de pantalla debe saber que hay una y qué muestra, como el
-  `alt` de cualquier imagen de cabecera. Se dejó **corta a propósito**: la primera versión tenía
-  154 caracteres y explicaba de más.
-- **Movimiento:** 0 animaciones y 0 transiciones dentro de la banda. Motion System §4, regla dura 3
-  —un dato no entra animado—, y esto tampoco.
-- **320 px y zoom 200 %:** sin desborde y sin scroll horizontal en ninguno de los dos.
-- **`forced-colors: active`:** sobrevive. Los trazos SVG no se fuerzan y el dibujo sigue legible
-  sobre el negro del sistema (`a11y-forced.png`).
-- **Nada se dice sólo con el color.** Las dos monedas se distinguen por el signo y por el canto,
-  no por ser verde y gris. En escala de grises la pieza sigue diciendo lo mismo.
+Lo que la v2 mide de verdad:
+
+- **Árbol de accesibilidad:** un solo nodo `image`, nombre «Una ficha marcada con una T, con el
+  canto dividido en unidades, dentro de un bucle de circulación» — 98 caracteres.
+- **Movimiento:** 0 animaciones y 0 transiciones.
+- **320 px y zoom 200 %:** sin desborde y sin scroll horizontal.
+- **`forced-colors: active`:** sobrevive (`a11y-forced.png`). *El agente no lo reprodujo y lo
+  aceptó sobre mi captura; queda dicho de los dos lados.*
+- **Nada se dice sólo con el color:** la ficha se distingue por la T y por el canto.
 
 ## 7. Para el agente de Claude Code
 
@@ -345,3 +346,81 @@ Pasada completa, no una casilla:
 7. **Retirado.** Decía que el blog lo publica otro agente de Cowork y que había coordinación
    pendiente. El agente de Claude Code responde que el artículo es suyo; ver §3.f.
 8. Nada de esto está integrado. `cowork/` es sólo visualización.
+
+---
+
+## 8. Veredicto: el artículo se queda sin portada  ·  *2026-09-22*
+
+El §1 quedó resuelto con la v2. Lo que la para es el **Design System §6.1**, y el agente de Claude
+Code tiene razón: **yo contesté al título de la regla, no a su cuerpo.** Lo cité cinco veces entre
+dos fichas y dos prompts, siempre como «la cuña no entra en las portadas», y nunca lo leí entero.
+Dice, textual:
+
+> «Una **portada de artículo muestra un dato**, no un movimiento.»
+>
+> «La primera versión de la portada del artículo de la Fed traía dos marcadores rotulados «FOMC» y
+> «CLP» unidos por un tramo con cuña **y un chevron que indicaba el sentido**.»
+>
+> «Lo que sí puede llevar una portada: la cifra, su etiqueta, su unidad, su fecha y su fuente; y,
+> para un intervalo, un segmento con un tope en cada extremo — **sin punta de flecha**, porque un
+> rango no va a ninguna parte.»
+
+Tres frases y las tres me excluyen. El chevron ya estaba dentro del alcance de la regla el día que
+se escribió; «sin punta de flecha» es literal; y una portada muestra un dato, que es precisamente
+lo que esta pieza presume de no tener.
+
+**Se suma la comprobación 3 del §6.2:** «la forma sale del dato, no al revés. Si la estructura que
+quieres dibujar no está en `content/`, la figura la está inventando». Las 24 marcas del canto no
+están en `content/`. Son una elección mía.
+
+**Y el artículo ya tenía escrito por qué va sin portada,** en un archivo que Sebastián validó el
+2026-09-21: es panorámico, no se apoya en una cifra ni en un intervalo. Mi propio §1 —«el artículo
+no admite las portadas que existen»— no era un hueco que llenar: era la razón por la que no lleva
+ninguna. Dediqué cuatro rondas a diseñar contra una respuesta que estaba escrita antes de empezar.
+
+**El coste tampoco era pequeño:** unión discriminada en el esquema, un tipo nuevo, enmienda del DS
+y reabrir a medias la puerta que cerró `coverImage`, para un consumidor único.
+
+### 8.1 Las tres mediciones que no cuadraron, comprobadas por mí
+
+1. **La proporción de la T no verifica.** Escribí «0,7041 = 207/294, desvío 0,0000». Medí a 400 px,
+   donde los números redondean a enteros que dieron justo mi objetivo. A 1000 px la misma fuente da
+   **517/735 = 0,70340** a pesos 400 y 500, y 0,72381 a peso 600. El dibujo traza 36/51,1304 =
+   **0,70408**. El desvío real es **0,00068**, no cero. *(Sus cifras y las mías no coinciden —él
+   midió 206,17 × 290,80; yo 517 × 735 a 1000 px— y eso conviene reconciliarlo algún día, pero no
+   cambia el veredicto: la cifra que publiqué como exacta no lo era.)*
+2. **El desvío del galón es 0,0470°, no 0,046°.** Lo calculé contra el 34,000° que *quería* trazar,
+   no contra el 34,0007° que el archivo *traza*. Es la regla 21 en versión pequeña, cometida en la
+   misma entrega que la estrenó.
+3. **§6.b describía la v1.** Corregido arriba. Es lo más grave de los tres: no es una cifra mal
+   redondeada, es un rótulo de accesibilidad equivocado que se habría publicado.
+
+### 8.2 El `--verde-hi` se cae entero, y el error de partida no era mío
+
+`tokens.css` decía que el token servía para «hover; líneas del motivo geométrico sobre tinta». **Ese
+segundo uso nunca existió:** las siete apariciones en `src/` son `:hover` de un botón. Lo comprobé.
+El agente corrigió el comentario.
+
+Pero mi argumento estaba mal de raíz y eso sí es mío: **§6.2 dice que el color no porta
+significado**, así que `--verde-hi` tampoco puede servir para decir «esto no es nuestro». Lo que
+elige el token es el fondo y el contraste, no el sentido. Sobre tinta las figuras van en `--verde`.
+
+### 8.3 Dónde sí cabe el dibujo
+
+El agente mejora mi propia nota. Yo escribí que la versión **CLP ↔ dólar digital** sería «una buena
+portada para otro artículo». Él dice que es mejor que eso: **es una figura de página, no una
+portada.** Dos nodos y un movimiento son lícitos en las figuras de página —es lo que dibujan
+`/empresas`, `/como-funciona` y el eje de alcance—; lo que §6.1 prohíbe es que eso sea una portada.
+Y sus dos nodos son nuestra operación real, así que §1 no objeta nada. Sin enmendar ninguna regla y
+sin tocar el esquema.
+
+**Con una salvedad que pongo yo antes de que nadie la pida:** hay que comprobar que no repita lo que
+ya dicen el eje de alcance y los seis pasos de `/como-funciona`. Una figura que vuelve a decir lo
+mismo con otra forma es ruido, y la lección de esta entrega es justamente no dibujar por dibujar.
+
+### 8.4 Qué queda en esta carpeta
+
+Nada se integra. Las cuatro versiones y sus cotejos se conservan porque el recorrido es el
+argumento: `opciones.html` → `index.html` → `tokenizando.html` → `moneda.html` (v1 de dos monedas,
+v2 de un nodo). El veredicto es que **el artículo no lleva portada**, que es lo que ya decía su
+frontmatter.
