@@ -141,6 +141,10 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     `tokens.css` y el andamio del globo. Las tres veces la cifra del estado actual estaba bien,
     porque salía del build, y la del propuesto mal, porque salía de algo que había construido yo.
     **Medir contra material propio no es medir: es comprobar que uno es consistente consigo mismo.**
+    **Matiz del 2026-09-22, aportado por el agente:** no aplica a una **razón adimensional**.
+    Medí en píxeles la relación entre el ancho de una cuña y el grosor de su trazo, y esa razón
+    es invariante de escala: 21,6/1,5 en unidades del lienzo da 14,4 sin renderizar nada. Medir
+    de más no es un error, pero saber qué no hace falta medir es parte del oficio.
 15. **Una afirmación y su desmentido no caben en la misma sección.** En la misma §6 escribí que
     `/empresas` «no declara el límite en ninguna parte» y, cuatro líneas después, cité la frase de
     `business.ts` que sí lo declara. Antes de dar por buena una afirmación absoluta —«ninguno»,
@@ -220,6 +224,23 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     integrara desde la ficha habría publicado el rótulo de una moneda que no está dibujada. Una
     entrega no se parchea por secciones: se vuelve a leer de arriba abajo contra la pieza.
 
+26. **Comprobar que algo no está en el árbol de accesibilidad no es comprobar qué sí está.** Puse
+    `aria-hidden="true"` en el `<svg>` de una figura y escribí «igual que `UseCaseFigure`». No era
+    igual: allí los rótulos son `<text>` dentro del SVG, y yo acababa de sacarlos a HTML —con
+    motivo, para que no escalaran— y con eso los saqué también del alcance del atributo. Un lector
+    de pantalla habría leído «pesos, dólar digital» sueltos entre dos párrafos. Mi comprobación
+    decía «imágenes en el árbol: 0» y de ahí concluí que estaba oculta: comprobé que lo que oculté
+    seguía oculto, no qué quedaba anunciándose. **Cuando muevo un elemento, se mueve también lo que
+    lo gobernaba**, y la comprobación es «qué lee un lector de pantalla en esta zona», no «¿sigue
+    oculto lo que oculté?».
+
+27. **La maqueta se ve bien en su formato; el defecto aparece en el de destino.** El bloque HTML de
+    una figura llevaba dos líneas en blanco, que en una maqueta no significan nada. En Markdown un
+    bloque de HTML **termina en la primera línea vacía**: publicado, el artículo habría mostrado
+    sólo la primera ficha y habría perdido el tramo, la cuña y la segunda. No da error, el archivo
+    fuente se ve bien, y sólo aparece midiendo los trazos del HTML servido. **Si propongo dónde va
+    una pieza, las reglas de ese formato son parte de la entrega.**
+
 ---
 
 ## 5. Protocolo con el agente de Claude Code
@@ -250,7 +271,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
-| 2026-09-22 | [`2026-09-22-riel-tokenizado`](2026-09-22-riel-tokenizado/ficha.md) — figura de página: el peso no está tokenizado y el dólar digital sí. Nace del rechazo de la portada; autorizada por Sebastián | **En revisión** | — |
+| 2026-09-22 | [`2026-09-22-riel-tokenizado`](2026-09-22-riel-tokenizado/ficha.md) — figura de página: el peso no está tokenizado y el dólar digital sí | **Integrada** (`a0c12f5`) | El dibujo, copiado literalmente. Cambió el envoltorio: el `aria-hidden` pasa a cubrir también las etiquetas, se quitan las líneas en blanco que en Markdown cortaban el bloque, y del copy entra sólo la frase nueva. De aquí salen las reglas 26 y 27 |
 | 2026-09-22 | [`2026-09-22-riel-tokenizado`](2026-09-22-riel-tokenizado/ficha.md) — figura de página: el peso, el dólar digital y la tokenización | **Integrada con cambios** | El dibujo tal cual. Cambia el envoltorio: `aria-hidden` cubre también las etiquetas, el copy no duplica lo que el artículo ya dice, y hubo que quitar las líneas en blanco del bloque HTML |
 | 2026-09-21 | [`2026-09-21-portada-capa`](2026-09-21-portada-capa/ficha.md) — pictograma de portada para el artículo de tokenizados · cuatro versiones | **Integrada el 2026-09-22 por decisión de Sebastián** | La v2, la de un solo nodo. Entró enmendando el DS §6.1, no esquivándolo. El verde pasa a `--verde` por §6.2. La v1 de dos monedas sigue rechazada por §1 |
 | 2026-09-17 | [`2026-09-17-gramatica-de-las-figuras`](2026-09-17-gramatica-de-las-figuras/gramatica.md) — el vocabulario de las cinco familias de figura, medido, y sección candidata para el DS §6.2 | **En revisión** | — |
@@ -1077,3 +1098,30 @@ un componente porque el artículo es `.md` y no `.mdx`, y `.mdx` exige `@astrojs
 dependencia nueva que CLAUDE.md §0.3 no admite sin el análisis del §8. **Si una segunda pieza
 necesita esta figura, deja de ser contenido y pasa a componente**, por el mismo criterio que sacó el
 eje de alcance a `EjeDeAlcance.astro`. Escrito en los dos sitios.
+
+### Cierre de `2026-09-22-riel-tokenizado`  ·  2026-09-22
+
+Nada quedaba pendiente salvo una cosa, y era de sistema: **la fila de la frontera punteada**. La
+propuesta de Cowork es correcta y entró en el Design System §6.2, con una precisión al comprobarla.
+
+**Comprobado:** en todo `src/` hay **un solo** trazo punteado visible, el `stroke-dasharray="3 4"`
+de `.edge` en `UseCaseFigure`. El `stroke-dasharray` que aparece dos veces en `tokens.css` **no
+cuenta y conviene que la fila lo diga**: es el mecanismo del movimiento M3 —el guion vale el largo
+del propio trazo y pasa a `none` al entrar— y nunca se lee como punteado. Sin esa aclaración, la
+fila nueva invitaría a leer cualquier `dasharray` como una frontera.
+
+Con la fila va la frase que la hace útil, que es la aportación de verdad: **un par horizontal sin
+frontera no afirma ningún cruce; afirma una transformación entre dos estados del mismo valor.** Eso
+convierte a `cruza` y a la figura del riel en dos frases distintas en vez de dos versiones del mismo
+dibujo.
+
+**Se escribió la regla en vez de unificar los dibujos.** La alternativa que Cowork ofrecía —apilar
+las dos fichas como `convierte`— funciona, pero la figura ya está publicada y aprobada, y una figura
+alta y estrecha se lleva mal con una columna de lectura. Criterio que queda: cuando dos figuras
+correctas parecen contradecirse, lo que falta casi siempre es la palabra que las distingue, no un
+dibujo nuevo.
+
+Las reglas 26 y 27 son buenas y las dos describen el mismo mecanismo desde lados distintos —mover
+algo lo saca del alcance de lo que lo gobernaba—, que es lo que pasó con el `aria-hidden` y con las
+líneas en blanco. Y el matiz de la regla 14 es exacto: una razón entre dos longitudes del mismo
+sistema de coordenadas no se mide contra el build, porque no depende de él.

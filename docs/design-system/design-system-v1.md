@@ -401,6 +401,7 @@ vocabulario geométrico ya no cabe en la regla dura de §6. Ésta es la semánti
 | Barra llena verde | una magnitud |
 | Filete `--ink-mute` | existe, es real, **no** es nuestro |
 | Canto dividido en unidades | la cosa está **hecha de unidades transferibles** |
+| Trazo **punteado** en `--line` | una **frontera** · es la única marca punteada del sistema |
 | `--line` | separador sin significado |
 
 **El color no es el portador del significado.** El verde dice «esta marca carga significado»; cuál
@@ -412,6 +413,31 @@ palabras distintas**, no dos usos del mismo color.
 Sin esta regla, quien compare los emblemas de `/empresas` —donde los nodos verdes rotulan CLP y
 USD, los dos extremos de la operación— con el eje de alcance —donde el tramo verde es el nuestro—
 concluirá, razonablemente, que el verde se usa de dos maneras incompatibles, y «arreglará» una.
+
+**Sobre la frontera punteada, añadida el 2026-09-22.** Estaba en producción desde que existe
+`UseCaseFigure` y no estaba escrita, y eso resultó ser lo que hacía ambiguo todo un par de figuras.
+Comprobado: en todo `src/` hay **un solo** trazo punteado visible, el `stroke-dasharray="3 4"` de
+`.edge` en `UseCaseFigure`. (El `stroke-dasharray` de `tokens.css` no cuenta: es el mecanismo del
+movimiento M3 —el guion vale el largo del propio trazo y pasa a `none` al entrar—, no una marca.
+Nunca se lee como punteado.)
+
+Lo que la fila resuelve, y es el motivo de escribirla:
+
+> **Un par horizontal SIN frontera no afirma ningún cruce.** Lo que afirma es una transformación
+> entre dos estados del mismo valor.
+
+Sin esa frase, la variante `cruza` de `UseCaseFigure` —dos nodos unidos por un tramo con cuña, que
+significa «sales de Chile»— y la figura del riel del blog —dos fichas unidas por un tramo con cuña,
+que significa «el mismo dólar, ahora hecho de unidades»— parecen dos versiones incompatibles del
+mismo dibujo, y alguien «arreglará» una. No lo son: lo que carga el significado de `cruza` es la
+frontera, no la horizontalidad, y por eso `convierte` puede decir «el mismo valor, dos unidades» con
+dos barras apiladas sin contradecir a ninguna de las dos.
+
+**Se escribió la regla en vez de unificar los dibujos**, que era la alternativa: apilar las dos
+fichas del riel como hace `convierte`. Funciona, pero una figura alta y estrecha se lleva mal con
+una columna de lectura, y el dibujo ya está publicado y aprobado. Cuando dos figuras correctas
+parecen contradecirse, lo que falta casi siempre es la palabra que las distingue, no un dibujo
+nuevo.
 
 **Sobre el canto dividido, añadido el 2026-09-22.** Es la única marca que entró después de escrita
 esta tabla, y entró con la regla que la tabla exige: primero se usó en la portada del artículo de

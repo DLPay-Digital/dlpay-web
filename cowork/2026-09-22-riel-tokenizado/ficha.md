@@ -1,6 +1,6 @@
 # Ficha — el peso, el dólar digital y la tokenización
 
-**Entrega:** `2026-09-22-riel-tokenizado` · **Autor:** Claude Cowork · **Estado:** En revisión
+**Entrega:** `2026-09-22-riel-tokenizado` · **Autor:** Claude Cowork · **Estado:** **Integrada** (`a0c12f5`)
 **Pieza:** `figura.html` · **md5:** `f858784669b2e8a27ac33171288f94bc`
 **Capturas:** `figura-1280.png`, `figura-390.png` · **Cotejo de registros:**
 `cotejo-registros-1280.png` · **Exploración:** `cotejo.html`
@@ -19,7 +19,7 @@ Lo medí, y **existe**. Dos piezas ya dibujan este recorrido:
 
 | pieza | qué dibuja hoy |
 |---|---|
-| `UseCaseFigure`, variante `convierte` | dos barras rotuladas **CLP** y **USD** unidas por un tramo con cuña. Su propio comentario: «el mismo valor, dos unidades, sin ir a ninguna parte» |
+| `UseCaseFigure`, variante `convierte` | dos barras de **largo idéntico**, rotuladas **CLP** y **USD**, con la cuña girada 90° entre ellas. Su comentario: «el mismo valor, dos unidades, sin ir a ninguna parte · no hay frontera ni segunda contraparte — el dinero no se va» |
 | `content/scope.ts` → `EjeDeAlcance` | el tramo entero: «Tus pesos, en tu banco en Chile (CLP)» → «Cambiamos y verificamos» → «Dólar digital en tu billetera (USD · ~5 min)» |
 
 **Ninguna de las dos dice qué ES el dólar digital.** Una dice que el valor se convierte; la otra,
@@ -31,6 +31,13 @@ que el propio artículo ya escribe en prosa —«lo que sí compartimos con el e
 tokenizados es la infraestructura»— sin dibujarla.
 
 Si la figura dijera algo más que eso, sobraría.
+
+> **Corrección del 2026-09-22, del agente de Claude Code.** La primera versión de esta tabla
+> describía `convierte` como «dos barras unidas por un tramo con cuña», que mezcla dos figuras: la
+> que une **dos nodos** con una cuña horizontal es `cruza`, y lleva frontera punteada porque
+> significa «sales de Chile». Lo comprobé en la fuente y tiene razón. La conclusión aguanta
+> —ninguna de las dos dice qué **es** el dólar digital— pero de ese error sale una pregunta de
+> sistema que está en §3.c.
 
 ## 2. Dos registros, y el pequeño no aguanta
 
@@ -76,6 +83,37 @@ buena**:
 también: el glifo no distingue y no debe fingir que sí. Lo que distingue es el canto, y lo que lo
 nombra son las etiquetas —`pesos` y `dólar digital`—, que es el vocabulario de `content/process.ts`.
 
+## 3.c La topología, que es la pregunta que deja el error anterior
+
+El propio `UseCaseFigure` dice que **lo que distingue a sus tres figuras es la topología, y que esa
+topología es el dato**:
+
+| variante | topología | significa |
+|---|---|---|
+| `cruza` | nodo —cuña— nodo, **horizontal**, con frontera punteada al medio | uno a uno atravesando una frontera: sales de Chile |
+| `convierte` | dos barras de largo idéntico, **apiladas**, cuña vertical | el mismo valor, dos unidades, **sin ir a ninguna parte** |
+| `reparte` | un tronco que se bifurca | uno a varios |
+
+**Esta figura usa la topología de `cruza` menos la frontera.** El agente lo anotó como «dos formas
+para el mismo hecho»; creo que es algo más preciso y algo menos grave a la vez:
+
+- **Menos grave**, porque `convierte` está apilada justamente para no sugerir un viaje, y lo que la
+  hace decir «sales de Chile» a `cruza` **no es la horizontalidad: es la frontera punteada**, que
+  es la única marca punteada de todo el sistema. Esta figura no la lleva, así que no afirma ningún
+  cruce.
+- **Más preciso**, porque entonces la frontera es la que carga el significado y **eso no está
+  escrito en la tabla del §6.2**. Mientras no lo esté, quien compare las dos figuras puede concluir
+  —razonablemente— que se contradicen, y «arreglar» una. Es literalmente el escenario que el §6.2
+  se escribió para evitar.
+
+**Lo que propongo, y no es unificar los dibujos:** añadir al §6.2 la fila que falta —
+
+> | `--line` punteado | una frontera · es la única marca punteada del sistema |
+
+— y con ella la frase que la hace útil: *un par horizontal **sin** frontera no afirma ningún cruce;
+lo que afirma es una transformación entre dos estados del mismo valor.* Con eso las dos figuras
+dejan de parecer dos versiones de lo mismo y pasan a ser dos frases distintas, que es lo que son.
+
 ## 3.b La cuña, medida contra la del sitio
 
 No basta con copiar la forma: una cuña puede ser la correcta y estar gorda para su línea. Medí la
@@ -89,6 +127,11 @@ figuras de tamaños distintos se vean de la misma familia:
 
 **Mi primera versión daba 18,0** —la cuña escalada ×1,5 sobre un trazo que sólo subía ×1,58— y se
 veía gorda. Corregida a ×1,2 antes de entregar.
+
+> **Apunte del agente, correcto:** esa relación es **invariante de escala**. 21,6/1,5 en unidades
+> del lienzo da 14,4 sin renderizar nada, así que la medición en píxeles sobraba. La regla 14 —«si
+> el número describe el estado propuesto, se mide contra el build»— no aplica a una razón entre dos
+> longitudes del mismo sistema de coordenadas. Anotado junto a la regla.
 
 ## 4. Un hallazgo en las figuras que ya existen, medido de paso
 
@@ -164,3 +207,44 @@ Pendiente de quien corresponde:
 4. Si la figura acabara fuera del artículo, la frase tiene que entrar antes en `content/` (§3).
 
 Nada de esto está integrado. `cowork/` es sólo visualización.
+
+
+---
+
+## 8. La integración, y dos fallos míos que sólo aparecieron ahí  ·  `a0c12f5`
+
+El dibujo entró **copiado literalmente**. Lo que cambió es el envoltorio, y los dos cambios
+corrigen cosas mías.
+
+### 8.1 El `aria-hidden` no cubría lo que yo creía
+
+Lo puse en el `<svg>` y escribí «igual que `UseCaseFigure`». **No es igual.** Allí los rótulos son
+`<text>` **dentro** del SVG; aquí los saqué a HTML —con motivo, para que no escalen— y con eso los
+saqué también del alcance del atributo. Un lector de pantalla habría leído «pesos, dólar digital»
+sueltos entre dos párrafos. El agente envolvió dibujo y etiquetas juntos.
+
+**Lo peor es cómo lo di por bueno:** mi comprobación decía «imágenes en el árbol de accesibilidad:
+0» y de ahí concluí que la figura estaba oculta. Comprobé que **lo que oculté** estaba oculto, no
+**qué quedaba** anunciándose. Es la regla 26.
+
+### 8.2 En Markdown, un bloque de HTML termina en la primera línea vacía
+
+La maqueta tiene dos líneas en blanco dentro del bloque de la figura. En un `.md` eso **corta el
+bloque**: publicado, el artículo habría mostrado sólo la ficha de la izquierda y habría perdido el
+tramo, la cuña y la ficha de la derecha. No da error, el archivo fuente se ve bien, y sólo aparece
+midiendo los trazos del HTML servido.
+
+Yo propuse el sitio —«dentro del artículo, en «Qué hacemos en la mesa»»— y entregué la maqueta en
+HTML. **Las reglas del formato de destino eran parte de mi entrega.** Es la regla 27.
+
+### 8.3 Del copy entró una frase, no dos
+
+Bien hecho: la segunda mitad —el riel compartido, el fondo tokenizado redimiendo— ya está en el
+párrafo inmediatamente anterior, con esas palabras. En la maqueta no se ve porque ahí el párrafo
+aparece cortado. Quedó sólo lo aprobado y nuevo: *«El peso no está tokenizado; el dólar digital sí.
+Es el mismo dólar existiendo como unidades sobre una red.»*
+
+### 8.4 HTML crudo y no componente
+
+El artículo es `.md` y un componente exigiría `@astrojs/mdx`. Si una segunda pieza lo necesita,
+pasa a componente; está escrito en los dos sitios.
