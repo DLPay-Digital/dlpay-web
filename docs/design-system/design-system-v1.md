@@ -400,6 +400,7 @@ vocabulario geométrico ya no cabe en la regla dura de §6. Ésta es la semánti
 | Cuña | valor moviéndose · el trabajo cambia de manos |
 | Barra llena verde | una magnitud |
 | Filete `--ink-mute` | existe, es real, **no** es nuestro |
+| Canto dividido en unidades | la cosa está **hecha de unidades transferibles** |
 | `--line` | separador sin significado |
 
 **El color no es el portador del significado.** El verde dice «esta marca carga significado»; cuál
@@ -411,6 +412,13 @@ palabras distintas**, no dos usos del mismo color.
 Sin esta regla, quien compare los emblemas de `/empresas` —donde los nodos verdes rotulan CLP y
 USD, los dos extremos de la operación— con el eje de alcance —donde el tramo verde es el nuestro—
 concluirá, razonablemente, que el verde se usa de dos maneras incompatibles, y «arreglará» una.
+
+**Sobre el canto dividido, añadido el 2026-09-22.** Es la única marca que entró después de escrita
+esta tabla, y entró con la regla que la tabla exige: primero se usó en la portada del artículo de
+activos tokenizados (`PortadaFigura.astro`) y quedó sin documentar; al aparecer una **segunda**
+pieza con el mismo significado —la figura del riel, en el cuerpo de ese mismo artículo— pasó el
+umbral que hizo nacer este §6.2 y se escribe. **El número de marcas no es un dato**: veinticuatro no
+significa veinticuatro de nada, y cambiarlo no cambia lo que la figura dice.
 
 **Cómo se comprueba una figura nueva, antes de dibujarla:**
 

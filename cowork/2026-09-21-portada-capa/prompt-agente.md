@@ -1,3 +1,10 @@
+> **SUPERADO el 2026-09-22.** Sebastián aprobó la portada y la orden de trabajo vigente —esta
+> pieza y la figura de página, juntas— está en
+> `cowork/2026-09-22-riel-tokenizado/prompt-agente.md`. Este archivo se conserva porque
+> documenta el rechazo y lo que se aprendió de él.
+
+---
+
 # Prompt para el agente de Claude Code — portada del artículo de activos tokenizados · **v2**
 
 **Entrega:** `cowork/2026-09-21-portada-capa` · **Autor:** Claude Cowork · **Fecha:** 2026-09-21

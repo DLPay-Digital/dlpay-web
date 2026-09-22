@@ -251,6 +251,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
 | 2026-09-22 | [`2026-09-22-riel-tokenizado`](2026-09-22-riel-tokenizado/ficha.md) — figura de página: el peso no está tokenizado y el dólar digital sí. Nace del rechazo de la portada; autorizada por Sebastián | **En revisión** | — |
+| 2026-09-22 | [`2026-09-22-riel-tokenizado`](2026-09-22-riel-tokenizado/ficha.md) — figura de página: el peso, el dólar digital y la tokenización | **Integrada con cambios** | El dibujo tal cual. Cambia el envoltorio: `aria-hidden` cubre también las etiquetas, el copy no duplica lo que el artículo ya dice, y hubo que quitar las líneas en blanco del bloque HTML |
 | 2026-09-21 | [`2026-09-21-portada-capa`](2026-09-21-portada-capa/ficha.md) — pictograma de portada para el artículo de tokenizados · cuatro versiones | **Integrada el 2026-09-22 por decisión de Sebastián** | La v2, la de un solo nodo. Entró enmendando el DS §6.1, no esquivándolo. El verde pasa a `--verde` por §6.2. La v1 de dos monedas sigue rechazada por §1 |
 | 2026-09-17 | [`2026-09-17-gramatica-de-las-figuras`](2026-09-17-gramatica-de-las-figuras/gramatica.md) — el vocabulario de las cinco familias de figura, medido, y sección candidata para el DS §6.2 | **En revisión** | — |
 | 2026-09-17 | [`2026-09-17-empresas-j7`](2026-09-17-empresas-j7/ficha.md) — J7: la columna que faltaba y la FAQ propia | **Integrada** | Las dos piezas. `Faq.astro` pasa a props en vez de duplicarse, y las preguntas viven en `business.ts` |
@@ -995,3 +996,84 @@ lo que siempre hizo.
   `cifra`.
 - `CLAUDE.md` §6 decía todavía que el esquema tenía `coverImage` resuelta por `astro:assets`, que
   es falso desde el 2026-09-16. Corregido de paso.
+
+### Notas de la integración de `2026-09-22-riel-tokenizado`
+
+`md5` `f858784669b2e8a27ac33171288f94bc`, el declarado. **La geometría se copió literalmente**; los
+`path` del archivo entregado están en el artículo sin una coma de diferencia.
+
+#### Lo medido, contra el build y en el navegador
+
+| | ficha | medido |
+|---|---|---|
+| Dibujo a 1280 | 420 × 136,5 | **420 × 136,5** · escala 1,3125 |
+| Etiquetas | 13 px en los tres anchos | **13 px** a 320, 390 y 1280 |
+| Ancho de la cuña / grosor del trazo | 28,4 / 1,97 = **14,4** | **28,35 / 1,97 = 14,40** |
+| La misma relación en `UseCaseFigure` | 18,0 / 1,25 = **14,4** | **14,40** |
+| `--verde-deep` sobre papel | 5,44 | **5,4444** |
+| `--ink-mute` sobre papel | 5,50 | **5,4990** |
+| `--verde` sobre papel (citado para descartarlo) | 2,02 | **2,0185** |
+| Desborde y scroll horizontal | 0 | **0** a 320, 390 y 1280 |
+| Animaciones dentro de la figura | 0 | **0** (las 2 de la página son la franja, ADR-0006) |
+
+La cuña es la canónica ×1,2 exacto —`6-5 6 10 6-5` → `7.2-6 7.2 12 7.2-6`— sobre un trazo también
+×1,2 —1,25 → 1,5—, y por eso la relación se conserva. Vale la pena notar que **esa relación es
+invariante de escala**: 21,6/1,5 da 14,4 se dibuje al tamaño que se dibuje, así que no hacía falta
+el build para comprobarla. El trabajo real está en haber escalado las dos cosas por el mismo factor,
+que es lo que la primera versión no hacía.
+
+**Una medida que no reproduce, y es de la maqueta, no del dibujo.** A 320 px la ficha da 280 px de
+ancho y 91 de alto; en el artículo salen **265 × 86,13**. La diferencia es el relleno de la columna:
+el andamio usaba el suyo y el cuerpo del artículo usa `--pad-section-m`. No afecta a nada —no hay
+desborde y las etiquetas siguen en 13 px— pero las cifras de esa columna de la tabla son del
+andamio.
+
+#### Tres cosas que cambiaron al trasladar
+
+1. **`aria-hidden` envuelve también a las etiquetas.** La ficha lo pone sólo en el `<svg>`, «igual
+   que `UseCaseFigure`». No es igual: en `UseCaseFigure` los rótulos son `<text>` **dentro** del SVG
+   y se ocultan con él; acá van fuera —correctamente, para que no escalen— y sin envoltorio un
+   lector de pantalla leería «pesos, dólar digital» sueltos entre dos párrafos. Va un `<div>`
+   envolvente con `aria-hidden="true"`.
+2. **El copy nuevo se reduce a la frase que de verdad es nueva.** El párrafo propuesto termina
+   diciendo que el riel se comparte con el ecosistema de activos tokenizados y que al convertir
+   pesos se usa la misma infraestructura que un fondo tokenizado para redimir — **el artículo ya lo
+   dice, en el párrafo inmediatamente anterior y con las mismas palabras**. La maqueta no lo
+   detecta porque ahí el párrafo de arriba aparece cortado después de «principalmente USDT». Entra
+   sólo *«El peso no está tokenizado; el dólar digital sí. Es el mismo dólar existiendo como
+   unidades sobre una red.»*, que es la aportación real y la que Sebastián aprobó.
+3. **Las líneas en blanco del bloque HTML hubo que quitarlas.** En Markdown un bloque de HTML
+   termina en la primera línea vacía (CommonMark §4.6). Pegado tal cual, el build publicaba **sólo
+   la moneda izquierda**: el tramo, la cuña y la moneda derecha caían fuera del bloque. No da error
+   y el archivo fuente se ve perfecto; se detectó contando los `path` del HTML servido. Queda
+   escrito en el artículo, junto al bloque.
+
+#### Un error de la ficha que no cambia la conclusión
+
+La tabla de solape de §1 atribuye a la variante **`convierte`** de `UseCaseFigure` el dibujo de
+«CLP y USD unidas por un tramo con cuña». No es ésa: `convierte` son **dos barras de largo
+idéntico** con la cuña girada 90°, y significa «el mismo valor, dos unidades, sin ir a ninguna
+parte». La que une dos nodos con un tramo y una cuña es **`cruza`**, que además lleva la frontera
+punteada y significa «sales de Chile».
+
+La conclusión aguanta —ninguna de las dos dice **qué es** el dólar digital—, pero de ahí sale algo
+que conviene mirar y que no bloqueaba esta entrega: **en la Home la conversión se dibuja como dos
+barras paralelas, precisamente para no sugerir un traslado, y acá se dibuja como A → B con una
+cuña.** No se contradicen —la figura del riel no lleva frontera punteada, así que no afirma ningún
+cruce— pero son dos formas distintas para el mismo hecho, que es el tipo de divergencia que el
+§6.2 existe para evitar. Queda anotado; resolverlo es una decisión de diseño, no de esta entrega.
+
+#### Lo aceptado tal cual
+
+El `$` en las dos fichas, por el motivo correcto: en Chile el peso y el dólar comparten glifo y el
+dibujo no debe fingir que no. La distinción la llevan el canto y las etiquetas. `--verde-deep`
+porque la figura va sobre papel. Las etiquetas fuera del SVG. Y la fila nueva del §6.2, que entra
+escrita con su condición: **el número de marcas no es un dato**.
+
+#### Dónde vive, y cuándo deja de vivir ahí
+
+En el Markdown del artículo, como HTML crudo, con los estilos en `[slug].astro` bajo `.prose`. No es
+un componente porque el artículo es `.md` y no `.mdx`, y `.mdx` exige `@astrojs/mdx`, una
+dependencia nueva que CLAUDE.md §0.3 no admite sin el análisis del §8. **Si una segunda pieza
+necesita esta figura, deja de ser contenido y pasa a componente**, por el mismo criterio que sacó el
+eje de alcance a `EjeDeAlcance.astro`. Escrito en los dos sitios.

@@ -165,6 +165,43 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
     el scroll horizontal de TODA la página en móvil, no sólo del artículo.
     `height: auto` conserva la proporción cuando el ancho se reduce.
   */
+  /*
+    La figura del riel tokenizado, del artículo de activos tokenizados. Vive en
+    el Markdown como HTML crudo —ver el comentario allí— así que sus estilos van
+    con `:global`, igual que los del resto del cuerpo.
+
+    Es UNA figura de UN artículo. Si aparece una segunda, deja de ser contenido y
+    se convierte en componente: tres copias de un dibujo que afirma algo es lo
+    que se decidió no tener cuando el eje de alcance salió a `EjeDeAlcance.astro`.
+
+    `--verde-deep` y no `--verde`: la figura va sobre papel y ahí `--verde` da
+    2,02:1, por debajo del 3:1 de un gráfico (Design System §2.4 y §6.2). Da
+    5,44:1.
+  */
+  .prose :global(.riel) { margin: var(--s-6) 0; }
+  /* El dibujo escala con el ancho; las etiquetas NO, porque son HTML y no
+     `<text>`. Dentro del SVG, a 320 px caerían a 9,6 px reales. */
+  .prose :global(.riel-fig) { display: block; width: 100%; max-width: 420px; height: auto; }
+  .prose :global(.riel-tags) {
+    display: flex;
+    justify-content: space-between;
+    max-width: 420px;
+    margin-top: var(--s-2);
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+  }
+  .prose :global(.riel .aro),
+  .prose :global(.riel .signo),
+  .prose :global(.riel .unidad),
+  .prose :global(.riel .link) { fill: none; stroke: var(--verde-deep); }
+  .prose :global(.riel .aro) { stroke-width: 1.5; }
+  .prose :global(.riel .signo) { stroke-width: 1.9; }
+  .prose :global(.riel .unidad) { stroke-width: 1.1; }
+  /* La cuña canónica del DS a escala 1,2, sobre un trazo también a 1,2: así la
+     relación ancho/grosor sigue siendo 14,4, la misma que en `UseCaseFigure`. */
+  .prose :global(.riel .link) { stroke-width: 1.5; stroke-linejoin: miter; }
+
   .prose :global(img) {
     display: block;
     max-width: 100%;

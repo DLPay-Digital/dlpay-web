@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propuesta — figura de página: el peso, el dólar digital y la tokenización</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+  @font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+
+  body{background:var(--papel)}
+  .board{max-width:var(--container);margin:0 auto;padding:var(--s-7) var(--pad-section) var(--s-4)}
+  .board p{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute)}
+  .board h2{font-size:var(--t-h3);margin-top:var(--s-2);padding-top:var(--s-3);
+    border-top:1px solid var(--line)}
+  .scaffold{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
+    background:var(--papel-2);border:1px dashed var(--line);padding:var(--s-3);text-align:center}
+
+  .col{max-width:760px;margin:0 auto;padding:var(--s-8) var(--pad-section-m)}
+  .col h3{font-size:var(--t-h3);margin-bottom:var(--s-4)}
+  .col p{font-size:17px;line-height:1.65;max-width:66ch;margin-bottom:var(--s-4)}
+
+  /* ── LA FIGURA ─────────────────────────────────────────────────────────────
+     Es una FIGURA DE PÁGINA, no una portada. La distinción no es de tamaño: el
+     DS §6.1 dice que «una portada de artículo muestra un dato, no un
+     movimiento» y que va «sin punta de flecha». Aquí sí hay movimiento y es
+     lícito — es lo mismo que dibujan `UseCaseFigure` en la Home y el eje de
+     alcance—, porque una figura de página sí puede mostrar un movimiento.
+
+     QUÉ DICE, y por qué no repite lo que ya hay. La variante `convierte` de
+     `UseCaseFigure` ya dibuja CLP → USD con una cuña: «el mismo valor, dos
+     unidades, sin ir a ninguna parte». Y `content/scope.ts` ya declara el tramo
+     entero. Ninguna de las dos dice **qué es** el dólar digital. Esta figura
+     añade eso y sólo eso: **el peso no está tokenizado y el dólar digital sí**,
+     que es lo que conecta el artículo con lo que realmente hacemos.
+
+     El vocabulario es el que ya existe (DS §6.2):
+     · dos extremos, un tramo y una cuña = valor moviéndose. Copiado de
+       `UseCaseFigure`: el tramo lleva la cuña dentro del propio `path`.
+     · `--verde-deep` sobre papel (5,44:1). NO `--verde`, que sobre papel da
+       2,02 — ver la nota de la ficha, porque las figuras de la Home sí lo usan.
+     · las etiquetas van en `--ink-mute`, como las de `UseCaseFigure`.
+     · la cuña es la canónica del DS —`6-5 6 10 6-5`— escalada ×1,2, y no al
+       azar: medido sobre el build, la cuña de `UseCaseFigure` guarda con su
+       propio trazo una relación de 14,4 (18 px de ancho sobre 1,25 de grosor).
+       Ésta se dibuja más grande porque la figura lo es, pero conserva esa misma
+       relación: 28,4 px sobre 1,97. Mi primera versión daba 18,0 y la cuña
+       salía gorda para su línea.
+
+     LA MARCA NUEVA, que hay que aprobar antes de usarla en otro sitio:
+     **canto dividido = hecho de unidades transferibles.** El DS §6.2 obliga a
+     escribir por qué antes de estrenar una marca, así que queda propuesta, no
+     dada por buena. **El número de marcas (24) NO es un dato** y la figura no
+     debe leerse como si dijera veinticuatro de algo.
+
+     `aria-hidden="true"`, igual que `UseCaseFigure`: el párrafo de al lado dice
+     esto mismo con palabras, y un lector de pantalla no debe oírlo dos veces.
+     Por eso el párrafo **no es opcional**: si la figura viaja sola, lo que dice
+     con la posición deja de estar dicho con texto. */
+  .fig{display:block;width:100%;max-width:420px;height:auto;margin:0}
+  /* Las etiquetas van en HTML y NO dentro del SVG. Medido: con los `<text>`
+     dentro, a 320 px el lienzo se dibujaba a 0,875 y los 11 px del rótulo
+     caían a 9,6 px reales. Es el mismo defecto que sacó a `PortadaDato` de
+     SVG —allí los rótulos acababan en ~6 px— y no hay por qué volver a
+     pagarlo: el dibujo escala, el texto no.
+     A ras de los extremos, como las etiquetas de `UseCaseFigure` (`x=0` y
+     `x=132 text-anchor=end`), no centradas bajo cada ficha: así no hay riesgo
+     de desborde en el ancho mínimo. */
+  /* `<div>` y no `<p>`: con un `<p>` la regla `.col p` del andamio ganaba en
+     especificidad y le imponía 17 px y 66ch. Medido: la fila salía a 1.030 px
+     de ancho contra los 420 del dibujo. */
+  .tags{display:flex;justify-content:space-between;width:100%;max-width:420px;
+    font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
+    margin:var(--s-2) 0 var(--s-4)}
+  .aro,.signo,.unidad,.link{fill:none;stroke:var(--verde-deep)}
+  .aro{stroke-width:1.5}
+  .signo{stroke-width:1.9}
+  .unidad{stroke-width:1.1}
+  .link{stroke-width:1.5;stroke-linejoin:miter}
+</style>
+</head>
+<body>
+
+<div class="board">
+  <p>cowork · 2026-09-22 · figura de página · sección «Qué hacemos en la mesa»</p>
+  <h2>El peso, el dólar digital y la tokenización</h2>
+  <p>figura de página, no portada · cuña lícita · etiquetas · sobre papel</p>
+</div>
+<div class="scaffold">andamio · va dentro del cuerpo del artículo, en la columna de lectura</div>
+
+<div class="col">
+  <h3>Qué hacemos en la mesa</h3>
+
+  <p>En DLPay operamos en el riel de dólar digital que hoy es la capa de settlement de todo el
+  ecosistema descrito. No participamos en la tokenización de acciones, bonos ni fondos: nuestro
+  servicio es el cambio de divisas entre pesos chilenos y dólar digital, principalmente USDT.</p>
+
+  <svg class="fig" viewBox="0 0 320 104" aria-hidden="true">
+    <circle class="aro" cx="44" cy="52" r="30"/>
+    <circle class="aro" cx="44" cy="52" r="24"/>
+    <path class="signo" d="M44.00 36.40 V67.60"/>
+    <path class="signo" d="M50.60 46.00 C50.60 43.00 47.72 41.20 44.00 41.20 C40.28 41.20 37.40 43.00 37.40 46.00 C37.40 49.00 40.04 50.50 44.00 52.00 C47.96 53.50 50.60 55.00 50.60 58.00 C50.60 61.00 47.72 62.80 44.00 62.80 C40.28 62.80 37.40 61.00 37.40 58.00"/>
+
+    <path class="link" d="M80 52h69.2l7.2-6 7.2 12 7.2-6h69.2"/>
+
+    <circle class="aro" cx="276" cy="52" r="30"/>
+    <circle class="aro" cx="276" cy="52" r="24"/>
+    <path class="unidad" d="M300.00 52.00 L306.00 52.00 M299.18 58.21 L304.98 59.76 M296.78 64.00 L301.98 67.00 M292.97 68.97 L297.21 73.21 M288.00 72.78 L291.00 77.98 M282.21 75.18 L283.76 80.98 M276.00 76.00 L276.00 82.00 M269.79 75.18 L268.24 80.98 M264.00 72.78 L261.00 77.98 M259.03 68.97 L254.79 73.21 M255.22 64.00 L250.02 67.00 M252.82 58.21 L247.02 59.76 M252.00 52.00 L246.00 52.00 M252.82 45.79 L247.02 44.24 M255.22 40.00 L250.02 37.00 M259.03 35.03 L254.79 30.79 M264.00 31.22 L261.00 26.02 M269.79 28.82 L268.24 23.02 M276.00 28.00 L276.00 22.00 M282.21 28.82 L283.76 23.02 M288.00 31.22 L291.00 26.02 M292.97 35.03 L297.21 30.79 M296.78 40.00 L301.98 37.00 M299.18 45.79 L304.98 44.24"/>
+    <path class="signo" d="M276.00 36.40 V67.60"/>
+    <path class="signo" d="M282.60 46.00 C282.60 43.00 279.72 41.20 276.00 41.20 C272.28 41.20 269.40 43.00 269.40 46.00 C269.40 49.00 272.04 50.50 276.00 52.00 C279.96 53.50 282.60 55.00 282.60 58.00 C282.60 61.00 279.72 62.80 276.00 62.80 C272.28 62.80 269.40 61.00 269.40 58.00"/>
+
+  </svg>
+  <div class="tags"><span>pesos</span><span>dólar digital</span></div>
+
+  <p><strong>El peso no está tokenizado; el dólar digital sí.</strong> Es el mismo dólar
+  existiendo como unidades sobre una red, y ése es el riel que compartimos con el ecosistema de
+  activos tokenizados: cuando alguien convierte pesos con nosotros, se mueve sobre la misma
+  infraestructura que usa un fondo tokenizado para redimir a un inversionista.</p>
+</div>
+
+<div class="scaffold">andamio · debajo sigue el artículo, sin cambios</div>
+
+</body>
+</html>

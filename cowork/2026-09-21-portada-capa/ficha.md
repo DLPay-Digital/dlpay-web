@@ -1,6 +1,7 @@
 # Ficha — portada mínima para el artículo de activos tokenizados
 
-**Entrega:** `2026-09-21-portada-capa` · **Autor:** Claude Cowork · **Estado:** **Rechazada** por DS §6.1 · el artículo se queda sin portada (§8)
+**Entrega:** `2026-09-21-portada-capa` · **Autor:** Claude Cowork · **Estado:** **Integrada el 2026-09-22** · la v2, la ficha sola con la T, como `PortadaFigura.astro`.
+El §8 conserva el rechazo anterior porque es el recorrido; **el veredicto vigente está en §9.**
 **Pieza final:** `moneda.html` — **v2, un solo nodo** tras el rechazo por §1 (§3.e)
 **Capturas:** `final-banda-1280.png`, `final-banda-390.png`, `final-ctx-1280.png`, `a11y-forced.png`
 **Cotejos:** `cotejo-1280.png` (canto liso / 24 marcas / 12 marcas),
@@ -424,3 +425,29 @@ Nada se integra. Las cuatro versiones y sus cotejos se conservan porque el recor
 argumento: `opciones.html` → `index.html` → `tokenizando.html` → `moneda.html` (v1 de dos monedas,
 v2 de un nodo). El veredicto es que **el artículo no lleva portada**, que es lo que ya decía su
 frontmatter.
+
+
+---
+
+## 9. El veredicto cambia: la portada entra  ·  *2026-09-22*
+
+Sebastián aprueba la portada, y con el agente de Claude Code deciden **dejar sólo la ficha del
+token con la T** — es decir, la **v2**, `moneda.html`, md5 `78a30cf5232177dcf4f5abdad99ba258`. La
+versión de dos monedas no entra en ninguna de sus formas.
+
+**Lo que esto no cambia.** El §8 se queda como está: el recorrido y los errores son el argumento, y
+borrarlos dejaría la carpeta contando una historia más limpia de la que ocurrió.
+
+**El §6.1 quedó resuelto por la vía correcta.** Yo había dejado anotado que la pieza lleva dos
+galones y que el cuerpo de la regla dice «sin punta de flecha», con dos salidas posibles. El agente
+tomó la buena: **enmendó la regla en vez de saltársela.** La enmienda del 2026-09-22 dice que lo que
+§6.1 prohíbe es la afirmación causal **entre dos cosas**, y que un bucle de un solo nodo no tiene
+ese par; la condición —un nodo, ninguna contraparte, sin cifra, sin texto, sin cuña— es ahora parte
+de la regla.
+
+**Un cambio suyo sobre el archivo entregado, y tiene razón:** el verde pasa de `--verde-hi` a
+`--verde` (8,45:1 sobre tinta). Es el §6.2 aplicado bien —el fondo elige el verde, no el
+significado— y cierra el error que yo había arrastrado desde el comentario del token. La geometría
+no se tocó.
+
+La figura de página va aparte, en `cowork/2026-09-22-riel-tokenizado/`.

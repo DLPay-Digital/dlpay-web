@@ -195,6 +195,55 @@ cuando alguien en DLPay convierte pesos a dólar digital, se mueve sobre el mism
 utiliza un fondo tokenizado para redimir a un inversionista, o un exchange para liquidar la
 compraventa de una acción tokenizada.
 
+<!--
+  FIGURA DE PÁGINA — el peso, el dólar digital y la tokenización.
+  Entrega `cowork/2026-09-22-riel-tokenizado`, aprobada por Sebastián.
+
+  Va en HTML crudo dentro del Markdown, y no como componente, porque este
+  artículo es `.md` y no `.mdx`: usar un componente aquí obligaría a instalar
+  `@astrojs/mdx`, que es una dependencia nueva y CLAUDE.md §0.3 no la admite sin
+  el análisis del §8. Sus estilos viven en `[slug].astro`, bajo `.prose`, que es
+  donde ya viven los del resto del cuerpo. **Si una segunda pieza la necesita,
+  deja de ser contenido y pasa a ser componente.**
+
+  `aria-hidden` envuelve al dibujo Y a sus etiquetas. En `UseCaseFigure` los
+  rótulos van DENTRO del SVG, así que quedan ocultos con él; acá van fuera —para
+  que no escalen con el ancho— y sin esta envoltura un lector de pantalla leería
+  «pesos, dólar digital» sueltos entre dos párrafos. El párrafo de abajo dice lo
+  mismo con palabras, y por eso no es opcional.
+-->
+<!--
+  SIN LÍNEAS EN BLANCO dentro de este bloque. En Markdown un bloque de HTML
+  termina en la primera línea vacía (CommonMark §4.6), así que las que traía la
+  maqueta cortaban el SVG por la mitad: el build publicaba la moneda izquierda y
+  perdía el tramo, la cuña y la moneda derecha. Se vio midiendo el HTML servido,
+  no el archivo.
+-->
+<div class="riel" aria-hidden="true">
+  <svg class="riel-fig" viewBox="0 0 320 104">
+    <circle class="aro" cx="44" cy="52" r="30"/>
+    <circle class="aro" cx="44" cy="52" r="24"/>
+    <path class="signo" d="M44.00 36.40 V67.60"/>
+    <path class="signo" d="M50.60 46.00 C50.60 43.00 47.72 41.20 44.00 41.20 C40.28 41.20 37.40 43.00 37.40 46.00 C37.40 49.00 40.04 50.50 44.00 52.00 C47.96 53.50 50.60 55.00 50.60 58.00 C50.60 61.00 47.72 62.80 44.00 62.80 C40.28 62.80 37.40 61.00 37.40 58.00"/>
+    <path class="link" d="M80 52h69.2l7.2-6 7.2 12 7.2-6h69.2"/>
+    <circle class="aro" cx="276" cy="52" r="30"/>
+    <circle class="aro" cx="276" cy="52" r="24"/>
+    <path class="unidad" d="M300.00 52.00 L306.00 52.00 M299.18 58.21 L304.98 59.76 M296.78 64.00 L301.98 67.00 M292.97 68.97 L297.21 73.21 M288.00 72.78 L291.00 77.98 M282.21 75.18 L283.76 80.98 M276.00 76.00 L276.00 82.00 M269.79 75.18 L268.24 80.98 M264.00 72.78 L261.00 77.98 M259.03 68.97 L254.79 73.21 M255.22 64.00 L250.02 67.00 M252.82 58.21 L247.02 59.76 M252.00 52.00 L246.00 52.00 M252.82 45.79 L247.02 44.24 M255.22 40.00 L250.02 37.00 M259.03 35.03 L254.79 30.79 M264.00 31.22 L261.00 26.02 M269.79 28.82 L268.24 23.02 M276.00 28.00 L276.00 22.00 M282.21 28.82 L283.76 23.02 M288.00 31.22 L291.00 26.02 M292.97 35.03 L297.21 30.79 M296.78 40.00 L301.98 37.00 M299.18 45.79 L304.98 44.24"/>
+    <path class="signo" d="M276.00 36.40 V67.60"/>
+    <path class="signo" d="M282.60 46.00 C282.60 43.00 279.72 41.20 276.00 41.20 C272.28 41.20 269.40 43.00 269.40 46.00 C269.40 49.00 272.04 50.50 276.00 52.00 C279.96 53.50 282.60 55.00 282.60 58.00 C282.60 61.00 279.72 62.80 276.00 62.80 C272.28 62.80 269.40 61.00 269.40 58.00"/>
+  </svg>
+  <div class="riel-tags"><span>pesos</span><span>dólar digital</span></div>
+</div>
+
+<!--
+  REQUIERE VALIDACIÓN DE COMPLIANCE — aprobado por Sebastián el 2026-09-22 junto
+  con la figura. Es la única frase nueva de la entrega: el resto del párrafo que
+  la acompañaba en la maqueta repetía lo que el párrafo de arriba ya dice sobre
+  el riel compartido, y no se duplica.
+-->
+**El peso no está tokenizado; el dólar digital sí.** Es el mismo dólar existiendo como unidades
+sobre una red.
+
 > El precio de referencia no es una promesa de ejecución. Lo confirma una persona antes de cerrar la operación.
 
 La conversación sobre tokenización va a seguir. Es probable que en los próximos trimestres

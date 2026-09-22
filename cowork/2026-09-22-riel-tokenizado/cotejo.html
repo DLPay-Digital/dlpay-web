@@ -1,0 +1,64 @@
+<!doctype html><html lang="es-CL"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Figura de página — el riel tokenizado</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css"><style>
+@font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+@font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+body{background:var(--papel);margin:0}
+.board{max-width:760px;margin:0 auto;padding:var(--s-7) var(--pad-section-m)}
+.rot{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);margin:var(--s-6) 0 var(--s-3)}
+.board p.cuerpo{font-size:17px;line-height:1.65;max-width:66ch}
+
+.fig{display:block;height:auto;margin:var(--s-4) 0}
+.pict{width:100%;max-width:420px}
+.sist{width:100%;max-width:220px}
+@media(min-width:760px){.sist{max-width:132px}}
+
+.aro,.signo,.unidad,.link,.unidad-sm,.nodo-aro{fill:none;stroke:var(--verde-deep)}
+.aro{stroke-width:1.5}
+.signo{stroke-width:1.9}
+.unidad{stroke-width:1.1}
+.link{stroke-width:1.5;stroke-linejoin:miter}
+.nodo-aro{stroke-width:1.1}
+.unidad-sm{stroke-width:0.8}
+.node{fill:var(--verde-deep)}
+.tag{font-family:var(--f-num);font-size:11px;fill:var(--ink-mute)}
+</style></head><body>
+<div class="board">
+  <p class="rot">cowork · 2026-09-22 · figura de página · «Qué hacemos en la mesa»</p>
+
+  <p class="rot">B · el pictograma. El canto dividido es la tokenización.</p>
+  <svg class="fig pict" viewBox="0 0 320 120" role="img"
+     aria-label="Dos fichas con el signo peso unidas por un tramo con una cuña. La de la izquierda tiene el canto liso; la de la derecha, dividido en unidades.">
+  <circle class="aro" cx="44" cy="52" r="30"/>
+  <circle class="aro" cx="44" cy="52" r="24"/>
+  <path class="signo" d="M44.00 36.40 V67.60"/>
+  <path class="signo" d="M50.60 46.00 C50.60 43.00 47.72 41.20 44.00 41.20 C40.28 41.20 37.40 43.00 37.40 46.00 C37.40 49.00 40.04 50.50 44.00 52.00 C47.96 53.50 50.60 55.00 50.60 58.00 C50.60 61.00 47.72 62.80 44.00 62.80 C40.28 62.80 37.40 61.00 37.40 58.00"/>
+
+  <path class="link" d="M80 52h66.5l9-7.5 9 15 9-7.5h66.5"/>
+
+  <circle class="aro" cx="276" cy="52" r="30"/>
+  <circle class="aro" cx="276" cy="52" r="24"/>
+  <path class="unidad" d="M300.00 52.00 L306.00 52.00 M299.18 58.21 L304.98 59.76 M296.78 64.00 L301.98 67.00 M292.97 68.97 L297.21 73.21 M288.00 72.78 L291.00 77.98 M282.21 75.18 L283.76 80.98 M276.00 76.00 L276.00 82.00 M269.79 75.18 L268.24 80.98 M264.00 72.78 L261.00 77.98 M259.03 68.97 L254.79 73.21 M255.22 64.00 L250.02 67.00 M252.82 58.21 L247.02 59.76 M252.00 52.00 L246.00 52.00 M252.82 45.79 L247.02 44.24 M255.22 40.00 L250.02 37.00 M259.03 35.03 L254.79 30.79 M264.00 31.22 L261.00 26.02 M269.79 28.82 L268.24 23.02 M276.00 28.00 L276.00 22.00 M282.21 28.82 L283.76 23.02 M288.00 31.22 L291.00 26.02 M292.97 35.03 L297.21 30.79 M296.78 40.00 L301.98 37.00 M299.18 45.79 L304.98 44.24"/>
+  <path class="signo" d="M276.00 36.40 V67.60"/>
+  <path class="signo" d="M282.60 46.00 C282.60 43.00 279.72 41.20 276.00 41.20 C272.28 41.20 269.40 43.00 269.40 46.00 C269.40 49.00 272.04 50.50 276.00 52.00 C279.96 53.50 282.60 55.00 282.60 58.00 C282.60 61.00 279.72 62.80 276.00 62.80 C272.28 62.80 269.40 61.00 269.40 58.00"/>
+
+  <text class="tag" x="44" y="104" text-anchor="middle">pesos</text>
+  <text class="tag" x="276" y="104" text-anchor="middle">dólar digital</text>
+</svg>
+  <p class="cuerpo">El peso no está tokenizado. El dólar digital sí: es el mismo dólar,
+  existiendo como unidades sobre una red.</p>
+
+  <p class="rot">A · la gramática que ya existe (UseCaseFigure), a su tamaño real</p>
+  <svg class="fig sist" viewBox="0 0 132 46" role="img"
+     aria-label="Dos extremos unidos por un tramo con una cuña; el de la derecha está dividido en unidades.">
+  <circle class="node" cx="5" cy="19" r="4.5"/>
+  <path class="link" d="M14 19h40l6-5 6 10 6-5h46"/>
+  <circle class="nodo-aro" cx="127" cy="19" r="4.5"/>
+  <path class="unidad-sm" d="M129.60 19.00 L131.50 19.00 M128.84 20.84 L130.18 22.18 M127.00 21.60 L127.00 23.50 M125.16 20.84 L123.82 22.18 M124.40 19.00 L122.50 19.00 M125.16 17.16 L123.82 15.82 M127.00 16.40 L127.00 14.50 M128.84 17.16 L130.18 15.82"/>
+  <text class="tag" x="0" y="43">$</text>
+  <text class="tag" x="132" y="43" text-anchor="end">dólar digital</text>
+</svg>
+  <p class="cuerpo">Mismo contenido, dibujado con el vocabulario de las figuras de la Home.</p>
+</div>
+</body></html>
