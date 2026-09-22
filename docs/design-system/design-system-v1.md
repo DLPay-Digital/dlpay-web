@@ -326,7 +326,7 @@ tarjeta": borde/fill/radio/sombra se gastan por rol, para levantar **una** cosa.
 | Geometría que compita visualmente con el cotizador. |
 | **La cuña en una portada de artículo.** Ver §6.1. |
 
-### 6.1 La cuña no entra en las portadas  ·  *añadido el 2026-09-16*
+### 6.1 Qué puede llevar una portada  ·  *añadido el 2026-09-16 · enmendado el 2026-09-22*
 
 La cuña significa **valor moviéndose**: es la misma marca que dibuja pesos cruzando una frontera en
 las figuras de `/empresas`. Una **portada de artículo muestra un dato**, no un movimiento. En cuanto
@@ -346,6 +346,45 @@ va a ninguna parte. Las dos formas están implementadas en `src/components/Porta
 
 Se aplica a portadas de artículo. El resto del sistema geométrico no cambia: las cuñas del héroe y
 las figuras de `/empresas` representan movimiento real y siguen siendo correctas.
+
+#### Enmienda del 2026-09-22 — el pictograma de un solo nodo
+
+**Una portada puede además ser un pictograma del asunto del artículo, sin cifra, si y sólo si tiene
+un solo nodo.** Aprobada por Sebastián para el artículo de activos tokenizados. Implementada en
+`src/components/PortadaFigura.astro`, con un catálogo cerrado: un artículo elige entre los dibujos
+que el sistema ya razona, nunca trae uno suyo.
+
+**Por qué la regla admite esto sin contradecirse.** Lo que §6.1 prohíbe, y el párrafo de arriba lo
+dice con esas palabras, es la **afirmación causal**: «entre dos cosas que no se mueven una hacia la
+otra, eso es una afirmación causal». El sujeto de la prohibición es el *par*. Un bucle con un solo
+nodo no tiene par: dice que la cosa dibujada circula —una propiedad suya— y no que alguien la
+intercambie por otra. La portada de la Fed fallaba porque unía FOMC y CLP; ésta no une nada.
+
+**La condición, que no se puede relajar:**
+
+| | |
+|---|---|
+| **Un solo nodo** | Ninguna contraparte dibujada. Dos nodos y un movimiento entre ellos es un intercambio, y en una página de DLPay uno de los dos extremos se leerá como nosotros |
+| Sin cifra | Si hay número, el tipo correcto es `cifra` o `rango`, con su fuente |
+| Sin texto | Un SVG a `width: 100%` escala sus rótulos; es el fallo que sacó a `PortadaDato` del SVG |
+| Sin cuña | La cuña sigue fuera: es la marca de *valor cambiando de manos*, que es exactamente el par que esto no puede tener |
+
+La primera versión de este pictograma traía **dos** monedas, una con una T y otra con el signo del
+dólar, unidas por el bucle. Se rechazó: en una página nuestra ese `$` se lee como nuestro dólar
+digital, así que el dibujo afirmaba que cambiamos activos tokenizados por él — lo contrario de lo
+que el artículo dice y de lo que CLAUDE.md §1 permite. **Quitar una de las dos puntas de flecha no
+lo arreglaba**, porque el problema nunca fue la dirección sino qué dos cosas unía el bucle. Lo que
+lo arregló fue quitar el segundo nodo.
+
+**Sobre las puntas de flecha.** El párrafo de arriba las prohíbe en el segmento de un intervalo,
+«porque un rango no va a ninguna parte», y ese motivo sigue intacto: en un rango la flecha inventa
+una dirección que el dato no tiene. En un bucle de circulación la dirección **es** el contenido, y
+no apunta a ninguna contraparte porque no hay ninguna.
+
+**Lo que esta enmienda no abre.** No es la vuelta de `coverImage`. El catálogo es un `z.enum`
+cerrado en el esquema: añadir un dibujo obliga a pasar por `PortadaFigura.astro`, que es donde está
+escrito qué puede afirmar una figura en una página de DLPay. Un artículo no puede traer una imagen,
+ni encargarla, ni describirla en el frontmatter.
 
 ### 6.2 El significado lo lleva la marca, no el color  ·  *añadido el 2026-09-17*
 

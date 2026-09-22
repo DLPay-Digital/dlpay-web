@@ -13,6 +13,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import Motion from '../../components/Motion.astro';
 import PortadaDato from '../../components/PortadaDato.astro';
+import PortadaFigura from '../../components/PortadaFigura.astro';
 import { publishedPosts } from '../../lib/blog.ts';
 
 export async function getStaticPaths() {
@@ -53,8 +54,19 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
 
       Sin portada el artículo arranca por el titular y funciona igual: por eso
       el campo es opcional en el esquema.
+
+      Dos componentes y no uno: `PortadaDato` dibuja una cifra o un intervalo
+      —con su unidad, su fecha y su fuente— y `PortadaFigura` un pictograma del
+      asunto, que no lleva ninguno de esos campos. El esquema es una unión
+      discriminada, así que quitar esta bifurcación no compila: el día que entre
+      un tercer tipo, TypeScript avisa acá.
     */}
-    {post.data.portada && <PortadaDato portada={post.data.portada} />}
+    {post.data.portada &&
+      (post.data.portada.tipo === 'figura' ? (
+        <PortadaFigura figura={post.data.portada.figura} />
+      ) : (
+        <PortadaDato portada={post.data.portada} />
+      ))}
 
     <article class="post">
       <header class="head">

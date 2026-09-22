@@ -1,7 +1,11 @@
 ---
 /**
- * La portada de un artículo del blog: una figura de DATO, dibujada en el
- * sistema. Sin archivos y sin imágenes.
+ * La portada de un artículo del blog cuando lo que ilustra ES UN DATO: una
+ * cifra o un intervalo, dibujados en el sistema. Sin archivos y sin imágenes.
+ *
+ * Su hermana es `PortadaFigura.astro`, que dibuja un pictograma del asunto
+ * cuando no hay cifra que mostrar. Ésta se elige con `tipo: cifra` o
+ * `tipo: rango`; aquélla con `tipo: figura`.
  *
  * ── Por qué existe ─────────────────────────────────────────────────────────
  *
@@ -31,7 +35,15 @@
  * FOMC y CLP unidos por un tramo con cuña. Con la gramática del sitio, ese
  * dibujo dice que algo de valor va de la Fed al peso chileno — una relación
  * causal justo en el artículo que se cuida de escribir «sin pronósticos». La
- * portada contradecía al texto. Por eso son dos tipos y no tres.
+ * portada contradecía al texto, y por eso este componente dibuja dos tipos y no
+ * tres.
+ *
+ * **La regla sigue viva, y el tipo `figura` no la rompe.** Desde el 2026-09-22
+ * hay un tercer tipo de portada, pero no vive acá: es un pictograma **sin cuña
+ * y de un solo nodo**, en `PortadaFigura.astro`. Lo que se prohíbe arriba es el
+ * par —dos cosas unidas por una marca de movimiento—, y un dibujo con un solo
+ * nodo no puede formarlo. Si alguna vez se le añade una contraparte, vuelve a
+ * ser el error del `propagacion`.
  *
  * ── Por qué HTML y CSS, y no un SVG ────────────────────────────────────────
  *
@@ -68,16 +80,21 @@
  */
 import { formatRate } from '../lib/pricing/format.ts';
 
-interface Portada {
-  tipo: 'cifra' | 'rango';
+/*
+  Unión discriminada, espejo del esquema: `cifra` trae `valor` y `rango` trae
+  `min` y `max`, y ninguno de los dos puede traer los del otro. Con campos
+  opcionales el componente aceptaba un `rango` sin `max` y lo dibujaba con un
+  hueco; acá eso ni compila.
+*/
+interface Comun {
   etiqueta: string;
-  valor?: number | undefined;
-  min?: number | undefined;
-  max?: number | undefined;
   unidad: string;
   fecha: Date;
   fuente: string;
 }
+type Portada =
+  | (Comun & { tipo: 'cifra'; valor: number })
+  | (Comun & { tipo: 'rango'; min: number; max: number });
 
 interface Props {
   portada: Portada;
@@ -89,9 +106,9 @@ const { portada } = Astro.props;
   chileno: nunca se escriben a mano con separadores en el frontmatter. El
   esquema recibe números y la conversión ocurre acá.
 */
-const valorTexto = portada.valor !== undefined ? formatRate(portada.valor) : '';
-const minTexto = portada.min !== undefined ? formatRate(portada.min) : '';
-const maxTexto = portada.max !== undefined ? formatRate(portada.max) : '';
+const valorTexto = portada.tipo === 'cifra' ? formatRate(portada.valor) : '';
+const minTexto = portada.tipo === 'rango' ? formatRate(portada.min) : '';
+const maxTexto = portada.tipo === 'rango' ? formatRate(portada.max) : '';
 
 /*
   La fecha va `DD-MM-AAAA`, el mismo formato tabular que el índice de /blog. NO

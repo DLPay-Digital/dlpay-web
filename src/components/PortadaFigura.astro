@@ -1,0 +1,131 @@
+---
+/**
+ * La portada de un artículo cuando lo que ilustra NO es un dato: un pictograma
+ * del asunto del que trata, dibujado en el sistema.
+ *
+ * Hermana de `PortadaDato.astro`, y con una diferencia que conviene entender
+ * antes de tocar cualquiera de las dos: aquélla dibuja **una cifra** —con su
+ * unidad, su fecha y su fuente, que son obligatorias— y ésta no dibuja ninguna.
+ * Por eso son dos componentes y no dos ramas del mismo: no comparten ni los
+ * campos, ni el motivo, ni la técnica.
+ *
+ * ── Por qué existe, y qué regla hubo que cambiar ───────────────────────────
+ *
+ * El Design System §6.1 decía, desde el 2026-09-16, que «una portada de
+ * artículo muestra un dato, no un movimiento», con una lista cerrada de lo que
+ * podía llevar. Este pictograma no lleva ninguno de esos campos y sí lleva
+ * movimiento, así que **entró enmendando la regla, no esquivándola**: ver §6.1,
+ * enmienda del 2026-09-22, aprobada por Sebastián.
+ *
+ * El motivo por el que la regla podía cambiarse sin romperse está escrito allí y
+ * se repite acá porque es la condición de esta pieza: §6.1 prohibía el
+ * movimiento porque «entre dos cosas que no se mueven una hacia la otra, eso es
+ * una afirmación causal». **Un bucle con un solo nodo no tiene ese par**: dice
+ * que la cosa dibujada circula, que es una propiedad suya, y no que alguien la
+ * intercambie por otra.
+ *
+ * ── LA CONDICIÓN QUE NO SE PUEDE RELAJAR ───────────────────────────────────
+ *
+ *   **Un solo nodo. Ninguna contraparte.**
+ *
+ * Nace de un error real y por eso queda escrito. La primera versión de esta
+ * pieza traía DOS monedas unidas por el bucle: una con la T y otra con el signo
+ * del dólar. En una página de DLPay ese `$` no se lee como «el dólar» en
+ * abstracto — se lee como NUESTRO dólar digital, que es el producto. Con eso el
+ * dibujo afirmaba que cambiamos activos tokenizados por él, que es exactamente
+ * lo que el artículo niega («no participamos en la tokenización de acciones,
+ * bonos ni fondos») y lo que CLAUDE.md §1 prohíbe. Y la portada se dibuja ANTES
+ * del titular, así que ningún encuadre posterior la alcanza.
+ *
+ * Añadir una segunda moneda a esta figura, en cualquier versión futura, vuelve a
+ * romper §1. No es una cuestión de dibujo: es qué dos cosas une el bucle.
+ *
+ * ── Por qué acá SÍ es un SVG, si `PortadaDato` tuvo que dejar de serlo ──────
+ *
+ * `PortadaDato` pasó a HTML porque un SVG a `width: 100%` escala TODO su
+ * contenido, y a 390 px sus rótulos de 13 px caían a unos 6 px reales. **Esta
+ * pieza no tiene texto** —cero elementos `<text>`, comprobado— así que lo único
+ * que escala es el dibujo, que es lo que tiene que escalar. Y el alto lo fija el
+ * CSS (132 / 160 px), no el ancho del contenedor.
+ *
+ * ── El verde ───────────────────────────────────────────────────────────────
+ *
+ * `--verde`, no `--verde-hi`, y esto se apartó de la entrega a propósito. El
+ * Design System §6.2 lo dice: el color no porta significado, y cuál de los dos
+ * verdes se usa **lo decide el fondo** — `--verde` sobre tinta. En todo `src/`
+ * el token `--verde-hi` aparece sólo en el `:hover` de un botón; estrenarlo en
+ * una figura lo haría significar dos cosas. Da 8,45:1 sobre tinta, muy por
+ * encima del 3:1 que un gráfico necesita.
+ *
+ * Sin movimiento animado: una portada no entra animada (Motion System §4,
+ * regla dura 3). El bucle dibuja circulación; no la ejecuta.
+ */
+
+/**
+ * Lista CERRADA a propósito. Es la salvaguarda que impide que `portada` vuelva a
+ * ser un campo de imagen, que es lo que se cerró al retirar `coverImage` el
+ * 2026-09-16: un artículo no puede traer un dibujo suyo, sólo elegir uno de los
+ * que el sistema ya dibuja y que están razonados acá.
+ */
+export type Figura = 'activo-tokenizado';
+
+interface Props {
+  figura: Figura;
+}
+const { figura } = Astro.props;
+
+/*
+  El nombre accesible sale de acá y no de la página: describe el dibujo, que es
+  lo mismo en todos los artículos que usen esta figura. Corto a propósito — es
+  el `alt` de una imagen de cabecera, no una explicación.
+*/
+const nombres: Record<Figura, string> = {
+  'activo-tokenizado':
+    'Una ficha marcada con una T, con el canto dividido en unidades, dentro de un bucle de circulación.',
+};
+---
+<div class="portada">
+  {figura === 'activo-tokenizado' && (
+    <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" role="img"
+         aria-label={nombres[figura]}>
+      {/* El bucle: dos arcos y dos galones. Un solo nodo: no hay intercambio. */}
+      <path class="flujo" d="M175.18 72.64 A80 80 0 0 0 24.82 72.64"/>
+      <path class="flujo" d="M34.533 65.585 L24.825 72.638 L21.922 60.995"/>
+      <path class="flujo" d="M24.82 127.36 A80 80 0 0 0 175.18 127.36"/>
+      <path class="flujo" d="M165.467 134.415 L175.175 127.362 L178.078 139.005"/>
+
+      {/* La ficha: 24 marcas en el canto = está hecha de unidades. */}
+      <circle class="token aro" cx="100" cy="100" r="46"/>
+      <circle class="token aro" cx="100" cy="100" r="38"/>
+      <path class="token unidad" d="M138.00 100.00 L146.00 100.00 M136.71 109.84 L144.43 111.91 M132.91 119.00 L139.84 123.00 M126.87 126.87 L132.53 132.53 M119.00 132.91 L123.00 139.84 M109.84 136.71 L111.91 144.43 M100.00 138.00 L100.00 146.00 M90.16 136.71 L88.09 144.43 M81.00 132.91 L77.00 139.84 M73.13 126.87 L67.47 132.53 M67.09 119.00 L60.16 123.00 M63.29 109.84 L55.57 111.91 M62.00 100.00 L54.00 100.00 M63.29 90.16 L55.57 88.09 M67.09 81.00 L60.16 77.00 M73.13 73.13 L67.47 67.47 M81.00 67.09 L77.00 60.16 M90.16 63.29 L88.09 55.57 M100.00 62.00 L100.00 54.00 M109.84 63.29 L111.91 55.57 M119.00 67.09 L123.00 60.16 M126.87 73.13 L132.53 67.47 M132.91 81.00 L139.84 77.00 M136.71 90.16 L144.43 88.09"/>
+      <path class="token signo" d="M82.00 74.43 H118.00"/>
+      <path class="token signo" d="M100 74.43 V125.57"/>
+    </svg>
+  )}
+</div>
+
+<style>
+  /* Misma banda que `PortadaDato`: a sangre, en tinta, con el mismo relleno
+     vertical. Lo único que difiere es el alto, porque acá lo fija la figura y
+     allá el texto — 256 / 196 contra 226 / 174, medido en el build. */
+  .portada { background: var(--tinta); padding: var(--s-6) 0; }
+
+  /*
+    El alto en CSS y el ancho en `auto`: así el dibujo no depende del ancho del
+    contenedor. `max-width: 100%` es el seguro para 320 px, donde 132 px de alto
+    dan 132 de ancho y sobra sitio, pero deja de sobrar si alguien sube el alto.
+  */
+  .portada svg { display: block; margin: 0 auto; height: 132px; width: auto; max-width: 100%; }
+
+  /* El trazo es todo lo que hay: sobre tinta un relleno da 1,07:1 y no se ve. */
+  .token { fill: none; stroke: var(--verde); }
+  .flujo { fill: none; stroke: var(--on-tinta-mute); stroke-linejoin: miter; stroke-width: 3.25; }
+  .aro { stroke-width: 3.25; }
+  .signo { stroke-width: 3.9; }
+  .unidad { stroke-width: 2.55; }
+
+  @media (min-width: 900px) {
+    .portada { padding: var(--s-7) 0; }
+    .portada svg { height: 160px; }
+  }
+</style>

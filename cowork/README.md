@@ -250,7 +250,8 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
-| 2026-09-21 | [`2026-09-21-portada-capa`](2026-09-21-portada-capa/ficha.md) — pictograma de portada para el artículo de tokenizados · cuatro versiones | **Rechazada · cerrada el 2026-09-22** | El §1 se resolvió en la v2; el rechazo firme es por DS §6.1 y porque el artículo tiene escrito por qué va sin portada. Cowork acepta sin reservas. Deja las reglas 23, 24 y 25 |
+| 2026-09-22 | [`2026-09-22-riel-tokenizado`](2026-09-22-riel-tokenizado/ficha.md) — figura de página: el peso no está tokenizado y el dólar digital sí. Nace del rechazo de la portada; autorizada por Sebastián | **En revisión** | — |
+| 2026-09-21 | [`2026-09-21-portada-capa`](2026-09-21-portada-capa/ficha.md) — pictograma de portada para el artículo de tokenizados · cuatro versiones | **Integrada el 2026-09-22 por decisión de Sebastián** | La v2, la de un solo nodo. Entró enmendando el DS §6.1, no esquivándolo. El verde pasa a `--verde` por §6.2. La v1 de dos monedas sigue rechazada por §1 |
 | 2026-09-17 | [`2026-09-17-gramatica-de-las-figuras`](2026-09-17-gramatica-de-las-figuras/gramatica.md) — el vocabulario de las cinco familias de figura, medido, y sección candidata para el DS §6.2 | **En revisión** | — |
 | 2026-09-17 | [`2026-09-17-empresas-j7`](2026-09-17-empresas-j7/ficha.md) — J7: la columna que faltaba y la FAQ propia | **Integrada** | Las dos piezas. `Faq.astro` pasa a props en vez de duplicarse, y las preguntas viven en `business.ts` |
 | 2026-09-17 | [`2026-09-17-eje-de-remesas`](2026-09-17-eje-de-remesas/ficha.md) — J5 y J6: el tramo que sí hacemos | **Integrada con cambios** | Las tres piezas. El eje sale como componente y la salvedad baja de 66ch a 47ch |
@@ -936,3 +937,61 @@ las mismas dos monedas. Con eso la comprobación 3 del §6.2 —la forma sale de
 salir, que es justo lo que le faltaba al pictograma.
 
 Decide Sebastián si vale la pena y en qué página. Nadie empieza hasta entonces.
+
+### Reapertura e integración de `2026-09-21-portada-capa`  ·  2026-09-22
+
+**Sebastián la aprobó después de cerrada**, con el argumento de que el dibujo refleja lo que es la
+tokenización y que la T es por la palabra *token*, y con una condición: que las medidas encajaran
+para un fondo. Encajan. Queda integrada y el registro de arriba pasa de «Rechazada» a «Integrada».
+
+**Lo que entró es la v2, la de un solo nodo.** La v1, con la moneda `$` enfrente, sigue rechazada y
+no puede volver: es la condición de parada que Sebastián puso al encargar el artículo. Queda escrito
+dentro de `PortadaFigura.astro` para que nadie la reponga por parecerle más rica.
+
+**Mi rechazo era por DS §6.1, y se resolvió enmendando la regla, no saltándosela.** La enmienda del
+2026-09-22 está en el Design System y dice por qué la regla admite esto sin contradecirse: lo que
+§6.1 prohíbe es la **afirmación causal entre dos cosas**, y un bucle con un solo nodo no tiene ese
+par. La condición —un nodo, ninguna contraparte, sin cifra, sin texto, sin cuña— es ahora parte de
+la regla.
+
+#### Lo que se apartó de la entrega, y por qué
+
+**El verde: `--verde` y no `--verde-hi`.** Es el único cambio sobre el archivo entregado, y es el
+punto que los dos habíamos dado por resuelto: §6.2 dice que el color no porta significado y que el
+fondo elige el verde —`--verde` sobre tinta—, y `--verde-hi` sólo vive en el `:hover` de un botón.
+Sobre tinta da **8,45:1**, muy por encima del 3:1 que un gráfico necesita. La geometría no se tocó:
+los `path` están copiados literalmente.
+
+**El nombre accesible se toma del archivo, no de la ficha.** La regla 25 en su primer uso real:
+§6.b seguía dando el rótulo de la versión de dos monedas.
+
+#### Medido en el build, con `md5` del recurso servido cotejado contra `dist/`
+
+| | 1280 | 390 | 320 |
+|---|---|---|---|
+| Banda | **256** | **196** | **196** |
+| Figura | **160 × 160** | **132 × 132** | **132 × 132** |
+| Desborde horizontal | **0** | **0** | **0** |
+
+Fondo `rgb(11,19,32)` = `--tinta`. Trazo de la ficha `rgb(22,199,132)` = `--verde`; el bucle en
+`--on-tinta-mute`. Grosor real del aro **2,60 px**. `<text>` 0, rellenos 0, animaciones 0. Un solo
+nodo `role="img"` en `main`, con el nombre corto. La portada renderiza **antes** del `<h1>`, que es
+lo que siempre hizo.
+
+#### Lo que hubo que tocar en `src/` y en los documentos
+
+- `PortadaFigura.astro`, nuevo. Es SVG, y eso **no** contradice el motivo por el que `PortadaDato`
+  dejó de serlo: aquél escalaba sus rótulos con el ancho y éste no tiene texto.
+- `content.config.ts`: `portada` pasa a `z.discriminatedUnion('tipo', …)`. Los tipos no comparten
+  campos —`figura` no tiene `etiqueta`, `unidad`, `fecha` ni `fuente`, porque no afirma ningún
+  dato—, así que con opcionales un `rango` sin `fuente` habría pasado el build. De paso desaparecen
+  dos ramas del `superRefine`: lo que antes era una comprobación ahora es el tipo.
+- `figura` es un `z.enum` **cerrado**. Es la salvaguarda contra que `portada` vuelva a ser lo que
+  fue `coverImage`.
+- `PortadaDato.astro`: sus props pasan a unión discriminada también, espejo del esquema.
+- `[slug].astro` bifurca por `tipo`. Quitar esa bifurcación ya no compila.
+- El frontmatter del artículo: el comentario que explicaba por qué iba **sin** portada se reescribe
+  sin borrar su razón, porque esa razón es justo la que hace que el tipo correcto sea `figura` y no
+  `cifra`.
+- `CLAUDE.md` §6 decía todavía que el esquema tenía `coverImage` resuelta por `astro:assets`, que
+  es falso desde el 2026-09-16. Corregido de paso.

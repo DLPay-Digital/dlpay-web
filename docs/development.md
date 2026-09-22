@@ -628,13 +628,28 @@ cualquier servidor estático.** Lo que rompa esa afirmación necesita una enmien
 | `/blog/<slug>` | Un artículo. Una página por entrada de la colección | 0,5 KB |
 | `404` | La dirección no existe. **No es una ruta**: el host la sirve bajo cualquier URL | 0 |
 
-**Las portadas son figuras de dato, no imágenes** (2026-09-16). `coverImage` se retiró: lo que
-había era un PNG de cuñas diagonales usado dos veces en el mismo artículo, o sea papel tapiz, que
-el Design System §6 prohíbe. En su lugar el frontmatter declara `portada` —`cifra` o `rango`— y
-`PortadaDato.astro` la dibuja en HTML sobre una banda en tinta. `fuente` es obligatoria: ninguna
-figura publica un número sin decir de dónde salió, y esas cifras las aprueba Compliance junto con
-el texto. La regla que gobierna el dibujo —**la cuña no entra en las portadas**— está en el Design
-System §6.1.
+**Las portadas las dibuja el sistema, nunca son imágenes** (2026-09-16, ampliado el 2026-09-22).
+`coverImage` se retiró: lo que había era un PNG de cuñas diagonales usado dos veces en el mismo
+artículo, o sea papel tapiz, que el Design System §6 prohíbe. En su lugar el frontmatter declara
+`portada`, que es una **unión discriminada** de tres tipos:
+
+| `tipo` | Qué dibuja | Componente |
+|---|---|---|
+| `cifra` | Un número con su unidad | `PortadaDato.astro` (HTML) |
+| `rango` | Un intervalo con un tope en cada extremo | `PortadaDato.astro` (HTML) |
+| `figura` | Un pictograma del asunto del artículo, sin número | `PortadaFigura.astro` (SVG) |
+
+`etiqueta`, `unidad`, `fecha` y `fuente` son obligatorias en los dos primeros y **no existen** en el
+tercero: por eso es una unión y no un objeto con opcionales. `fuente` es obligatoria donde hay
+número porque ninguna figura publica una cifra sin decir de dónde salió, y esas cifras las aprueba
+Compliance junto con el texto. En `figura` no hay nada que citar porque no se afirma ningún dato.
+
+**`figura` es un `z.enum` cerrado**, y ésa es la salvaguarda que impide que el campo vuelva a ser
+lo que fue `coverImage`: un artículo elige entre los dibujos que el sistema ya razona, no puede
+traer uno suyo. Las reglas que gobiernan el dibujo están en el Design System §6.1 —la cuña no entra
+en las portadas, y un pictograma necesita **un solo nodo**— y §6.2.
+
+Hoy `cifra` no tiene ningún consumidor; se conserva y lo dice, igual que los tokens reservados.
 
 **La 404 se añadió el 2026-09-15** y no se cuenta entre las rutas: no tiene dirección propia. Reusa
 `PageHero` sin componentes nuevos, va con `noindex` y sin canónico, queda **excluida del sitemap**

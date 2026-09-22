@@ -4,12 +4,22 @@ description: 'Qué son, quién los está construyendo y qué rol cumplen las sta
 pubDate: 2026-09-21
 category: 'Mercado'
 estado: publicado
-# SIN `portada`. El campo es opcional en el esquema y este artículo es el caso
-# para el que se dejó opcional: es panorámico y no se apoya en un dato puntual ni
-# en un intervalo, que son los dos tipos que `PortadaDato` dibuja. Elegir una de
-# sus cifras para que fuera LA cifra de la portada sería una decisión editorial
-# sobre datos de producto de terceros que están bajo marcador de Compliance.
-# Arranca por el titular, que es lo que el esquema contempla.
+# Portada de tipo `figura`, aprobada por Sebastián el 2026-09-22.
+#
+# NO lleva cifra, y el motivo es el mismo por el que estuvo sin portada hasta
+# ahora: el artículo es panorámico y no se apoya en un dato puntual ni en un
+# intervalo. Elegir una de sus cifras para que fuera LA cifra de la portada
+# sería una decisión editorial sobre datos de producto de terceros que están
+# bajo marcador de Compliance. Ese razonamiento no se cayó — es justo lo que
+# hace que el tipo correcto sea `figura` y no `cifra` ni `rango`.
+#
+# El pictograma dibuja UNA ficha con una T, hecha de unidades, circulando. Dice
+# una propiedad del asunto del artículo y no afirma nada sobre lo que DLPay
+# hace. La condición está escrita en `PortadaFigura.astro` y no se puede
+# relajar: **un solo nodo, ninguna contraparte**.
+portada:
+  tipo: figura
+  figura: activo-tokenizado
 ---
 
 <!--
@@ -25,9 +35,11 @@ Cifras de producto de terceros. Cinco puntos a reverificar si el artículo se ci
 
 SOBRE LA PORTADA. El bloque de asset pendiente que traía este borrador pedía un PNG de 1200x630
 y una línea `coverImage` en el frontmatter. Ninguna de las dos cosas existe desde el 2026-09-16:
-`coverImage` se retiró del esquema y las portadas son una figura de dato dibujada por
-`PortadaDato.astro`, declarada en el frontmatter. Este artículo va sin portada a propósito; el
-porqué está arriba, junto al frontmatter.
+`coverImage` se retiró del esquema y las portadas las dibuja el sistema, declaradas en el
+frontmatter. Este artículo llevó sin portada del 21 al 22 de septiembre, porque los dos tipos que
+había entonces eran de dato y ninguno le servía. El 2026-09-22 Sebastián aprobó el pictograma y
+entró como tipo `figura`; el porqué está arriba, junto al frontmatter, y la regla que hubo que
+enmendar para admitirlo es el Design System §6.1.
 -->
 
 En las últimas semanas la conversación sobre activos tokenizados pasó de nota técnica en

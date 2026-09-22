@@ -307,9 +307,15 @@ no como página propia.
 
 **`/blog` se añadió el 2026-09-11.** Colección tipada de Astro (`src/content.config.ts`) con
 esquema cerrado: `title`, `description`, `pubDate`, `category` —sólo `DLPay` o `Mercado`, un valor
-fuera de esa lista rompe el build— y `coverImage` opcional resuelta por `astro:assets`. Sin
-paquetes nuevos: `sharp` ya viene como dependencia opcional de Astro, así que `package.json` sigue
-declarando cuatro. Enlazado desde el desplegable «Información» de la cabecera. El sitemap se
+fuera de esa lista rompe el build—, `estado` y `portada`. Sin paquetes nuevos: `package.json` sigue
+declarando cuatro.
+
+**Las portadas las dibuja el sistema y nunca son imágenes.** `coverImage` existió hasta el
+2026-09-16 y se retiró: era un PNG de cuñas usado dos veces en el mismo artículo, o sea papel
+tapiz. Hoy `portada` es una unión discriminada de tres tipos —`cifra`, `rango` y, desde el
+2026-09-22, `figura`—; los dos primeros exigen `fuente` y el tercero es un `z.enum` **cerrado** de
+pictogramas que el sistema ya razona, para que un artículo no pueda traer un dibujo suyo. Las
+reglas del dibujo están en el Design System §6.1 y §6.2. Enlazado desde el desplegable «Información» de la cabecera. El sitemap se
 derivaba de `src/pages/**/*.astro` y publicaba `/blog/index/` y `/blog/[slug]/` —dos 404—: ahora
 colapsa los `index` anidados, descarta las rutas dinámicas y añade cada artículo desde la
 colección.
