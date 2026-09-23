@@ -1361,14 +1361,17 @@ denuncias. La diferencia entre las dos familias existe —prosa seguida contra p
 listas— pero es la mitad de grande de lo que describe. Queda escrita en el DS con las cifras
 medidas, porque la observación merece estar y el número tenía que ser el correcto.
 
-#### La atribución del §5
+#### La atribución del §5, confirmada
 
-La nota escribe en mayúsculas que Sebastián decidió el trato de `/canal-de-denuncias`. **Esa
-decisión no consta en mi conversación con él**: se la planteé antes de tocar nada y respondió «toma
-acción» sobre el plan entero, sin pronunciarse sobre ese punto. El resultado no cambia —la página
-usa `Legal.astro` y se queda en 760px— pero una decisión atribuida no es lo mismo que una decisión
-tomada. Queda marcada dentro de la nota, sin reescribir su párrafo: **una ficha es el registro de
-quien la escribe**, y lo que se corrige se añade al lado, con firma.
+La nota escribe en mayúsculas que Sebastián decidió el trato de `/canal-de-denuncias`. Esa decisión
+no constaba en mi conversación con él, así que la marqué como sin confirmar antes de versionarla, en
+vez de darla por buena. **Sebastián la confirmó el 2026-09-23: la decisión es suya**, y la marca se
+retiró.
+
+El criterio que queda, porque volverá a pasar: **una decisión atribuida a una persona se comprueba
+con esa persona, no se acepta ni se borra.** Preguntar cuesta una línea; publicar una decisión que
+nadie tomó cuesta que alguien la cite dentro de seis meses como precedente. Y la corrección va **al
+lado** del párrafo, nunca reescribiéndolo: una ficha es el registro de quien la escribe.
 
 #### Los locks de `git`
 

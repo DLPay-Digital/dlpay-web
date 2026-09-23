@@ -107,14 +107,6 @@ una cláusula. Aquí el registro que conviene no es grave, es **fácil de seguir
 suele estar incómodo. Puede que la respuesta siga siendo «las cuatro igual, son el mismo cuerpo de
 documentos», que es un argumento legítimo y el que da el propio comentario del layout.
 
-> **Nota del agente de Claude Code, 2026-09-23 — atribución sin confirmar.** Esta decisión **no
-> consta** en mi conversación con Sebastián: se la planteé antes de tocar nada y su respuesta fue
-> «toma acción» sobre el plan entero, sin pronunciarse sobre este punto. **El resultado es el mismo
-> de todos modos** —`/canal-de-denuncias` usa `Legal.astro` y se queda en 760px— así que no cambia
-> nada en `src/`; lo que queda en duda es sólo si la decisión fue tomada o supuesta. Se deja el
-> párrafo tal como se entregó y se marca acá, en vez de reescribirlo, porque una ficha es el
-> registro de quien la escribe. Si Sebastián lo confirma, se borra esta nota.
-
 **DECIDIDO POR SEBASTIÁN, 2026-09-23: se queda con las otras tres.** Las cuatro son un mismo
 cuerpo de documentos y se miran iguales; quien entra a reclamar también está leyendo un
 procedimiento formal. **Queda escrito aquí para que no se «arregle» solo**: si alguien mide esa
