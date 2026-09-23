@@ -3,7 +3,28 @@
  * Layout de las páginas legales. Comparten estructura para que se lean como un
  * mismo cuerpo de documentos y no como cuatro páginas sueltas.
  *
- * Medida de lectura propia: son textos largos, no secciones de marketing.
+ * ── Medida de lectura: la del blog, no la del resto del sitio ──────────────
+ *
+ * Decisión de Sebastián del 2026-09-23. **Un documento y un artículo no son una
+ * página de marketing**, y la medida de lectura es lo que lo dice sin decirlo:
+ * una columna ancha se lee como un texto para leer entero, no como una sección
+ * que se barre. Es el tono que un contrato necesita.
+ *
+ * Por eso esta columna es **la misma que la del artículo del blog** —760px de
+ * texto, con el mismo relleno en móvil y sin relleno desde 900— y no una
+ * parecida: son las dos únicas familias de texto largo del sitio y tienen que
+ * mirarse iguales.
+ *
+ * **Se aparta del tope de 65 caracteres del Design System §3 a propósito**, y
+ * la excepción está escrita ahí con su medición. Medido sobre el build, en las
+ * cuatro páginas: el carácter de esta prosa mide 6,37–6,53px, así que 760px dan
+ * **116–119 caracteres por línea**, la misma familia de medida que los 112 del
+ * blog. Ajustarla a 112 exactos habría exigido 715px y habría dejado las
+ * legales MÁS ESTRECHAS que el artículo, que es justo lo contrario de tratarlas
+ * igual: el número de caracteres depende del texto, el ancho de la columna no.
+ *
+ * Antes tenía `max-width: 47ch`, que daba 38 caracteres reales: una cinta de
+ * 298px con casi 500px de blanco a cada lado.
  */
 import Base from './Base.astro';
 import Header from '../components/Header.astro';
@@ -44,8 +65,9 @@ const { title, description, path, lead } = Astro.props;
 
 <style>
   .doc { background: var(--papel); padding: var(--s-9) 0; }
+  /* 760px, la columna del artículo del blog. Ver la nota de arriba. */
   .prose {
-    max-width: 47ch;
+    max-width: 760px;
     margin: 0 auto;
     padding: 0 var(--pad-section-m);
   }
@@ -97,7 +119,9 @@ const { title, description, path, lead } = Astro.props;
   .meta p { margin: 0 0 var(--s-1); }
 
   @media (min-width: 900px) {
-    .prose { padding-inline: var(--pad-section); }
+    /* Sin relleno lateral desde 900, igual que `.post` del artículo: así los
+       760px son de texto y las dos familias coinciden de verdad. */
+    .prose { padding-inline: 0; }
     .prose :global(h2) { font-size: var(--t-h3); }
   }
 </style>

@@ -651,6 +651,12 @@ en las portadas, y un pictograma necesita **un solo nodo**— y §6.2.
 
 Hoy `cifra` no tiene ningún consumidor; se conserva y lo dice, igual que los tokens reservados.
 
+**Las legales y el blog comparten medida de lectura desde el 2026-09-23.** Los dos son texto largo
+y usan la misma columna de 760px, que da entre 93 y 112 caracteres por línea. Se aparta del tope de
+65 del Design System §3 a propósito y por tono: un documento no se presenta como una sección de
+marketing. La excepción está escrita junto a la regla, con su medición. Antes las legales tenían
+`max-width: 47ch`, que daba 38 caracteres reales.
+
 **La 404 se añadió el 2026-09-15** y no se cuenta entre las rutas: no tiene dirección propia. Reusa
 `PageHero` sin componentes nuevos, va con `noindex` y sin canónico, queda **excluida del sitemap**
 por nombre en `sitemap.xml.ts` y no importa `Motion.astro`, así que es la quinta página del sitio en

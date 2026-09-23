@@ -168,22 +168,37 @@ modificar y usar comercialmente. Conservar el archivo de licencia junto a las fu
   > fuente cambiara. Se mide contando los caracteres de la primera línea con
   > `Range.getClientRects()` sobre el build, nunca a ojo.
 
-  > **Una excepción viva, medida y aceptada: el cuerpo de los artículos del blog**
-  > *(2026-09-23)*
+  > **La excepción de los textos largos: el blog y las legales** *(decidida el 2026-09-23)*
   >
-  > El artículo va a **112 caracteres por línea**, un 72 % por encima del tope. Es la peor medida
-  > del sitio y la única fuera de regla: `.post` está limitado a 760 px y sus párrafos no llevan
-  > `max-width`, porque el blog se construyó el 2026-09-11 y la medida de lectura se cerró el
-  > 2026-09-17. Todo lo demás sí la tiene — **18 declaraciones de `47ch` en `src/` y ninguna de
-  > `66ch`**.
+  > El tope de 65 caracteres vale para **todo el sitio menos dos familias**: los artículos del blog
+  > y las cuatro páginas legales. Las dos usan una columna de **760px**, que da entre **93 y 112
+  > caracteres** por línea según el texto.
   >
-  > **Sebastián decidió el 2026-09-23 no corregirlo**, porque la corrección estrecha la columna de
-  > texto de 760 px a unos 426 y los dos artículos publicados están como los quiere. Queda escrito
-  > acá, y no borrado, para que quien audite las medidas sepa que este caso está **medido y
-  > decidido**, no pasado por alto. La corrección, si algún día se toma, es `max-width: 47ch` en
-  > los párrafos y las listas de `.prose`, dejando el titular y las figuras en sus 760 px.
+  > **No es un descuido heredado: es una decisión de Sebastián, y tiene un motivo de tono.** Un
+  > contrato y un artículo no son una página de marketing, y la medida de lectura es lo que lo dice
+  > sin decirlo: una columna ancha se lee como un texto para leer entero, no como una sección que se
+  > barre. La medida es **parte de cómo se distingue un documento del resto del sitio**.
   >
-  > Factor medido en esa página: **1,337**, que confirma el 1,37 de arriba.
+  > | | columna de texto | caracteres por línea |
+  > |---|---|---|
+  > | Artículo del blog | 760px | **112** |
+  > | `/tarifas` | 760px | **108** |
+  > | `/canal-de-denuncias` | 760px | **101** |
+  > | `/privacidad` | 760px | **97** |
+  > | `/terminos` | 760px | **93** |
+  > | Todo lo demás | `47ch` | **58–64** |
+  >
+  > **Se iguala el ANCHO, no el número.** El número de caracteres depende del texto —el carácter
+  > medio va de 6,37 a 6,76px entre unas páginas y otras— así que perseguir una cifra exacta habría
+  > dejado a las legales más estrechas que el artículo, que es lo contrario de tratarlas igual. Lo
+  > que se replica es la columna.
+  >
+  > **Qué se pierde, dicho y no disimulado:** el tope de 65 existe porque a partir de ahí cuesta
+  > encontrar el principio de la línea siguiente. En un documento que se consulta por secciones ese
+  > coste es menor que el de un texto legal presentado como una cinta estrecha — las legales estaban
+  > en **38 caracteres reales**, 298px de texto con casi 500px de blanco a cada lado.
+  >
+  > Factor medido en estas páginas: **1,315 a 1,395**, que confirma el 1,37 de arriba.
 - `text-wrap: balance` en titulares; `text-wrap: pretty` en párrafos.
 
 ### 3.2 Antipatrones tipográficos (prohibidos)

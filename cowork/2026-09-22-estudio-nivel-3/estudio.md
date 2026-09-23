@@ -69,6 +69,23 @@ Factor medido, página a página: **1,315 a 1,395**. El 1,37 del DS es exacto.
 
 **La prioridad de la §5 se invierte:** lo primero no son las legales, es el artículo del blog.
 
+### DECISIÓN DE SEBASTIÁN, 2026-09-23 — el artículo se queda en 112 caracteres
+
+**No se estrecha.** El motivo, con sus palabras: *«me gusta que el blog tenga una distinción en la
+distribución del texto»*. Es una decisión legítima —un artículo no tiene por qué leerse como una
+página de producto— y **queda escrita aquí para que no se «arregle» sola.**
+
+Eso es lo importante de anotarlo: una desviación deliberada que no está documentada la corrige el
+siguiente que la mire, porque desde fuera es indistinguible de un descuido. Es el mecanismo que el
+DS §6.2 describe para el verde, aplicado a la medida de lectura.
+
+**Lo que dejo dicho una vez y no repito:** la distinción que Sebastián quiere y los 112 caracteres
+son cosas separables. Las páginas de producto están en 62; un artículo en **75–80** ya se lee
+distinto de un vistazo y todavía no cansa. **112 es el número concreto que cuesta**, no la idea de
+que el blog respire diferente. Si algún día se revisa, ése es el rango por el que yo empezaría.
+
+**Estado:** cerrado. No es una tarea pendiente ni un defecto abierto.
+
 ---
 
 ## 1. La corrección número uno, y no es de dibujo: **la medida de lectura**
