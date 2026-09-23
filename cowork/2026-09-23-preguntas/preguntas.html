@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propuesta — /preguntas</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+  @font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+  body{background:var(--papel);margin:0}
+  .scaffold{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
+    background:var(--papel-2);border:1px dashed var(--line);padding:var(--s-3);text-align:center}
+
+  /* ── HÉROE ── misma plantilla que /confianza y /como-funciona: tinta, h1 de 32,
+     bajada en --on-tinta-mute. No se inventa nada. */
+  .hero{background:var(--tinta);padding:var(--s-8) 0}
+  .hero .inner{max-width:760px;margin:0 auto;padding:0 var(--pad-section-m)}
+  .hero h1{font-size:var(--t-h2-m);font-weight:700;line-height:var(--lh-h2);
+    letter-spacing:var(--ls-h2);color:var(--on-tinta);margin:0 0 var(--s-3)}
+  .hero p{color:var(--on-tinta-mute);max-width:56ch;margin:0}
+
+  /* ── LAS PREGUNTAS ── copiado de Faq.astro, sin tocar una medida.
+     Los dos grupos alternan papel / papel-2, que es el ritmo que el sitio ya
+     usa entre secciones. Sin eso, 96+96 px de relleno entre el último
+     desplegable de un grupo y el título del otro los deja indistinguibles. */
+  .faq{padding:var(--s-9) 0}
+  .faq.a{background:var(--papel)}
+  .faq.b{background:var(--papel-2)}
+  .faq .inner{max-width:760px;margin:0 auto;padding:0 var(--pad-section-m)}
+  .faq h2{font-size:var(--t-h2-m);font-weight:700;line-height:var(--lh-h2);
+    letter-spacing:var(--ls-h2);margin:0 0 var(--s-6)}
+  .items{border-top:1px solid var(--line)}
+  .item{border-bottom:1px solid var(--line)}
+  summary{display:flex;align-items:center;justify-content:space-between;gap:var(--s-4);
+    padding:var(--s-4) 0;cursor:pointer;font-weight:600;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  .item p{margin:0 0 var(--s-4);max-width:66ch;color:var(--ink-mute)}
+  details[open] .mark{transform:rotate(45deg)}
+  .mark{flex:none;color:var(--verde-deep)}
+
+  /* ── EL GLOSARIO ──────────────────────────────────────────────────────────
+     Es lo único nuevo de la página, y es una LISTA DE DEFINICIONES de verdad:
+     <dl>, <dt>, <dd>. No es purismo — un lector de pantalla anuncia «lista de
+     descripción, 8 elementos» y permite saltar de término en término, cosa que
+     una retícula de <div> no da.
+
+     Sin acordeón a propósito: las preguntas ya lo son, y un glosario se lee
+     barriendo, no abriendo. Y sin figura: esta página es un mapa del sitio, y
+     un dibujo aquí competiría con el texto sin decir nada que el texto no diga.
+
+     Cada término que el sitio explica en algún sitio lleva su enlace. Con eso el
+     glosario deja de ser una lista y pasa a ser el índice del vocabulario. */
+  .glosario{background:var(--papel);padding:var(--s-9) 0}
+  .glosario .inner{max-width:760px;margin:0 auto;padding:0 var(--pad-section-m)}
+  .glosario h2{font-size:var(--t-h2-m);font-weight:700;line-height:var(--lh-h2);
+    letter-spacing:var(--ls-h2);margin:0 0 var(--s-3)}
+  .glosario .bajada{color:var(--ink-mute);max-width:60ch;margin:0 0 var(--s-6)}
+  dl{margin:0;border-top:1px solid var(--line)}
+  .fila{border-bottom:1px solid var(--line);padding:var(--s-5) 0}
+  dt{font-size:var(--t-h3);font-weight:700;margin:0 0 var(--s-2)}
+  dd{margin:0;color:var(--ink-mute);max-width:66ch}
+  .ver{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--verde-deep);
+    white-space:nowrap;margin-left:var(--s-2)}
+  @media (min-width:900px){
+    .fila{display:grid;grid-template-columns:200px 1fr;gap:var(--s-6);align-items:baseline}
+    dt{margin:0}
+  }
+
+  /* ── CIERRE ── la misma banda de llamada que cierra /como-funciona. */
+  .cierre{background:var(--tinta);padding:var(--s-8) 0}
+  .cierre .inner{max-width:760px;margin:0 auto;padding:0 var(--pad-section-m)}
+  .cierre h2{font-size:var(--t-h3);color:var(--on-tinta);margin:0 0 var(--s-2)}
+  .cierre p{color:var(--on-tinta-mute);margin:0 0 var(--s-5)}
+  .cta{display:inline-block;background:var(--verde);color:var(--tinta);font-weight:700;
+    padding:var(--s-3) var(--s-5);text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="scaffold">andamio · arriba va Header.astro</div>
+
+<header class="hero">
+  <div class="inner">
+    <h1>Preguntas</h1>
+    <p>Lo que nos preguntan antes de operar, y las palabras que usamos para responder.</p>
+  </div>
+</header>
+
+<section class="faq a" aria-labelledby="faq-personas">
+  <div class="inner">
+    <h2 id="faq-personas">Preguntas frecuentes</h2>
+    <div class="items">
+        <details class="item">
+          <summary><span>¿Por qué es más rápido que un banco?</span>
+            <svg class="mark" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+              <path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </summary>
+          <p>Porque el dólar digital se transfiere en minutos y a cualquier hora, sin pasar por la cadena de bancos corresponsales. Lo que sí depende de tu banco es el momento en que tu transferencia en pesos nos llega. Y si después conviertes ese dólar digital a moneda local en otro país, ese último paso es un proceso aparte.</p>
+        </details>
+        <details class="item">
+          <summary><span>¿DLPay deposita el dinero en una cuenta bancaria en el extranjero?</span>
+            <svg class="mark" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+              <path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </summary>
+          <p>No. Lo que hacemos es el cambio de divisas: recibes dólar digital en tu billetera. Desde ahí puedes mantenerlo, enviarlo a otra persona o convertirlo a moneda local en destino, que es un servicio distinto y lo resuelves tú. Preferimos ser exactos en esto.</p>
+        </details>
+        <details class="item">
+          <summary><span>¿El precio de la web es el precio final?</span>
+            <svg class="mark" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+              <path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </summary>
+          <p>No. Es un precio referencial de mercado. Tu ejecutivo te confirma el precio final al momento de cerrar, porque el mercado se mueve. Preferimos decírtelo antes que después.</p>
+        </details>
+        <details class="item">
+          <summary><span>¿Qué es el "dólar digital" que recibo?</span>
+            <svg class="mark" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+              <path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </summary>
+          <p>Es una stablecoin, USDT: una moneda digital diseñada para mantener una equivalencia 1:1 con el dólar y que puede transferirse por distintas redes. Es lo que permite que el movimiento no dependa de horarios bancarios. No necesitas saber de esto para operar; tu ejecutivo te guía.</p>
+        </details>
+        <details class="item">
+          <summary><span>¿Necesito registrarme?</span>
+            <svg class="mark" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+              <path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </summary>
+          <p>Sí. Pedimos registro y verificación de identidad antes de la primera operación, a personas y a empresas. Es un requisito de seguridad y cumplimiento, no un trámite opcional.</p>
+        </details>
+    </div>
+  </div>
+</section>
+
+<section class="faq b" aria-labelledby="faq-empresas">
+  <div class="inner">
+    <h2 id="faq-empresas">Preguntas de una empresa</h2>
+    <div class="items">
+        <details class="item">
+          <summary><span>¿Quién atiende mi cuenta?</span>
+            <svg class="mark" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+              <path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </summary>
+          <p>Un ejecutivo asignado, el mismo cada vez. Conoce a dónde paga tu empresa, con qué frecuencia y en qué montos, así que no tienes que volver a explicar la operación cada mes.</p>
+        </details>
+        <details class="item">
+          <summary><span>¿Qué documentos necesito?</span>
+            <svg class="mark" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+              <path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </summary>
+          <p>Los documentos de la sociedad y de quienes la representan legalmente. Además, la cuenta desde la que transfieres tiene que estar a nombre de la empresa: recibimos transferencias sólo desde cuentas del titular de la operación, nunca de terceros.</p>
+        </details>
+        <details class="item">
+          <summary><span>¿Qué pasa si mi proveedor sólo recibe por banco?</span>
+            <svg class="mark" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+              <path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </summary>
+          <p>Conversémoslo antes. Nosotros entregamos dólar digital en la billetera que nos indiques y no depositamos dinero en cuentas bancarias en el extranjero. Si tu proveedor sólo opera con su banco, esa última conversión es un proceso distinto que DLPay no realiza.</p>
+        </details>
+        <details class="item">
+          <summary><span>¿Desde qué volumen conviene?</span>
+            <svg class="mark" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+              <path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </summary>
+          <p>Las condiciones se conversan según volumen y frecuencia: no publicamos una tabla por tramos. La operación pesa donde el spread de un banco pesa de verdad y una app retail no alcanza.</p>
+        </details>
+    </div>
+  </div>
+</section>
+
+<div class="scaffold">andamio · debajo empieza lo único nuevo de la página</div>
+
+<section class="glosario" aria-labelledby="glosario-t">
+  <div class="inner">
+    <h2 id="glosario-t">Las palabras</h2>
+    <p class="bajada">Ocho términos que usamos en todo el sitio. Cinco están definidos con las
+    mismas palabras que ya usamos en otra página; tres son nuevos.</p>
+    <dl>
+        <div class="fila">
+          <dt>Dólar digital</dt>
+          <dd>Una stablecoin, USDT: una moneda digital diseñada para mantener una equivalencia 1:1 con el dólar y que puede transferirse por distintas redes. Es lo que te entregamos. <a class="ver" href="#p4">Dónde se explica</a></dd>
+        </div>
+        <div class="fila">
+          <dt>Stablecoin</dt>
+          <dd>Una moneda digital diseñada para mantener su valor pegado al de otra moneda. La que usamos está pegada al dólar. <a class="ver" href="/blog/activos-tokenizados-que-son-y-quien-los-construye/">Dónde se explica</a></dd>
+        </div>
+        <div class="fila">
+          <dt>Precio referencial</dt>
+          <dd>El precio que ves en la web. Es una referencia de mercado: tu ejecutivo te confirma el precio final al momento de cerrar, porque el mercado se mueve. <a class="ver" href="/tarifas/">Dónde se explica</a></dd>
+        </div>
+        <div class="fila">
+          <dt>Spread</dt>
+          <dd>La diferencia que DLPay aplica sobre la referencia de mercado. Ya viene incorporada en el número que ves: no hay una comisión aparte que se sume al final. <a class="ver" href="/tarifas/">Dónde se explica</a></dd>
+        </div>
+        <div class="fila">
+          <dt>Billetera</dt>
+          <dd>La aplicación o cuenta digital donde recibes y guardas el dólar digital. Es tuya, tú la controlas, y es donde termina nuestra operación. <a class="ver" href="/como-funciona/">Dónde se explica</a></dd>
+        </div>
+        <div class="fila">
+          <dt>Red</dt>
+          <dd>El canal por el que viaja el dólar digital. Hay varias, y la que se usa cambia el tiempo y el costo del traspaso, no el valor de lo que recibes.</dd>
+        </div>
+        <div class="fila">
+          <dt>Verificación de identidad</dt>
+          <dd>Lo que te pedimos antes de la primera operación, a todas las personas y empresas sin excepción. Nos permite saber con quién operamos y es parte del cumplimiento que exige trabajar con un banco de por medio. <a class="ver" href="/confianza/">Dónde se explica</a></dd>
+        </div>
+        <div class="fila">
+          <dt>Ejecutivo</dt>
+          <dd>La persona del equipo que confirma tu precio final, coordina el destino del dinero y te avisa cuando la operación está lista. No es un sistema automático. <a class="ver" href="/confianza/">Dónde se explica</a></dd>
+        </div>
+    </dl>
+  </div>
+</section>
+
+<section class="cierre">
+  <div class="inner">
+    <h2>¿Queda algo sin responder?</h2>
+    <p>Nos escribes y te contesta una persona del equipo.</p>
+    <a class="cta" href="#">Escribir por WhatsApp</a>
+  </div>
+</section>
+
+<div class="scaffold">andamio · debajo va Footer.astro</div>
+
+</body>
+</html>

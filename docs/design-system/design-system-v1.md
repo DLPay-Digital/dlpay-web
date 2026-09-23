@@ -577,6 +577,17 @@ cada una, no qué significa.
 - Objetivos táctiles ≥ **44px**. Un enlace de 14px sin relleno vertical mide ~20px: los
   enlaces de navegación —los del pie incluidos— necesitan `min-height` explícito. Los
   enlaces dentro de un párrafo quedan exentos.
+
+  **Y la caja de 44px es también lo que los alinea** *(2026-09-23)*. «Personas», «Empresas» e
+  «Iniciar sesión» eran los únicos elementos de la cabecera sin ella, y el síntoma que se vio
+  primero no fue el táctil sino que estaban **más arriba que el resto**: sin caja propia, un
+  enlace `inline` se apoya en la primera línea de su contenedor en vez de centrarse en él.
+  Medido: centros en 33,65 y 28,75 contra el 38 de la marca, «Información» y los dos botones.
+  Los seis elementos de la barra centran hoy en 38 y ninguno baja de 44px de alto.
+
+  Corolario para cualquier marcador de «página actual»: va **absoluto**, no en flujo. En flujo
+  le suma su alto a la caja del enlace y desplaza el texto respecto de los enlaces sin marcar,
+  que es lo que hacía que «Personas» y «Empresas» ni siquiera coincidieran entre sí.
 - HTML semántico, jerarquía de headings correcta, labels en formularios, `alt` en imágenes.
 - `prefers-reduced-motion` respetado.
 - El cotizador operable por teclado; mensajes de error comprensibles y accionables.

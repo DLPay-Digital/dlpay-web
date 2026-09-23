@@ -245,16 +245,44 @@ const infoIsCurrent = navInfo.some((item) => isCurrent(item.href));
       77px a 83px. Un enlace de menú no se parte nunca.
     */
     white-space: nowrap;
+    /*
+      Caja propia de 44px, centrada. Era el único elemento de la barra que no la
+      tenía —`.brand`, `.trigger` y `.register` la declaran las tres, con el
+      mismo comentario— y de ahí salían dos defectos a la vez:
+
+      · **Desalineación.** Sin caja, el enlace es `inline` y se apoya en la
+        primera línea de su `li`, que está estirada a 44px. Medido: «Personas»
+        centraba en 33,65 y «Empresas» en 28,75, contra el 38 de la marca, de
+        «Información» y de los dos botones. Y los dos ni siquiera coincidían
+        entre sí, porque el subrayado de página actual iba EN FLUJO y le sumaba
+        6,5px de alto a uno solo de ellos.
+      · **Objetivo táctil.** Medían 17,5 y 27,3px de alto contra los 44 que pide
+        el Design System §10. No es sólo cosmético.
+    */
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    /* Ancla del subrayado de abajo. */
+    position: relative;
   }
   .desktop-nav > ul > li > a { transition: color var(--m-fast) var(--m-ease); }
   .desktop-nav > ul > li > a:hover { color: var(--on-tinta); }
   .desktop-nav > ul > li > a[aria-current='page'] { color: var(--on-tinta); }
+  /*
+    Absoluto y no en flujo, igual que el marcador de `.trigger` y por el mismo
+    motivo: en flujo, el subrayado agranda la caja del enlace y desplaza su
+    texto respecto de los enlaces sin subrayar. `bottom: 8px` es el valor que ya
+    usa el trigger, así que los dos marcadores de «dónde estoy» caen a la misma
+    altura — antes quedaban a 46 y a 50,5.
+  */
   .desktop-nav > ul > li > a[aria-current='page']::after {
     content: '';
-    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
     height: 1.5px;
     background: var(--verde);
-    margin-top: 5px;
   }
 
   /* ── Desplegable «Información» ───────────────────────────────────────────
@@ -507,7 +535,16 @@ const infoIsCurrent = navInfo.some((item) => isCurrent(item.href));
     .nav-item { display: block; margin-left: auto; }
     .register { padding-inline: var(--s-4); }
     .login {
-      display: inline;
+      /*
+        `inline-flex` y no `inline`, con caja de 44px: es lo mismo que declaran
+        `.brand`, `.trigger`, `.register` y los enlaces del menú. Estaba bien
+        CENTRADO —`.actions` es flex centrado— pero su área pulsable medía
+        21,7px de alto, la mitad de lo que pide el Design System §10. Agrandar
+        la caja no mueve el texto ni un píxel, porque se centra dentro de ella.
+      */
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
       color: var(--on-tinta-mute);
       text-decoration: none;
       font-size: var(--t-body-sm);

@@ -314,6 +314,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-23 | [`2026-09-23-oportunidades`](2026-09-23-oportunidades/propuesta.md) — seis contenidos que añadir, con `wise.com` como referencia y el filtro de lo que nuestras propias reglas no permiten copiar | **Registrado** | Propuesta de contenido, no una entrega a trasladar |
 | 2026-09-22 | [`2026-09-22-estudio-nivel-3`](2026-09-22-estudio-nivel-3/estudio.md) — estudio del sitio entero: medida de lectura, jerarquía, densidad y reparto de figuras, con ocho propuestas ordenadas | **Registrado** | Documento de análisis, no una entrega a trasladar |
 | 2026-09-22 | [`2026-09-22-riel-tokenizado`](2026-09-22-riel-tokenizado/ficha.md) — figura de página: el peso no está tokenizado y el dólar digital sí | **Integrada** (`a0c12f5`) | El dibujo, copiado literalmente. Cambió el envoltorio: el `aria-hidden` pasa a cubrir también las etiquetas, se quitan las líneas en blanco que en Markdown cortaban el bloque, y del copy entra sólo la frase nueva. De aquí salen las reglas 26 y 27 |
 | 2026-09-22 | [`2026-09-22-riel-tokenizado`](2026-09-22-riel-tokenizado/ficha.md) — figura de página: el peso, el dólar digital y la tokenización | **Integrada con cambios** | El dibujo tal cual. Cambia el envoltorio: `aria-hidden` cubre también las etiquetas, el copy no duplica lo que el artículo ya dice, y hubo que quitar las líneas en blanco del bloque HTML |
