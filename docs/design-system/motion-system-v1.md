@@ -74,6 +74,24 @@ que enumera los movimientos permitidos no conocía dos movimientos infinitos que
 el globo sale del viewport** (`IntersectionObserver`). Antes recalculaba ~1.500 vértices sesenta
 veces por segundo durante toda la navegación de la Home, con el globo fuera de pantalla.
 
+### Enmienda interna — 2026-09-23
+
+Pedida por Sebastián: **que el encabezado entre igual en todas las páginas del sitio.** Hasta hoy
+la cascada del titular era `opt-in` y sólo la tenían la Home, `/empresas` y la 404; las otras ocho
+páginas presentaban el encabezado de golpe.
+
+| Regla de este documento | Estado |
+|---|---|
+| §5 — «Páginas legales: **sólo M1**. Un documento legal no se presenta con movimiento» | **Enmendado.** Las cuatro legales llevan **M6 en el encabezado**. Lo que no se mueve, y sigue sin moverse, es el **texto del documento**: entra la portada de la página, no la letra pequeña |
+| §6 — «Páginas legales: JS sin cambios: hoy es 0 y seguiría en 0» | **Intacto, y comprobado.** M6 es una animación CSS de carga y no depende del observador: las cuatro legales y la 404 siguen en **0 bytes de JavaScript ejecutable**, medido sobre el build |
+| §4, regla dura 4 — máximo cuatro hermanos con stagger | **Intacto.** El listado de `/blog` escalona con `:nth-child`, que sólo retrasa del 2.º al 4.º: el quinto artículo y los siguientes entran sin esperar |
+| §4, regla dura 1 — una sola vez | **Intacto.** Nada de lo añadido se re-anima |
+
+**Por qué la regla de las legales podía enmendarse.** Decía dos cosas y sólo una era de diseño. La
+técnica —«cero JavaScript»— era la que de verdad protegía algo, y **no se toca**: el encabezado
+entra sin una línea de script. La otra —«un documento legal no se presenta con movimiento»— hablaba
+del documento, y el documento sigue inmóvil.
+
 ---
 
 ## 1. Estado actual, verificado
@@ -220,6 +238,7 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 
 | Zona | Movimiento | Por qué |
 |---|---|---|
+| Encabezado | **M6** en titular y bajada | *Añadido el 2026-09-23.* Antes entraba de golpe mientras la Home y `/empresas` cascadeaban |
 | ~~Diagrama de flujo~~ | *Retirado el 2026-09-17* | La banda entera salió de la página, y con ella `FlowDiagram.astro`. El motivo no fue densidad: su pie decía «Dónde está tu dinero en cada momento», que es el título exacto de la figura de `/confianza`. No era riesgo de duplicación, era una colisión ya ocurrida |
 | Cuñas de traspaso | **M3 en secuencia**: se dibujan las tres cuñas que marcan dónde el trabajo cambia de manos | **El momento de movimiento del sitio, trasladado, no perdido.** No hubo que inventar dónde ponerlo: la fila de M3 ya nombraba dos sitios, «cuñas del héroe, **cuñas de los pasos**, conectores del diagrama de flujo». Se retiró uno y quedó el otro. La secuencia sale gratis: el observador las dispara a alturas distintas, así que se dibujan 03 → 04 → 05 conforme se lee, y sin una línea de JavaScript nueva |
 | Pasos | **M4 sólo en el titular.** La lista **no** entra | *Corregido al implementar:* son **seis** pasos y el tope es cuatro. En dos columnas, escalonar seis se lee como el revelado de tarjetas de cualquier plantilla. El tope gana sobre el argumento de "es una secuencia real". **Sigue vigente con los carriles** (2026-09-17): lo que se dibuja son las tres cuñas, no los seis pasos |
@@ -240,14 +259,40 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 
 | Zona | Movimiento | Por qué |
 |---|---|---|
+| Encabezado | **M6** en titular y bajada | *Añadido el 2026-09-23.* No toca la quietud de «Lo que no afirmamos», que sigue sin movimiento a propósito |
 | Mecanismos | **M4** en el titular. Los tres bloques **no** escalonan | Ya se ajustó su composición; escalonarlos la desharía |
 | Requisitos | **Nada** | |
 | **Lo que no afirmamos** | **Nada, deliberadamente** | Es la sección más honesta del sitio. La quietud *es* el tono |
 | Quiénes somos | **M1** en el botón | |
 
-### Páginas legales
+### /blog  ·  *añadido el 2026-09-23*
 
-**Sólo M1.** Un documento legal no se presenta con movimiento.
+| Zona | Movimiento | Por qué |
+|---|---|---|
+| Encabezado | **M6** en titular y bajada | Está sobre el pliegue: entra al cargar, sin depender del observador |
+| Listado de artículos | **M5** en cada artículo | El escalonado lo pone `:nth-child`, que sólo retrasa del 2.º al 4.º hermano. El quinto artículo y los siguientes entran sin esperar, así que la lista puede crecer sin volver a tocar esto |
+
+### /blog/artículo  ·  *añadido el 2026-09-23*
+
+| Zona | Movimiento | Por qué |
+|---|---|---|
+| Portada | **Nada** | Es lo primero que ves al llegar y tiene que estar ahí. Mismo criterio que la tarjeta del cotizador en la regla dura 2 |
+| Cabecera | **M6** en categoría, titular y bajada, **en bloques** | No palabra por palabra: `PageHero` parte titulares de tres o cuatro palabras, y el de un artículo puede tener dieciséis — a 60 ms cada una la entrada duraría casi un segundo |
+| Cuerpo | **Nada** | Es un documento. Una columna de párrafos escalonada es la definición de plantilla |
+
+**Las dos páginas ya cargaban el motor y no usaban nada**, desde que el blog se añadió el
+2026-09-11: este capítulo se escribió el 2026-09-07 y nunca tuvo una fila para ellas. Pagaban el
+JavaScript sin movimiento a cambio.
+
+### Páginas legales  ·  *enmendado el 2026-09-23*
+
+**M6 en el encabezado y M1 en los controles. El texto del documento no se mueve.**
+
+La regla anterior decía «sólo M1: un documento legal no se presenta con movimiento», y se enmienda
+en su mitad de diseño: lo que se presenta con movimiento es el **encabezado de la página** —el
+titular y su bajada, como en todas las demás—, no el articulado. **La mitad técnica sigue intacta y
+comprobada: cero JavaScript.** M6 es una animación CSS de carga, así que estas cuatro páginas y la
+404 siguen sin un solo byte de script ejecutable.
 
 ---
 

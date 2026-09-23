@@ -5,6 +5,17 @@
  * Rejilla mínima de tarjetas sobre tinta, el mismo registro A×C que el resto
  * del sitio. Sin paginación: con el volumen actual sería infraestructura para
  * un problema que todavía no existe (Principio 5). Cuando haga falta, entra.
+ *
+ * ── Movimiento (2026-09-23) ────────────────────────────────────────────────
+ *
+ * `sequence` enciende M6 en el encabezado, como en el resto del sitio, y es una
+ * animación CSS: no gasta JavaScript.
+ *
+ * `data-enter` en cada `<li>` enciende M5, el escalonado. El desfase lo pone el
+ * CSS con `:nth-child`, que **sólo retrasa del 2.º al 4.º hermano**: el quinto
+ * artículo y los siguientes entran sin esperar. Es la regla dura 4 del Motion
+ * System —un listado largo escalonado se lee como plantilla— y significa que la
+ * lista puede crecer sin tocar nada.
  */
 import Base from '../../layouts/Base.astro';
 import Header from '../../components/Header.astro';
@@ -49,6 +60,7 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
     <PageHero
       title="Blog"
       lead="Qué mueve el precio del dólar y cómo leerlo antes de operar."
+      sequence
     />
 
     <section class="list" aria-labelledby="list-title">
@@ -60,7 +72,7 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
         ) : (
           <ul class="posts" role="list">
             {posts.map((post) => (
-              <li>
+              <li data-enter>
                 <a href={`/blog/${post.id}/`}>
                   <span class="p-meta">
                     <span class="cat">{post.data.category}</span>

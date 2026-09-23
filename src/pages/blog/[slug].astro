@@ -69,13 +69,26 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
       ))}
 
     <article class="post">
+      {/*
+        M6 (2026-09-23): la cabecera entra al cargar, en tres pasos. Es una
+        animación CSS y no depende del observador, porque esto está sobre el
+        pliegue — el mismo criterio que el encabezado de /empresas.
+
+        **En bloques, no palabra por palabra.** `PageHero` parte el titular en
+        palabras porque los suyos tienen tres o cuatro; el de un artículo puede
+        tener dieciséis, y a 60 ms por palabra la entrada duraría casi un
+        segundo. El titular entra entero.
+
+        La portada NO se mueve: es lo primero que ves al llegar y tiene que
+        estar ahí, igual que la tarjeta del cotizador en la Home (regla dura 2).
+      */}
       <header class="head">
-        <span class="meta">
+        <span class="meta seq" style="--seq:0">
           <span class="cat">{post.data.category}</span>
           <time datetime={post.data.pubDate.toISOString()}>{fecha.format(post.data.pubDate)}</time>
         </span>
-        <h1>{post.data.title}</h1>
-        <p class="lead">{post.data.description}</p>
+        <h1 class="seq" style="--seq:1">{post.data.title}</h1>
+        <p class="lead seq" style="--seq:2">{post.data.description}</p>
       </header>
 
       <div class="prose">
@@ -121,6 +134,28 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
     margin-bottom: var(--s-4);
   }
   .lead { color: var(--ink-mute); font-size: var(--t-h3-m); margin-bottom: var(--s-7); }
+
+  /*
+    M6 · la secuencia de carga de la cabecera. Sobre el eje diagonal de la marca
+    —nunca un `translateY` vertical— y dentro del techo de 280 ms.
+
+    PENDIENTE: ésta es la TERCERA copia de `heroIn` en el repositorio; las otras
+    dos están en `Hero.astro` y `PageHero.astro` y son idénticas a ésta. Cuando
+    alguien vuelva a tocar el Motion System, las tres deberían salir a
+    `tokens.css` como utilidad M6. No se hizo hoy porque consolidarlas obliga a
+    editar el héroe de la Home, y eso excede lo que se pidió.
+  */
+  .seq {
+    animation: heroIn var(--m-base) var(--m-ease) both;
+    animation-delay: calc(var(--seq) * var(--m-stagger));
+  }
+  @keyframes heroIn {
+    from { opacity: 0; transform: translate(var(--m-shift-x), var(--m-shift-y)); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .seq { animation: none; }
+  }
 
   /*
     Estilos del cuerpo en Markdown. Van con `:global` porque este componente no

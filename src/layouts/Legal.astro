@@ -22,7 +22,14 @@ const { title, description, path, lead } = Astro.props;
 <Base title={title} description={description} path={path}>
   <Header />
   <main id="main">
-    <PageHero title={title} lead={lead} />
+    {/*
+      `sequence` (M6) desde el 2026-09-23: el encabezado entra palabra por
+      palabra igual que en el resto del sitio. **No cuesta JavaScript** —M6 es
+      una animación CSS de carga, no depende del observador— así que estas
+      cuatro páginas siguen en cero bytes. El cuerpo del documento no se mueve:
+      lo que entra es la portada de la página, no el texto legal.
+    */}
+    <PageHero title={title} lead={lead} sequence />
     <div class="doc">
       <article class="prose">
         <slot />

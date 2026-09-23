@@ -74,8 +74,15 @@ const titleWords = title.split(' ');
  * al titular arrancan cuando la última palabra empieza a entrar, y no antes: si
  * la bajada apareciera a los 60 ms, la frase todavía se estaría escribiendo
  * detrás y el efecto se perdería.
+ *
+ * **El mínimo de 1 es para los titulares de UNA palabra** (2026-09-23). Con
+ * `length - 1` a secas, «Tarifas», «Privacidad» y «Blog» daban índice 0 para la
+ * bajada: el titular y la bajada entraban en el mismo instante y no había
+ * cascada, sólo un fundido del bloque entero. El mínimo les da el mismo paso de
+ * dos tiempos que tienen las demás páginas, sin cambiar ninguna: con dos o más
+ * palabras `length - 1` ya es 1 o mayor y la expresión devuelve lo de siempre.
  */
-let step = titleWords.length - 1;
+let step = Math.max(titleWords.length - 1, 1);
 const seqLead = lead ? step++ : 0;
 const seqCta = hasCta ? step++ : 0;
 const seqAside = hasAside ? step++ : 0;
