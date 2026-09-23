@@ -31,6 +31,46 @@ Nada de lo que propongo abajo toca esas cuatro cosas.
 
 ---
 
+## 0.b CORRECCIÓN DEL 2026-09-23 — la §1 de este estudio estaba mal medida
+
+**Todas las cifras de «ch» de la §1 van un 37 % altas, y la conclusión salía invertida.**
+
+Mi medidor dividía el ancho de la caja por `measureText('0')`. Eso es la unidad **`ch`**, no un
+carácter — y el Design System §3 ya lo advierte con estas palabras:
+
+> «**`1ch` NO es un carácter.** Es el ancho del glifo **cero**, y en Familjen Grotesk el cero es
+> 9,07 px frente a los 6,64 px del carácter medio. El factor es **1,37**… El tope de 65 caracteres
+> se escribe `max-width: 47ch`.»
+
+Lo encontró el agente de Claude Code al integrar. Volví a medir sobre el build, esta vez dividiendo
+por el **ancho medio real** de los caracteres del propio párrafo:
+
+| página | ancho | lo que escribí («ch») | **caracteres de verdad** |
+|---|---|---|---|
+| `/` · `/empresas` · `/como-funciona` | 376–423 px | 46–47 | **62** |
+| `/confianza` | 375 px | 41,7 | **58** |
+| `/tarifas` · `/terminos` · `/privacidad` | 295 px | 32,8 | **45** |
+| `/canal-de-denuncias` | 269 px | 29,9 | **40** |
+| **artículo del blog** | 760 px | 84,4 | **112** |
+
+Factor medido, página a página: **1,315 a 1,395**. El 1,37 del DS es exacto.
+
+**Qué cambia de verdad, y es lo importante:**
+
+- **Las páginas principales están bien.** 62 caracteres, justo dentro del objetivo. Yo las di por
+  correctas por casualidad: el sitio escribe `47ch` en las 18 medidas de `src/` precisamente porque
+  alguien ya había hecho esta cuenta.
+- **Las legales están en 45 caracteres, no en 33.** Siguen siendo estrechas, pero **no son «la
+  mitad del objetivo»** como escribí. Y su problema real es de composición, no de medida: una cinta
+  de 295 px con 493 px de blanco a cada lado en una pantalla de 1280.
+- **El artículo del blog es el defecto grave, y yo lo puse de segundo.** No se pasa «un 20 %»: está
+  en **112 caracteres** contra un techo de 65. Es un **72 % por encima**, y es la peor medida de
+  lectura del sitio con diferencia.
+
+**La prioridad de la §5 se invierte:** lo primero no son las legales, es el artículo del blog.
+
+---
+
 ## 1. La corrección número uno, y no es de dibujo: **la medida de lectura**
 
 Medí el párrafo de cuerpo más largo de cada página, en caracteres reales:
@@ -54,8 +94,8 @@ Lo que se ve en `/tarifas` a 1280 es una cinta de 295 px flotando en el centro d
 1280, con más de un tercio de la ventana en blanco a cada lado. Una página que explica el precio no
 puede leerse como una nota al pie.
 
-**Propuesta N1 · subir las cuatro legales a 640–680 px y bajar el artículo de blog a ~680.** Cero
-dibujo, cinco páginas cambian de carácter. Es lo primero que haría.
+**Propuesta N1 · bajar el artículo de blog, y de paso ensanchar las legales.** Cero dibujo.
+*(Corregida el 2026-09-23: ver §0.b. El artículo es lo urgente; las legales, lo cómodo.)*
 
 ---
 

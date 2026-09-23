@@ -167,6 +167,23 @@ modificar y usar comercialmente. Conservar el archivo de licencia junto a las fu
   > `--medida`: un token escondería la dependencia y el número seguiría ahí, equivocado, cuando la
   > fuente cambiara. Se mide contando los caracteres de la primera línea con
   > `Range.getClientRects()` sobre el build, nunca a ojo.
+
+  > **Una excepción viva, medida y aceptada: el cuerpo de los artículos del blog**
+  > *(2026-09-23)*
+  >
+  > El artículo va a **112 caracteres por línea**, un 72 % por encima del tope. Es la peor medida
+  > del sitio y la única fuera de regla: `.post` está limitado a 760 px y sus párrafos no llevan
+  > `max-width`, porque el blog se construyó el 2026-09-11 y la medida de lectura se cerró el
+  > 2026-09-17. Todo lo demás sí la tiene — **18 declaraciones de `47ch` en `src/` y ninguna de
+  > `66ch`**.
+  >
+  > **Sebastián decidió el 2026-09-23 no corregirlo**, porque la corrección estrecha la columna de
+  > texto de 760 px a unos 426 y los dos artículos publicados están como los quiere. Queda escrito
+  > acá, y no borrado, para que quien audite las medidas sepa que este caso está **medido y
+  > decidido**, no pasado por alto. La corrección, si algún día se toma, es `max-width: 47ch` en
+  > los párrafos y las listas de `.prose`, dejando el titular y las figuras en sus 760 px.
+  >
+  > Factor medido en esa página: **1,337**, que confirma el 1,37 de arriba.
 - `text-wrap: balance` en titulares; `text-wrap: pretty` en párrafos.
 
 ### 3.2 Antipatrones tipográficos (prohibidos)

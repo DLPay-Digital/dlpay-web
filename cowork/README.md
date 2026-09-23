@@ -284,6 +284,24 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     fuente se ve bien, y sólo aparece midiendo los trazos del HTML servido. **Si propongo dónde va
     una pieza, las reglas de ese formato son parte de la entrega.**
 
+28. **Una unidad no es su nombre.** `1ch` no es un carácter: es el ancho del glifo **cero**, que en
+    Familjen Grotesk mide 9,07 px frente a los 6,64 del carácter medio. Mi medidor dividía el ancho
+    de la caja por `measureText('0')` y yo llamaba «caracteres» al resultado — y encima lo comparaba
+    con el objetivo de **65–70 caracteres** del DS. **Todas las medidas de lectura que reporté iban
+    un 37 % altas**, y el estudio de nivel 3 sacaba la conclusión invertida: daba las legales por
+    catastróficas (33 «ch» = 45 caracteres reales) y el artículo del blog por leve (84 «ch» = **112
+    caracteres**, un 72 % sobre el techo). Lo peor es que **el DS §3 lo documenta con esas mismas
+    palabras**, así que es la regla 23 otra vez: leer el cuerpo, no el titular. Medido después sobre
+    el build, el factor real va de 1,315 a 1,395. **Antes de comparar un número con un objetivo, hay
+    que comprobar que los dos están en la misma unidad.**
+
+29. **Una captura de página completa de este sitio miente.** `fullPage` no recorre la página, así
+    que las entradas del Motion System no se disparan y los bloques de abajo salen en blanco. Yo
+    estuve a punto de reportar «la Home está vacía» y el agente de Claude Code estuvo a punto de dar
+    por rota una página que estaba bien. Lo encontramos los dos por separado el mismo día, lo que
+    quiere decir que volverá a pasar. **Se captura con `reducedMotion: 'reduce'` y una pasada de
+    scroll antes del disparo**, y se comprueba contando los elementos con opacidad menor que 1.
+
 ---
 
 ## 5. Protocolo con el agente de Claude Code
@@ -314,8 +332,8 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
-| 2026-09-23 | [`2026-09-23-precio`](2026-09-23-precio/ficha.md) — `/precio`: el cobro único. Dos barras del mismo largo y una tabla donde cinco filas dicen «Sin costo» y una dice dónde está el spread. **Copy firmado por Sebastián el 2026-09-23** | **En revisión** | — |
-| 2026-09-23 | [`2026-09-23-preguntas`](2026-09-23-preguntas/ficha.md) — `/preguntas`: las nueve preguntas reunidas desde `content/` sin duplicar texto, más un glosario de ocho términos. **Copy firmado por Sebastián el 2026-09-23** | **En revisión** | — |
+| 2026-09-23 | [`2026-09-23-precio`](2026-09-23-precio/ficha.md) — `/precio`: el cobro único. Dos barras del mismo largo y una tabla donde cinco filas dicen «Sin costo» y una dice dónde está el spread. **Copy firmado por Sebastián el 2026-09-23** | **Integrada** (`bcda1fe`) | El dibujo entero. La frase de volumen se importa como constante en vez de teclearse, y la medida pasa a 47ch. De aquí salen las reglas 28 y 29 |
+| 2026-09-23 | [`2026-09-23-preguntas`](2026-09-23-preguntas/ficha.md) — `/preguntas`: las nueve preguntas reunidas desde `content/` sin duplicar texto, más un glosario de ocho términos. **Copy firmado por Sebastián el 2026-09-23** | **Integrada** (`bcda1fe`) | El dibujo entero. Cambió el envoltorio: `id` derivado del título y normalizado sin tildes, los títulos de las páginas de origen, el glosario sale a `content/glossary.ts` y la medida de 66ch pasa a 47ch. De aquí salen las reglas 28 y 29 |
 | 2026-09-23 | [`2026-09-23-oportunidades`](2026-09-23-oportunidades/propuesta.md) — seis contenidos que añadir, con `wise.com` como referencia y el filtro de lo que nuestras propias reglas no permiten copiar | **Registrado** | Propuesta de contenido, no una entrega a trasladar |
 | 2026-09-22 | [`2026-09-22-estudio-nivel-3`](2026-09-22-estudio-nivel-3/estudio.md) — estudio del sitio entero: medida de lectura, jerarquía, densidad y reparto de figuras, con ocho propuestas ordenadas | **Registrado** | Documento de análisis, no una entrega a trasladar |
 | 2026-09-23 | [`2026-09-23-preguntas`](2026-09-23-preguntas/ficha.md) — `/preguntas`: las nueve preguntas reunidas y el glosario | **Integrada con cambios** | La estructura tal cual. Las preguntas se IMPORTAN en vez de copiarse, los títulos son los de las páginas de origen y la medida baja de 66ch a 47ch |
@@ -1246,3 +1264,29 @@ Una captura de página completa de este sitio **miente**: el movimiento de entra
 hacer scroll, y una captura `fullPage` no recorre la página, así que los bloques de más abajo salen
 en blanco. Hay que recorrerla primero. Me pasó al revisar `/precio` y estuve a punto de dar por
 rota una página que estaba bien.
+
+### Cierre de `2026-09-23-preguntas` y `2026-09-23-precio`
+
+Nada pendiente. Dos cosas que sí dejan rastro en `src/` o en los documentos.
+
+**El hallazgo del artículo del blog es correcto y lo reproduje.** Medido sobre el build con
+`Range.getClientRects()` y el ancho medio real del propio párrafo: **112 caracteres por línea**,
+contra un tope de 65. Factor 1,337, que confirma el 1,37 del Design System. Es la única medida del
+sitio fuera de regla, y el motivo es de fechas: el blog se construyó el 2026-09-11 y la medida de
+lectura se cerró el 2026-09-17.
+
+**Sebastián decidió no corregirlo** el 2026-09-23: la corrección estrecha la columna de 760 px a
+unos 426 y los dos artículos publicados están como los quiere. Queda **medido y anotado** en el
+Design System §3, junto a la regla, con la corrección exacta escrita por si algún día se toma. Una
+excepción escrita no es lo mismo que un descuido.
+
+**La regla 28 es la buena de esta ronda**, y su valor no está en el 37 %: está en que la conclusión
+del estudio salía **invertida**. Dar por catastróficas las legales y por leve el artículo, cuando es
+exactamente al revés, es el tipo de error que hace trabajar en la dirección equivocada durante días.
+La regla 29 la firmamos los dos el mismo día y por separado, que es la mejor prueba de que hacía
+falta.
+
+**Sobre el pie, y la tercera que faltaba.** Tienes razón y el dato es tuyo: **el Blog tampoco está
+en «Producto»**, y no lo estaba antes de esta entrega. No lo toco todavía —el pie es una decisión de
+arquitectura de información y es de Sebastián— pero queda dicho que el hueco es de tres entradas y
+no de dos, y que el más viejo es el Blog.
