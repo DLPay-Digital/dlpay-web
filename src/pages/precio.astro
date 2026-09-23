@@ -1,0 +1,256 @@
+---
+/**
+ * /precio — dónde está el cobro y dónde no lo hay.
+ *
+ * ── Qué afirma, y por qué NO afirma «gratis» ───────────────────────────────
+ *
+ * El encargo pedía mostrar que «todo es gratis». Cuatro partes de eso chocaban
+ * con lo que el sitio ya publica, y la página dice otra cosa que es más fuerte
+ * precisamente porque nadie la puede desmontar:
+ *
+ *   **Un solo cobro en toda la operación, y va dentro del precio.**
+ *
+ * 1. «Convertir: gratis» sería falso. `/tarifas` publica que DLPay aplica un
+ *    spread. Anunciar cero comisión cobrando en el tipo de cambio es
+ *    literalmente lo que esa misma página dice que NO hacemos —«un tipo de
+ *    cambio inflado por dentro para esconder un cobro»—.
+ * 2. «Mantener saldo» y «recibir dinero» describen un producto que no existe:
+ *    `/confianza` dibuja que el dinero está en la cuenta del cliente, luego en
+ *    la de DLPay mientras dura la operación, luego en la billetera del cliente.
+ *    **No hay una cuenta DLPay donde guardar saldo.** Sí entra «recibir el dólar
+ *    digital en tu billetera», que es verdad.
+ * 3. «A diferencia de otros proveedores» y «más barato que el competitivo» son
+ *    comparativas sin base auditable, y «el mejor precio» ya está en la lista de
+ *    claims pendientes de firma. La página dice lo mismo sin nombrar a nadie:
+ *    «ves cuánto recibes antes de transferir».
+ * 4. «Descuentos por volumen»: D5 está bloqueado y `/empresas` ya publica que no
+ *    hay tabla por tramos. Esa frase se IMPORTA de `business.ts`, no se teclea.
+ *
+ * ── Y por qué no reemplaza a `/tarifas` ────────────────────────────────────
+ *
+ * `/tarifas` es una página legal y se queda en el pie: describe la composición
+ * del precio y el mínimo, y es donde D5 aterrizará el día que se cierre. Ésta
+ * vive en el menú «Información» y responde una pregunta distinta —«¿qué me van a
+ * cobrar?»— antes de operar. Ninguna de las dos copia texto de la otra.
+ */
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
+import Motion from '../components/Motion.astro';
+import { volumeTerms } from '../content/business.ts';
+
+/*
+  La tabla es dato, no prosa: cinco filas iguales y una distinta. Escrita como
+  lista y no como seis párrafos, el ojo ve el patrón y ve la excepción sin leer.
+
+  La fila del costo de red entró por decisión de Sebastián del 2026-09-23 y
+  faltaba: una tabla de costos que se salta un costo deja de ser una tabla de
+  costos. Que DLPay lo asuma es además un diferenciador real.
+*/
+const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
+  { what: 'Registrarte y verificar tu identidad', cost: 'Sin costo' },
+  { what: 'Cotizar, las veces que quieras', cost: 'Sin costo · sin cuenta' },
+  { what: 'Hablar con tu ejecutivo', cost: 'Sin costo' },
+  { what: 'Recibir el dólar digital en tu billetera', cost: 'Sin costo' },
+  { what: 'El costo de red del traspaso', cost: 'Sin costo · lo asumimos nosotros' },
+  { what: 'Convertir', cost: 'El spread, ya incluido en el precio que ves', isCharge: true },
+];
+---
+<Base
+  title="Precio"
+  description="Un solo cobro en toda la operación y va dentro del precio. Qué cuesta y qué no en DLPay: registro, cotización, ejecutivo y costo de red, sin costo."
+  path="/precio/"
+>
+  <Motion />
+  <Header />
+  <main id="main">
+    <PageHero
+      title="Un solo número"
+      lead="Lo que ves al cotizar es lo que pagas. Acá está dónde está el cobro y dónde no lo hay."
+      sequence
+    />
+
+    <section class="figura" aria-labelledby="fig-title">
+      <div class="inner">
+        <h2 id="fig-title" data-enter>Lo que ves y lo que pagas miden lo mismo</h2>
+        <p class="bajada">
+          Entre la cotización y el cierre no se suma nada. El precio que te confirma tu ejecutivo no
+          cambia después de que lo aceptas.
+        </p>
+
+        {/*
+          Es la topología de `convierte` de `UseCaseFigure` a escala de página:
+          dos barras del MISMO largo. No estrena ninguna marca, así que no hay
+          nada que escribir en el Design System §6.2.
+
+          SIN CUÑA, y es lo que hace la figura. En `convierte` la cuña está
+          porque sí ocurre una conversión; acá es el mismo importe en dos
+          momentos, y una cuña afirmaría una transformación que no existe. Entre
+          las dos barras no hay nada, y eso es exactamente lo que dice la página.
+
+          El spread NO se dibuja como un trozo de la barra: cualquier anchura
+          afirmaría una proporción, y los tramos son D5. La barra dice que el
+          precio es uno solo; cuánto de él es nuestro lo dicen las palabras.
+        */}
+        <p class="rot">El precio que ves al cotizar</p>
+        <svg class="barras" viewBox="0 0 720 76" aria-hidden="true">
+          <path class="bar" d="M0 14 H720" />
+          <path class="bar" d="M0 62 H720" />
+        </svg>
+        <p class="rot abajo">El precio que pagas</p>
+      </div>
+    </section>
+
+    <section class="costos" aria-labelledby="costos-title">
+      <div class="inner">
+        <h2 id="costos-title" data-enter>Qué cuesta y qué no</h2>
+        <p class="bajada">
+          Un solo cobro en toda la operación, y va dentro del precio. Todo lo demás no tiene costo,
+          incluido el costo de red del traspaso, que lo asumimos nosotros.
+        </p>
+        <dl>
+          {costs.map((row) => (
+            <div class:list={['fila', { charge: row.isCharge }]}>
+              <dt>{row.what}</dt>
+              <dd>{row.cost}</dd>
+            </div>
+          ))}
+        </dl>
+        {/* La misma salvedad que ya publica `/tarifas` sobre servicios ajenos. */}
+        <p class="nota">
+          Lo que hagas después con ese dólar digital, moverlo a otra billetera o convertirlo a
+          moneda local en otro país, puede tener costos de los servicios que uses para eso, que son
+          ajenos a DLPay.
+        </p>
+      </div>
+    </section>
+
+    <section class="tres" aria-labelledby="tres-title">
+      <div class="inner">
+        <h2 id="tres-title" class="sr-only">Cómo trabajamos el precio</h2>
+        <div class="bloques">
+          <div class="bloque" data-enter>
+            <h3>Precio transparente</h3>
+            <p>
+              Ves cuánto recibes antes de transferir, y ese número ya incluye lo nuestro. No hay una
+              comisión que aparezca al final ni un tipo de cambio inflado por dentro para esconder
+              un cobro.
+            </p>
+          </div>
+          <div class="bloque" data-enter>
+            <h3>Conversión justa</h3>
+            <p>
+              Partimos de una referencia de mercado y le aplicamos nuestro spread. No inventamos un
+              precio propio: el punto de partida es el mismo que puedes mirar tú.
+            </p>
+          </div>
+          <div class="bloque" data-enter>
+            <h3>Volumen y frecuencia</h3>
+            {/* Importado de `business.ts`: la misma frase que publica la FAQ de
+                /empresas, con su marcador de Compliance en un solo sitio. */}
+            <p>{volumeTerms}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="close on-tinta-surface" aria-labelledby="close-title">
+      <div class="inner">
+        <h2 id="close-title" data-enter>¿Listo para ver tu precio?</h2>
+        <p>Toma menos de un minuto y no necesitas cuenta para cotizar.</p>
+        <a class="cta" href="/#cotizador">Cotizar ahora</a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .inner { max-width: 760px; margin: 0 auto; padding: 0 var(--pad-section-m); }
+  .figura { background: var(--papel); padding: var(--s-9) 0; }
+  .costos { background: var(--papel-2); padding: var(--s-9) 0; }
+  .tres { background: var(--papel); padding: var(--s-9) 0; }
+
+  h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: var(--s-3);
+  }
+  /* Intro de sección: medida única de 46ch (Design System §3). */
+  .bajada { color: var(--ink-mute); max-width: 46ch; margin-bottom: var(--s-7); }
+
+  .rot {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+  }
+  .rot.abajo { margin-top: var(--s-2); }
+  .barras { display: block; width: 100%; height: auto; margin: var(--s-2) 0; }
+  /*
+    `non-scaling-stroke`: sin él el trazo escala con el dibujo y a 390px se
+    dibujaría a 1,2px reales, la mitad del grosor del resto de las figuras.
+  */
+  .barras path {
+    fill: none;
+    stroke: var(--verde-deep);
+    stroke-width: 2.5;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .costos .bajada { margin-bottom: var(--s-6); }
+  dl { margin: 0; border-top: 1px solid var(--line); }
+  .fila {
+    border-bottom: 1px solid var(--line);
+    padding: var(--s-4) 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--s-4);
+    flex-wrap: wrap;
+  }
+  dt { font-weight: 600; }
+  dd {
+    margin: 0;
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+    text-align: right;
+  }
+  /* La única fila que cobra, y el único filete grueso de la página. */
+  .fila.charge { border-bottom: 2px solid var(--verde-deep); }
+  .fila.charge dd { color: var(--verde-deep); font-weight: 600; }
+  /* 47ch = el tope de 65 caracteres del Design System §3. */
+  .nota { color: var(--ink-mute); max-width: 47ch; margin-top: var(--s-5); }
+
+  .bloques { display: grid; gap: var(--s-6); }
+  .bloque h3 { font-size: var(--t-h3-m); font-weight: 600; margin-bottom: var(--s-2); }
+  .bloque p { color: var(--ink-mute); max-width: 47ch; }
+
+  .close { background: var(--tinta); padding: var(--s-8) 0; }
+  .close h2 { color: var(--on-tinta); font-size: var(--t-h3); margin-bottom: var(--s-2); }
+  .close p { color: var(--on-tinta-mute); margin-bottom: var(--s-5); }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    background: var(--verde);
+    color: var(--on-verde);
+    font-weight: 700;
+    font-size: var(--t-body);
+    padding: var(--s-4) var(--s-6);
+    border-radius: var(--r-2);
+    text-decoration: none;
+  }
+  .cta { transition: background-color var(--m-fast) var(--m-ease); }
+  .cta:hover { background: var(--verde-hi); }
+
+  @media (min-width: 900px) {
+    h2 { font-size: var(--t-h2); }
+    .bloque h3 { font-size: var(--t-h3); }
+    /* Tres bloques en fila: son tres afirmaciones del mismo rango, no una
+       secuencia. Dentro del tope de cuatro hermanos con escalonado. */
+    .bloques { grid-template-columns: repeat(3, 1fr); gap: var(--s-7); }
+  }
+</style>

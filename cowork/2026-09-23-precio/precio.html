@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propuesta — /precio, v2</title>
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  @font-face{font-family:'Familjen Grotesk';font-weight:400 700;font-display:swap;
+    src:url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2')}
+  @font-face{font-family:'Spline Sans Mono';font-weight:400 600;font-display:swap;
+    src:url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2')}
+  body{background:var(--papel);margin:0}
+  .scaffold{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
+    background:var(--papel-2);border:1px dashed var(--line);padding:var(--s-3);text-align:center}
+  .col{max-width:760px;margin:0 auto;padding:0 var(--pad-section-m)}
+
+  .hero{background:var(--tinta);padding:var(--s-8) 0}
+  .hero h1{font-size:var(--t-h2-m);font-weight:700;line-height:var(--lh-h2);
+    letter-spacing:var(--ls-h2);color:var(--on-tinta);margin:0 0 var(--s-3)}
+  .hero p{color:var(--on-tinta-mute);max-width:56ch;margin:0}
+
+  /* ── LA FIGURA ── no es nueva: es `convierte` de UseCaseFigure a escala de
+     página. Dos barras de LARGO IDÉNTICO y la cuña canónica girada 90° entre
+     ellas — su propio comentario dice «el mismo valor, dos unidades, sin ir a
+     ninguna parte».
+
+     Aquí las dos barras dicen otra cosa con la misma forma: **lo que ves y lo
+     que pagas miden lo mismo**. Nada se suma entre una y otra, y esa es
+     literalmente la afirmación de la página.
+
+     Por qué NO dibujo el spread como un trozo dentro de la barra: cualquier
+     anchura que le diera afirmaría una proporción, y los tramos de spread son
+     dato bloqueado (D5). La barra dice que el precio es uno solo; cuánto de él
+     es nuestro lo dice la tabla de abajo con palabras, no con un ancho.
+
+     Y POR QUÉ NO HAY CUÑA ENTRE LAS DOS BARRAS, que es lo que corregí después
+     de dibujarla: la puse por reflejo, porque `convierte` la lleva. Pero allí la
+     cuña está porque SÍ ocurre una conversión —pesos a dólar digital— y acá no
+     ocurre nada: es el mismo importe en dos momentos. Una cuña habría afirmado
+     una transformación que no existe, y encima habría quedado desproporcionada:
+     en `convierte` la cuña mide 0,23 del largo de la barra, y a este tamaño daba
+     0,06. **Lo que hace la figura es la ausencia:** entre las dos barras no hay
+     nada, y eso es exactamente lo que la página dice. */
+  .figura{background:var(--papel);padding:var(--s-9) 0}
+  .figura h2{font-size:var(--t-h2-m);font-weight:700;line-height:var(--lh-h2);
+    letter-spacing:var(--ls-h2);margin:0 0 var(--s-3)}
+  .figura .bajada{color:var(--ink-mute);max-width:60ch;margin:0 0 var(--s-7)}
+  .rot{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);margin:0}
+  .rot.abajo{margin-top:var(--s-2)}
+  .barras{display:block;width:100%;height:auto;margin:var(--s-2) 0}
+  .barras path{fill:none;stroke:var(--verde-deep);vector-effect:non-scaling-stroke;
+    stroke-linejoin:miter}
+  .barras .bar{stroke-width:2.5}
+
+  /* ── LA TABLA ── la repetición ES el mensaje: cinco «Sin costo» seguidos y
+     una sexta fila que dice otra cosa. El ojo ve el patrón y ve la excepción.
+     Una tabla que dijera «gratis» cinco veces diría menos, porque no se
+     entiende un precio sin saber dónde está el cobro. */
+  .costos{background:var(--papel-2);padding:var(--s-9) 0}
+  .costos h2{font-size:var(--t-h2-m);font-weight:700;line-height:var(--lh-h2);
+    letter-spacing:var(--ls-h2);margin:0 0 var(--s-3)}
+  .costos .bajada{color:var(--ink-mute);max-width:60ch;margin:0 0 var(--s-6)}
+  dl{margin:0;border-top:1px solid var(--line)}
+  .fila{border-bottom:1px solid var(--line);padding:var(--s-4) 0;
+    display:flex;justify-content:space-between;align-items:baseline;gap:var(--s-4);flex-wrap:wrap}
+  dt{margin:0;font-weight:600}
+  dd{margin:0;font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);
+    text-align:right}
+  .fila.spread{border-bottom:2px solid var(--verde-deep)}
+  .fila.spread dd{color:var(--verde-deep);font-weight:600}
+  .nota{color:var(--ink-mute);max-width:66ch;margin:var(--s-5) 0 0}
+
+  .tres{background:var(--papel);padding:var(--s-9) 0}
+  .tres .bloque{border-top:1px solid var(--line);padding-top:var(--s-5);margin-top:var(--s-6)}
+  .tres .bloque:first-of-type{border-top:0;margin-top:0;padding-top:0}
+  .tres h3{font-size:var(--t-h3);margin:0 0 var(--s-2)}
+  .tres p{color:var(--ink-mute);max-width:66ch;margin:0}
+
+  .cierre{background:var(--tinta);padding:var(--s-8) 0}
+  .cierre h2{font-size:var(--t-h3);color:var(--on-tinta);margin:0 0 var(--s-2)}
+  .cierre p{color:var(--on-tinta-mute);margin:0 0 var(--s-5)}
+  .cta{display:inline-block;background:var(--verde);color:var(--tinta);font-weight:700;
+    padding:var(--s-3) var(--s-5);text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="scaffold">andamio · arriba va Header.astro</div>
+
+<header class="hero"><div class="col">
+  <h1>Un solo número</h1>
+  <p>Lo que ves al cotizar es lo que pagas. Acá está dónde está el cobro y dónde no lo hay.</p>
+</div></header>
+
+<section class="figura" aria-labelledby="fig-t"><div class="col">
+  <h2 id="fig-t">Lo que ves y lo que pagas miden lo mismo</h2>
+  <p class="bajada">Entre la cotización y el cierre no se suma nada. El precio que te confirma tu
+  ejecutivo no cambia después de que lo aceptas.</p>
+
+  <p class="rot">El precio que ves al cotizar</p>
+  <svg class="barras" viewBox="0 0 720 76" aria-hidden="true">
+    <path class="bar" d="M0 14 H720"/>
+    <path class="bar" d="M0 62 H720"/>
+  </svg>
+  <p class="rot abajo">El precio que pagas</p>
+</div></section>
+
+<section class="costos" aria-labelledby="cos-t"><div class="col">
+  <h2 id="cos-t">Qué cuesta y qué no</h2>
+  <p class="bajada">Un solo cobro en toda la operación, y va dentro del precio. Todo lo demás no
+  tiene costo, incluido el costo de red del traspaso, que lo asumimos nosotros.</p>
+  <dl>
+        <div class="fila">
+          <dt>Registrarte y verificar tu identidad</dt>
+          <dd>Sin costo</dd>
+        </div>
+        <div class="fila">
+          <dt>Cotizar, las veces que quieras</dt>
+          <dd>Sin costo · sin cuenta</dd>
+        </div>
+        <div class="fila">
+          <dt>Hablar con tu ejecutivo</dt>
+          <dd>Sin costo</dd>
+        </div>
+        <div class="fila">
+          <dt>Recibir el dólar digital en tu billetera</dt>
+          <dd>Sin costo</dd>
+        </div>
+        <div class="fila">
+          <dt>El costo de red del traspaso</dt>
+          <dd>Sin costo · lo asumimos nosotros</dd>
+        </div>
+        <div class="fila spread">
+          <dt>Convertir</dt>
+          <dd>El spread, ya incluido en el precio que ves</dd>
+        </div>
+  </dl>
+  <p class="nota">Lo que hagas después con ese dólar digital —moverlo a otra billetera, convertirlo
+  a moneda local en otro país— puede tener costos de los servicios que uses para eso, que son
+  ajenos a DLPay.</p>
+</div></section>
+
+<section class="tres" aria-labelledby="tres-t"><div class="col">
+  <h2 id="tres-t" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">Cómo trabajamos el precio</h2>
+
+  <div class="bloque">
+    <h3>Precio transparente</h3>
+    <p>Ves cuánto recibes antes de transferir, y ese número ya incluye lo nuestro. No hay una
+    comisión que aparezca al final ni un tipo de cambio inflado por dentro para esconder un cobro.</p>
+  </div>
+
+  <div class="bloque">
+    <h3>Conversión justa</h3>
+    <p>Partimos de una referencia de mercado y le aplicamos nuestro spread. No inventamos un precio
+    propio: el punto de partida es el mismo que puedes mirar tú.</p>
+  </div>
+
+  <div class="bloque">
+    <h3>Volumen y frecuencia</h3>
+    <p>Las condiciones se conversan según volumen y frecuencia: no publicamos una tabla por tramos.
+    La operación pesa donde el spread de un banco pesa de verdad y una app retail no alcanza.</p>
+  </div>
+</div></section>
+
+<section class="cierre"><div class="col">
+  <h2>¿Quieres ver tu precio?</h2>
+  <p>Toma menos de un minuto y no necesitas cuenta para cotizar.</p>
+  <a class="cta" href="#">Cotizar ahora</a>
+</div></section>
+
+<div class="scaffold">andamio · debajo va Footer.astro</div>
+
+</body>
+</html>

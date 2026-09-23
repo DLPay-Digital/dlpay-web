@@ -37,12 +37,24 @@ const navMain = [
  * qué no afirmamos, y evita a propósito la palabra «regulaciones». CLAUDE.md §6
  * prohíbe afirmar o sugerir que DLPay está regulado, y D26 fijó que el único
  * registro público admisible es «registrada y supervisada» ante la UAF.
+ *
+ * **El orden no es de llegada** (2026-09-23, al entrar `/precio` y
+ * `/preguntas`): va de lo que explica el servicio a lo que resuelve una duda
+ * suelta — cómo funciona, qué cuesta, por qué fiarse, qué leer, qué preguntar.
+ * Añadir al final habría dejado «Preguntas» entre «Confianza» y «Blog» sin
+ * criterio. Con cinco entradas el desplegable sigue siendo cómodo; con más
+ * habría que replantearlo, no seguir añadiendo.
  */
 const navInfo = [
   {
     label: 'Cómo funciona',
     href: '/como-funciona/',
     detail: 'El recorrido del dinero, paso a paso',
+  },
+  {
+    label: 'Precio',
+    href: '/precio/',
+    detail: 'Qué cuesta y qué no',
   },
   {
     label: 'Confianza',
@@ -53,6 +65,11 @@ const navInfo = [
     label: 'Blog',
     href: '/blog/',
     detail: 'Qué mueve el precio del dólar',
+  },
+  {
+    label: 'Preguntas',
+    href: '/preguntas/',
+    detail: 'Las dudas frecuentes y el glosario',
   },
 ];
 

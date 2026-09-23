@@ -56,7 +56,7 @@ esquivar llamando a `astro build` directamente. Detalle en
 
 ```
 src/
-├── pages/            # una ruta por página — las nueve de la AI v1, más el blog
+├── pages/            # una ruta por página — las once de la AI v1, más el blog
 │   ├── index.astro · como-funciona · empresas · confianza
 │   ├── terminos · privacidad · tarifas · canal-de-denuncias
 │   ├── blog/index.astro · blog/[slug].astro  # índice + una página por artículo
@@ -589,7 +589,7 @@ que es el único sitio donde el esquema los valida.
 Generados, no escritos a mano:
 
 - **`/sitemap.xml`** se deriva de `src/pages/`. Una página nueva entra sola; no puede quedar fuera
-  por olvido. Cero dependencias: el paquete oficial no aporta nada sobre nueve rutas estáticas más
+  por olvido. Cero dependencias: el paquete oficial no aporta nada sobre once rutas estáticas más
   una por artículo. Hay dos ajustes que sí hicieron falta al llegar el blog: colapsar los `index`
   anidados —si no, se publicaba `/blog/index/`— y descartar las rutas dinámicas —`/blog/[slug]/`—,
   cuyos artículos entran desde la colección.

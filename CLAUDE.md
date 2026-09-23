@@ -298,12 +298,26 @@ son una sola conversación · móvil primero · confianza que se comprueba, no q
 geometría siempre tiene función · rápido de verdad · personas y empresas caben pero la Home no se
 vuelve corporativa · español chileno plano · identidad propia.
 
-**Arquitectura de información v1 — enmendada el 2026-09-09 y el 2026-09-11:**
-`/` (Home con el cotizador en el hero) · `/como-funciona` · `/empresas` · `/confianza` ·
-`/blog` y `/blog/<slug>` ·
+**Arquitectura de información v1 — enmendada el 2026-09-09, el 2026-09-11 y el 2026-09-23:**
+`/` (Home con el cotizador en el hero) · `/como-funciona` · `/precio` · `/empresas` · `/confianza` ·
+`/preguntas` · `/blog` y `/blog/<slug>` ·
 legales: `/terminos`, `/privacidad`, `/tarifas`, `/canal-de-denuncias`.
-Las **nueve** rutas estáticas existen y resuelven, más una por artículo. La FAQ vive en la Home,
-no como página propia.
+Las **once** rutas estáticas existen y resuelven, más una por artículo.
+
+**`/precio` y `/preguntas` se añadieron el 2026-09-23.** Ninguna de las dos es contenido nuevo
+disperso: `/preguntas` **importa** las nueve preguntas de `home.ts` y `business.ts` —siguen
+publicadas donde estaban, que es donde resuelven una objeción en su contexto— y añade el glosario
+de ocho términos (`content/glossary.ts`). `/precio` responde «¿qué me van a cobrar?» con una sola
+afirmación: **un solo cobro en toda la operación, y va dentro del precio.**
+
+**`/precio` no reemplaza a `/tarifas`, y la distinción importa.** `/tarifas` es una página legal,
+se queda en el pie, describe la composición del precio y el mínimo, y es donde aterrizará D5 el día
+que se cierre. `/precio` vive en el menú «Información» y se lee antes de operar. Ninguna copia
+texto de la otra: la frase de condiciones por volumen se importa de `business.ts`, donde vive con
+su marcador de Compliance.
+
+**La FAQ sigue viviendo en la Home y en `/empresas`**, no como página propia: `/preguntas` las
+reúne desde la misma fuente tipada, no las muda.
 
 **`/blog` se añadió el 2026-09-11.** Colección tipada de Astro (`src/content.config.ts`) con
 esquema cerrado: `title`, `description`, `pubDate`, `category` —sólo `DLPay` o `Mercado`, un valor

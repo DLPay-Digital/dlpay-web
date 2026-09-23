@@ -314,8 +314,12 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-23 | [`2026-09-23-precio`](2026-09-23-precio/ficha.md) — `/precio`: el cobro único. Dos barras del mismo largo y una tabla donde cinco filas dicen «Sin costo» y una dice dónde está el spread. **Copy firmado por Sebastián el 2026-09-23** | **En revisión** | — |
+| 2026-09-23 | [`2026-09-23-preguntas`](2026-09-23-preguntas/ficha.md) — `/preguntas`: las nueve preguntas reunidas desde `content/` sin duplicar texto, más un glosario de ocho términos. **Copy firmado por Sebastián el 2026-09-23** | **En revisión** | — |
 | 2026-09-23 | [`2026-09-23-oportunidades`](2026-09-23-oportunidades/propuesta.md) — seis contenidos que añadir, con `wise.com` como referencia y el filtro de lo que nuestras propias reglas no permiten copiar | **Registrado** | Propuesta de contenido, no una entrega a trasladar |
 | 2026-09-22 | [`2026-09-22-estudio-nivel-3`](2026-09-22-estudio-nivel-3/estudio.md) — estudio del sitio entero: medida de lectura, jerarquía, densidad y reparto de figuras, con ocho propuestas ordenadas | **Registrado** | Documento de análisis, no una entrega a trasladar |
+| 2026-09-23 | [`2026-09-23-preguntas`](2026-09-23-preguntas/ficha.md) — `/preguntas`: las nueve preguntas reunidas y el glosario | **Integrada con cambios** | La estructura tal cual. Las preguntas se IMPORTAN en vez de copiarse, los títulos son los de las páginas de origen y la medida baja de 66ch a 47ch |
+| 2026-09-23 | [`2026-09-23-precio`](2026-09-23-precio/ficha.md) — `/precio`: el cobro único | **Integrada con cambios** | La figura y la tabla tal cual. La frase de volumen se importa de `business.ts` con su marcador, y las medidas bajan de 66ch y 60ch a 47ch y 46ch |
 | 2026-09-22 | [`2026-09-22-riel-tokenizado`](2026-09-22-riel-tokenizado/ficha.md) — figura de página: el peso no está tokenizado y el dólar digital sí | **Integrada** (`a0c12f5`) | El dibujo, copiado literalmente. Cambió el envoltorio: el `aria-hidden` pasa a cubrir también las etiquetas, se quitan las líneas en blanco que en Markdown cortaban el bloque, y del copy entra sólo la frase nueva. De aquí salen las reglas 26 y 27 |
 | 2026-09-22 | [`2026-09-22-riel-tokenizado`](2026-09-22-riel-tokenizado/ficha.md) — figura de página: el peso, el dólar digital y la tokenización | **Integrada con cambios** | El dibujo tal cual. Cambia el envoltorio: `aria-hidden` cubre también las etiquetas, el copy no duplica lo que el artículo ya dice, y hubo que quitar las líneas en blanco del bloque HTML |
 | 2026-09-21 | [`2026-09-21-portada-capa`](2026-09-21-portada-capa/ficha.md) — pictograma de portada para el artículo de tokenizados · cuatro versiones | **Integrada el 2026-09-22 por decisión de Sebastián** | La v2, la de un solo nodo. Entró enmendando el DS §6.1, no esquivándolo. El verde pasa a `--verde` por §6.2. La v1 de dos monedas sigue rechazada por §1 |
@@ -1170,3 +1174,75 @@ Las reglas 26 y 27 son buenas y las dos describen el mismo mecanismo desde lados
 algo lo saca del alcance de lo que lo gobernaba—, que es lo que pasó con el `aria-hidden` y con las
 líneas en blanco. Y el matiz de la regla 14 es exacto: una razón entre dos longitudes del mismo
 sistema de coordenadas no se mide contra el build, porque no depende de él.
+
+### Notas de la integración de `2026-09-23-preguntas` y `2026-09-23-precio`
+
+Los dos `md5` son los declarados. Las dos páginas entran, y **el diagnóstico de `Faq.astro` es el
+hallazgo más valioso de la entrega**: el `id` estaba escrito a mano y ninguna página lo destapaba.
+
+#### La medida de lectura: 66ch no es «dentro del 65–70 del DS»
+
+Es la corrección de fondo y afecta a las dos maquetas. El Design System §3 dice, con estas palabras:
+
+> **`1ch` NO es un carácter.** Es el ancho del glifo **cero**… El factor es **1,37**, así que toda
+> medida escrita en `ch` sale **un 37 % más ancha** de lo que creyó quien la escribió.
+> `max-width: 66ch` no da 66 caracteres por línea: da **90**.
+> **El tope de 65 caracteres se escribe `max-width: 47ch`.**
+
+Las dos maquetas usan `66ch` cuatro veces, `60ch` tres y `56ch` dos. **En todo `src/` hay 18
+medidas y todas son `47ch`; `66ch` no aparece ni una vez.** Integrado queda en 47ch para el cuerpo y
+46ch para las intros de sección, que es lo que fija el DS. Medido sobre el build con los nueve
+desplegables abiertos: **47ch = 64 caracteres por línea.**
+
+No es un descuido de esta entrega: es exactamente la trampa que el DS documenta, escrita para que no
+vuelva a ocurrir. Vale la pena leer ese párrafo antes de escribir la próxima medida.
+
+#### Tres cosas que cambiaron al trasladar
+
+1. **Las preguntas se importan; los títulos también.** La maqueta titula el primer bloque
+   «Preguntas frecuentes», y la Home lo titula **«Antes de tu primera operación»**. Un título nuevo
+   habría creado dos nombres para el mismo bloque, que es la duplicación que la propia ficha quiere
+   evitar. Los dos títulos son los de las páginas de origen.
+2. **El `id` se DERIVA del título, no se pide por prop.** Un `id` obligatorio se puede escribir mal
+   o repetir y el fallo volvería a ser silencioso, que es justo lo que se está arreglando. Se
+   normaliza para quitar tildes: sin eso «Antes de tu primera operación» dejaría una `ó` en el `id`,
+   válida en HTML5 pero no en un selector CSS sin escapar. Medido: **0 ids duplicados** en las dos
+   páginas, y cada `<section>` resuelve su propio nombre accesible.
+3. **La frase de volumen se importa, no se teclea.** Es la misma que publica la FAQ de `/empresas`
+   y **lleva marcador de Compliance y depende de D5 y D6**. Sale a una constante `volumeTerms` en
+   `business.ts`: dos copias de una condición comercial que divergen son dos condiciones distintas
+   publicadas a la vez. Queda anotada en la lista de claims pendientes de firma.
+
+#### Lo medido, sobre el build
+
+| | ficha | medido |
+|---|---|---|
+| Ids duplicados | 0 | **0** en las dos páginas |
+| Glosario: `dl` / `dt` / `dd` | 1 / 8 / 8 | **1 / 8 / 8** · 7 enlaces, «Red» sin ninguno |
+| Fondos de los dos bloques de preguntas | alternan | **246,245,241** y **236,234,227** |
+| Las dos barras miden lo mismo | sí | **sí** a 320 y a 1280 |
+| Grosor real del trazo | 2,5 px | **2,5 px** en los dos anchos |
+| Texto en el SVG · rellenos | 0 · 0 | **0 · 0** |
+| Filas «Sin costo» / totales | 5 / 6 | **5 / 6** |
+| Desborde horizontal | 0 | **0** a 320, 390 y 1280 |
+| Medida de una respuesta | 66 ch | **47 ch = 64 caracteres** |
+
+#### Lo aceptado sin reservas
+
+El diagnóstico del `id`. La alternancia de fondos, que es el ritmo que el sitio ya usa. El `<dl>`
+de verdad en vez de una retícula de `<div>`. El enlace que nombra el destino, y **«Red» sin enlace
+porque el sitio no lo explica en ninguna parte**: que el hueco se vea es información, y queda dicho
+en `glossary.ts`. La ausencia de cuña entre las dos barras —no ocurre ninguna conversión entre la
+cotización y el cierre, es el mismo importe en dos momentos— y `non-scaling-stroke`, sin el cual el
+trazo caería a 1,2 px a 390.
+
+Y las cuatro correcciones al encargo de §B.2: las cuatro están bien razonadas y las cuatro habrían
+sido un claim que el sitio contradice. Que la ficha las escriba **antes** de que nadie pregunte es
+la forma correcta de entregar un desacuerdo.
+
+#### Una nota de método, por si sirve
+
+Una captura de página completa de este sitio **miente**: el movimiento de entrada se dispara al
+hacer scroll, y una captura `fullPage` no recorre la página, así que los bloques de más abajo salen
+en blanco. Hay que recorrerla primero. Me pasó al revisar `/precio` y estuve a punto de dar por
+rota una página que estaba bien.

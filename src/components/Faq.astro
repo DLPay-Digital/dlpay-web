@@ -18,12 +18,45 @@ import type { FaqItem } from '../content/home.ts';
 interface Props {
   items: readonly FaqItem[];
   title: string;
+  /**
+   * `papel-2` para el segundo bloque cuando hay dos seguidos en una página.
+   * Dos bloques con el mismo fondo dejan 192px de aire entre el último
+   * desplegable de uno y el título del otro, y se leen como un solo bloque mal
+   * espaciado. Alternar es el ritmo que el sitio ya usa entre secciones.
+   */
+  surface?: 'papel' | 'papel-2';
 }
-const { items, title } = Astro.props;
+const { items, title, surface = 'papel' } = Astro.props;
+
+/*
+  El `id` del título se DERIVA del título y no está escrito a mano.
+
+  Lo estuvo hasta el 2026-09-23 —`id="faq-title"` fijo—, y no molestaba porque
+  ninguna página usaba el componente dos veces. `/preguntas` lo usa dos veces, y
+  dos elementos con el mismo `id` son HTML inválido: el `aria-labelledby` del
+  segundo apuntaría al título del primero, así que un lector de pantalla
+  anunciaría las preguntas de empresa con el nombre del bloque de personas.
+
+  Se deriva en vez de pedirse por prop para que no haya forma de olvidarlo: un
+  `id` obligatorio se puede escribir mal o repetir, y el fallo sería otra vez
+  silencioso. Dos bloques con el MISMO título en una página volverían a chocar,
+  pero eso ya sería un error de contenido visible a simple vista.
+
+  `normalize('NFD')` + el rango de diacríticos quita las tildes: sin eso,
+  «Antes de tu primera operación» dejaría una `ó` en el `id`. Es válido en HTML5
+  pero no en un selector CSS sin escapar, y este `id` se usa como ancla.
+*/
+const slug = title
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-|-$/g, '');
+const titleId = `faq-${slug}`;
 ---
-<section class="faq" aria-labelledby="faq-title">
+<section class:list={['faq', surface]} aria-labelledby={titleId}>
   <div class="inner">
-    <h2 id="faq-title" data-enter>{title}</h2>
+    <h2 id={titleId} data-enter>{title}</h2>
     <div class="items">
       {items.map((item) => (
         <details class="item">
@@ -42,6 +75,7 @@ const { items, title } = Astro.props;
 
 <style>
   .faq { background: var(--papel); padding: var(--s-9) 0; }
+  .faq.papel-2 { background: var(--papel-2); }
   .inner { max-width: 760px; margin: 0 auto; padding: 0 var(--pad-section-m); }
   h2 {
     font-size: var(--t-h2-m);

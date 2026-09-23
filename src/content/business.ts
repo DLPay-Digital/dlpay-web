@@ -90,6 +90,25 @@ export const checklist: readonly string[] = [
  * Ninguna de estas cuatro inventa sustancia: recomponen material ya escrito y
  * disperso por la página, `trust.ts` y `process.ts`.
  */
+/**
+ * Las condiciones por volumen, en UN solo sitio.
+ *
+ * Se publica en dos páginas —la pregunta «¿Desde qué volumen conviene?» de
+ * `/empresas` y el bloque «Volumen y frecuencia» de `/precio`— y por eso es una
+ * constante y no dos literales: es una condición comercial, y dos copias que
+ * divergen serían dos condiciones distintas publicadas a la vez.
+ *
+ * PENDIENTE DE DECISIÓN — D6 (monto mínimo real) y D5 (transparencia del
+ * spread). Y REQUIERE VALIDACIÓN DE COMPLIANCE: toca condiciones comerciales,
+ * así que cae en CLAUDE.md §3 y no basta con el visto bueno del equipo.
+ *
+ * Va SIN cifra a propósito: dice lo que hoy sí se puede afirmar. Cuando D5 o D6
+ * se cierren, la frase cambia acá y cambia en las dos páginas — y este
+ * comentario es lo que hará que alguien la revise entonces.
+ */
+export const volumeTerms =
+  'Las condiciones se conversan según volumen y frecuencia: no publicamos una tabla por tramos. La operación pesa donde el spread de un banco pesa de verdad y una app retail no alcanza.';
+
 export const faq: readonly { q: string; a: string }[] = [
   {
     q: '¿Quién atiende mi cuenta?',
@@ -104,15 +123,8 @@ export const faq: readonly { q: string; a: string }[] = [
     a: 'Conversémoslo antes. Nosotros entregamos dólar digital en la billetera que nos indiques y no depositamos dinero en cuentas bancarias en el extranjero. Si tu proveedor sólo opera con su banco, esa última conversión es un proceso distinto que DLPay no realiza.',
   },
   {
-    // PENDIENTE DE DECISIÓN — D6 (monto mínimo real). Y REQUIERE VALIDACIÓN DE
-    // COMPLIANCE: la respuesta toca condiciones comerciales, así que cae en
-    // CLAUDE.md §3 y no basta con el visto bueno del equipo.
-    //
-    // Va SIN cifra a propósito: dice lo que hoy sí se puede afirmar. Cuando D6
-    // se cierre, la cifra entra sin reescribir la respuesta — y este comentario
-    // es lo que hará que alguien la revise entonces.
     q: '¿Desde qué volumen conviene?',
-    a: 'Las condiciones se conversan según volumen y frecuencia: no publicamos una tabla por tramos. La operación pesa donde el spread de un banco pesa de verdad y una app retail no alcanza.',
+    a: volumeTerms,
   },
 ];
 

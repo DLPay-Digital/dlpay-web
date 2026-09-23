@@ -1,0 +1,164 @@
+---
+/**
+ * /preguntas — las nueve preguntas del sitio reunidas, más el glosario.
+ *
+ * ── Por qué existe, si las preguntas ya están publicadas ───────────────────
+ *
+ * Porque están REPARTIDAS: cinco al final de la Home y cuatro al final de
+ * `/empresas`, y las dos son páginas largas. Quien llega con una duda concreta
+ * —«¿el precio es final?»— no tiene dónde ir. Las preguntas se quedan donde
+ * están, que es donde resuelven una objeción en su contexto; esta página es la
+ * puerta para quien viene con la pregunta ya formada.
+ *
+ * ── Cero duplicación de texto, y es la condición de la página ──────────────
+ *
+ * Las nueve preguntas se IMPORTAN de `content/home.ts` y `content/business.ts`.
+ * No se copian. El día que cambie una respuesta cambia en los dos sitios a la
+ * vez, que es lo mismo que `content/scope.ts` garantiza para el alcance del
+ * servicio. Los TÍTULOS también son los de las páginas de origen, no unos
+ * nuevos: si acá dijera «Preguntas frecuentes» habría dos nombres para el mismo
+ * bloque.
+ *
+ * Lo único nuevo de esta página es el glosario, y también es dato:
+ * `content/glossary.ts`.
+ *
+ * ── Los dos bloques alternan fondo ─────────────────────────────────────────
+ *
+ * `Faq.astro` trae `padding: var(--s-9) 0`, así que dos seguidos sobre el mismo
+ * fondo dejan 192px entre el último desplegable de uno y el título del otro y se
+ * leen como un solo bloque mal espaciado. La prop `surface` alterna a `papel-2`,
+ * que es el ritmo que el sitio ya usa entre secciones.
+ */
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
+import Motion from '../components/Motion.astro';
+import Faq from '../components/Faq.astro';
+import { faq as faqPersonas } from '../content/home.ts';
+import { faq as faqEmpresas } from '../content/business.ts';
+import { glossary } from '../content/glossary.ts';
+---
+<Base
+  title="Preguntas"
+  description="Las preguntas que nos hacen antes de operar, reunidas, y el glosario de las palabras que usamos: dólar digital, spread, precio referencial, billetera."
+  path="/preguntas/"
+>
+  <Motion />
+  <Header />
+  <main id="main">
+    <PageHero
+      title="Preguntas"
+      lead="Lo que nos preguntan antes de operar, y las palabras que usamos para responder."
+      sequence
+    />
+
+    <Faq items={faqPersonas} title="Antes de tu primera operación" />
+    <Faq items={faqEmpresas} title="Preguntas de una empresa" surface="papel-2" />
+
+    <section class="glosario" aria-labelledby="glosario-title">
+      <div class="inner">
+        <h2 id="glosario-title" data-enter>Las palabras</h2>
+        <p class="bajada">
+          Ocho términos que usamos en todo el sitio. Cinco están definidos con las mismas palabras
+          que ya usamos en otra página; tres son nuevos.
+        </p>
+        {/*
+          `<dl>`, `<dt>` y `<dd>` de verdad, no una retícula de `<div>`: un lector
+          de pantalla anuncia «lista de descripción, 8 elementos» y permite saltar
+          de término en término. Los `<div class="fila">` intermedios son válidos
+          dentro de un `<dl>` desde HTML5 y sirven para agrupar cada par.
+
+          Sin acordeón a propósito: las preguntas de arriba ya lo son, y un
+          glosario se lee barriendo, no abriendo.
+        */}
+        <dl>
+          {glossary.map((t) => (
+            <div class="fila">
+              <dt>{t.term}</dt>
+              <dd>
+                {t.definition}
+                {t.href && t.linkLabel && (
+                  <a class="ver" href={t.href}>→ {t.linkLabel}</a>
+                )}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+
+    {/* La misma banda y el mismo copy que cierran `/como-funciona`: es la misma
+        invitación, y reescribirla daría dos versiones de una sola frase. */}
+    <section class="close on-tinta-surface" aria-labelledby="close-title">
+      <div class="inner">
+        <h2 id="close-title" data-enter>¿Listo para ver tu precio?</h2>
+        <p>Toma menos de un minuto y no necesitas cuenta para cotizar.</p>
+        <a class="cta" href="/#cotizador">Cotizar ahora</a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .glosario { background: var(--papel); padding: var(--s-9) 0; }
+  .inner { max-width: 760px; margin: 0 auto; padding: 0 var(--pad-section-m); }
+
+  h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: var(--s-3);
+  }
+  /* Intro de sección: medida única de 46ch (Design System §3). */
+  .bajada { color: var(--ink-mute); max-width: 46ch; margin-bottom: var(--s-6); }
+
+  dl { margin: 0; border-top: 1px solid var(--line); }
+  .fila { border-bottom: 1px solid var(--line); padding: var(--s-5) 0; }
+  dt { font-size: var(--t-h3-m); font-weight: 700; margin-bottom: var(--s-2); }
+  /*
+    47ch y no 66ch. `1ch` es el ancho del glifo cero, no un carácter: en Familjen
+    Grotesk el factor es 1,37, así que 66ch da noventa caracteres por línea y no
+    sesenta y seis. El tope de 65 caracteres del Design System §3 se escribe
+    `max-width: 47ch`, que es lo que usan las otras 18 medidas del sitio.
+  */
+  dd { margin: 0; color: var(--ink-mute); max-width: 47ch; }
+
+  /* El enlace nombra el destino. `nowrap` para que la flecha no quede sola al
+     final de una línea. */
+  .ver {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--verde-deep);
+    white-space: nowrap;
+    margin-left: var(--s-2);
+  }
+
+  .close { background: var(--tinta); padding: var(--s-8) 0; }
+  .close h2 { color: var(--on-tinta); font-size: var(--t-h3); margin-bottom: var(--s-2); }
+  .close p { color: var(--on-tinta-mute); margin-bottom: var(--s-5); }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    background: var(--verde);
+    color: var(--on-verde);
+    font-weight: 700;
+    font-size: var(--t-body);
+    padding: var(--s-4) var(--s-6);
+    border-radius: var(--r-2);
+    text-decoration: none;
+  }
+  .cta { transition: background-color var(--m-fast) var(--m-ease); }
+  .cta:hover { background: var(--verde-hi); }
+
+  @media (min-width: 900px) {
+    h2 { font-size: var(--t-h2); }
+    dt { font-size: var(--t-h3); }
+    /* El término en su propia columna: el ojo baja por los ocho términos sin
+       atravesar las definiciones. */
+    .fila { display: grid; grid-template-columns: 200px 1fr; gap: var(--s-6); align-items: baseline; }
+    dt { margin-bottom: 0; }
+  }
+</style>

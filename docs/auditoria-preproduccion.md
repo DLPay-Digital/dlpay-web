@@ -457,6 +457,31 @@ lista de bloqueantes. No son trabajo de ingeniería: necesitan que DLPay los apr
 | «Precio garantizado» | Home | `Process.astro` |
 | «la mesa de dinero» | Home | `Process.astro` |
 | «el mejor precio» — claim comparativo, en un H1 | `/empresas` | `empresas.astro` |
+| «no publicamos una tabla por tramos» — condiciones comerciales | `/empresas` y `/precio` | `business.ts`, constante `volumeTerms` |
+
+**La última se publica en dos páginas desde el 2026-09-23** y por eso es **una constante y no dos
+literales**: es una condición comercial, y dos copias que divergen serían dos condiciones distintas
+publicadas a la vez. Depende de D5 y de D6; cuando cualquiera de las dos se cierre, la frase cambia
+en un solo sitio.
+
+### Copy aprobado por Compliance — 2026-09-23
+
+**Firmado por Sebastián Villanueva Pereira como Compliance el 2026-09-23.** Va **sin** marcador
+`REQUIERE VALIDACIÓN DE COMPLIANCE` porque ya está aprobado; se registra acá porque una aprobación
+que sólo existe en una conversación no es auditable.
+
+| Qué se aprobó | Dónde vive |
+|---|---|
+| Las tres definiciones nuevas del glosario: **stablecoin**, **billetera** y **red** | `content/glossary.ts` |
+| Todo el copy de `/precio`, incluida la afirmación **«un solo cobro en toda la operación, y va dentro del precio»** | `precio.astro` |
+| **«El costo de red del traspaso: sin costo, lo asumimos nosotros»** | `precio.astro`, tabla de costos |
+
+Las tres definiciones nuevas van **sin cifras, sin plazos y sin nombrar ninguna red concreta**:
+nombrarlas sería una decisión de producto, no de redacción, y hoy no está tomada.
+
+La fila del costo de red es un **compromiso comercial**, no una descripción: si algún día DLPay deja
+de asumirlo, esa fila hay que cambiarla antes que nada. Queda dicho acá porque es el tipo de frase
+que nadie recuerda haber publicado.
 
 Los dos de `Process.astro` tienen además un problema propio, señalado aparte: conviven en la misma
 Home con cinco lugares que dicen «precio referencial, nunca cerrado», y el código ya propone la
