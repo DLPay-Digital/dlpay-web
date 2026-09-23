@@ -4,6 +4,7 @@
  *
  * REGLA: nada aquí puede afirmar algo que DLPay no pueda respaldar.
  */
+import type { IconName } from '../components/Icon.astro';
 
 export interface FlowNode {
   label: string;
@@ -77,8 +78,22 @@ export const detailedSteps: DetailedStep[] = [
 ];
 
 /** Lo que conviene tener a mano antes de empezar. Reduce la fricción real. */
-export const checklist: string[] = [
-  'Tu cédula de identidad vigente',
-  'Una cuenta bancaria a tu nombre',
-  'La dirección de la billetera donde quieres recibir el dólar digital',
+/**
+ * Cada ítem lleva SU icono, y no lo decide la página por posición (2026-09-23).
+ *
+ * Con un `string[]` la página tenía que mapear icono por índice, y entonces
+ * reordenar la lista —o añadir un ítem— desparejaba el dibujo del texto sin que
+ * nada fallara ni en el build ni a la vista. Acá el icono viaja pegado a la
+ * frase a la que pertenece. Es la forma que ya tienen `mechanisms` y los usos
+ * de la Home.
+ */
+export interface ChecklistItem {
+  icon: IconName;
+  text: string;
+}
+
+export const checklist: readonly ChecklistItem[] = [
+  { icon: 'documento', text: 'Tu cédula de identidad vigente' },
+  { icon: 'bank', text: 'Una cuenta bancaria a tu nombre' },
+  { icon: 'wallet', text: 'La dirección de la billetera donde quieres recibir el dólar digital' },
 ];

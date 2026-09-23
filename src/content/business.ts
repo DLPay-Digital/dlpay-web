@@ -5,6 +5,7 @@
  * REGLA: nada de cifras de volumen, número de clientes ni logos de empresas
  * hasta tener el dato verificable y la autorización (phase-2.5 §5, D10).
  */
+import type { ChecklistItem } from './process.ts';
 
 /** Emblema geométrico que acompaña a cada caso. Ver BusinessEmblem.astro. */
 export type EmblemKind = 'proveedores' | 'tesoreria' | 'recurrentes' | 'divisas';
@@ -77,10 +78,10 @@ export const differences: Difference[] = [
  * `trust.ts` —el segundo adaptado al titular empresa— y el tercero literal del
  * `checklist` de `process.ts`.
  */
-export const checklist: readonly string[] = [
-  'Los documentos de la sociedad y de quienes la representan legalmente',
-  'Una cuenta bancaria a nombre de la empresa',
-  'La dirección de la billetera donde quieres recibir el dólar digital',
+export const checklist: readonly ChecklistItem[] = [
+  { icon: 'documento', text: 'Los documentos de la sociedad y de quienes la representan legalmente' },
+  { icon: 'bank', text: 'Una cuenta bancaria a nombre de la empresa' },
+  { icon: 'wallet', text: 'La dirección de la billetera donde quieres recibir el dólar digital' },
 ];
 
 /**

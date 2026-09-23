@@ -532,8 +532,19 @@ significa veinticuatro de nada, y cambiarlo no cambia lo que la figura dice.
   `/confianza` un icono de 20px convive con titulares de 17/20px: iguala el cuerpo del titular en
   escritorio y aun así funciona, porque la agrupación y la medida del bloque ya resolvieron la
   jerarquía. Fuera de la grilla 16/20/24 no se baja sin una razón anotada.
-- Set pequeño y funcional: banco, reloj, chat/WhatsApp, chevron/paso, documento, empresa, wallet,
-  candado. Nada más hasta que una necesidad lo pida.
+- Set pequeño y funcional: banco, reloj, **personas**, chat/WhatsApp, chevron/paso, documento,
+  empresa, wallet, candado. **Nueve, y son los que hay** — nada más hasta que una necesidad lo pida.
+
+  *Reconciliado el 2026-09-23.* Esta lista nombraba ocho y omitía **`people`**, que existía y se
+  usaba en `content/home.ts` y `content/trust.ts` desde antes: la lista describía una intención y no
+  el set. Los otros cuatro —documento, empresa, wallet, candado— estaban nombrados aquí y no
+  existían; entraron ese mismo día.
+
+  **`candado` es la excepción de la lista y se declara como tal:** está dibujado y **no se usa en
+  ninguna página**. Entró por autorización de Sebastián para cerrar el set de una vez, y el límite
+  está escrito en `Icon.astro` — el sitio no afirma nada sobre cifrado, así que un candado junto a
+  un texto que no reclama seguridad afirmaría por su cuenta algo que sólo firma Compliance. Se usa
+  el día que exista la frase que lo sostenga, no antes.
 - Sin emoji como iconos.
 - **Los iconos viven en el componente `Icon`, y el padre los dimensiona por CSS.** Para que eso
   funcione, el proyecto usa `scopedStyleStrategy: 'class'`: con la estrategia por atributo, las

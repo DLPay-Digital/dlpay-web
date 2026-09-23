@@ -3,17 +3,27 @@
  * Icono dentro de una píldora tenue: convierte un icono suelto en una insignia.
  *
  * El fondo es --verde-deep al 12%. Se eligió midiendo, no a ojo: el icono
- * encima queda en 3.82:1 sobre el 3:1 que WCAG pide a un gráfico con
- * significado, y es la opacidad más alta que aún deja legible el trazo.
- * Subirla hace la píldora más visible y el icono peor. No cambiar sin recalcular.
+ * encima queda en **4,59:1** sobre el 3:1 que WCAG pide a un gráfico con
+ * significado. Subir la opacidad hace la píldora más visible y el icono peor:
+ * al 24% cae a 3,86:1, todavía sobre el piso pero con mucho menos margen.
+ * No cambiar sin recalcular.
+ *
+ * *(Corregido el 2026-09-23: esta nota decía 3,82:1, que es el valor de una
+ * píldora al 24%. En algún momento la pastilla se aclaró al 12% y la cifra se
+ * quedó con la de antes. El contraste real siempre fue MEJOR que el
+ * documentado, así que no había nada roto — pero una cabecera que dice «no
+ * cambiar sin recalcular» no puede llevar el número de otra versión.)*
  *
  * `tone` existe porque sobre tinta el verde de marca sí contrasta (8.45:1) y el
  * verde profundo no. Ver Design System §2.4.
  */
 import Icon from '../Icon.astro';
+import type { IconName } from '../Icon.astro';
 
 interface Props {
-  name: 'bank' | 'clock' | 'people' | 'whatsapp' | 'chevron';
+  /* La unión se IMPORTA. Estuvo escrita a mano acá hasta el 2026-09-23, así que
+     un icono nuevo entraba en el set y no podía usarse en una insignia. */
+  name: IconName;
   /** Superficie donde vive. Decide el verde y la opacidad del fondo. */
   tone?: 'light' | 'tinta';
   /**

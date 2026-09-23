@@ -5,6 +5,7 @@
  * clientes o volumen, testimonios, logos, sellos ni afirmaciones regulatorias.
  * "Es preferible una web con menos badges pero 100% verificables" (Fase 1 §14.3).
  */
+import type { IconName } from '../components/Icon.astro';
 
 export interface Mechanism {
   icon: 'bank' | 'clock' | 'people';
@@ -98,16 +99,29 @@ export const honesty: { claim: string; reality: string }[] = [
 ];
 
 /** Qué pedimos y por qué. Explicar el requisito baja la fricción. */
-export const requirements: { title: string; body: string }[] = [
+/**
+ * Los requisitos. El icono entró el 2026-09-23 y sale del dato, como en
+ * `mechanisms`: reordenar la lista no despareja el dibujo del texto.
+ *
+ * **Van con `Icon` suelto y NO con `IconBadge`**, y la distinción es de
+ * significado, no de estilo: en esta misma página «Qué pasa con tu plata» usa
+ * insignias. **Insignia = lo que hacemos nosotros; icono suelto = lo que traes
+ * tú.** Repetir las pastillas acá dejaría la página en una pared de píldoras y
+ * borraría una diferencia que sí existe.
+ */
+export const requirements: { icon: IconName; title: string; body: string }[] = [
   {
+    icon: 'documento',
     title: 'Verificación de identidad',
     body: 'A todas las personas, sin excepción, antes de la primera operación. Nos permite saber con quién operamos y es parte del cumplimiento que exige trabajar con un banco.',
   },
   {
+    icon: 'empresa',
     title: 'Verificación de la empresa',
     body: 'Para empresas pedimos los documentos de la sociedad y de quienes la representan legalmente.',
   },
   {
+    icon: 'bank',
     title: 'Cuenta bancaria a tu nombre',
     body: 'Recibimos transferencias sólo desde cuentas del titular de la operación. No operamos con fondos de terceros.',
   },

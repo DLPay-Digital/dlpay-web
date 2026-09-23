@@ -152,13 +152,13 @@ const waPlain = contact.whatsappUrl();
             */}
             <h3 class="sub">Ten esto a mano</h3>
             <ul class="check" role="list">
+              {/* El icono sale del dato, no de la posición. Ver la nota gemela
+                  en `/como-funciona`: los tres ticks idénticos no eran
+                  checkboxes, sólo decían «esto es un ítem». */}
               {checklist.map((item) => (
                 <li>
-                  <svg class="tick" viewBox="0 0 16 16" aria-hidden="true">
-                    <path d="M3 8.5l3.5 3.5L13 4.5" fill="none" stroke="currentColor"
-                          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                  <span>{item}</span>
+                  <Icon name={item.icon} size={20} class="tick" />
+                  <span>{item.text}</span>
                 </li>
               ))}
             </ul>
@@ -383,7 +383,17 @@ const waPlain = contact.whatsappUrl();
   }
   .check { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
   .check li { display: flex; gap: var(--s-3); align-items: flex-start; color: var(--ink-mute); }
-  .tick { width: 17px; height: 17px; color: var(--verde-deep); flex: none; margin-top: 3px; }
+  /*
+    20px y no los 19 de la maqueta: **19 está fuera de la grilla 16/20/24** del
+    Design System §7, que pide una razón anotada para salirse de ella, y acá no
+    la hay — 20 es el escalón de al lado y la diferencia no se ve. El tick que
+    sustituye medía 17px, pero era una marca sin caja interior: un icono con
+    caja necesita el escalón siguiente para pesar lo mismo.
+
+    `margin-top: 2px` alinea la caja del icono con la altura de x de la primera
+    línea; con los 3px del tick viejo quedaba bajo.
+  */
+  .tick { width: 20px; height: 20px; color: var(--verde-deep); flex: none; margin-top: 2px; }
 
   .contact { background: var(--tinta-2); color: var(--on-tinta); padding: var(--s-8) 0; }
   .contact h2 { color: var(--on-tinta); }

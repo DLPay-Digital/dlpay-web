@@ -91,12 +91,20 @@ const wa = contact.whatsappUrl();
           <div>
             <h2 id="prep-title" data-enter>Ten esto a mano</h2>
             <ul class="check" role="list">
+              {/*
+                Cada ítem lleva su icono, y sale del dato (`process.ts`), no de
+                la posición: reordenar la lista no desparejaba nada porque el
+                icono viaja con su frase.
+
+                Antes eran tres ticks IDÉNTICOS. No eran checkboxes —no se marca
+                nada, no hay estado—, así que sólo decían «esto es un ítem», que
+                es el trazo que no dice nada del Design System §6. El sentido de
+                checklist lo lleva el titular, con palabras.
+              */}
               {checklist.map((item) => (
                 <li>
-                  <svg class="tick" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-                    <path d="M3 8.5l3.5 3.5L13 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                  {item}
+                  <Icon name={item.icon} size={20} class="tick" />
+                  {item.text}
                 </li>
               ))}
             </ul>
@@ -240,7 +248,17 @@ const wa = contact.whatsappUrl();
     align-items: flex-start;
     color: var(--ink-mute);
   }
-  .tick { width: 17px; height: 17px; color: var(--verde-deep); flex: none; margin-top: 3px; }
+  /*
+    20px y no los 19 de la maqueta: **19 está fuera de la grilla 16/20/24** del
+    Design System §7, que pide una razón anotada para salirse de ella, y acá no
+    la hay — 20 es el escalón de al lado y la diferencia no se ve. El tick que
+    sustituye medía 17px, pero era una marca sin caja interior: un icono con
+    caja necesita el escalón siguiente para pesar lo mismo.
+
+    `margin-top: 2px` alinea la caja del icono con la altura de x de la primera
+    línea; con los 3px del tick viejo quedaba bajo.
+  */
+  .tick { width: 20px; height: 20px; color: var(--verde-deep); flex: none; margin-top: 2px; }
 
   .kyc p { color: var(--ink-mute); max-width: 47ch; margin-bottom: var(--s-3); }
   .kyc .note { font-size: var(--t-body-sm); }

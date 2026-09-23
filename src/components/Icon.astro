@@ -1,10 +1,29 @@
 ---
 /**
  * Set de iconos: line icons, trazo 1.6, un solo estilo (Design System §7).
- * Sólo los que una página real necesita. Nada más.
+ *
+ * ── El nombre del icono se EXPORTA ────────────────────────────────────────
+ *
+ * `IconName` vive acá y lo importan `IconBadge.astro` y los módulos de
+ * `content/` que declaran un icono. Hasta el 2026-09-23 la unión estaba
+ * **escrita dos veces**, acá y en `IconBadge`, así que un icono nuevo entraba
+ * en el set y seguía sin poder usarse en una insignia hasta que alguien se
+ * acordara de la segunda lista. Mismo criterio que `volumeTerms`: un dato que
+ * se publica en dos sitios se declara en uno.
  */
+export type IconName =
+  | 'bank'
+  | 'clock'
+  | 'people'
+  | 'whatsapp'
+  | 'chevron'
+  | 'documento'
+  | 'empresa'
+  | 'wallet'
+  | 'candado';
+
 interface Props {
-  name: 'bank' | 'clock' | 'people' | 'whatsapp' | 'chevron';
+  name: IconName;
   class?: string;
   /**
    * Tamaño intrínseco en px. Se emite como atributos `width`/`height` en el
@@ -20,12 +39,31 @@ interface Props {
 }
 const { name, class: className, size = 24 } = Astro.props;
 
-const paths: Record<Props['name'], string> = {
+const paths: Record<IconName, string> = {
   bank: '<path d="M3 21h18M4 21V10l8-6 8 6v11M9 21v-6h6v6"/>',
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   people: '<path d="M16 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9.5" cy="7" r="3.5"/><path d="M17 4.5a3.5 3.5 0 010 6.8M21 20v-2a4 4 0 00-3-3.8"/>',
   whatsapp: '<path d="M3.5 20.5l1.4-4.8A8.3 8.3 0 1112 20.3a8.4 8.4 0 01-4.1-1.1z"/><path d="M9 9.2c.4 1.2 1.3 2.6 2.4 3.5.6.5 1.3.9 2 1.1"/>',
   chevron: '<path d="M9 5l7 7-7 7"/>',
+  documento: '<path d="M13.5 3.5H6.5A1.5 1.5 0 005 5v14a1.5 1.5 0 001.5 1.5h11a1.5 1.5 0 001.5-1.5V9z"/><path d="M13.5 3.5V9H19"/><path d="M8.5 13h5M8.5 16.5h3"/>',
+  empresa: '<path d="M5 8h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2z"/><path d="M9 8V6a2 2 0 012-2h2a2 2 0 012 2v2"/><path d="M10.5 13.5h3"/>',
+  wallet: '<path d="M19 9V7A1.5 1.5 0 0017.5 5.5h-13A1.5 1.5 0 003 7v12a1.5 1.5 0 001.5 1.5h13A1.5 1.5 0 0019 19v-2"/><path d="M20 9h-4a3.5 3.5 0 000 7h4a1 1 0 001-1v-5a1 1 0 00-1-1z"/>',
+  /*
+    DIBUJADO Y SIN COLOCAR, a propósito. Excepción al Design System §7 —«nada
+    más hasta que una necesidad lo pida»— autorizada por Sebastián el
+    2026-09-23 para cerrar de una vez los ocho iconos que el propio §7 nombra.
+
+    **No se coloca en ninguna página, y el límite es tan firme como la
+    excepción.** El sitio no afirma nada sobre cifrado: un barrido de
+    «cifrado», «encriptado», «seguridad», «protección» y «resguardo» en
+    `content/` y en las páginas no devuelve ningún claim de ese tipo. Un candado
+    junto a un texto que no reclama seguridad **afirma por su cuenta que algo
+    está cifrado**, y eso lo firma Compliance, no un icono — lo contrario de lo
+    que promete `/confianza`.
+
+    Si algún día se usa, primero tiene que existir la frase que lo sostenga.
+  */
+  candado: '<path d="M5.5 10h13a1.5 1.5 0 011.5 1.5v8a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 014 19.5v-8A1.5 1.5 0 015.5 10z"/><path d="M8 10V7a4 4 0 018 0v3"/><path d="M12 14.5v2.5"/>',
 };
 ---
 <svg

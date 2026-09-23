@@ -104,6 +104,12 @@ proponer, no cómo se comprueba.
 
 ---
 
+### Excepciones autorizadas por Sebastián
+
+| fecha | regla | qué se excepciona | la ventaja | el límite |
+|---|---|---|---|---|
+| 2026-09-23 | **DS §7** — «Set pequeño y funcional… Nada más hasta que una necesidad lo pida» | `candado` entra a `Icon.astro` sin que ninguna página lo use, para cerrar los ocho iconos que el §7 nombró | Ya está dibujado y medido con el lote; el día que exista la frase que lo pida no hace falta otra ronda de dibujo y medición | **No se coloca en ninguna página.** El sitio no afirma nada sobre cifrado, y un candado junto a un texto que no lo reclama afirma por su cuenta algo que firma Compliance |
+
 ## 4. Formato de entrega
 
 Una entrega es una carpeta `AAAA-MM-DD-slug/` con dos archivos:
@@ -356,7 +362,9 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-23 | [`2026-09-23-iconos`](2026-09-23-iconos/ficha.md) — los cuatro iconos que el DS §7 ya nombraba y `Icon.astro` no tenía: documento, empresa, wallet, candado | **En revisión** | El set pasa de cinco a nueve sin estrenar nada. «empresa» va como maletín y no como edificio porque `bank` ya lo es y a 16 px colisionan. De aquí sale el largo de trazo como proxy del peso óptico |
 | 2026-09-23 | [`2026-09-23-precio`](2026-09-23-precio/ficha.md) — `/precio`: el cobro único. Dos barras del mismo largo y una tabla donde cinco filas dicen «Sin costo» y una dice dónde está el spread. **Copy firmado por Sebastián el 2026-09-23** | **Integrada** (`bcda1fe`) | El dibujo entero. La frase de volumen se importa como constante en vez de teclearse, y la medida pasa a 47ch. De aquí salen las reglas 28 y 29 |
+| 2026-09-23 | [`2026-09-23-iconos`](2026-09-23-iconos/ficha.md) — cuatro iconos nuevos y tres listas que dejan de llevar ticks idénticos | **Integrada con cambios** | Los cuatro trazados tal cual y las tres ubicaciones tal cual. El tamaño sube de 19 a 20px: 19 está fuera de la grilla del §7 |
 | 2026-09-23 | [`2026-09-23-medida-legales`](2026-09-23-medida-legales/nota-agente.md) — revisión de la medida de las legales, sin propuesta | **Registrada · dos cifras corregidas en los dos sentidos** | Acierta en que mis dos documentos se contradecían, y falla en cuál estaba mal. Su regla 30 es una distinción real |
 | 2026-09-23 | [`2026-09-23-preguntas`](2026-09-23-preguntas/ficha.md) — `/preguntas`: las nueve preguntas reunidas desde `content/` sin duplicar texto, más un glosario de ocho términos. **Copy firmado por Sebastián el 2026-09-23** | **Integrada** (`bcda1fe`) | El dibujo entero. Cambió el envoltorio: `id` derivado del título y normalizado sin tildes, los títulos de las páginas de origen, el glosario sale a `content/glossary.ts` y la medida de 66ch pasa a 47ch. De aquí salen las reglas 28 y 29 |
 | 2026-09-23 | [`2026-09-23-oportunidades`](2026-09-23-oportunidades/propuesta.md) — seis contenidos que añadir, con `wise.com` como referencia y el filtro de lo que nuestras propias reglas no permiten copiar | **Registrado** | Propuesta de contenido, no una entrega a trasladar |
@@ -1378,3 +1386,74 @@ lado** del párrafo, nunca reescribiéndolo: una ficha es el registro de quien l
 Ya estaban desactivados y `git` respondía con normalidad. Los dos archivos de 0 bytes, borrados.
 La regla que sale de ahí —**Cowork no ejecuta `git` en la carpeta del proyecto**— es correcta y el
 aviso llegó antes de que rompiera nada: eso vale más que el destrozo.
+
+### Notas de la integración de `2026-09-23-iconos`
+
+Los dos `md5` son los declarados. **Los cuatro trazados van copiados literalmente** y las tres
+ubicaciones son las propuestas. Se comprobó lo que pide el §6 de la ficha, punto por punto.
+
+#### Un cambio, y es de grilla
+
+**20px y no 19.** El Design System §7 fija la grilla en **16 / 20 / 24** y dice que salirse de ella
+necesita «una razón anotada». La maqueta pone 19 para igualar el peso del tick de 17px al que
+sustituye — un motivo real, pero 20 es el escalón de al lado, la diferencia no se ve y no obliga a
+escribir una excepción. A 20px el grosor renderizado es **1,333px**, que es el valor que la propia
+ficha tabula para ese escalón.
+
+El diagnóstico de fondo de la ficha sí es correcto: el tick de 17px era una marca sin caja interior
+y un icono con caja necesita el escalón siguiente para pesar lo mismo.
+
+#### Tres decisiones que la ficha deja abiertas, y cómo se cerraron
+
+1. **Los `checklist` pasan a objetos `{ icon, text }`**, no a índice. Es lo que recomienda la ficha
+   y el motivo es el correcto: con un `string[]` la página mapea por posición, y reordenar la lista
+   despareja el dibujo del texto **sin que falle nada** ni en el build ni a la vista. Es la forma
+   que ya tienen `mechanisms` y los usos de la Home.
+2. **`IconName` se exporta de `Icon.astro` y se importa en `IconBadge`.** La unión estaba escrita
+   dos veces, así que un icono nuevo entraba en el set y seguía sin poder usarse en una insignia
+   hasta que alguien se acordara de la segunda lista. Mismo criterio que `volumeTerms`.
+3. **`Icon` suelto y no `IconBadge` en `/confianza`.** La distinción que propone la ficha es buena y
+   queda escrita en `trust.ts` para que sobreviva: **insignia = lo que hacemos nosotros; icono
+   suelto = lo que traes tú.** Medido en la página: 3 insignias y 3 iconos sueltos, que es
+   exactamente el contraste que la regla describe.
+
+#### La objeción del ✓, contestada
+
+La ficha se adelanta a ella y tiene razón: **ese ✓ no era un checkbox.** No se marca, no hay estado
+y las tres marcas eran idénticas, así que sólo decían «esto es un ítem» — el trazo que no dice nada
+del §6. El sentido de checklist lo lleva el titular, con palabras. No hay nada que medir acá.
+
+#### La cifra del `IconBadge`: correcta
+
+Recalculada de forma independiente, componiendo el alfa sobre `--papel` y contrastando
+`--verde-deep` encima: **4,594:1** con la pastilla al 12 % de hoy, y **3,857:1** al 24 %. La ficha
+decía 4,60 y 3,82. Su calculador está bien calibrado — mis tres cifras de control salen idénticas a
+las del proyecto (5,44 · 2,02 · 5,50). La cabecera del componente decía 3,82 y llevaba la advertencia
+«no cambiar sin recalcular»: corregida, con la nota de que el valor real siempre fue **mejor** que
+el documentado.
+
+#### `people` y el §7
+
+Correcto y ya reconciliado: la lista del §7 nombraba ocho iconos, omitía `people` —que existía y se
+usaba— y nombraba cuatro que no existían. Describía una intención, no un set. Ahora son **nueve** y
+la lista lo dice.
+
+#### El `candado`, y su límite
+
+Entra sin usarse, por autorización de Sebastián. **Lo que hace aceptable la excepción no es la
+autorización: es el límite que la ficha escribió con ella**, y que es mejor que la excepción misma —
+el sitio no afirma nada sobre cifrado, así que un candado junto a un texto que no lo reclama
+afirmaría por su cuenta algo que sólo firma Compliance. Comprobado sobre el build: `candado` está en
+el componente y **no aparece en ninguna de las catorce páginas**. El límite queda escrito dentro de
+`Icon.astro`, no sólo en la ficha, porque ahí es donde lo leerá quien vaya a usarlo.
+
+#### Lo medido
+
+| | ficha | medido |
+|---|---|---|
+| Grosor a 20px | 1,333px | **1,333px** |
+| Iconos en las dos listas «Ten esto a mano» | 3 y 3 | **3 y 3**, cero ticks viejos |
+| Iconos en los requisitos de `/confianza` | 3 | **3**, a 20px y en `--verde-deep` |
+| Iconos anunciados por un lector de pantalla | 0 | **0** · todos con `aria-hidden` |
+| `candado` en alguna página | 0 | **0** |
+| Scroll horizontal a 320, 390 y 1280 | no | **no** |

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dónde van los cuatro iconos</title>
+<style>
+@font-face{font-family:'Familjen Grotesk';src:url(/fonts/familjen-grotesk-latin.woff2) format('woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Spline Sans Mono';src:url(/fonts/spline-sans-mono-latin.woff2) format('woff2');font-weight:100 900;font-display:swap}
+:root{--verde:#16C784;--verde-deep:#0A7250;--tinta:#0B1320;--papel:#F6F5F1;--papel-2:#ECEAE3;
+--ink:#131A26;--ink-mute:#5A6472;--line:rgba(11,19,32,.14);--on-tinta:#EDF2EF;--on-tinta-mute:#9DB0AA;
+--f-text:'Familjen Grotesk',system-ui,sans-serif;--f-num:'Spline Sans Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--ink);font-family:var(--f-text);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+section{padding:52px 0;border-bottom:1px solid var(--line)}
+h1{font-size:32px;line-height:1.1;letter-spacing:-.01em;margin:0 0 10px}
+h2{font-size:23px;line-height:1.15;margin:0 0 6px;letter-spacing:-.005em}
+.kicker{font-family:var(--f-num);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-mute);margin:0 0 18px}
+p.note{max-width:620px;color:var(--ink-mute);margin:0 0 26px;font-size:14px}
+code{font-family:var(--f-num);font-size:.88em}
+
+.par{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+@media(max-width:760px){.par{grid-template-columns:1fr}}
+.caja{border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--papel)}
+.caja.after{background:var(--papel-2)}
+.caja > h4{margin:0 0 16px;font-family:var(--f-num);font-size:11.5px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-mute)}
+.sub{font-size:17px;margin:0 0 14px;font-weight:700}
+ul.check{list-style:none;margin:0;padding:0;display:grid;gap:13px}
+ul.check li{display:flex;gap:11px;align-items:flex-start;font-size:15px;line-height:1.45}
+.tick{width:17px;height:17px;color:var(--verde-deep);flex:none;margin-top:3px}
+.mark{width:19px;height:19px;color:var(--verde-deep);flex:none;margin-top:2px}
+
+.req{list-style:none;margin:0;padding:0;display:grid;gap:22px}
+.req li{display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:start}
+.req li.plain{grid-template-columns:1fr}
+.req h3{margin:0 0 3px;font-size:17px;line-height:1.25}
+.req p{margin:0;font-size:14px;color:var(--ink-mute);line-height:1.5}
+.badge{border-radius:50%;display:grid;place-items:center;flex:none;width:36px;height:36px;background:rgba(10,114,80,.12);color:var(--verde-deep)}
+
+.vacio{border:1px dashed var(--line);border-radius:12px;padding:28px;max-width:640px}
+.vacio h3{margin:0 0 8px;font-size:17px}
+.vacio p{margin:0 0 10px;font-size:14px;color:var(--ink-mute)}
+.vacio p:last-child{margin:0}
+</style></head><body><div class="wrap">
+
+<section>
+  <p class="kicker">Dónde van · tres sitios que ya existen</p>
+  <h1>Ninguno estrena sección</h1>
+  <p class="note">Los tres bloques de abajo ya están publicados. En dos de ellos hay hoy <strong>tres marcas idénticas</strong> que sólo dicen «esto es un ítem de una lista»; en el tercero no hay ninguna marca. Cambiar un tick repetido por un icono que nombra la cosa es el §6 en una frase: el trazo tiene que decir algo.</p>
+</section>
+
+<section>
+  <p class="kicker">1 · /como-funciona → «Ten esto a mano»</p>
+  <h2>Lo que trae una persona</h2>
+  <p class="note">Tres ticks iguales pasan a ser cédula, banco y billetera. La lista deja de leerse en bloque y se puede barrer.</p>
+  <div class="par">
+    <div class="caja"><h4>hoy</h4>
+      <p class="sub">Ten esto a mano</p>
+      <ul class="check" id="cf-antes"></ul></div>
+    <div class="caja after"><h4>con los iconos</h4>
+      <p class="sub">Ten esto a mano</p>
+      <ul class="check" id="cf-despues"></ul></div>
+  </div>
+</section>
+
+<section>
+  <p class="kicker">2 · /empresas → «Ten esto a mano»</p>
+  <h2>Lo que trae una empresa</h2>
+  <p class="note">La lista gemela de la anterior, y las dos llevan <code>documento</code> en el primer ítem. <strong>Aquí me corregí:</strong> había puesto <code>empresa</code> para que la marca distinguiera las dos páginas, y eso era un motivo mío, no del contenido. Lo que la empresa trae son <em>documentos</em>; el maletín nombraría al dueño de los documentos, no la cosa que se pide. La diferencia entre persona y empresa ya la llevan la página, el titular y el texto.</p>
+  <div class="par">
+    <div class="caja"><h4>hoy</h4>
+      <p class="sub">Ten esto a mano</p>
+      <ul class="check" id="em-antes"></ul></div>
+    <div class="caja after"><h4>con los iconos</h4>
+      <p class="sub">Ten esto a mano</p>
+      <ul class="check" id="em-despues"></ul></div>
+  </div>
+</section>
+
+<section>
+  <p class="kicker">3 · /confianza → «Qué te pedimos, y por qué»</p>
+  <h2>Los tres requisitos</h2>
+  <p class="note">Hoy es <code>h3</code> + <code>p</code>, sin marca. Los tres ítems son exactamente identidad, empresa y banco. <strong>Van con icono suelto y no con insignia</strong>: justo encima, en la misma página, «Qué pasa con tu plata» ya usa insignias, y repetirlas aquí volvería la página una pared de pastillas. Insignia = lo que hacemos nosotros; icono suelto = lo que traes tú.</p>
+  <div class="par">
+    <div class="caja"><h4>hoy</h4><ul class="req" id="cz-antes"></ul></div>
+    <div class="caja after"><h4>con los iconos</h4><ul class="req" id="cz-despues"></ul></div>
+  </div>
+</section>
+
+<section style="border-bottom:0">
+  <p class="kicker">Y el cuarto · candado</p>
+  <h2>No tiene dónde ir, y no es un problema de diseño</h2>
+  <div class="vacio">
+    <h3>El sitio no afirma nada sobre cifrado</h3>
+    <p>Busqué «cifrado», «encriptado», «seguridad», «protección» y «resguardo» en todo <code>content/</code> y en todas las páginas. Lo único que aparece es «es un requisito de <strong>seguridad</strong> y cumplimiento», que habla de la verificación de identidad, y <code>/privacidad</code>, que dice que la política está en revisión.</p>
+    <p><strong>Un candado no es una etiqueta: es una afirmación.</strong> Puesto al lado de un texto que no reclama seguridad, dice por su cuenta «esto está cifrado» — y ése es un claim que firma Compliance, no un icono. Es lo contrario de lo que promete <code>/confianza</code>: no publicar lo que no se puede probar.</p>
+    <p>Se queda dibujado y sin usar. El día que exista una frase sobre cómo se guardan los datos, ya está hecho.</p>
+  </div>
+</section>
+
+</div>
+<script>
+const P={
+ bank:'<path d="M3 21h18M4 21V10l8-6 8 6v11M9 21v-6h6v6"/>',
+ documento:'<path d="M13.5 3.5H6.5A1.5 1.5 0 005 5v14a1.5 1.5 0 001.5 1.5h11a1.5 1.5 0 001.5-1.5V9z"/><path d="M13.5 3.5V9H19"/><path d="M8.5 13h5M8.5 16.5h3"/>',
+ empresa:'<path d="M5 8h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2z"/><path d="M9 8V6a2 2 0 012-2h2a2 2 0 012 2v2"/><path d="M10.5 13.5h3"/>',
+ wallet:'<path d="M19 9V7A1.5 1.5 0 0017.5 5.5h-13A1.5 1.5 0 003 7v12a1.5 1.5 0 001.5 1.5h13A1.5 1.5 0 0019 19v-2"/><path d="M20 9h-4a3.5 3.5 0 000 7h4a1 1 0 001-1v-5a1 1 0 00-1-1z"/>',
+};
+const tick='<svg class="tick" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ico=n=>`<svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-icon="${n}">${P[n]}</svg>`;
+
+const CF=['Tu cédula de identidad vigente','Una cuenta bancaria a tu nombre','La dirección de la billetera donde quieres recibir el dólar digital'];
+const EM=['Los documentos de la sociedad y de quienes la representan legalmente','Una cuenta bancaria a nombre de la empresa','La dirección de la billetera donde quieres recibir el dólar digital'];
+const ICF=['documento','bank','wallet'], IEM=['documento','bank','wallet'];
+
+const li=(m,t)=>`<li>${m}<span>${t}</span></li>`;
+document.getElementById('cf-antes').innerHTML=CF.map(t=>li(tick,t)).join('');
+document.getElementById('cf-despues').innerHTML=CF.map((t,i)=>li(ico(ICF[i]),t)).join('');
+document.getElementById('em-antes').innerHTML=EM.map(t=>li(tick,t)).join('');
+document.getElementById('em-despues').innerHTML=EM.map((t,i)=>li(ico(IEM[i]),t)).join('');
+
+const REQ=[
+ ['documento','Verificación de identidad','A todas las personas, sin excepción, antes de la primera operación. Nos permite saber con quién operamos y es parte del cumplimiento que exige trabajar con un banco.'],
+ ['empresa','Verificación de la empresa','Para empresas pedimos los documentos de la sociedad y de quienes la representan legalmente.'],
+ ['bank','Cuenta bancaria a tu nombre','Recibimos transferencias sólo desde cuentas del titular de la operación. No operamos con fondos de terceros.'],
+];
+document.getElementById('cz-antes').innerHTML=REQ.map(([n,t,d])=>`<li class="plain"><div><h3>${t}</h3><p>${d}</p></div></li>`).join('');
+document.getElementById('cz-despues').innerHTML=REQ.map(([n,t,d])=>`<li>${ico(n)}<div><h3>${t}</h3><p>${d}</p></div></li>`).join('');
+</script></body></html>

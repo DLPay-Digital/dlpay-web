@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cuatro iconos que el §7 ya nombraba</title>
+<style>
+@font-face{font-family:'Familjen Grotesk';src:url(/fonts/familjen-grotesk-latin.woff2) format('woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Spline Sans Mono';src:url(/fonts/spline-sans-mono-latin.woff2) format('woff2');font-weight:100 900;font-display:swap}
+:root{
+  --verde:#16C784; --verde-hi:#3DD69A; --verde-deep:#0A7250;
+  --tinta:#0B1320; --tinta-2:#101A2B;
+  --papel:#F6F5F1; --papel-2:#ECEAE3;
+  --ink:#131A26; --ink-mute:#5A6472;
+  --line:rgba(11,19,32,.14); --on-tinta:#EDF2EF; --on-tinta-mute:#9DB0AA;
+  --line-on-tinta:rgba(237,242,239,.40);
+  --f-text:'Familjen Grotesk',system-ui,sans-serif;
+  --f-num:'Spline Sans Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--ink);font-family:var(--f-text);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+section{padding:56px 0;border-bottom:1px solid var(--line)}
+section.dark{background:var(--tinta);color:var(--on-tinta);border-bottom:0}
+h1{font-size:32px;line-height:1.1;letter-spacing:-.01em;margin:0 0 8px}
+h2{font-size:20px;line-height:1.2;margin:0 0 4px}
+.kicker{font-family:var(--f-num);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-mute);margin:0 0 20px}
+.dark .kicker{color:var(--on-tinta-mute)}
+p.note{max-width:640px;color:var(--ink-mute);margin:0 0 28px;font-size:14px}
+.dark p.note{color:var(--on-tinta-mute)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:4px}
+.cell{display:grid;place-items:center;gap:10px;padding:20px 8px;border:1px solid var(--line);border-radius:10px;background:var(--papel)}
+.dark .cell{border-color:var(--line-on-tinta);background:transparent}
+.cell.nuevo{background:var(--papel-2)}
+.dark .cell.nuevo{background:var(--tinta-2)}
+.cell span{font-family:var(--f-num);font-size:11px;color:var(--ink-mute);letter-spacing:.02em}
+.dark .cell span{color:var(--on-tinta-mute)}
+svg{display:block;color:var(--ink)}
+.dark .cell svg{color:var(--on-tinta)}
+
+.escala{display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap;margin-bottom:8px}
+.escala .col{display:grid;place-items:center;gap:8px}
+.escala .col em{font-style:normal;font-family:var(--f-num);font-size:11px;color:var(--ink-mute)}
+.fila{display:flex;align-items:center;gap:36px;flex-wrap:wrap;padding:18px 0;border-bottom:1px solid var(--line)}
+.fila:last-child{border-bottom:0}
+.fila > b{font-family:var(--f-num);font-size:12px;font-weight:500;width:96px;flex:none;color:var(--ink-mute)}
+
+.badge{border-radius:50%;display:grid;place-items:center;flex:none;width:48px;height:48px}
+.badge.sm{width:36px;height:36px}
+.badge.light{background:rgba(10,114,80,.12);color:var(--verde-deep)}
+.badge.tinta{background:rgba(22,199,132,.14);color:var(--verde)}
+
+.lista{display:grid;gap:22px;max-width:520px}
+.item{display:grid;grid-template-columns:36px 1fr;gap:14px;align-items:start}
+.item h3{margin:0 0 2px;font-size:17px;line-height:1.25}
+.item p{margin:0;font-size:14px;color:var(--ink-mute);line-height:1.5}
+.dark .item p{color:var(--on-tinta-mute)}
+
+.duelo{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:4px}
+.duelo .caja{border:1px solid var(--line);border-radius:10px;padding:24px}
+.duelo h4{margin:0 0 14px;font-size:14px;font-family:var(--f-num);font-weight:500;color:var(--ink-mute)}
+.duelo .par{display:flex;gap:26px;align-items:center}
+.duelo .par figure{margin:0;display:grid;place-items:center;gap:7px}
+.duelo .par figcaption{font-family:var(--f-num);font-size:11px;color:var(--ink-mute)}
+</style></head>
+<body>
+<div class="wrap">
+
+<section>
+  <p class="kicker">Design System §7 · el set pasa de cinco a nueve</p>
+  <h1>documento · empresa · wallet · candado</h1>
+  <p class="note">El §7 ya los nombraba —«banco, reloj, chat/WhatsApp, chevron/paso, documento, empresa, wallet, candado»— y cuatro no existían. Misma grilla de 24, mismo trazo 1,6, mismas terminaciones redondas. No se estrena nada: se cierra un hueco que el propio sistema dejó escrito.</p>
+</section>
+
+<section>
+  <p class="kicker">Los nueve a 24 px · los cuatro nuevos van sobre papel-2</p>
+  <div class="grid" id="todos"></div>
+</section>
+
+<section>
+  <p class="kicker">La escala del §7 · 16 / 20 / 22 / 24</p>
+  <p class="note">20 y 22 px son los tamaños reales de <code>IconBadge</code>; 16 es el escalón más bajo que el §7 admite. Si un dibujo se cae, se cae aquí.</p>
+  <div id="escalas"></div>
+</section>
+
+<section>
+  <p class="kicker">Dentro de la insignia · fondo --verde-deep al 12 %</p>
+  <p class="note">Es el contexto de <code>/confianza</code> y de <code>Trust</code>. El icono queda en 3,82:1 sobre ese fondo, que es lo medido y documentado en <code>IconBadge.astro</code>.</p>
+  <div class="fila" id="badges-light"></div>
+</section>
+
+<section>
+  <p class="kicker">La pregunta de verdad · «empresa» contra «banco»</p>
+  <p class="note">«banco» ya es un edificio. Dos edificios en el mismo set se leen igual a 20 px, que es el tamaño al que se usan. Por eso «empresa» va como maletín y no como bloque de oficinas: comparten significado de negocio y no comparten silueta.</p>
+  <div class="duelo" id="duelo"></div>
+</section>
+
+<section>
+  <p class="kicker">En su sitio · una lista como la de /confianza</p>
+  <div class="lista" id="lista"></div>
+</section>
+
+<section class="dark">
+  <div class="wrap" style="padding:0">
+    <p class="kicker">Sobre tinta · el otro fondo del sitio</p>
+    <div class="grid" id="todos-dark"></div>
+    <div class="fila" id="badges-tinta" style="border-bottom:0;margin-top:28px"></div>
+  </div>
+</section>
+
+</div>
+<script>
+const P = {
+  bank:'<path d="M3 21h18M4 21V10l8-6 8 6v11M9 21v-6h6v6"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  people:'<path d="M16 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9.5" cy="7" r="3.5"/><path d="M17 4.5a3.5 3.5 0 010 6.8M21 20v-2a4 4 0 00-3-3.8"/>',
+  whatsapp:'<path d="M3.5 20.5l1.4-4.8A8.3 8.3 0 1112 20.3a8.4 8.4 0 01-4.1-1.1z"/><path d="M9 9.2c.4 1.2 1.3 2.6 2.4 3.5.6.5 1.3.9 2 1.1"/>',
+  chevron:'<path d="M9 5l7 7-7 7"/>',
+  documento:'<path d="M13.5 3.5H6.5A1.5 1.5 0 005 5v14a1.5 1.5 0 001.5 1.5h11a1.5 1.5 0 001.5-1.5V9z"/><path d="M13.5 3.5V9H19"/><path d="M8.5 13h5M8.5 16.5h3"/>',
+  empresa:'<path d="M5 8h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2z"/><path d="M9 8V6a2 2 0 012-2h2a2 2 0 012 2v2"/><path d="M10.5 13.5h3"/>',
+  wallet:'<path d="M19 9V7A1.5 1.5 0 0017.5 5.5h-13A1.5 1.5 0 003 7v12a1.5 1.5 0 001.5 1.5h13A1.5 1.5 0 0019 19v-2"/><path d="M20 9h-4a3.5 3.5 0 000 7h4a1 1 0 001-1v-5a1 1 0 00-1-1z"/>',
+  candado:'<path d="M5.5 10h13a1.5 1.5 0 011.5 1.5v8a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 014 19.5v-8A1.5 1.5 0 015.5 10z"/><path d="M8 10V7a4 4 0 018 0v3"/><path d="M12 14.5v2.5"/>',
+  empresaAlt:'<path d="M3 21h18"/><path d="M6 21V5h7v16"/><path d="M13 21v-9h5v9"/><path d="M8.5 9h2M8.5 13h2M8.5 17h2"/>',
+};
+const VIEJOS = ['bank','clock','people','whatsapp','chevron'];
+const NUEVOS = ['documento','empresa','wallet','candado'];
+
+function svg(name, size){
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-icon="${name}" data-size="${size}">${P[name]}</svg>`;
+}
+function pintarGrid(el){
+  el.innerHTML = [...VIEJOS,...NUEVOS].map(n =>
+    `<div class="cell${NUEVOS.includes(n)?' nuevo':''}">${svg(n,24)}<span>${n}</span></div>`).join('');
+}
+pintarGrid(document.getElementById('todos'));
+pintarGrid(document.getElementById('todos-dark'));
+
+document.getElementById('escalas').innerHTML = NUEVOS.map(n =>
+  `<div class="fila"><b>${n}</b>${[16,20,22,24].map(s =>
+    `<div class="col" style="display:grid;place-items:center;gap:8px">${svg(n,s)}<em style="font-style:normal;font-family:var(--f-num);font-size:11px;color:var(--ink-mute)">${s}</em></div>`).join('')}</div>`).join('');
+
+document.getElementById('badges-light').innerHTML =
+  [...VIEJOS.slice(0,3),...NUEVOS].map(n => `<span class="badge light">${svg(n,22)}</span>`).join('') +
+  [...NUEVOS].map(n => `<span class="badge light sm">${svg(n,20)}</span>`).join('');
+document.getElementById('badges-tinta').innerHTML =
+  [...VIEJOS.slice(0,3),...NUEVOS].map(n => `<span class="badge tinta">${svg(n,22)}</span>`).join('');
+
+document.getElementById('duelo').innerHTML = `
+  <div class="caja"><h4>A · maletín  (propuesto)</h4><div class="par">
+    <figure>${svg('bank',20)}<figcaption>banco</figcaption></figure>
+    <figure>${svg('empresa',20)}<figcaption>empresa</figcaption></figure>
+    <figure>${svg('bank',16)}<figcaption>16 px</figcaption></figure>
+    <figure>${svg('empresa',16)}<figcaption>16 px</figcaption></figure>
+  </div></div>
+  <div class="caja"><h4>B · bloque de oficinas  (descartado)</h4><div class="par">
+    <figure>${svg('bank',20)}<figcaption>banco</figcaption></figure>
+    <figure>${svg('empresaAlt',20)}<figcaption>empresa</figcaption></figure>
+    <figure>${svg('bank',16)}<figcaption>16 px</figcaption></figure>
+    <figure>${svg('empresaAlt',16)}<figcaption>16 px</figcaption></figure>
+  </div></div>`;
+
+const LISTA = [
+  ['candado','Tus datos, cifrados','La información que nos entregas viaja y se guarda cifrada.'],
+  ['documento','Qué te pedimos, y por qué','Cédula y un comprobante. Nada que no exija la ley.'],
+  ['wallet','Tu billetera es tuya','Recibes el dólar digital donde tú decides. No la custodiamos.'],
+  ['empresa','Condiciones por volumen','Se conversan según volumen y frecuencia.'],
+];
+document.getElementById('lista').innerHTML = LISTA.map(([n,t,d]) =>
+  `<div class="item"><span class="badge light sm">${svg(n,20)}</span><div><h3>${t}</h3><p>${d}</p></div></div>`).join('');
+</script>
+</body></html>
