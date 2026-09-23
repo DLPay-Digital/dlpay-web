@@ -61,6 +61,49 @@ breakpoints, 760 y 900, y móvil es la base**.
 
 ---
 
+## 3.b Instrucciones permanentes de Sebastián  ·  *escritas el 2026-09-22*
+
+Hasta hoy estas instrucciones vivían **sólo en la conversación**, y una conversación se compacta.
+No son reglas de evidencia —ésas están en §4— sino condiciones de encargo: gobiernan qué se puede
+proponer, no cómo se comprueba.
+
+1. **Cowork no modifica ningún archivo del proyecto.** Es la regla de oro de la cabecera, y el
+   motivo original con sus palabras: *«los archivos dentro de la carpeta del proyecto cumplirán la
+   función únicamente como visualización»*. Quien traslada es el agente de Claude Code.
+
+2. **La identidad está congelada.** Tipografía —Familjen Grotesk y Spline Sans Mono— y colores de
+   marca —`--verde` y `--tinta`— no se tocan, no se «afinan» y no se proponen alternativas.
+
+3. **Lo que ya está construido no se quita.** Los mockups de iPhone y WhatsApp, el del MacBook y el
+   globo del héroe. **El globo se queda exactamente como está**; puede además aparecer en
+   `/empresas`, pero no se rediseña.
+
+4. **Una excepción a una regla del proyecto sólo se propone diciendo la ventaja.** Si no hay
+   ventaja que escribir, no hay excepción. Vale para el Design System, el Motion System y las
+   convenciones del repositorio.
+
+5. **JavaScript sólo si gana mucho**, con el coste medido en KB y el argumento por escrito. El
+   inventario por página está en `docs/arquitectura-produccion.md` §1.1.
+
+6. **Los emblemas de UAF y FinteChile se quedan en el footer.** No se mueven ni se rediseñan.
+
+7. **Hay una palabra retirada del léxico** y no se usa, ni en el copy ni en el código ni en un
+   nombre de clase. *Nota: a propósito no se escribe aquí, para que ningún `grep` la encuentre en
+   el repositorio — y ése es justo su punto débil, porque quien llegue nuevo no puede saber cuál
+   es. **Pendiente de decidir con Sebastián** dónde se nombra una sola vez.*
+
+8. **Datos bloqueados — «ninguna por ahora».** Ninguna entrega puede apoyarse en: tramos de spread
+   (D5), montos (D6 y D21), las cifras de D10 ni fotos del equipo (D11). Si una pieza los necesita,
+   la pieza no se hace: se propone sin ellos o se espera.
+
+9. **El prompt para el agente va siempre como archivo `.md`** dentro de la carpeta de la entrega,
+   nunca sólo pegado en el chat. El detalle está en §5.
+
+10. **Pendiente abierto del estudio de nivel 2: J9**, la lista de datos bloqueados. No avanza por
+    diseño sino por decisiones de Sebastián, así que no se empuja.
+
+---
+
 ## 4. Formato de entrega
 
 Una entrega es una carpeta `AAAA-MM-DD-slug/` con dos archivos:
@@ -271,6 +314,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-22 | [`2026-09-22-estudio-nivel-3`](2026-09-22-estudio-nivel-3/estudio.md) — estudio del sitio entero: medida de lectura, jerarquía, densidad y reparto de figuras, con ocho propuestas ordenadas | **Registrado** | Documento de análisis, no una entrega a trasladar |
 | 2026-09-22 | [`2026-09-22-riel-tokenizado`](2026-09-22-riel-tokenizado/ficha.md) — figura de página: el peso no está tokenizado y el dólar digital sí | **Integrada** (`a0c12f5`) | El dibujo, copiado literalmente. Cambió el envoltorio: el `aria-hidden` pasa a cubrir también las etiquetas, se quitan las líneas en blanco que en Markdown cortaban el bloque, y del copy entra sólo la frase nueva. De aquí salen las reglas 26 y 27 |
 | 2026-09-22 | [`2026-09-22-riel-tokenizado`](2026-09-22-riel-tokenizado/ficha.md) — figura de página: el peso, el dólar digital y la tokenización | **Integrada con cambios** | El dibujo tal cual. Cambia el envoltorio: `aria-hidden` cubre también las etiquetas, el copy no duplica lo que el artículo ya dice, y hubo que quitar las líneas en blanco del bloque HTML |
 | 2026-09-21 | [`2026-09-21-portada-capa`](2026-09-21-portada-capa/ficha.md) — pictograma de portada para el artículo de tokenizados · cuatro versiones | **Integrada el 2026-09-22 por decisión de Sebastián** | La v2, la de un solo nodo. Entró enmendando el DS §6.1, no esquivándolo. El verde pasa a `--verde` por §6.2. La v1 de dos monedas sigue rechazada por §1 |
