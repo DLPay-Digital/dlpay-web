@@ -16,15 +16,23 @@
  * mirarse iguales.
  *
  * **Se aparta del tope de 65 caracteres del Design System §3 a propósito**, y
- * la excepción está escrita ahí con su medición. Medido sobre el build, en las
- * cuatro páginas: el carácter de esta prosa mide 6,37–6,53px, así que 760px dan
- * **116–119 caracteres por línea**, la misma familia de medida que los 112 del
- * blog. Ajustarla a 112 exactos habría exigido 715px y habría dejado las
- * legales MÁS ESTRECHAS que el artículo, que es justo lo contrario de tratarlas
- * igual: el número de caracteres depende del texto, el ancho de la columna no.
+ * la excepción está escrita ahí con su medición y su método. Contados sobre el
+ * build, carácter a carácter con un `Range`: **114–120 por línea llena** en las
+ * cuatro páginas, contra los 111 del artículo del blog.
  *
- * Antes tenía `max-width: 47ch`, que daba 38 caracteres reales: una cinta de
- * 298px con casi 500px de blanco a cada lado.
+ * Ajustarla a una cifra exacta habría dejado las legales MÁS ESTRECHAS que el
+ * artículo, que es lo contrario de tratarlas igual: **el número de caracteres
+ * depende del texto y el ancho de la columna no.** Con esta misma columna, las
+ * cinco páginas van de 111 a 120.
+ *
+ * Antes tenía `max-width: 47ch`, que daba **38 caracteres contados**: una cinta
+ * de 298px con casi 500px de blanco a cada lado.
+ *
+ * **Lo que esto NO arregla**, y conviene no esperarlo: las legales llenan el
+ * 69–72 % de su columna y el artículo el 82 %, porque son párrafos cortos y
+ * listas en vez de prosa seguida. El blanco no desapareció — se mudó de fuera
+ * de la columna a dentro. Ningún ancho lo cambia; lo cambiaría reescribir el
+ * texto, y eso no lo decide ingeniería.
  */
 import Base from './Base.astro';
 import Header from '../components/Header.astro';

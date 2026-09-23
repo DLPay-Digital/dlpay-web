@@ -179,24 +179,45 @@ modificar y usar comercialmente. Conservar el archivo de licencia junto a las fu
   > sin decirlo: una columna ancha se lee como un texto para leer entero, no como una sección que se
   > barre. La medida es **parte de cómo se distingue un documento del resto del sitio**.
   >
-  > | | columna de texto | caracteres por línea |
-  > |---|---|---|
-  > | Artículo del blog | 760px | **112** |
-  > | `/tarifas` | 760px | **108** |
-  > | `/canal-de-denuncias` | 760px | **101** |
-  > | `/privacidad` | 760px | **97** |
-  > | `/terminos` | 760px | **93** |
-  > | Todo lo demás | `47ch` | **58–64** |
+  > | | columna de texto | caracteres en una línea llena | llenado de la columna |
+  > |---|---|---|---|
+  > | Artículo del blog | 760px | **111** | 82 % |
+  > | `/tarifas` | 760px | **120** | 72 % |
+  > | `/privacidad` | 760px | **119** | 70 % |
+  > | `/canal-de-denuncias` | 760px | **116** | 72 % |
+  > | `/terminos` | 760px | **114** | 69 % |
+  > | Todo lo demás | `47ch` | **58–64** | — |
   >
-  > **Se iguala el ANCHO, no el número.** El número de caracteres depende del texto —el carácter
-  > medio va de 6,37 a 6,76px entre unas páginas y otras— así que perseguir una cifra exacta habría
-  > dejado a las legales más estrechas que el artículo, que es lo contrario de tratarlas igual. Lo
-  > que se replica es la columna.
+  > **CÓMO SE CUENTA, porque la primera versión de esta tabla estaba mal** *(corregida el
+  > 2026-09-23)*. Publicó 93–108 y lo correcto es 114–120. El error no era de unidades —ése es el
+  > `ch` de arriba— sino de **definición**:
+  >
+  > · **Capacidad** = ancho de la columna ÷ ancho medio del carácter. Es lo que cabría si la línea
+  >   llegara al borde.
+  > · **Recuento** = los caracteres que hay **de verdad** en una línea renderizada. Es lo que pide
+  >   la regla.
+  >
+  > No son lo mismo y aquí **la capacidad salía corta**, no larga: el ancho medio del carácter se
+  > calcula sobre todo el párrafo e incluye los espacios finales de línea, que no se dibujan, así
+  > que sale demasiado ancho y el cociente demasiado bajo. **Se cuenta recorriendo el texto con un
+  > `Range` carácter a carácter y agrupando por la coordenada `top` de cada línea**, sobre el build.
+  > Nunca dividiendo.
+  >
+  > **Se iguala el ANCHO, no el número.** El número depende del texto —entre estas cinco páginas va
+  > de 111 a 120 con la misma columna— así que perseguir una cifra exacta habría dejado a las
+  > legales más estrechas que el artículo, que es lo contrario de tratarlas igual. Lo que se
+  > replica es la columna.
+  >
+  > **Mismo ancho no da mismo aspecto, y conviene saberlo antes de mirarlo.** El artículo llena el
+  > 82 % de su columna y las legales entre el 69 y el 72 %, con un 22–33 % de líneas que acaban
+  > antes de la mitad. No es la columna: el artículo es prosa seguida y las legales son párrafos
+  > cortos y listas. **El blanco no desapareció, se mudó de fuera de la columna a dentro** — antes
+  > eran 298px de texto con casi 500px de blanco a cada lado. Es una mejora, y no una simetría.
   >
   > **Qué se pierde, dicho y no disimulado:** el tope de 65 existe porque a partir de ahí cuesta
   > encontrar el principio de la línea siguiente. En un documento que se consulta por secciones ese
   > coste es menor que el de un texto legal presentado como una cinta estrecha — las legales estaban
-  > en **38 caracteres reales**, 298px de texto con casi 500px de blanco a cada lado.
+  > en **38 caracteres contados**.
   >
   > Factor medido en estas páginas: **1,315 a 1,395**, que confirma el 1,37 de arriba.
 - `text-wrap: balance` en titulares; `text-wrap: pretty` en párrafos.

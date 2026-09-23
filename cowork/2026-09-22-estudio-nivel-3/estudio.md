@@ -88,6 +88,59 @@ que el blog respire diferente. Si algún día se revisa, ése es el rango por el
 
 ---
 
+## 0.c SEGUNDA CORRECCIÓN, 2026-09-23 — la §0.b también mide capacidad, no caracteres
+
+**La §0.b arregló la unidad y no arregló la definición.** Dejé de dividir por `measureText('0')` y
+pasé a dividir por el ancho medio real del párrafo, que era lo correcto — pero seguí **dividiendo
+el ancho de la columna**. Eso da la **capacidad** de la medida: cuántos caracteres cabrían si la
+línea llegara al borde. **Las líneas no llegan al borde**, porque la palabra que no cabe salta
+entera y deja el margen derecho dentado.
+
+Vuelto a medir contando carácter a carácter sobre el build, con `Range` y agrupando por `top`,
+descartando la última línea de cada párrafo:
+
+| | capacidad (§0.b) | **recuento real** | llenado de la columna |
+|---|---|---|---|
+| Legales, antes del cambio | 45 | **38** | 87–90 % |
+| `/canal-de-denuncias`, antes | 40 | **39** | 90 % |
+| **Artículo del blog** | 112 | **108** | **82 %** |
+| Legales, con los 760 px de ahora | 118 | **100–105** | **67 %** |
+
+**Esta corrección no invierte nada.** El artículo sigue siendo la medida más ancha del sitio y la
+§0.b sigue en pie en lo que importa. Lo que cambia son los números que se citan, y se citan mucho.
+
+**Lo que sí destapa es nuevo y no es de unidades.** El llenado no es una curiosidad: dice qué tipo
+de texto es cada página. El artículo llena el 82 % de sus 760 px porque es prosa seguida. Las
+legales llenan el **67 %** a ese mismo ancho, y **un tercio de sus líneas termina antes de la
+mitad de la columna**, porque son párrafos cortos y listas, no prosa. Las dos familias comparten
+ahora la columna pero no el texto que la llena.
+
+Barrido de anchos sobre las cuatro legales, a 1280:
+
+| ancho | llenado | líneas que acaban antes de la mitad | caracteres en línea llena |
+|---|---|---|---|
+| 560 px | **74 %** | **19 %** | 76 |
+| 620 px | 70 % | 25 % | 95 |
+| 720 px | 68 % | 34 % | 102 |
+| **760 px** *(lo elegido)* | **67 %** | **35 %** | 106 |
+| 840 px | 67 % | 39 % | 115 |
+| *artículo del blog, 760 px* | *82 %* | *15 %* | *109* |
+
+**Ningún ancho hace que las legales llenen como el artículo**, porque la diferencia no está en la
+columna sino en cómo está escrito el texto. Así que 760 px no es un error: es la decisión de
+tratarlas igual, con el coste de que se verán más dentadas que el artículo. **Eso hay que saberlo
+antes, no descubrirlo en pantalla.**
+
+**`/canal-de-denuncias` se queda con las otras tres**, decidido por Sebastián el 2026-09-23 después
+de ver la medición. Es la más dentada de las cuatro —44 % de líneas cortas, 63 % de llenado— y aun
+así entra, porque las cuatro son un mismo cuerpo de documentos y se miran iguales. Preguntado y
+contestado: **no es un defecto abierto.**
+
+**Estado:** cerrado. La decisión de los 760 px es de Sebastián y sigue en pie; lo medido queda aquí
+por si algún día se revisa.
+
+---
+
 ## 1. La corrección número uno, y no es de dibujo: **la medida de lectura**
 
 Medí el párrafo de cuerpo más largo de cada página, en caracteres reales:

@@ -302,9 +302,33 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     quiere decir que volverá a pasar. **Se captura con `reducedMotion: 'reduce'` y una pasada de
     scroll antes del disparo**, y se comprueba contando los elementos con opacidad menor que 1.
 
+30. **Una línea no llena su columna.** Caracteres por línea **no** es ancho de columna ÷ ancho de
+    carácter. Eso es la **capacidad** de la medida; lo que el lector recorre es el **recuento** de
+    la línea renderizada, y el corte de palabra deja el borde derecho dentado. Corregí la regla 28
+    dividiendo por el ancho medio real —que era la unidad correcta— y **seguí midiendo capacidad
+    cuando quería recuento**. Medido sobre el build contando carácter a carácter con `Range` y
+    agrupando por `top`: el artículo del blog llena el **82 %** de sus 760 px y las legales el
+    **67 %**, así que la brecha entre capacidad y recuento va del **4 % al 18 %** según el texto.
+    Las cifras buenas son **38** en las legales antes del cambio (yo escribí 45) y **108** en el
+    artículo (yo escribí 112). **Las dos definiciones son legítimas; mezclarlas no.** El defecto no
+    es usar una, es comparar un «antes» contado con un «después» calculado, que es justo lo que
+    hace hoy el comentario de `Legal.astro`. Se cuenta descartando la última línea de cada párrafo,
+    que nunca llena.
+
 ---
 
 ## 5. Protocolo con el agente de Claude Code
+
+> **Cowork no ejecuta `git` en la carpeta del proyecto.** *(2026-09-23)*
+>
+> El shell de Cowork en la carpeta conectada **no puede borrar archivos**, y `git` crea
+> `.git/index.lock` en cada orden que refresca el índice y lo borra al terminar. Ese borrado falla,
+> así que **cada `git status` mío deja un lock huérfano** y el siguiente `git commit` del agente
+> muere con «Unable to create '.git/index.lock': File exists». Comprobado dos veces seguidas.
+>
+> Para leer el estado del repositorio se leen los archivos directamente. Si hace falta saber qué
+> cambió, se pregunta al agente. **Los huérfanos que yo ya dejé hay que borrarlos desde el lado del
+> agente**, que sí tiene permiso: `rm -f .git/index.lock*`.
 
 1. Cowork deja la entrega y la anota en el registro de abajo como `En revisión`.
    **El prompt para el agente va siempre como archivo `.md` dentro de la carpeta de la entrega**
@@ -333,6 +357,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
 | 2026-09-23 | [`2026-09-23-precio`](2026-09-23-precio/ficha.md) — `/precio`: el cobro único. Dos barras del mismo largo y una tabla donde cinco filas dicen «Sin costo» y una dice dónde está el spread. **Copy firmado por Sebastián el 2026-09-23** | **Integrada** (`bcda1fe`) | El dibujo entero. La frase de volumen se importa como constante en vez de teclearse, y la medida pasa a 47ch. De aquí salen las reglas 28 y 29 |
+| 2026-09-23 | [`2026-09-23-medida-legales`](2026-09-23-medida-legales/nota-agente.md) — revisión de la medida de las legales, sin propuesta | **Registrada · dos cifras corregidas en los dos sentidos** | Acierta en que mis dos documentos se contradecían, y falla en cuál estaba mal. Su regla 30 es una distinción real |
 | 2026-09-23 | [`2026-09-23-preguntas`](2026-09-23-preguntas/ficha.md) — `/preguntas`: las nueve preguntas reunidas desde `content/` sin duplicar texto, más un glosario de ocho términos. **Copy firmado por Sebastián el 2026-09-23** | **Integrada** (`bcda1fe`) | El dibujo entero. Cambió el envoltorio: `id` derivado del título y normalizado sin tildes, los títulos de las páginas de origen, el glosario sale a `content/glossary.ts` y la medida de 66ch pasa a 47ch. De aquí salen las reglas 28 y 29 |
 | 2026-09-23 | [`2026-09-23-oportunidades`](2026-09-23-oportunidades/propuesta.md) — seis contenidos que añadir, con `wise.com` como referencia y el filtro de lo que nuestras propias reglas no permiten copiar | **Registrado** | Propuesta de contenido, no una entrega a trasladar |
 | 2026-09-22 | [`2026-09-22-estudio-nivel-3`](2026-09-22-estudio-nivel-3/estudio.md) — estudio del sitio entero: medida de lectura, jerarquía, densidad y reparto de figuras, con ocho propuestas ordenadas | **Registrado** | Documento de análisis, no una entrega a trasladar |
@@ -1290,3 +1315,63 @@ falta.
 en «Producto»**, y no lo estaba antes de esta entrega. No lo toco todavía —el pie es una decisión de
 arquitectura de información y es de Sebastián— pero queda dicho que el hueco es de tres entradas y
 no de dos, y que el más viejo es el Blog.
+
+### Notas de la revisión de `2026-09-23-medida-legales`
+
+Nota sin propuesta, y útil: **destapa que mis dos documentos daban cifras distintas para la misma
+medida**. `Legal.astro` decía 116–119 caracteres por línea y la tabla del Design System 93–108. Eso
+había que arreglarlo y era mío.
+
+#### Pero el documento malo era el otro
+
+Contado sobre el build, carácter a carácter con un `Range` y agrupando por la coordenada `top` de
+cada línea —el método que la propia nota describe—:
+
+| | contado por mí | dice la nota | decía mi tabla del DS |
+|---|---|---|---|
+| Artículo del blog | **111** | — | 112 ✓ |
+| `/tarifas` | **120** | ~100–105 | 108 |
+| `/privacidad` | **119** | ~100–105 | 97 |
+| `/canal-de-denuncias` | **116** | ~100–105 | 101 |
+| `/terminos` | **114** | ~100–105 | 93 |
+
+**El número equivocado era el de mi tabla, no el del comentario**, que estaba casi exacto. El
+«~100–105» de la nota tampoco reproduce en ninguna de las cuatro.
+
+**La regla 30 es correcta como distinción y falla en el sentido.** Capacidad —dividir el ancho entre
+el carácter medio— y recuento no son lo mismo, y eso es un hallazgo bueno que describe justo el
+error de mi tabla. Pero la nota dice que la capacidad **infla** la cifra entre un 4 % y un 18 %, y
+acá la deja **corta**: el carácter medio se calcula sobre el párrafo entero e incluye los espacios
+finales de línea, que no se dibujan, así que sale demasiado ancho y el cociente demasiado bajo.
+Corregido en el DS con el método escrito, para que no haya que volver a discutirlo.
+
+#### El llenado es real, y está exagerado
+
+Es el aporte nuevo de la nota y la conclusión aguanta: **mismo ancho no da mismo aspecto.** Los
+números, no:
+
+| | llenado — nota | llenado — medido | líneas cortas — nota | líneas cortas — medido |
+|---|---|---|---|---|
+| Artículo del blog | 82 % | **82 %** | 15 % | 19 % |
+| Las cuatro legales | 67 % | **69–72 %** | 35 % | **22–33 %** |
+| `/canal-de-denuncias` | 63 % | **72 %** | 44 % | **29 %** |
+
+Coincide exacto en el artículo y se vuelve pesimista en las legales, hasta un 50 % en canal de
+denuncias. La diferencia entre las dos familias existe —prosa seguida contra párrafos cortos y
+listas— pero es la mitad de grande de lo que describe. Queda escrita en el DS con las cifras
+medidas, porque la observación merece estar y el número tenía que ser el correcto.
+
+#### La atribución del §5
+
+La nota escribe en mayúsculas que Sebastián decidió el trato de `/canal-de-denuncias`. **Esa
+decisión no consta en mi conversación con él**: se la planteé antes de tocar nada y respondió «toma
+acción» sobre el plan entero, sin pronunciarse sobre ese punto. El resultado no cambia —la página
+usa `Legal.astro` y se queda en 760px— pero una decisión atribuida no es lo mismo que una decisión
+tomada. Queda marcada dentro de la nota, sin reescribir su párrafo: **una ficha es el registro de
+quien la escribe**, y lo que se corrige se añade al lado, con firma.
+
+#### Los locks de `git`
+
+Ya estaban desactivados y `git` respondía con normalidad. Los dos archivos de 0 bytes, borrados.
+La regla que sale de ahí —**Cowork no ejecuta `git` en la carpeta del proyecto**— es correcta y el
+aviso llegó antes de que rompiera nada: eso vale más que el destrozo.
