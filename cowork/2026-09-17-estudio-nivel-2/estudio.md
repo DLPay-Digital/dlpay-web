@@ -235,8 +235,30 @@ dijiste «ninguna por ahora» y quiero que la lista esté escrita cuando cambies
 |---|---|---|
 | **D11** · equipo con nombre y foto | `/confianza` dice «una persona identificable cierra tu operación» y no muestra a nadie | El mayor de todos, y sólo depende de ti |
 | **D5** · tramos del spread | El argumento del volumen en `/empresas` y la tabla de `/tarifas` | Grande |
-| **D22** · mensaje prellenado | Cinco enlaces que abren WhatsApp en blanco, uno de ellos el cierre de `/empresas` | Pequeño y barato |
+| **D22** · mensaje prellenado | ~~Cinco~~ **cuatro** enlaces que abren WhatsApp en blanco *(ver la nota de abajo)* | Pequeño y barato |
 | **D6/D21** · mínimo y máximo reales | El cotizador deja de hablar en hipotético | Medio |
+
+> **Puesta al día del 2026-09-24**, medida sobre `src/`. Una lista de pendientes que no se recuenta
+> envejece igual que una cifra, así que la recuento:
+>
+> **D22 ya no son cinco, son cuatro**, y las cuatro que se arreglaron son las legales:
+> `/canal-de-denuncias`, `/empresas`, `/privacidad` y `/terminos` llevan mensaje. **Siguen en blanco
+> las cuatro comerciales:** el pie —que está en todas las páginas—, `/confianza`, `/tarifas` y
+> `/como-funciona`. Es decir: quedaron sin mensaje justo los sitios donde la persona llega con una
+> pregunta concreta, y llega al chat sin nada escrito.
+>
+> **D6/D21, con nombre y apellido:** `minPayClp` cae a **50.000** si no hay variable de entorno, y
+> `maxPayClp` es `undefined`, o sea **no hay máximo**. El mínimo se publica en `/tarifas` como cifra
+> dura; el máximo no existe.
+>
+> **D11 sigue exactamente igual, y es el que peor se ve.** `/confianza` afirma en sus mecanismos que
+> «una persona identificable cierra tu operación», y su sección «Quiénes somos» no nombra a nadie:
+> dice que el equipo está en Chile y que «te atiende una persona del equipo». **La página promete
+> identificable y entrega anónimo.**
+>
+> **Y D5 ganó un tercer dependiente el 2026-09-24:** además del argumento de volumen de `/empresas`
+> y de la tabla de `/tarifas`, ahora bloquea la banda «No cambia después de que lo aceptas» de
+> `/precio`, que dibuja una frase que vive dentro del `PendingNotice` de esa tabla.
 
 ---
 

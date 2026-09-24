@@ -56,6 +56,39 @@ palabras, y por eso no estrena claim.
 promesa sobre el futuro, «no cambia después de que lo aceptas» es una descripción de cómo opera la
 mesa.
 
+### 2.b Lo que no vi de esa frase, y lo encontró el agente
+
+Escribí «no estrena claim» porque la frase está publicada. **Leí la línea y no leí lo que la
+envuelve**, que es el error entero:
+
+```astro
+<PendingNotice title="Tabla de tarifas: en publicación">
+  <p>Los Términos y Condiciones de DLPay comprometen la publicación de una tabla con las
+     comisiones aplicables, el tipo de cambio y el spread informado. Esa tabla está en revisión…</p>
+  <p><strong>Mientras tanto</strong>, el precio aplicable a tu operación te lo informa tu ejecutivo
+     antes de que transfieras, y no cambia después de que lo aceptas.</p>
+</PendingNotice>
+```
+
+Y `PendingNotice.astro` dice en su cabecera para qué existe: *«para no publicar nunca un texto
+inventado ocupando el lugar de uno que requiere revisión legal»*.
+
+**Así que no era un párrafo que sube a titular. Era un parche.** Un texto provisional, bajo borde de
+aviso, que ocupa el lugar de una tabla de tarifas que los Términos y Condiciones comprometen y que
+todavía no existe, y que empieza por «mientras tanto». Sacarlo de esa caja y ponerlo en 32 px sobre
+tinta le quita exactamente el marco que lo hacía honesto.
+
+**El agente pidió la firma por eso y no por lo que yo escribí.** Sebastián la firmó el 2026-09-24 y
+queda registrada en `auditoria-preproduccion.md`, con la nota de que **cuando D5 se cierre hay que
+volver a mirar esta frase** — y con ella, esta figura, que es lo que dibuja.
+
+**La consecuencia para la pieza, escrita aquí para que no se pierda:** la banda tiene una
+**dependencia de D5**. El día que se publique la tabla de tarifas, esa frase cambia o desaparece de
+`/tarifas`, y la figura pasaría a dibujar una frase que ya no está donde dice que está. No es un
+defecto hoy; es una fecha de revisión.
+
+Va como **regla 31** del `README.md`: citar una frase publicada obliga a leer su envoltorio.
+
 ---
 
 ## 3. La sexta familia — entrada propuesta para el DS §6.2
@@ -181,12 +214,22 @@ retoque.
 
 | | valor |
 |---|---|
-| Media del tramo posterior | **+1,409 px** |
+| Media del tramo posterior | **1,41 px por debajo de la recta**, en pantalla *(ver la nota de signo)* |
 | Excursión máxima arriba / abajo | **58,2 / 58,2 px** (diferencia 0,00) |
 | Cruces de la horizontal | **9** |
 | Último punto | 20,6 px, el **35 %** de la excursión máxima |
 | Recorrido vertical del tramo previo | 80 px |
 | Peso del trazado | 201 puntos · 2.137 bytes |
+
+> **Nota de signo, a petición del agente — y tiene razón.** Yo escribí «+1,409» y él midió «−1,398»,
+> y las dos son la misma cosa dicha con convenciones opuestas. La mía es la `y` del SVG, donde
+> **mayor es más abajo**; la suya toma arriba como positivo, como un eje de precio. La diferencia de
+> 0,011 es que él incluye el punto de aceptación en la media y yo no (129 puntos contra 128).
+>
+> **En esta figura el signo de esa corrección es justo lo que la figura no puede afirmar**, así que
+> no se escribe con signo: se escribe en pantalla. **El tramo posterior queda de media 1,41 px por
+> debajo de la recta verde**, que es el **2,4 %** de la excursión máxima. Nadie lo ve, y ninguna de
+> las dos convenciones puede confundirse.
 
 ---
 

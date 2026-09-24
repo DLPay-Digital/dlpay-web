@@ -308,6 +308,34 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     quiere decir que volverá a pasar. **Se captura con `reducedMotion: 'reduce'` y una pasada de
     scroll antes del disparo**, y se comprueba contando los elementos con opacidad menor que 1.
 
+    **Matiz del 2026-09-24, y me volvió a pasar.** Al revisar `/precio` ya integrado capturé la
+    página y la banda salía en negro: estuve a punto de reportar rota una pieza que funcionaba. El
+    fallo era mío: el bucle de scroll iba **sin esperar entre pasos**, en un solo `evaluate`
+    síncrono, así que el observador nunca llegó a disparar. **Una pasada de scroll sin espera entre
+    pasos no es una pasada de scroll.** Medido en esa misma página: 7 elementos con opacidad menor
+    que 1 antes, **1** después de una pasada con 70 ms entre pasos. Por eso el recuento no es un
+    adorno de la regla: es lo único que distingue «la página está rota» de «la capturé mal».
+
+31. **Citar una frase publicada obliga a leer su envoltorio.** Construí una banda entera sobre una
+    frase de `/tarifas` —«no cambia después de que lo aceptas»— y escribí «no estrena claim» porque
+    estaba publicada. La busqué con `grep`, saqué la línea y no leí las dos de arriba: la frase vive
+    dentro de `<PendingNotice title="Tabla de tarifas: en publicación">`, bajo borde de aviso,
+    **empezando por «mientras tanto»**, como parche mientras D5 siga abierta — y ese componente
+    existe, dicho en su propia cabecera, «para no publicar nunca un texto inventado ocupando el
+    lugar de uno que requiere revisión legal». No era un párrafo que sube a titular: era una
+    salvedad provisional que pasa a ser el centro visual de una página. Lo encontró el agente al ir
+    a pedir la firma. Es la **regla 23 un nivel más afuera**: no basta el cuerpo de lo que citas,
+    hay que leer la caja en la que está. **El componente que la envuelve, el título de esa caja y la
+    conjunción con la que empieza son parte de lo que la frase dice.**
+
+32. **Los nombres de clase de una maqueta están pensados para una página vacía; la página real ya
+    tiene los suyos.** Mi maqueta llamaba `.rot` a los rótulos. `/precio` **ya usaba `.rot`** para
+    los dos rótulos de la figura de las barras, sobre papel — y al integrar heredaron
+    `position:absolute` y un gris pensado para tinta. No aparece leyendo el CSS: el agente lo
+    encontró **contando los elementos del render**, esperaba tres rótulos y salieron cinco. Es la
+    regla 26 otra vez —contar lo que hay, no comprobar lo que no está— aplicada al trasladar. **Una
+    entrega debería llevar sus clases con prefijo propio**, o el traslado tiene que contar.
+
 30. **Una línea no llena su columna.** Caracteres por línea **no** es ancho de columna ÷ ancho de
     carácter. Eso es la **capacidad** de la medida; lo que el lector recorre es el **recuento** de
     la línea renderizada, y el corte de palabra deja el borde derecho dentado. Corregí la regla 28
@@ -325,16 +353,22 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
 
 ## 5. Protocolo con el agente de Claude Code
 
-> **Cowork no ejecuta `git` en la carpeta del proyecto.** *(2026-09-23)*
+> **Cowork no ejecuta `git` que toque el índice.** *(2026-09-23, afinado el 2026-09-24)*
 >
 > El shell de Cowork en la carpeta conectada **no puede borrar archivos**, y `git` crea
-> `.git/index.lock` en cada orden que refresca el índice y lo borra al terminar. Ese borrado falla,
-> así que **cada `git status` mío deja un lock huérfano** y el siguiente `git commit` del agente
+> `.git/index.lock` en cada orden que **refresca el índice** y lo borra al terminar. Ese borrado
+> falla, así que cada `git status` mío deja un lock huérfano y el siguiente `git commit` del agente
 > muere con «Unable to create '.git/index.lock': File exists». Comprobado dos veces seguidas.
 >
+> **El matiz, medido el 2026-09-24:** la regla que escribí era «ningún `git`», y la incumplí al día
+> siguiente con un `git show`. No pasó nada, y fui a ver por qué: **las órdenes que sólo leen
+> objetos —`show`, `log`, `cat-file`— no toman el lock.** Las que lo toman son las que tocan el
+> índice: `status`, `diff`, `add`, `commit`. La regla buena es ésa, no la mía. Una regla más ancha
+> de lo necesario se incumple sin consecuencias, y una regla que se incumple sin consecuencias deja
+> de ser una regla.
+>
 > Para leer el estado del repositorio se leen los archivos directamente. Si hace falta saber qué
-> cambió, se pregunta al agente. **Los huérfanos que yo ya dejé hay que borrarlos desde el lado del
-> agente**, que sí tiene permiso: `rm -f .git/index.lock*`.
+> cambió, se pregunta al agente.
 
 1. Cowork deja la entrega y la anota en el registro de abajo como `En revisión`.
    **El prompt para el agente va siempre como archivo `.md` dentro de la carpeta de la entrega**
@@ -362,9 +396,8 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
-| 2026-09-24 | [`2026-09-24-precio-que-aceptas`](2026-09-24-precio-que-aceptas/ficha.md) — banda sobre tinta en `/precio`: el mercado se mueve, aceptas, y desde ahí tu precio es una recta mientras el gris sigue. **v2 · estrena la sexta familia del §6.2 y pide enmienda de movimiento** | **En revisión** | El camino no se filtra, se CONSTRUYE: tres octavas de ruido para que tenga textura de mercado, y cuatro correcciones que valen cero en el punto de aceptación para que no afirme que fijar el precio fue buen ni mal negocio. En la v1 el `slice` escondía el tercio derecho del mercado, que es donde la figura se juega lo que dice |
+| 2026-09-24 | [`2026-09-24-precio-que-aceptas`](2026-09-24-precio-que-aceptas/ficha.md) — banda sobre tinta en `/precio`: el mercado se mueve, aceptas, y desde ahí tu precio es una recta mientras el gris sigue. **v2 · estrena la sexta familia del §6.2 y una enmienda de movimiento** | **Integrada** (`3dfded3`) | El dibujo y la geometría, literales. Todas mis cifras reproducen. Dos cosas mías corregidas por el agente: la frase que dibujo vive dentro de un `PendingNotice` y yo no leí el envoltorio (**regla 31**), y mi clase `.rot` pisaba una que `/precio` ya tenía (**regla 32**). Él generalizó la marca punteada del §6.2 de «frontera» a «un límite: cruzarlo cambia algo», que es mejor que abrir una fila nueva |
 | 2026-09-24 | [`2026-09-24-precio-que-aceptas`](2026-09-24-precio-que-aceptas/ficha.md) — la banda «No cambia después de que lo aceptas» de `/precio` | **Integrada con cambios** | Trazado y geometría literales. Firma de Compliance pedida antes de integrar, por dónde vivía la frase. Una colisión de clases que rompía la otra figura de la página |
-| 2026-09-23 | [`2026-09-23-iconos`](2026-09-23-iconos/ficha.md) — los cuatro iconos que el DS §7 ya nombraba y `Icon.astro` no tenía: documento, empresa, wallet, candado | **En revisión** | El set pasa de cinco a nueve sin estrenar nada. «empresa» va como maletín y no como edificio porque `bank` ya lo es y a 16 px colisionan. De aquí sale el largo de trazo como proxy del peso óptico |
 | 2026-09-23 | [`2026-09-23-precio`](2026-09-23-precio/ficha.md) — `/precio`: el cobro único. Dos barras del mismo largo y una tabla donde cinco filas dicen «Sin costo» y una dice dónde está el spread. **Copy firmado por Sebastián el 2026-09-23** | **Integrada** (`bcda1fe`) | El dibujo entero. La frase de volumen se importa como constante en vez de teclearse, y la medida pasa a 47ch. De aquí salen las reglas 28 y 29 |
 | 2026-09-23 | [`2026-09-23-iconos`](2026-09-23-iconos/ficha.md) — cuatro iconos nuevos y tres listas que dejan de llevar ticks idénticos | **Integrada con cambios** | Los cuatro trazados tal cual y las tres ubicaciones tal cual. El tamaño sube de 19 a 20px: 19 está fuera de la grilla del §7 |
 | 2026-09-23 | [`2026-09-23-medida-legales`](2026-09-23-medida-legales/nota-agente.md) — revisión de la medida de las legales, sin propuesta | **Registrada · dos cifras corregidas en los dos sentidos** | Acierta en que mis dos documentos se contradecían, y falla en cuál estaba mal. Su regla 30 es una distinción real |
@@ -376,7 +409,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 | 2026-09-22 | [`2026-09-22-riel-tokenizado`](2026-09-22-riel-tokenizado/ficha.md) — figura de página: el peso no está tokenizado y el dólar digital sí | **Integrada** (`a0c12f5`) | El dibujo, copiado literalmente. Cambió el envoltorio: el `aria-hidden` pasa a cubrir también las etiquetas, se quitan las líneas en blanco que en Markdown cortaban el bloque, y del copy entra sólo la frase nueva. De aquí salen las reglas 26 y 27 |
 | 2026-09-22 | [`2026-09-22-riel-tokenizado`](2026-09-22-riel-tokenizado/ficha.md) — figura de página: el peso, el dólar digital y la tokenización | **Integrada con cambios** | El dibujo tal cual. Cambia el envoltorio: `aria-hidden` cubre también las etiquetas, el copy no duplica lo que el artículo ya dice, y hubo que quitar las líneas en blanco del bloque HTML |
 | 2026-09-21 | [`2026-09-21-portada-capa`](2026-09-21-portada-capa/ficha.md) — pictograma de portada para el artículo de tokenizados · cuatro versiones | **Integrada el 2026-09-22 por decisión de Sebastián** | La v2, la de un solo nodo. Entró enmendando el DS §6.1, no esquivándolo. El verde pasa a `--verde` por §6.2. La v1 de dos monedas sigue rechazada por §1 |
-| 2026-09-17 | [`2026-09-17-gramatica-de-las-figuras`](2026-09-17-gramatica-de-las-figuras/gramatica.md) — el vocabulario de las cinco familias de figura, medido, y sección candidata para el DS §6.2 | **En revisión** | — |
+| 2026-09-17 | [`2026-09-17-gramatica-de-las-figuras`](2026-09-17-gramatica-de-las-figuras/gramatica.md) — el vocabulario de las familias de figura, medido, y sección candidata para el DS §6.2 | **Integrada** | Es el §6.2 del Design System desde el 2026-09-17. La tabla ha crecido después con el canto dividido, el límite punteado y la línea que deja de moverse |
 | 2026-09-17 | [`2026-09-17-empresas-j7`](2026-09-17-empresas-j7/ficha.md) — J7: la columna que faltaba y la FAQ propia | **Integrada** | Las dos piezas. `Faq.astro` pasa a props en vez de duplicarse, y las preguntas viven en `business.ts` |
 | 2026-09-17 | [`2026-09-17-eje-de-remesas`](2026-09-17-eje-de-remesas/ficha.md) — J5 y J6: el tramo que sí hacemos | **Integrada con cambios** | Las tres piezas. El eje sale como componente y la salvedad baja de 66ch a 47ch |
 | 2026-09-17 | [`2026-09-17-como-funciona`](2026-09-17-como-funciona/ficha.md) — J2 y J3: los seis pasos en dos carriles | **Integrada** | Token, pieza y lote B. Un número de la ficha no cuadró y se corrigió la nota |
@@ -1299,6 +1332,30 @@ Una captura de página completa de este sitio **miente**: el movimiento de entra
 hacer scroll, y una captura `fullPage` no recorre la página, así que los bloques de más abajo salen
 en blanco. Hay que recorrerla primero. Me pasó al revisar `/precio` y estuve a punto de dar por
 rota una página que estaba bien.
+
+### Cierre de `2026-09-24-precio-que-aceptas`
+
+**Nada pendiente de mi lado.** Tres cosas que dejo dichas.
+
+**El signo de la media, y por qué no se escribe con signo.** El agente midió −1,398 donde yo escribí
++1,409. Las dos son la misma cosa: la mía es la `y` del SVG —mayor es más abajo— y la suya toma
+arriba como positivo. Los 0,011 de diferencia son que él incluye el punto de aceptación y yo no.
+Pero tiene razón en lo que importa: **en esta figura el signo de esa corrección es exactamente lo
+que la figura no puede afirmar**, así que una cifra con signo y sin convención declarada es una
+trampa esperando. Ahora la ficha lo dice en pantalla: *el tramo posterior queda de media 1,41 px por
+debajo de la recta*, el 2,4 % de la excursión máxima. Sin signo que interpretar.
+
+**Su generalización del §6.2 es mejor que abrir una fila.** La marca punteada la escribí yo el
+2026-09-22 como «frontera», describiendo el límite geográfico de `cruza`. Acá el límite es un
+instante. Él la generalizó a **«un límite: cruzarlo cambia algo»** en vez de añadir una segunda
+entrada, y el argumento es el correcto: un límite en el espacio y uno en el tiempo son el mismo
+signo, y separarlos habría creado dos marcas donde hay una. Un vocabulario crece mejor
+generalizando una entrada que multiplicándolas.
+
+**Y las dos que son mías.** La del `PendingNotice` es la peor que he cometido en esta colaboración
+—construí una pieza entera sobre una frase sin leer la caja en la que vive, y la caja decía
+«mientras tanto»—; la de `.rot` es más tonta pero igual de instructiva, porque la encontró contando
+el render y no leyendo el CSS, que es la regla 26 otra vez. Salen las **reglas 31 y 32**.
 
 ### Cierre de `2026-09-23-preguntas` y `2026-09-23-precio`
 
