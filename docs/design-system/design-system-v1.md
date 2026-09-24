@@ -561,6 +561,35 @@ hay que recalcular.
 
 ---
 
+### 6.3 La banda de cierre y el pie  ·  *añadido el 2026-09-24*
+
+**Una banda de llamada que precede al pie va en `--tinta-2`, nunca en `--tinta`, y el pie declara su
+propio borde superior en `--line-on-tinta`.**
+
+Cuatro páginas cierran así —`/como-funciona`, `/precio`, `/preguntas` y la banda de contacto de
+`/empresas`— y el pie es `--tinta`. Con la banda también en `--tinta` los dos bloques se fundían en
+uno solo: el lector no sabe dónde acaba la invitación y empieza la navegación.
+
+**Hacen falta las dos cosas, y se eligieron midiendo:**
+
+| | contraste contra `--tinta` | |
+|---|---|---|
+| `--tinta-2` | **1,068:1** | se distingue como superficie, **no** como línea |
+| El filete de `rgba(237,242,239,.1)` de la cabecera y la 404 | **1,27:1** | no se ve sobre tinta |
+| **`--line-on-tinta`** | **3,50:1** | el corte |
+
+`--tinta-2` sólo da el cambio de material; el corte lo da el filete. Por separado ninguna de las dos
+basta, y por eso la regla las pide juntas.
+
+**El borde vive en el pie y no en cada banda**, para que valga en todas las páginas. En las que
+cierran sobre papel queda contra una superficie clara y no se nota, que es lo correcto: ahí el corte
+ya se ve solo.
+
+Texto sobre `--tinta-2`, comprobado: `--on-tinta` 15,40:1 · `--on-tinta-mute` 7,66:1 ·
+`--verde` 7,92:1.
+
+---
+
 ## 7. Iconografía
 
 - **Line icons**, trazo `1.6`, grilla 16 / 20 / 24, `stroke-linejoin: round`, **un solo estilo**.
