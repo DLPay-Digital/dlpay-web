@@ -29,11 +29,16 @@
  * Lo único escrito acá son los cinco títulos de preocupación, la frase que
  * explica la agrupación y el cierre. Son de esta página y de ninguna otra.
  *
- * ── El índice, sin JavaScript ──────────────────────────────────────────────
+ * ── Sin índice y sin numerar, por decisión de Sebastián del 2026-09-24 ─────
  *
- * Seis anclas y `position: sticky`. **Sin estado activo**: marcar en qué
- * sección va el lector necesita un observador, y no vale lo que cuesta en una
- * página de seis destinos que caben en pantalla.
+ * La primera versión de esta forma traía un índice pegajoso de seis anclas y
+ * numeraba los grupos 01 a 05. Las dos cosas se retiraron por estética.
+ *
+ * **Los `id` de las secciones se quedan**, aunque ya nada de esta página
+ * enlace a ellos: `aria-labelledby` los necesita para dar nombre a cada
+ * `<section>`, y un enlace externo a `/preguntas/#cuanto-cuesta` sigue
+ * funcionando. `scroll-margin-top` también se queda, que es lo que hace que ese
+ * enlace no deje el título pegado al borde.
  */
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
@@ -47,9 +52,8 @@ import { contact } from '../lib/config/site.ts';
 
 /*
   El orden de los grupos y sus títulos. El `id` se DERIVA del título con el
-  mismo criterio que `Faq.astro`: escribirlo a mano es una ocasión más de que un
-  ancla apunte a donde no hay nada, y **un ancla rota no falla, sólo no hace
-  nada**.
+  mismo criterio que `Faq.astro`: escrito a mano puede repetirse o no coincidir
+  con su `aria-labelledby`, y ese fallo es silencioso.
 */
 const grupos: readonly { concern: Concern; title: string }[] = [
   { concern: 'recibo', title: 'Qué recibo, y cuándo' },
@@ -125,38 +129,16 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
 
     <div class="cuerpo">
       <div class="inner">
-        <div class="cols">
-          {/* Seis anclas, cero JavaScript. En móvil se queda arriba, estático:
-              con la página larga, ver las cinco preocupaciones antes de bajar
-              es la mitad de lo que aporta el índice. */}
-          <nav class="indice" aria-label="Secciones de esta página">
-            <p class="ind-t">En esta página</p>
-            <ul role="list">
-              {secciones.map((s, i) => (
-                <li>
-                  <a href={`#${s.id}`}>
-                    <span class="n">{String(i + 1).padStart(2, '0')}</span>
-                    {s.title}
-                  </a>
-                </li>
-              ))}
-              <li class="sep">
-                <a href="#las-palabras"><span class="n">—</span>Las palabras</a>
-              </li>
-            </ul>
-          </nav>
+        <div class="grupos">
+          <p class="tesis">
+            Las mismas cinco preocupaciones aparecen de los dos lados.
+            <strong>Tres son idénticas para una persona y para una empresa</strong> y sólo cambian de
+            palabras; las otras dos las hace un lado solo.
+          </p>
 
-          <div class="grupos">
-            <p class="tesis">
-              Las mismas cinco preocupaciones aparecen de los dos lados.
-              <strong>Tres son idénticas para una persona y para una empresa</strong> y sólo cambian
-              de palabras; las otras dos las hace un lado solo.
-            </p>
-
-            {secciones.map((s, i) => (
+            {secciones.map((s) => (
               <section class="grupo" id={s.id} aria-labelledby={`${s.id}-t`}>
                 <header class="g-cab" data-enter>
-                  <span class="n num">{String(i + 1).padStart(2, '0')}</span>
                   <h2 id={`${s.id}-t`}>{s.title}</h2>
                   <span class="quienes">{s.quienes}</span>
                 </header>
@@ -173,7 +155,6 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
                 </div>
               </section>
             ))}
-          </div>
         </div>
       </div>
     </div>
@@ -230,30 +211,13 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
   .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
   .cuerpo { background: var(--papel); padding: var(--s-9) 0; }
 
-  /* Móvil: el índice arriba, estático, como lista de saltos. */
-  .cols { display: grid; gap: var(--s-7); }
-
-  .indice { border-top: 1px solid var(--line); padding-top: var(--s-4); }
-  .ind-t {
-    font-family: var(--f-num);
-    font-size: var(--t-dato-sm);
-    color: var(--ink-mute);
-    margin-bottom: var(--s-3);
-  }
-  .indice ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-2); }
-  .indice a {
-    display: flex;
-    align-items: baseline;
-    gap: var(--s-3);
-    min-height: 44px;
-    color: var(--ink);
-    text-decoration: none;
-    font-size: var(--t-body-sm);
-  }
-  .indice a:hover { color: var(--verde-deep); }
-  .indice .n { font-family: var(--f-num); font-size: var(--t-dato-sm); color: var(--ink-mute); }
-  .indice .sep { border-top: 1px solid var(--line); padding-top: var(--s-2); }
-
+  /*
+    Sin índice, la columna de texto se queda sola en un contenedor ancho. El
+    `max-width` lo devuelve a una medida de lectura: sin él, los títulos de
+    grupo y sus filetes cruzarían los 1.200px del contenedor y la página se
+    leería como una tabla.
+  */
+  .grupos { max-width: 760px; }
   .tesis { color: var(--ink-mute); max-width: 47ch; margin-bottom: var(--s-8); }
   .tesis strong { color: var(--ink); font-weight: 600; }
 
@@ -271,7 +235,6 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     border-bottom: 1px solid var(--line);
     margin-bottom: var(--s-6);
   }
-  .g-cab .n { font-family: var(--f-num); font-size: var(--t-dato-sm); color: var(--verde-deep); }
   .g-cab h2 {
     font-size: var(--t-h2-m);
     font-weight: 700;
@@ -323,7 +286,12 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     margin-bottom: var(--s-3);
   }
   .bajada { color: var(--ink-mute); max-width: 46ch; margin-bottom: var(--s-7); }
-  dl { margin: 0; border-top: 1px solid var(--line); }
+  /*
+    La misma columna que los grupos de arriba. Al quitar el índice, las dos
+    secciones dejaron de acabar en el mismo sitio —901 contra 1.125 px— y el
+    borde derecho de la página daba un salto entre una y otra.
+  */
+  dl { margin: 0; max-width: 760px; border-top: 1px solid var(--line); }
   .term { border-bottom: 1px solid var(--line); padding: var(--s-5) 0; }
   dt { font-size: var(--t-h3-m); font-weight: 700; margin-bottom: var(--s-2); }
   dd { margin: 0; color: var(--ink-mute); max-width: 47ch; }
@@ -365,9 +333,6 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
 
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
-    /* El índice se pega al margen mientras se baja. */
-    .cols { grid-template-columns: 232px 1fr; gap: var(--s-9); align-items: start; }
-    .indice { position: sticky; top: var(--s-6); border-top: 0; padding-top: 0; }
     .grupo { scroll-margin-top: var(--s-8); }
     .palabras { scroll-margin-top: var(--s-8); }
     .g-cab h2 { font-size: var(--t-h2); }

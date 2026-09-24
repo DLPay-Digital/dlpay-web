@@ -1795,3 +1795,24 @@ dudas la acción que sigue es preguntar, no cotizar— y pregunta si es decisió
 parte, y por eso **el enlace lleva mensaje prellenado**: «Hola, tengo una duda que no encontré en la
 web». Así no se suma a los cinco enlaces planos de **D22**, que abren el chat en blanco. Un enlace
 nuevo que nace con el problema ya resuelto es mejor que uno que engrosa la lista.
+
+#### Retirados el mismo día, por Sebastián
+
+**El índice pegajoso y la numeración 01–05 de los grupos**, por estética. Los dos eran de la ficha y
+los dos salieron. Lo que se quedó, y conviene saber por qué:
+
+- **Los `id` de las cinco secciones.** Ya nada de la página enlaza a ellos, pero `aria-labelledby`
+  los necesita para dar nombre a cada `<section>`, y un enlace externo a
+  `/preguntas/#cuanto-cuesta` sigue funcionando. `scroll-margin-top` también se queda, que es lo
+  que hace que ese enlace no deje el título pegado al borde.
+- **La derivación del `id` desde el título**, por el mismo motivo de siempre: escrito a mano puede
+  repetirse o dejar de coincidir con su `aria-labelledby`, y ese fallo es silencioso.
+
+Y dos cosas que hubo que ajustar al quitarlos, y que sólo se ven midiendo:
+
+1. **La columna de texto se quedaba sola en un contenedor de 1.200px.** Sin el índice a la
+   izquierda no había nada que la acotara, así que los títulos de grupo y sus filetes habrían
+   cruzado la página entera. Va a 760px, la medida del artículo del blog.
+2. **Las dos secciones dejaron de acabar en el mismo sitio**: los grupos en 901px y el glosario en
+   1.125. Un salto en el borde derecho entre dos secciones seguidas de la misma página. Igualadas
+   en 901.
