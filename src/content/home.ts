@@ -12,9 +12,28 @@ export interface TrustBlock {
   body: string;
 }
 
+/**
+ * Las cinco PREOCUPACIONES en las que se agrupan las nueve preguntas del sitio.
+ *
+ * Existe porque `/preguntas` las presenta agrupadas, y la pertenencia tenía que
+ * viajar CON la pregunta y no en una lista aparte. Con cinco listas de textos
+ * dentro de la página, reescribir una pregunta acá la sacaría de su grupo **sin
+ * que nada fallara**: es el mismo fallo silencioso del `id` fijo de `Faq.astro`.
+ *
+ * Unión cerrada a propósito: una preocupación mal escrita rompe el build, igual
+ * que un `category` fuera de la lista.
+ *
+ * El LADO —persona o empresa— no se declara: sale de qué archivo viene la
+ * pregunta, `home.ts` o `business.ts`. Duplicarlo en un campo sería un dato que
+ * puede contradecir a su propio origen.
+ */
+export type Concern = 'recibo' | 'precio' | 'alcance' | 'requisitos' | 'atencion';
+
 export interface FaqItem {
   q: string;
   a: string;
+  /** En qué preocupación entra. La agrupa `/preguntas`; acá no se usa. */
+  concern: Concern;
 }
 
 /**
@@ -68,22 +87,27 @@ export const trust: TrustBlock[] = [
 export const faq: FaqItem[] = [
   {
     q: '¿Por qué es más rápido que un banco?',
+    concern: 'recibo',
     a: 'Porque el dólar digital se transfiere en minutos y a cualquier hora, sin pasar por la cadena de bancos corresponsales. Lo que sí depende de tu banco es el momento en que tu transferencia en pesos nos llega. Y si después conviertes ese dólar digital a moneda local en otro país, ese último paso es un proceso aparte.',
   },
   {
     q: '¿DLPay deposita el dinero en una cuenta bancaria en el extranjero?',
+    concern: 'alcance',
     a: 'No. Lo que hacemos es el cambio de divisas: recibes dólar digital en tu billetera. Desde ahí puedes mantenerlo, enviarlo a otra persona o convertirlo a moneda local en destino, que es un servicio distinto y lo resuelves tú. Preferimos ser exactos en esto.',
   },
   {
     q: '¿El precio de la web es el precio final?',
+    concern: 'precio',
     a: 'No. Es un precio referencial de mercado. Tu ejecutivo te confirma el precio final al momento de cerrar, porque el mercado se mueve. Preferimos decírtelo antes que después.',
   },
   {
     q: '¿Qué es el "dólar digital" que recibo?',
+    concern: 'recibo',
     a: 'Es una stablecoin, USDT: una moneda digital diseñada para mantener una equivalencia 1:1 con el dólar y que puede transferirse por distintas redes. Es lo que permite que el movimiento no dependa de horarios bancarios. No necesitas saber de esto para operar; tu ejecutivo te guía.',
   },
   {
     q: '¿Necesito registrarme?',
+    concern: 'requisitos',
     a: 'Sí. Pedimos registro y verificación de identidad antes de la primera operación, a personas y a empresas. Es un requisito de seguridad y cumplimiento, no un trámite opcional.',
   },
 ];

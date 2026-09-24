@@ -1,47 +1,117 @@
 ---
 /**
- * /preguntas — las nueve preguntas del sitio reunidas, más el glosario.
+ * /preguntas — las nueve preguntas del sitio, agrupadas, y el glosario.
  *
- * ── Por qué existe, si las preguntas ya están publicadas ───────────────────
+ * ── Por qué no usa `Faq.astro`, si publica las mismas preguntas ────────────
  *
- * Porque están REPARTIDAS: cinco al final de la Home y cuatro al final de
- * `/empresas`, y las dos son páginas largas. Quien llega con una duda concreta
- * —«¿el precio es final?»— no tiene dónde ir. Las preguntas se quedan donde
- * están, que es donde resuelven una objeción en su contexto; esta página es la
- * puerta para quien viene con la pregunta ya formada.
+ * Porque a esta página se llega **para** las respuestas, y a un acordeón se
+ * llega ojeando. En la Home y en `/empresas` el bloque de preguntas es
+ * secundario —está al final de una página que argumenta otra cosa— y ahí un
+ * `<details>` es lo correcto: comprime lo que la mayoría no va a abrir. Acá la
+ * respuesta es el contenido, así que va **abierta**.
  *
- * ── Cero duplicación de texto, y es la condición de la página ──────────────
+ * `Faq.astro` se queda como está y esas dos páginas lo siguen usando. **No se
+ * unifican**: son dos presentaciones de un mismo dato, que es justamente lo que
+ * el dato tipado permite.
  *
- * Las nueve preguntas se IMPORTAN de `content/home.ts` y `content/business.ts`.
- * No se copian. El día que cambie una respuesta cambia en los dos sitios a la
- * vez, que es lo mismo que `content/scope.ts` garantiza para el alcance del
- * servicio. Los TÍTULOS también son los de las páginas de origen, no unos
- * nuevos: si acá dijera «Preguntas frecuentes» habría dos nombres para el mismo
- * bloque.
+ * ── De dónde sale cada cosa ────────────────────────────────────────────────
  *
- * Lo único nuevo de esta página es el glosario, y también es dato:
- * `content/glossary.ts`.
+ * · Las nueve preguntas y respuestas: `home.ts` y `business.ts`. Ni una palabra
+ *   escrita acá.
+ * · **Qué pregunta va en qué grupo: del campo `concern` de cada pregunta**, no
+ *   de una lista en esta página. Con cinco listas de textos, reescribir una
+ *   pregunta en `home.ts` la sacaría de su grupo sin que nada fallara — el
+ *   mismo fallo silencioso que tenía el `id` de `Faq.astro`.
+ * · **De qué lado es cada pregunta: de qué archivo viene.** No hay campo que lo
+ *   diga, porque un campo así podría contradecir a su propio origen.
+ * · Los ocho términos: `glossary.ts`.
  *
- * ── Los dos bloques alternan fondo ─────────────────────────────────────────
+ * Lo único escrito acá son los cinco títulos de preocupación, la frase que
+ * explica la agrupación y el cierre. Son de esta página y de ninguna otra.
  *
- * `Faq.astro` trae `padding: var(--s-9) 0`, así que dos seguidos sobre el mismo
- * fondo dejan 192px entre el último desplegable de uno y el título del otro y se
- * leen como un solo bloque mal espaciado. La prop `surface` alterna a `papel-2`,
- * que es el ritmo que el sitio ya usa entre secciones.
+ * ── El índice, sin JavaScript ──────────────────────────────────────────────
+ *
+ * Seis anclas y `position: sticky`. **Sin estado activo**: marcar en qué
+ * sección va el lector necesita un observador, y no vale lo que cuesta en una
+ * página de seis destinos que caben en pantalla.
  */
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
 import Motion from '../components/Motion.astro';
-import Faq from '../components/Faq.astro';
-import { faq as faqPersonas } from '../content/home.ts';
+import { faq as faqPersonas, type Concern, type FaqItem } from '../content/home.ts';
 import { faq as faqEmpresas } from '../content/business.ts';
 import { glossary } from '../content/glossary.ts';
+import { contact } from '../lib/config/site.ts';
+
+/*
+  El orden de los grupos y sus títulos. El `id` se DERIVA del título con el
+  mismo criterio que `Faq.astro`: escribirlo a mano es una ocasión más de que un
+  ancla apunte a donde no hay nada, y **un ancla rota no falla, sólo no hace
+  nada**.
+*/
+const grupos: readonly { concern: Concern; title: string }[] = [
+  { concern: 'recibo', title: 'Qué recibo, y cuándo' },
+  { concern: 'precio', title: 'Cuánto cuesta' },
+  { concern: 'alcance', title: 'Hasta dónde llegamos' },
+  { concern: 'requisitos', title: 'Qué te pedimos' },
+  { concern: 'atencion', title: 'Quién te atiende' },
+];
+
+const slug = (t: string): string =>
+  t
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+/*
+  Cada pregunta se etiqueta con su lado al salir de su archivo, y a partir de
+  ahí las dos fuentes son una sola lista. Así el grupo no tiene que saber de
+  dónde vino nada.
+*/
+type Pregunta = FaqItem & { lado: 'persona' | 'empresa' };
+const todas: readonly Pregunta[] = [
+  ...faqPersonas.map((f): Pregunta => ({ ...f, lado: 'persona' })),
+  ...faqEmpresas.map((f): Pregunta => ({ ...f, lado: 'empresa' })),
+];
+
+const secciones = grupos.map((g) => {
+  const preguntas = todas.filter((p) => p.concern === g.concern);
+  const lados = new Set(preguntas.map((p) => p.lado));
+  return {
+    ...g,
+    id: slug(g.title),
+    preguntas,
+    /* Con un solo lado la cabecera ya dice quién pregunta y el rótulo por
+       pregunta sobra A LA VISTA. Se oculta con la utilidad `.sr-only`, que lo
+       deja para el lector de pantalla. */
+    unLado: lados.size === 1,
+    quienes: lados.size === 1 ? [...lados][0] : 'persona y empresa',
+  };
+});
+
+/*
+  Comprobación en tiempo de build: ninguna pregunta puede quedarse fuera de un
+  grupo. Con `concern` tipado esto no debería ocurrir nunca, pero el día que se
+  añada una preocupación al tipo y se olvide añadir su grupo acá, el build lo
+  dice en vez de publicar una pregunta invisible.
+*/
+const colocadas = secciones.reduce((n, s) => n + s.preguntas.length, 0);
+if (colocadas !== todas.length) {
+  throw new Error(
+    `/preguntas: ${todas.length - colocadas} pregunta(s) sin grupo. ` +
+      `Revisa que cada valor de \`Concern\` tenga su entrada en \`grupos\`.`
+  );
+}
+
+const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.');
 ---
 <Base
   title="Preguntas"
-  description="Las preguntas que nos hacen antes de operar, reunidas, y el glosario de las palabras que usamos: dólar digital, spread, precio referencial, billetera."
+  description="Las preguntas que nos hacen antes de operar, agrupadas por preocupación, y el glosario de las palabras que usamos: dólar digital, spread, precio referencial, billetera."
   path="/preguntas/"
 >
   <Motion />
@@ -53,33 +123,84 @@ import { glossary } from '../content/glossary.ts';
       sequence
     />
 
-    <Faq items={faqPersonas} title="Antes de tu primera operación" />
-    <Faq items={faqEmpresas} title="Preguntas de una empresa" surface="papel-2" />
-
-    <section class="glosario" aria-labelledby="glosario-title">
+    <div class="cuerpo">
       <div class="inner">
-        <h2 id="glosario-title" data-enter>Las palabras</h2>
+        <div class="cols">
+          {/* Seis anclas, cero JavaScript. En móvil se queda arriba, estático:
+              con la página larga, ver las cinco preocupaciones antes de bajar
+              es la mitad de lo que aporta el índice. */}
+          <nav class="indice" aria-label="Secciones de esta página">
+            <p class="ind-t">En esta página</p>
+            <ul role="list">
+              {secciones.map((s, i) => (
+                <li>
+                  <a href={`#${s.id}`}>
+                    <span class="n">{String(i + 1).padStart(2, '0')}</span>
+                    {s.title}
+                  </a>
+                </li>
+              ))}
+              <li class="sep">
+                <a href="#las-palabras"><span class="n">—</span>Las palabras</a>
+              </li>
+            </ul>
+          </nav>
+
+          <div class="grupos">
+            <p class="tesis">
+              Las mismas cinco preocupaciones aparecen de los dos lados.
+              <strong>Tres son idénticas para una persona y para una empresa</strong> y sólo cambian
+              de palabras; las otras dos las hace un lado solo.
+            </p>
+
+            {secciones.map((s, i) => (
+              <section class="grupo" id={s.id} aria-labelledby={`${s.id}-t`}>
+                <header class="g-cab" data-enter>
+                  <span class="n num">{String(i + 1).padStart(2, '0')}</span>
+                  <h2 id={`${s.id}-t`}>{s.title}</h2>
+                  <span class="quienes">{s.quienes}</span>
+                </header>
+                <div class="qs">
+                  {s.preguntas.map((p) => (
+                    <div class:list={['qa', { solo: s.unLado }]}>
+                      <p class:list={['quien', { 'sr-only': s.unLado }]}>{p.lado}</p>
+                      <div>
+                        <h3>{p.q}</h3>
+                        <p class="r">{p.a}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="palabras" id="las-palabras" aria-labelledby="palabras-t">
+      <div class="inner">
+        <h2 id="palabras-t" data-enter>Las palabras</h2>
         <p class="bajada">
           Ocho términos que usamos en todo el sitio. Cinco están definidos con las mismas palabras
           que ya usamos en otra página; tres son nuevos.
         </p>
-        {/*
-          `<dl>`, `<dt>` y `<dd>` de verdad, no una retícula de `<div>`: un lector
-          de pantalla anuncia «lista de descripción, 8 elementos» y permite saltar
-          de término en término. Los `<div class="fila">` intermedios son válidos
-          dentro de un `<dl>` desde HTML5 y sirven para agrupar cada par.
-
-          Sin acordeón a propósito: las preguntas de arriba ya lo son, y un
-          glosario se lee barriendo, no abriendo.
-        */}
+        {/* `<dl>`, `<dt>` y `<dd>` de verdad: un lector de pantalla anuncia
+            «lista de descripción, 8 elementos» y permite saltar de término en
+            término, cosa que una retícula de `<div>` no da. */}
         <dl>
           {glossary.map((t) => (
-            <div class="fila">
+            <div class="term">
               <dt>{t.term}</dt>
               <dd>
                 {t.definition}
-                {t.href && t.linkLabel && (
-                  <a class="ver" href={t.href}>→ {t.linkLabel}</a>
+                {t.href && t.linkLabel ? (
+                  <a class="dest" href={t.href}>→ {t.linkLabel}</a>
+                ) : (
+                  /* La ausencia se VE. `glossary.ts` lo dice en su cabecera: el
+                     sitio no explica «red» en ninguna parte, y que el hueco se
+                     note es parte de la información. */
+                  <span class="sin-dest">El sitio todavía no lo explica en ninguna parte</span>
                 )}
               </dd>
             </div>
@@ -88,13 +209,17 @@ import { glossary } from '../content/glossary.ts';
       </div>
     </section>
 
-    {/* La misma banda y el mismo copy que cierran `/como-funciona`: es la misma
-        invitación, y reescribirla daría dos versiones de una sola frase. */}
+    {/*
+      El cierre invita a PREGUNTAR y no a cotizar: en una página de dudas, la
+      acción que sigue es escribir. Y el enlace lleva mensaje prellenado, así
+      que **no engrosa la lista de D22** —los cinco enlaces planos que abren el
+      chat en blanco—: nace resuelto.
+    */}
     <section class="close on-tinta-surface" aria-labelledby="close-title">
       <div class="inner">
-        <h2 id="close-title" data-enter>¿Listo para ver tu precio?</h2>
-        <p>Toma menos de un minuto y no necesitas cuenta para cotizar.</p>
-        <a class="cta" href="/#cotizador">Cotizar ahora</a>
+        <h2 id="close-title" data-enter>¿Te quedó una duda que no está acá?</h2>
+        <p>Escríbenos y te responde una persona del equipo. No hace falta cuenta para preguntar.</p>
+        <a class="cta" href={wa} target="_blank" rel="noopener">Escribir por WhatsApp</a>
       </div>
     </section>
   </main>
@@ -102,38 +227,123 @@ import { glossary } from '../content/glossary.ts';
 </Base>
 
 <style>
-  .glosario { background: var(--papel); padding: var(--s-9) 0; }
-  .inner { max-width: 760px; margin: 0 auto; padding: 0 var(--pad-section-m); }
+  .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
+  .cuerpo { background: var(--papel); padding: var(--s-9) 0; }
 
-  h2 {
+  /* Móvil: el índice arriba, estático, como lista de saltos. */
+  .cols { display: grid; gap: var(--s-7); }
+
+  .indice { border-top: 1px solid var(--line); padding-top: var(--s-4); }
+  .ind-t {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+    margin-bottom: var(--s-3);
+  }
+  .indice ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-2); }
+  .indice a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+    min-height: 44px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: var(--t-body-sm);
+  }
+  .indice a:hover { color: var(--verde-deep); }
+  .indice .n { font-family: var(--f-num); font-size: var(--t-dato-sm); color: var(--ink-mute); }
+  .indice .sep { border-top: 1px solid var(--line); padding-top: var(--s-2); }
+
+  .tesis { color: var(--ink-mute); max-width: 47ch; margin-bottom: var(--s-8); }
+  .tesis strong { color: var(--ink); font-weight: 600; }
+
+  /* `scroll-margin-top` para que el ancla no deje el título pegado al borde ni
+     debajo de la cabecera. */
+  .grupo { scroll-margin-top: var(--s-7); }
+  .grupo + .grupo { margin-top: var(--s-9); }
+
+  .g-cab {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+    flex-wrap: wrap;
+    padding-bottom: var(--s-4);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: var(--s-6);
+  }
+  .g-cab .n { font-family: var(--f-num); font-size: var(--t-dato-sm); color: var(--verde-deep); }
+  .g-cab h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin: 0;
+  }
+  .quienes {
+    margin-left: auto;
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+  }
+
+  .qs { display: grid; gap: var(--s-6); }
+  /*
+    Dos columnas: el rótulo de lado y la pregunta con su respuesta.
+
+    **Cuando el rótulo se oculta, la rejilla pasa a UNA columna.** Con
+    `.sr-only` el rótulo sale del flujo, y si la rejilla siguiera reservándole
+    su columna el contenido se metería en lo que queda: medido en la maqueta,
+    la página crecía de 4.023 a 5.451px. No se ve leyendo el CSS, se ve en el
+    alto.
+  */
+  .qa { display: grid; grid-template-columns: 96px 1fr; gap: var(--s-4); align-items: baseline; }
+  .qa.solo { grid-template-columns: 1fr; }
+  .quien {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .qa h3 {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    margin-bottom: var(--s-2);
+  }
+  .qa .r { color: var(--ink-mute); max-width: 47ch; }
+
+  /* ── El glosario, a pliego ─────────────────────────────────────────────── */
+  .palabras { background: var(--papel-2); padding: var(--s-9) 0; scroll-margin-top: var(--s-7); }
+  .palabras h2 {
     font-size: var(--t-h2-m);
     font-weight: 700;
     line-height: var(--lh-h2);
     letter-spacing: var(--ls-h2);
     margin-bottom: var(--s-3);
   }
-  /* Intro de sección: medida única de 46ch (Design System §3). */
-  .bajada { color: var(--ink-mute); max-width: 46ch; margin-bottom: var(--s-6); }
-
+  .bajada { color: var(--ink-mute); max-width: 46ch; margin-bottom: var(--s-7); }
   dl { margin: 0; border-top: 1px solid var(--line); }
-  .fila { border-bottom: 1px solid var(--line); padding: var(--s-5) 0; }
+  .term { border-bottom: 1px solid var(--line); padding: var(--s-5) 0; }
   dt { font-size: var(--t-h3-m); font-weight: 700; margin-bottom: var(--s-2); }
-  /*
-    47ch y no 66ch. `1ch` es el ancho del glifo cero, no un carácter: en Familjen
-    Grotesk el factor es 1,37, así que 66ch da noventa caracteres por línea y no
-    sesenta y seis. El tope de 65 caracteres del Design System §3 se escribe
-    `max-width: 47ch`, que es lo que usan las otras 18 medidas del sitio.
-  */
   dd { margin: 0; color: var(--ink-mute); max-width: 47ch; }
-
-  /* El enlace nombra el destino. `nowrap` para que la flecha no quede sola al
-     final de una línea. */
-  .ver {
+  .dest {
     font-family: var(--f-num);
     font-size: var(--t-dato-sm);
     color: var(--verde-deep);
     white-space: nowrap;
     margin-left: var(--s-2);
+  }
+  /* La ausencia, dicha. Va en el gris del texto secundario y no en verde:
+     no es un destino, es la falta de uno. */
+  .sin-dest {
+    display: block;
+    margin-top: var(--s-2);
+    padding-left: var(--s-3);
+    border-left: 1px solid var(--line);
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
   }
 
   .close { background: var(--tinta); padding: var(--s-8) 0; }
@@ -154,11 +364,17 @@ import { glossary } from '../content/glossary.ts';
   .cta:hover { background: var(--verde-hi); }
 
   @media (min-width: 900px) {
-    h2 { font-size: var(--t-h2); }
+    .inner { padding-inline: var(--pad-section); }
+    /* El índice se pega al margen mientras se baja. */
+    .cols { grid-template-columns: 232px 1fr; gap: var(--s-9); align-items: start; }
+    .indice { position: sticky; top: var(--s-6); border-top: 0; padding-top: 0; }
+    .grupo { scroll-margin-top: var(--s-8); }
+    .palabras { scroll-margin-top: var(--s-8); }
+    .g-cab h2 { font-size: var(--t-h2); }
     dt { font-size: var(--t-h3); }
-    /* El término en su propia columna: el ojo baja por los ocho términos sin
-       atravesar las definiciones. */
-    .fila { display: grid; grid-template-columns: 200px 1fr; gap: var(--s-6); align-items: baseline; }
+    /* El término en su columna: el ojo baja por los ocho sin atravesar las
+       definiciones. */
+    .term { display: grid; grid-template-columns: 200px 1fr; gap: var(--s-6); align-items: baseline; }
     dt { margin-bottom: 0; }
   }
 </style>

@@ -316,6 +316,16 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     que 1 antes, **1** después de una pasada con 70 ms entre pasos. Por eso el recuento no es un
     adorno de la regla: es lo único que distingue «la página está rota» de «la capturé mal».
 
+33. **Derivar no es medir, aunque la derivación acierte.** Reporté el punteado de `/precio` como
+    «2 y 6 px medidos en pantalla»: eran los valores declarados, y les apliqué una suposición —que
+    `non-scaling-stroke` congela también el patrón de guiones—. El agente corrigió que en un lienzo
+    estirado ×1,5467 saldrían 3,09 y 9,28: eso era el atributo **multiplicado por la escala**.
+    **Contando píxeles de la captura a DPR 4, el periodo real es 8,00 —exactamente 2+6—**, así que
+    el patrón no se estira y mi suposición era cierta; la suya, no. Da igual: **las dos eran
+    derivaciones y las dos iban firmadas como medición.** La regla no es «no leas el atributo», que
+    es la mitad: es que **lo único que mide es contar el resultado**. Y el que acertó por suposición
+    no acertó mejor, acertó con más suerte.
+
 31. **Citar una frase publicada obliga a leer su envoltorio.** Construí una banda entera sobre una
     frase de `/tarifas` —«no cambia después de que lo aceptas»— y escribí «no estrena claim» porque
     estaba publicada. La busqué con `grep`, saqué la línea y no leí las dos de arriba: la frase vive
@@ -396,7 +406,10 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
-| 2026-09-24 | [`2026-09-24-vocabulario-62`](2026-09-24-vocabulario-62/nota-agente.md) — revisión de las nueve marcas del §6.2 juntas, contra su uso real | **Registrada** | Tres hallazgos: la tabla no distingue las dos líneas verdes aunque el cuerpo sí, la sección se contradice sobre cuántos punteados hay, y **la única marca punteada está dibujada con 43 % de ciclo en una pieza y 25 % en la otra** — la segunda es mía. La cuña, en cambio, tiene una sola ortografía en todo el sitio |
+| 2026-09-24 | [`2026-09-24-preguntas-v2`](2026-09-24-preguntas-v2/ficha.md) — `/preguntas` rehecha con **las mismas nueve preguntas**: agrupadas por preocupación en vez de por público, respuestas abiertas, índice pegajoso sin JS y el glosario como pliego | **En revisión** | Sebastián dijo que la primera versión era copiar y pegar, y tenía razón. La estructura sale del contenido: tres de las cinco preocupaciones emparejan una pregunta de persona con una de empresa, una a una |
+| 2026-09-24 | [`2026-09-24-comparacion-estructural`](2026-09-24-comparacion-estructural/nota.md) — la comparación de dos recorridos, propuesta 3 de las oportunidades | **Descartada con motivo** | Dos paredes: el §1 prohíbe **sugerir** que somos otra vía al mismo destino, y dibujar dos recorridos en paralelo lo sugiere por su forma; y la versión honesta —que los destinos son distintos— ya la dibuja `EjeDeAlcance`, que es «la regla dura del §1 dibujada». La propuse yo con el aviso ya escrito y sin comprobarlo |
+| 2026-09-24 | [`2026-09-24-preguntas-v2`](2026-09-24-preguntas-v2/ficha.md) — `/preguntas` agrupada en cinco preocupaciones, con índice y respuestas abiertas | **Integrada** | La estructura y la decisión de ingeniería, tal cual. El enlace del cierre nace con mensaje prellenado para no engrosar D22 |
+| 2026-09-24 | [`2026-09-24-vocabulario-62`](2026-09-24-vocabulario-62/nota-agente.md) — revisión de las nueve marcas del §6.2 juntas, contra su uso real · **con adenda** | **Integrada** (`9af0997`) | Tres hallazgos: la tabla no distingue las dos líneas verdes aunque el cuerpo sí, la sección se contradice sobre cuántos punteados hay, y **la única marca punteada está dibujada con 43 % de ciclo en una pieza y 25 % en la otra** — la segunda es mía. La cuña, en cambio, tiene una sola ortografía en todo el sitio |
 | 2026-09-24 | [`2026-09-24-vocabulario-62`](2026-09-24-vocabulario-62/nota-agente.md) — relectura del §6.2 con las nueve marcas juntas | **Integrada con cambios** | Los tres hallazgos son ciertos. Las cifras del tercero no, y el remedio que proponía no habría igualado las dos figuras |
 | 2026-09-24 | [`2026-09-24-indice-del-blog`](2026-09-24-indice-del-blog/ficha.md) — la portada de cada artículo, como marca del índice | **Integrada con cambios** | La estructura tal cual. El pictograma sale del componente y no se copia, el verde no se vuelve gris, y el rango toma la precisión del par |
 | 2026-09-24 | [`2026-09-24-precio-que-aceptas`](2026-09-24-precio-que-aceptas/ficha.md) — banda sobre tinta en `/precio`: el mercado se mueve, aceptas, y desde ahí tu precio es una recta mientras el gris sigue. **v2 · estrena la sexta familia del §6.2 y una enmienda de movimiento** | **Integrada** (`3dfded3`) | El dibujo y la geometría, literales. Todas mis cifras reproducen. Dos cosas mías corregidas por el agente: la frase que dibujo vive dentro de un `PendingNotice` y yo no leí el envoltorio (**regla 31**), y mi clase `.rot` pisaba una que `/precio` ya tenía (**regla 32**). Él generalizó la marca punteada del §6.2 de «frontera» a «un límite: cruzarlo cambia algo», que es mejor que abrir una fila nueva |
@@ -1723,3 +1736,62 @@ misma revisión lo demuestra: de las tres cosas encontradas, **dos las introduje
 recuento obsoleto y el punteado dibujado distinto— y ninguna se veía escribiendo la fila nueva, sólo
 mirando las nueve juntas. No va al Design System porque es de método y no de dibujo, pero queda
 dicho acá, que es donde vive el método.
+
+### Notas de la integración de `2026-09-24-preguntas-v2`
+
+`md5` el declarado. **El diagnóstico era de Sebastián y era justo**: la primera versión importaba
+bien el contenido y no diseñaba nada encima. 2.982 px sin un ancla y dos acordeones cerrados en una
+página a la que se llega *para* las respuestas.
+
+#### La decisión de ingeniería, tal cual la propone
+
+`concern` en cada ítem de `faq`, en `home.ts` y en `business.ts`, como unión cerrada de cinco
+valores. **El argumento es el correcto y es el de `Faq.astro` otra vez**: con cinco listas de textos
+dentro de la página, reescribir una pregunta la sacaría de su grupo **sin que nada fallara**. Con el
+campo tipado, una preocupación mal escrita rompe el build.
+
+Y el lado —persona o empresa— **no se declara**: sale de qué archivo viene. Tiene razón en que
+duplicarlo sería un dato que puede contradecir a su propio origen.
+
+Se añadió una guarda que la ficha no pedía: si alguna pregunta quedara fuera de todos los grupos, el
+build **falla con un mensaje**. Hoy no puede pasar porque el tipo lo impide, pero el día que se
+añada un valor a `Concern` y se olvide su grupo, la alternativa sería publicar una pregunta
+invisible.
+
+#### Las dos trampas del §4, comprobadas
+
+**a) La rejilla que se cae.** Comprobado sobre el build: los grupos de un solo lado pasan a **una
+columna** (`656px`) y los de dos mantienen `96px 544px`. La página mide **4.483 px de `main`** a
+1280, de los que 2.299 son las cinco secciones. Sin la corrección, el rótulo oculto habría dejado el
+contenido en la columna de 96. El aviso valió.
+
+**b) Las capturas enormes.** Cierto, y por eso todo lo de arriba está medido con
+`getBoundingClientRect()` y no mirado.
+
+#### Lo que se comprobó del §7
+
+| | pedido | medido |
+|---|---|---|
+| Las nueve preguntas, cada una en su grupo | 9 | **9** · 2+2+2+2+1 |
+| `<details>` en la página | 0 | **0** — el único del HTML es el menú móvil de la cabecera |
+| Respuestas visibles sin clic | 9 | **9** |
+| Anclas del índice · rotas | 6 · 0 | **6 · 0** |
+| `<dl>` / `<dt>` / `<dd>` | 1 / 8 / 8 | **1 / 8 / 8** |
+| Scroll horizontal a 320, 390, 1280 | no | **no** |
+| La Home y `/empresas` con su acordeón | intactas | **6 y 5 `<details>`**, sin cambios |
+
+El índice es `sticky` en escritorio y `static` arriba en móvil, con **44 px** de objetivo táctil en
+sus seis enlaces, que es el piso del Design System §10.
+
+#### Lo que firma Compliance, y cómo se resolvió
+
+**Los cinco títulos entran.** Son rótulos de navegación sobre respuestas ya aprobadas: «Qué recibo,
+y cuándo», «Cuánto cuesta», «Hasta dónde llegamos», «Qué te pedimos», «Quién te atiende». Ninguno
+afirma nada del servicio; ordenan el discurso, que es lo que la ficha dice. Quedan anotados por si
+Sebastián quiere otros.
+
+**El cierre cambia a WhatsApp, y nace resuelto.** La ficha tiene razón en el fondo —en una página de
+dudas la acción que sigue es preguntar, no cotizar— y pregunta si es decisión de producto. Lo es en
+parte, y por eso **el enlace lleva mensaje prellenado**: «Hola, tengo una duda que no encontré en la
+web». Así no se suma a los cinco enlaces planos de **D22**, que abren el chat en blanco. Un enlace
+nuevo que nace con el problema ya resuelto es mejor que uno que engrosa la lista.

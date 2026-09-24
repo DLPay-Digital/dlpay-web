@@ -6,6 +6,7 @@
  * hasta tener el dato verificable y la autorización (phase-2.5 §5, D10).
  */
 import type { ChecklistItem } from './process.ts';
+import type { FaqItem } from './home.ts';
 
 /** Emblema geométrico que acompaña a cada caso. Ver BusinessEmblem.astro. */
 export type EmblemKind = 'proveedores' | 'tesoreria' | 'recurrentes' | 'divisas';
@@ -110,21 +111,25 @@ export const checklist: readonly ChecklistItem[] = [
 export const volumeTerms =
   'Las condiciones se conversan según volumen y frecuencia: no publicamos una tabla por tramos. La operación pesa donde el spread de un banco pesa de verdad y una app retail no alcanza.';
 
-export const faq: readonly { q: string; a: string }[] = [
+export const faq: readonly FaqItem[] = [
   {
     q: '¿Quién atiende mi cuenta?',
+    concern: 'atencion',
     a: 'Un ejecutivo asignado, el mismo cada vez. Conoce a dónde paga tu empresa, con qué frecuencia y en qué montos, así que no tienes que volver a explicar la operación cada mes.',
   },
   {
     q: '¿Qué documentos necesito?',
+    concern: 'requisitos',
     a: 'Los documentos de la sociedad y de quienes la representan legalmente. Además, la cuenta desde la que transfieres tiene que estar a nombre de la empresa: recibimos transferencias sólo desde cuentas del titular de la operación, nunca de terceros.',
   },
   {
     q: '¿Qué pasa si mi proveedor sólo recibe por banco?',
+    concern: 'alcance',
     a: 'Conversémoslo antes. Nosotros entregamos dólar digital en la billetera que nos indiques y no depositamos dinero en cuentas bancarias en el extranjero. Si tu proveedor sólo opera con su banco, esa última conversión es un proceso distinto que DLPay no realiza.',
   },
   {
     q: '¿Desde qué volumen conviene?',
+    concern: 'precio',
     a: volumeTerms,
   },
 ];

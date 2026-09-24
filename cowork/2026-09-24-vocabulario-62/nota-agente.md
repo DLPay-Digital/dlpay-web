@@ -115,3 +115,58 @@ solas. La regla que yo sacaría de esta revisión, y que no escribo en el DS por
 **una marca nueva obliga a releer la tabla entera, no sólo a añadir una fila.**
 
 Nada de esto está integrado. `cowork/` es sólo visualización.
+
+
+---
+
+# Adenda del 2026-09-24 — fui a contar los píxeles
+
+Tu corrección decía que mi «2 y 6 px» eran los valores declarados y que en pantalla salían 3,09 y
+9,28, porque el lienzo va estirado ×1,5467. **Fui a comprobarlo contando píxeles de la captura**, a
+DPR 4, no leyendo ningún atributo ni multiplicando por ninguna escala:
+
+| | declarado | **contado en la captura** |
+|---|---|---|
+| `/precio`, dentro del SVG estirado | `2 6` | guion **2,25** · hueco **5,75** · **periodo 8,00** |
+| Home · `UseCaseFigure .edge`, sin estirar | `3 4` | guion **4,00** · hueco **3,00** · **periodo 7,00** |
+
+**El periodo del de `/precio` es 8,00, que es exactamente 2+6.** El punteado **no se estira**:
+`vector-effect: non-scaling-stroke` mantiene también el patrón de guiones, no sólo el grosor. Los
+2,25 y 5,75 son el desborde del antialiasing en las puntas, que engorda el guion y adelgaza el hueco
+en la misma cantidad y deja el periodo intacto.
+
+**Y lo comprobé en el caso que decide:** puse `3 4` a 1,25 **dentro del mismo SVG estirado** y lo
+conté a dos anchos, con escalas verticales muy distintas:
+
+| ancho | escala del lienzo | periodo contado |
+|---|---|---|
+| 1280 | ×1,5467 | **7,00** |
+| 390 | ×1,12 | **7,00** |
+
+Siete exacto en los dos, no los 7,16 y 10,83 que saldrían de multiplicar. **Así que mi remedio sí
+habría funcionado**, y el motivo por el que lo descartaste no se sostiene.
+
+## Lo que esto sí deja, que es lo importante
+
+**Ninguno de los dos midió.** Yo leí el atributo y le apliqué una suposición —que
+`non-scaling-stroke` congela el guion—; tú leíste el atributo y lo multiplicaste por la escala. La
+suposición mía resultó cierta y la tuya no, pero **las dos eran derivaciones**, y escribimos «medido
+en pantalla» encima de las dos. Yo primero.
+
+**Tu regla es la correcta y ninguno de los dos la cumplió al escribir las cifras que la justifican.**
+Así que la afino, no la contradigo: *no basta con no leer el atributo — multiplicar el atributo por
+la escala tampoco es medir.* **Lo único que mide es contar el resultado.**
+
+## Y tu arreglo sigue siendo mejor que el mío, por algo que yo no vi
+
+Sacar la frontera a HTML es más robusto que copiar valores dentro del SVG, y sobre todo **arregla un
+defecto que yo no había detectado**: la vertical estaba **0,63 px desalineada del punto**, porque su
+borde caía en el 36 % en vez de su centro. Mi remedio habría igualado el punteado y habría dejado
+esa desviación intacta. Comprobado que ya está en `src/`: `<span class="frontera">`, con el motivo
+escrito al lado y el mismo argumento que el punto.
+
+**Un detalle menor que queda:** `precio.astro` conserva `.frontera { fill: none; vector-effect:
+non-scaling-stroke; }`, que eran reglas de SVG y sobre un `<span>` no hacen nada. CSS muerto, sin
+consecuencia.
+
+**Estado:** cerrado. No cambia nada de lo integrado; cambia lo que la regla dice.

@@ -1,0 +1,119 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Preguntas</title>
+<style>
+@font-face{font-family:'Familjen Grotesk';src:url(/fonts/familjen-grotesk-latin.woff2) format('woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Spline Sans Mono';src:url(/fonts/spline-sans-mono-latin.woff2) format('woff2');font-weight:100 900;font-display:swap}
+:root{--verde:#16C784;--verde-deep:#0A7250;--tinta:#0B1320;--tinta-2:#101A2B;--papel:#F6F5F1;--papel-2:#ECEAE3;
+--ink:#131A26;--ink-mute:#5A6472;--line:rgba(11,19,32,.14);--on-tinta:#EDF2EF;--on-tinta-mute:#9DB0AA;
+--f-text:'Familjen Grotesk',system-ui,sans-serif;--f-num:'Spline Sans Mono',ui-monospace,monospace}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--papel);color:var(--ink);font-family:var(--f-text);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.inner{max-width:1120px;margin:0 auto;padding:0 24px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+
+.hero{background:var(--tinta);color:var(--on-tinta);padding:76px 0 80px}
+.hero h1{font-size:32px;line-height:1.08;letter-spacing:-.012em;margin:0 0 12px;max-width:18ch}
+.hero p{margin:0;color:var(--on-tinta-mute);max-width:52ch}
+.hero .cifras{display:flex;gap:34px;margin:34px 0 0;font-family:var(--f-num);font-size:12px;letter-spacing:.04em;color:var(--on-tinta-mute)}
+.hero .cifras b{display:block;color:var(--verde);font-size:23px;font-weight:500;letter-spacing:-.01em;margin-bottom:2px}
+
+.cuerpo{display:grid;grid-template-columns:232px 1fr;gap:64px;padding:0 0 84px}
+nav.indice{position:sticky;top:28px;align-self:start;padding-top:44px}
+nav.indice p{margin:0 0 14px;font-family:var(--f-num);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-mute)}
+nav.indice ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+nav.indice a{display:grid;grid-template-columns:26px 1fr;gap:8px;align-items:baseline;padding:7px 0;
+ text-decoration:none;color:var(--ink);font-size:14.5px;line-height:1.3;border-top:1px solid transparent}
+nav.indice a:hover{color:var(--verde-deep)}
+nav.indice .n{font-family:var(--f-num);font-size:11px;color:var(--ink-mute)}
+nav.indice .sep a{margin-top:10px;border-top:1px solid var(--line);padding-top:13px}
+
+.grupo{padding:44px 0 6px;border-top:1px solid var(--line);scroll-margin-top:24px}
+.grupo:first-child{border-top:0;padding-top:26px}
+.grupo header{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:baseline;margin-bottom:26px}
+.grupo header .n{font-size:13px;color:var(--verde-deep);letter-spacing:.04em;font-weight:500}
+.quienes{font-family:var(--f-num);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-mute);white-space:nowrap}
+.tesis{margin:0 0 6px;padding:40px 0 0;font-size:15px;color:var(--ink-mute);max-width:56ch}
+.tesis strong{color:var(--ink);font-weight:400}
+.grupo h2{margin:0;font-size:25px;line-height:1.15;letter-spacing:-.008em}
+.qs{display:grid;gap:30px}
+.qa{display:grid;grid-template-columns:96px 1fr;gap:20px;align-items:start;
+ padding-bottom:28px;border-bottom:1px solid var(--line)}
+.qa:last-child{border-bottom:0;padding-bottom:6px}
+.grupo.sola .quien{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.grupo.sola .qa{grid-template-columns:1fr}
+.quien{margin:4px 0 0;font-family:var(--f-num);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--verde-deep)}
+.qa h3{margin:0 0 9px;font-size:19px;line-height:1.28;letter-spacing:-.004em;max-width:36ch}
+.qa .r{margin:0;color:var(--ink-mute);font-size:15px;line-height:1.55;max-width:47ch}
+
+/* las palabras */
+.palabras{background:var(--papel-2);padding:72px 0 80px;margin-top:56px}
+.palabras .cab{margin-bottom:38px}
+.palabras h2{margin:0 0 8px;font-size:25px;letter-spacing:-.008em}
+.palabras .cab p{margin:0;color:var(--ink-mute);max-width:52ch;font-size:15px}
+dl.glos{margin:0;display:grid;gap:0}
+.term{display:grid;grid-template-columns:230px 1fr;gap:28px;padding:22px 0;border-top:1px solid var(--line)}
+.term:last-child{border-bottom:1px solid var(--line)}
+dl.glos dt{margin:0;font-size:18px;font-weight:700;line-height:1.25;letter-spacing:-.004em}
+dl.glos dd{margin:0;color:var(--ink-mute);font-size:15px;line-height:1.55;max-width:56ch}
+.dest{display:inline-block;margin-left:6px;font-family:var(--f-num);font-size:12.5px;color:var(--verde-deep);text-decoration:none;white-space:nowrap}
+.dest:hover{text-decoration:underline}
+.sin-dest{display:block;margin-top:7px;font-family:var(--f-num);font-size:11.5px;color:var(--ink-mute);
+ border-left:2px solid var(--line);padding-left:10px}
+
+.cierre{background:var(--tinta);color:var(--on-tinta);padding:64px 0 72px}
+.cierre h2{margin:0 0 8px;font-size:25px}
+.cierre p{margin:0 0 26px;color:var(--on-tinta-mute);max-width:46ch}
+.cierre a{display:inline-block;background:var(--verde);color:var(--tinta);text-decoration:none;
+ font-weight:700;padding:13px 22px;border-radius:7px}
+
+@media (max-width:900px){
+ .hero{padding:52px 0 56px}.hero h1{font-size:23px}
+ .cuerpo{grid-template-columns:1fr;gap:0;padding-bottom:56px}
+ nav.indice{position:static;padding:34px 0 8px;border-bottom:1px solid var(--line)}
+ nav.indice ul{grid-template-columns:1fr}
+ .grupo{padding:34px 0 4px}
+ .grupo header{grid-template-columns:34px 1fr;gap:8px;margin-bottom:18px}
+ .quienes{grid-column:2;margin-top:-2px}
+ .tesis{padding-top:26px}
+ .grupo h2{font-size:20px}
+ .qa{grid-template-columns:1fr;gap:6px;padding-bottom:22px}
+ .grupo.sola .qa{grid-template-columns:1fr}
+ .quien{margin:0 0 2px}
+ .qa h3{font-size:17px}
+ .term{grid-template-columns:1fr;gap:6px;padding:18px 0}
+ .palabras{padding:52px 0 58px;margin-top:36px}
+}
+</style></head><body>
+
+<section class="hero"><div class="inner">
+ <h1>Preguntas</h1>
+ <p>Lo que nos preguntan antes de operar, y las palabras que usamos para responder.</p>
+ <div class="cifras">
+  <span><b class="num">05</b>preocupaciones</span>
+  <span><b class="num">09</b>preguntas</span>
+  <span><b class="num">08</b>palabras</span>
+ </div>
+</div></section>
+
+<div class="inner"><div class="cuerpo">
+ <nav class="indice" aria-label="Índice de la página">
+  <p>En esta página</p>
+  <ul><li><a href="#que-recibo-y-cuando"><span class="n">01</span>Qué recibo, y cuándo</a></li><li><a href="#cuanto-cuesta"><span class="n">02</span>Cuánto cuesta</a></li><li><a href="#hasta-donde-llegamos"><span class="n">03</span>Hasta dónde llegamos</a></li><li><a href="#que-te-pedimos"><span class="n">04</span>Qué te pedimos</a></li><li><a href="#quien-te-atiende"><span class="n">05</span>Quién te atiende</a></li><li class="sep"><a href="#las-palabras"><span class="n">—</span>Las palabras</a></li></ul>
+ </nav>
+ <main><p class="tesis">Las mismas cinco preocupaciones aparecen de los dos lados. <strong>Tres son idénticas para una persona y para una empresa</strong> y sólo cambian de palabras; las otras dos las hace un lado solo.</p><section class="grupo sola" id="que-recibo-y-cuando"><header><span class="n num">01</span><h2>Qué recibo, y cuándo</h2><span class="quienes">persona</span></header><div class="qs"><div class="qa"><p class="quien">persona</p><div><h3>¿Por qué es más rápido que un banco?</h3><p class="r">Porque el dólar digital se transfiere en minutos y a cualquier hora, sin pasar por la cadena de bancos corresponsales. Lo que sí depende de tu banco es el momento en que tu transferencia en pesos nos llega. Y si después conviertes ese dólar digital a moneda local en otro país, ese último paso es un proceso aparte.</p></div></div><div class="qa"><p class="quien">persona</p><div><h3>¿Qué es el &quot;dólar digital&quot; que recibo?</h3><p class="r">Es una stablecoin, USDT: una moneda digital diseñada para mantener una equivalencia 1:1 con el dólar y que puede transferirse por distintas redes. Es lo que permite que el movimiento no dependa de horarios bancarios. No necesitas saber de esto para operar; tu ejecutivo te guía.</p></div></div></div></section><section class="grupo pareja" id="cuanto-cuesta"><header><span class="n num">02</span><h2>Cuánto cuesta</h2><span class="quienes">persona y empresa</span></header><div class="qs"><div class="qa"><p class="quien">persona</p><div><h3>¿El precio de la web es el precio final?</h3><p class="r">No. Es un precio referencial de mercado. Tu ejecutivo te confirma el precio final al momento de cerrar, porque el mercado se mueve. Preferimos decírtelo antes que después.</p></div></div><div class="qa"><p class="quien">empresa</p><div><h3>¿Desde qué volumen conviene?</h3><p class="r">Las condiciones se conversan según volumen y frecuencia: no publicamos una tabla por tramos. La operación pesa donde el spread de un banco pesa de verdad y una app retail no alcanza.</p></div></div></div></section><section class="grupo pareja" id="hasta-donde-llegamos"><header><span class="n num">03</span><h2>Hasta dónde llegamos</h2><span class="quienes">persona y empresa</span></header><div class="qs"><div class="qa"><p class="quien">persona</p><div><h3>¿DLPay deposita el dinero en una cuenta bancaria en el extranjero?</h3><p class="r">No. Lo que hacemos es el cambio de divisas: recibes dólar digital en tu billetera. Desde ahí puedes mantenerlo, enviarlo a otra persona o convertirlo a moneda local en destino, que es un servicio distinto y lo resuelves tú. Preferimos ser exactos en esto.</p></div></div><div class="qa"><p class="quien">empresa</p><div><h3>¿Qué pasa si mi proveedor sólo recibe por banco?</h3><p class="r">Conversémoslo antes. Nosotros entregamos dólar digital en la billetera que nos indiques y no depositamos dinero en cuentas bancarias en el extranjero. Si tu proveedor sólo opera con su banco, esa última conversión es un proceso distinto que DLPay no realiza.</p></div></div></div></section><section class="grupo pareja" id="que-te-pedimos"><header><span class="n num">04</span><h2>Qué te pedimos</h2><span class="quienes">persona y empresa</span></header><div class="qs"><div class="qa"><p class="quien">persona</p><div><h3>¿Necesito registrarme?</h3><p class="r">Sí. Pedimos registro y verificación de identidad antes de la primera operación, a personas y a empresas. Es un requisito de seguridad y cumplimiento, no un trámite opcional.</p></div></div><div class="qa"><p class="quien">empresa</p><div><h3>¿Qué documentos necesito?</h3><p class="r">Los documentos de la sociedad y de quienes la representan legalmente. Además, la cuenta desde la que transfieres tiene que estar a nombre de la empresa: recibimos transferencias sólo desde cuentas del titular de la operación, nunca de terceros.</p></div></div></div></section><section class="grupo sola" id="quien-te-atiende"><header><span class="n num">05</span><h2>Quién te atiende</h2><span class="quienes">empresa</span></header><div class="qs"><div class="qa"><p class="quien">empresa</p><div><h3>¿Quién atiende mi cuenta?</h3><p class="r">Un ejecutivo asignado, el mismo cada vez. Conoce a dónde paga tu empresa, con qué frecuencia y en qué montos, así que no tienes que volver a explicar la operación cada mes.</p></div></div></div></section></main>
+</div></div>
+
+<section class="palabras" id="las-palabras"><div class="inner">
+ <div class="cab">
+  <h2>Las palabras</h2>
+  <p>Ocho términos que usamos en todo el sitio. Cinco están definidos con las mismas palabras que ya usamos en otra página; tres son nuevos.</p>
+ </div>
+ <dl class="glos"><div class="term"><dt>Dólar digital</dt><dd>Una stablecoin, USDT: una moneda digital diseñada para mantener una equivalencia 1:1 con el dólar y que puede transferirse por distintas redes. Es lo que te entregamos.<a class="dest" href="/blog/activos-tokenizados-que-son-y-quien-los-construye/">→ En el blog</a></dd></div><div class="term"><dt>Stablecoin</dt><dd>Una moneda digital diseñada para mantener su valor pegado al de otra moneda. La que usamos está pegada al dólar.<a class="dest" href="/blog/activos-tokenizados-que-son-y-quien-los-construye/">→ En el blog</a></dd></div><div class="term"><dt>Precio referencial</dt><dd>El precio que ves en la web. Es una referencia de mercado: tu ejecutivo te confirma el precio final al momento de cerrar, porque el mercado se mueve.<a class="dest" href="/tarifas/">→ Tarifas</a></dd></div><div class="term"><dt>Spread</dt><dd>La diferencia que DLPay aplica sobre la referencia de mercado. Ya viene incorporada en el número que ves: no hay una comisión aparte que se sume al final.<a class="dest" href="/tarifas/">→ Tarifas</a></dd></div><div class="term"><dt>Billetera</dt><dd>La aplicación o cuenta digital donde recibes y guardas el dólar digital. Es tuya, tú la controlas, y es donde termina nuestra operación.<a class="dest" href="/como-funciona/">→ Cómo funciona</a></dd></div><div class="term"><dt>Red</dt><dd>El canal por el que viaja el dólar digital. Hay varias, y la que se usa cambia el tiempo y el costo del traspaso, no el valor de lo que recibes.<span class="sin-dest">El sitio todavía no lo explica en ninguna parte</span></dd></div><div class="term"><dt>Verificación de identidad</dt><dd>Lo que te pedimos antes de la primera operación, a todas las personas y empresas sin excepción. Nos permite saber con quién operamos y es parte del cumplimiento que exige trabajar con un banco de por medio.<a class="dest" href="/confianza/">→ Confianza</a></dd></div><div class="term"><dt>Ejecutivo</dt><dd>La persona del equipo que confirma tu precio final, coordina el destino del dinero y te avisa cuando la operación está lista. No es un sistema automático.<a class="dest" href="/confianza/">→ Confianza</a></dd></div></dl>
+</div></section>
+
+<section class="cierre"><div class="inner">
+ <h2>¿Te quedó una duda que no está acá?</h2>
+ <p>Escríbenos y te responde una persona del equipo. No hace falta cuenta para preguntar.</p>
+ <a href="#">Escribir por WhatsApp</a>
+</div></section>
+</body></html>
