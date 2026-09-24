@@ -396,6 +396,8 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-24 | [`2026-09-24-vocabulario-62`](2026-09-24-vocabulario-62/nota-agente.md) — revisión de las nueve marcas del §6.2 juntas, contra su uso real | **Registrada** | Tres hallazgos: la tabla no distingue las dos líneas verdes aunque el cuerpo sí, la sección se contradice sobre cuántos punteados hay, y **la única marca punteada está dibujada con 43 % de ciclo en una pieza y 25 % en la otra** — la segunda es mía. La cuña, en cambio, tiene una sola ortografía en todo el sitio |
+| 2026-09-24 | [`2026-09-24-vocabulario-62`](2026-09-24-vocabulario-62/nota-agente.md) — relectura del §6.2 con las nueve marcas juntas | **Integrada con cambios** | Los tres hallazgos son ciertos. Las cifras del tercero no, y el remedio que proponía no habría igualado las dos figuras |
 | 2026-09-24 | [`2026-09-24-indice-del-blog`](2026-09-24-indice-del-blog/ficha.md) — la portada de cada artículo, como marca del índice | **Integrada con cambios** | La estructura tal cual. El pictograma sale del componente y no se copia, el verde no se vuelve gris, y el rango toma la precisión del par |
 | 2026-09-24 | [`2026-09-24-precio-que-aceptas`](2026-09-24-precio-que-aceptas/ficha.md) — banda sobre tinta en `/precio`: el mercado se mueve, aceptas, y desde ahí tu precio es una recta mientras el gris sigue. **v2 · estrena la sexta familia del §6.2 y una enmienda de movimiento** | **Integrada** (`3dfded3`) | El dibujo y la geometría, literales. Todas mis cifras reproducen. Dos cosas mías corregidas por el agente: la frase que dibujo vive dentro de un `PendingNotice` y yo no leí el envoltorio (**regla 31**), y mi clase `.rot` pisaba una que `/precio` ya tenía (**regla 32**). Él generalizó la marca punteada del §6.2 de «frontera» a «un límite: cruzarlo cambia algo», que es mejor que abrir una fila nueva |
 | 2026-09-24 | [`2026-09-24-precio-que-aceptas`](2026-09-24-precio-que-aceptas/ficha.md) — la banda «No cambia después de que lo aceptas» de `/precio` | **Integrada con cambios** | Trazado y geometría literales. Firma de Compliance pedida antes de integrar, por dónde vivía la frase. Una colisión de clases que rompía la otra figura de la página |
@@ -1656,3 +1658,68 @@ que entregarlo sin el aviso.
 **La fila sin portada deja su columna vacía.** Hoy no hay ninguna, porque los dos artículos tienen
 portada, pero el día que entre un artículo sin ella el hueco se lee como «éste no trae figura», que
 es verdad. Rellenarlo con algo genérico diría que sí la hay.
+
+### Notas de la integración de `2026-09-24-vocabulario-62`
+
+Nota sin propuesta de dibujo, y **los tres hallazgos son ciertos**. Los tres entran. El tercero
+entra con otras cifras y con otro remedio.
+
+#### A y B, aceptados tal cual
+
+**Las dos filas verdes no se distinguían solas.** La redacción propuesta es mejor que la mía y entró
+sin cambios: una dice **de quién es** un tramo y la otra **que no cambia**. Y el argumento para NO
+fusionarlas es el correcto — la segunda no significa nada por sí sola, necesita la línea gris al
+lado, y esa condición no cabe dentro de «el tramo que es nuestro» sin desdibujarla. Generalizar
+sirve cuando dos casos son el mismo signo; acá son dos dimensiones del mismo color.
+
+**La sección se contradecía a sí misma cuatro párrafos aparte.** Cierto y era mío: escribí «hay un
+solo trazo punteado» el 23 y «`/precio` estrenó un segundo» el 24, sin volver a la primera frase.
+Recontado y nombrados los dos. *Una comprobación con fecha que no se recuenta es peor que ninguna.*
+
+#### C: el hallazgo es cierto, las cifras no y el remedio tampoco
+
+**Lo cierto:** las dos fronteras punteadas están dibujadas distinto y eso es exactamente lo que el
+§6.2 existe para evitar.
+
+**Lo que no cuadra.** La nota dice «medida en píxeles de pantalla» y da 2 y 6 para `/precio`. Esos
+son los valores **declarados**. El lienzo de esa banda está estirado con
+`preserveAspectRatio="none"` y su escala vertical es **1,5467**, así que en pantalla el punteado se
+dibuja a **3,09 y 9,28**:
+
+| | Home · `.edge` | `/precio` · `.frontera` |
+|---|---|---|
+| Declarado | `3 4` | `2 6` |
+| **En pantalla** | **3 / 4 px** (escala 1) | **3,09 / 9,28 px** (escala 1,5467) |
+| Trazo real | 1,25 px | 1 px |
+
+O sea: **los guiones eran casi idénticos —3 contra 3,09— y lo que diferÍa era el hueco, más del
+doble.** El diagnóstico aguanta y mejora; el número, no.
+
+Es la misma trampa que la propia entrega de la banda esquivó para el punto: *«con el SVG estirado un
+círculo sale ovalado»*. Un punteado se deforma igual, y medir el atributo en vez de la pantalla es
+lo que la oculta.
+
+**Y por eso el remedio propuesto no servía.** Copiar `3 4` a `/precio` habría dibujado **4,64 y
+6,19** en escritorio y **3,36 y 4,48** en móvil: las dos piezas seguirían sin coincidir, y `/precio`
+no coincidiría ni consigo misma entre anchos. **Ningún valor declarado da el mismo punteado en los
+dos anchos de esa banda.**
+
+**Lo que se hizo:** la frontera sale del SVG y pasa a HTML con `repeating-linear-gradient`, igual
+que el punto y por el mismo motivo. Medido después: **3 / 4 px y 1,25 px de trazo, idénticos a 390 y
+a 1280**, y alineada con el nodo con **0,00 px** de desviación —tenía 0,63 porque su borde caía en
+el 36 % en vez de su centro—. `border: dashed` no servía: el guion y el hueco los elige el navegador.
+
+La regla queda escrita en el §6.2: **un punteado dentro de un SVG estirado se mide en pantalla,
+nunca se lee del atributo.**
+
+#### D, comprobado por mi parte
+
+La cuña tiene una sola ortografía: `l6-5 6 10 6-5` en las cuatro piezas. Ninguna deriva.
+
+#### E: la observación de método es la mejor de la nota
+
+*«Una marca nueva obliga a releer la tabla entera, no sólo a añadir una fila.»* Es cierta y esta
+misma revisión lo demuestra: de las tres cosas encontradas, **dos las introduje yo en dos días** —el
+recuento obsoleto y el punteado dibujado distinto— y ninguna se veía escribiendo la fila nueva, sólo
+mirando las nueve juntas. No va al Design System porque es de método y no de dibujo, pero queda
+dicho acá, que es donde vive el método.

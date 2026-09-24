@@ -449,13 +449,13 @@ vocabulario geométrico ya no cabe en la regla dura de §6. Ésta es la semánti
 | Marca | Significa |
 |---|---|
 | Punto lleno verde | un extremo de la operación: una contraparte o una unidad de valor |
-| Tramo o línea verde | el tramo que es nuestro |
+| Tramo o línea verde **que ocupa un trecho de un recorrido** | el tramo que es nuestro · dice **de quién es**, no cómo se comporta |
 | Cuña | valor moviéndose · el trabajo cambia de manos |
 | Barra llena verde | una magnitud |
 | Filete `--ink-mute` | existe, es real, **no** es nuestro |
 | Canto dividido en unidades | la cosa está **hecha de unidades transferibles** |
 | Trazo **punteado** | un **límite**: cruzarlo cambia algo · es la única marca punteada del sistema |
-| Línea horizontal plana en verde, junto a otra que sigue moviéndose | **un valor que quedó fijo** · lo que ya no cambia |
+| Línea verde **plana a lo largo de un eje, junto a otra que sigue moviéndose** | **un valor que quedó fijo** · dice **que no cambia**, y sólo significa algo contra el movimiento de al lado |
 | `--line` | separador sin significado |
 
 **El color no es el portador del significado.** El verde dice «esta marca carga significado»; cuál
@@ -470,10 +470,26 @@ concluirá, razonablemente, que el verde se usa de dos maneras incompatibles, y 
 
 **Sobre la frontera punteada, añadida el 2026-09-22.** Estaba en producción desde que existe
 `UseCaseFigure` y no estaba escrita, y eso resultó ser lo que hacía ambiguo todo un par de figuras.
-Comprobado: en todo `src/` hay **un solo** trazo punteado visible, el `stroke-dasharray="3 4"` de
-`.edge` en `UseCaseFigure`. (El `stroke-dasharray` de `tokens.css` no cuenta: es el mecanismo del
+Comprobado, y **recontado el 2026-09-24**: en todo `src/` hay **dos** trazos punteados visibles,
+`.edge` en `UseCaseFigure` y `.frontera` en la banda de `/precio`. La primera versión de esta frase
+decía «uno solo» y era cierta el día que se escribió; cuatro párrafos más abajo esta misma sección
+dice que `/precio` estrenó el segundo. **Una comprobación con fecha que no se recuenta es peor que
+ninguna**, porque el siguiente la cita. (El `stroke-dasharray` de `tokens.css` no cuenta: es el mecanismo del
 movimiento M3 —el guion vale el largo del propio trazo y pasa a `none` al entrar—, no una marca.
 Nunca se lee como punteado.)
+
+**Cómo se dibuja, y por qué el valor declarado no basta** *(2026-09-24)*. Guion **3px**, hueco
+**4px**, trazo **1,25px**, medidos en pantalla. En `UseCaseFigure` salen solos porque su SVG va a
+escala 1. En `/precio` **no**: ese lienzo está estirado con `preserveAspectRatio="none"`, y un
+lienzo estirado deforma el ritmo del punteado igual que deformaría un círculo. Con `2 6` declarado
+se dibujaba a **3,09 y 9,28** —la escala vertical es 1,5467 en escritorio y 1,12 en móvil—, así que
+**ningún valor declarado da el mismo punteado en los dos anchos**.
+
+Por eso ahí la frontera es un elemento HTML con `repeating-linear-gradient`, como ya lo era el punto
+y por el mismo motivo. `border: dashed` no sirve: el guion y el hueco los elige el navegador.
+
+**La regla que queda: un punteado dentro de un SVG estirado se mide en pantalla, nunca se lee del
+atributo.**
 
 **Generalizada el 2026-09-24, de «frontera» a «límite».** Nació describiendo el único punteado que
 existía —la frontera de `cruza`, que separa Chile del extranjero—. La banda de `/precio` estrenó un

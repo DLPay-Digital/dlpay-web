@@ -182,7 +182,6 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
               que ya costó una versión en el riel tokenizado.
             */}
             <svg class="curva" viewBox="0 34 1200 150" preserveAspectRatio="none" aria-hidden="true">
-              <path class="frontera" d="M432 34V184" />
               <path class="mercado" pathLength="1" d="M0 40.0 L6 42.6 L12 48.5 L18 53.5 L24 57.4 L30 61.9 L36 66.2 L42 67.6 L48 66.1 L54 66.0 L60 69.7 L66 75.1 L72 78.4 L78 79.1 L84 79.3 L90 80.2 L96 82.6 L102 85.9 L108 89.3 L114 92.2 L120 95.0 L126 99.2 L132 102.8 L138 104.0 L144 105.7 L150 109.6 L156 114.2 L162 114.5 L168 109.6 L174 102.3 L180 95.6 L186 89.3 L192 82.7 L198 78.3 L204 76.0 L210 74.4 L216 73.5 L222 75.6 L228 80.2 L234 82.5 L240 80.7 L246 76.7 L252 74.4 L258 74.4 L264 74.7 L270 74.4 L276 72.8 L282 70.8 L288 69.5 L294 70.4 L300 73.3 L306 75.1 L312 73.5 L318 70.0 L324 69.1 L330 72.4 L336 77.5 L342 81.3 L348 84.3 L354 88.4 L360 91.7 L366 94.0 L372 96.2 L378 99.6 L384 102.7 L390 104.7 L396 107.3 L402 109.8 L408 110.9 L414 111.8 L420 114.4 L426 118.4 L432 120.0 L438 118.1 L444 114.5 L450 112.7 L456 113.0 L462 113.9 L468 114.7 L474 117.0 L480 120.9 L486 122.9 L492 122.2 L498 120.4 L504 119.9 L510 122.0 L516 125.1 L522 126.7 L528 124.9 L534 121.2 L540 119.0 L546 119.0 L552 119.4 L558 119.8 L564 121.2 L570 123.8 L576 125.5 L582 125.7 L588 125.2 L594 125.3 L600 126.4 L606 127.5 L612 127.3 L618 125.1 L624 122.4 L630 122.1 L636 125.4 L642 130.0 L648 132.4 L654 130.7 L660 126.1 L666 121.2 L672 116.2 L678 110.0 L684 102.1 L690 92.8 L696 83.3 L702 75.6 L708 72.6 L714 74.2 L720 75.6 L726 74.7 L732 73.7 L738 75.5 L744 79.8 L750 84.1 L756 87.2 L762 88.9 L768 89.3 L774 87.9 L780 84.8 L786 80.5 L792 75.8 L798 70.5 L804 65.0 L810 61.8 L816 61.8 L822 64.1 L828 68.0 L834 73.9 L840 81.7 L846 88.8 L852 93.6 L858 96.3 L864 98.0 L870 98.6 L876 99.2 L882 100.1 L888 101.2 L894 102.7 L900 104.8 L906 106.9 L912 109.0 L918 111.7 L924 117.0 L930 123.2 L936 125.6 L942 123.5 L948 120.1 L954 118.6 L960 118.6 L966 118.9 L972 122.4 L978 129.0 L984 137.0 L990 145.2 L996 155.3 L1002 167.3 L1008 175.9 L1014 178.2 L1020 176.1 L1026 174.8 L1032 174.4 L1038 172.6 L1044 169.8 L1050 166.7 L1056 163.7 L1062 161.0 L1068 161.2 L1074 164.5 L1080 166.0 L1086 165.1 L1092 164.0 L1098 163.3 L1104 160.9 L1110 156.2 L1116 153.0 L1122 152.3 L1128 153.1 L1134 153.5 L1140 154.5 L1146 157.0 L1152 158.9 L1158 157.1 L1164 152.5 L1170 150.2 L1176 151.9 L1182 154.5 L1188 153.9 L1194 148.4 L1200 140.6" />
               <path class="precio" pathLength="1" d="M432 120H1200" />
             </svg>
@@ -192,6 +191,16 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
               57,33% son 432/1200 y (120-34)/150 del viewBox — si el viewBox
               cambia, estos dos números se recalculan.
             */}
+            {/*
+              La frontera va en HTML por el MISMO motivo que el punto: el SVG
+              está estirado con `preserveAspectRatio="none"`, y eso deforma el
+              ritmo del punteado igual que deformaría un círculo. Dentro del
+              lienzo, un `2 6` declarado se dibujaba a 3,09 y 9,28 px reales
+              —la escala vertical es 1,5467 en escritorio y 1,12 en móvil—, así
+              que **ningún valor declarado da el mismo punteado en los dos
+              anchos**. En HTML el guion y el hueco son píxeles de verdad.
+            */}
+            <span class="frontera" aria-hidden="true"></span>
             <span class="nodo" aria-hidden="true"></span>
           </div>
 
@@ -358,9 +367,35 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
     stroke-linecap: round;
   }
   .precio { stroke: var(--verde); stroke-width: 3.4; stroke-linecap: butt; }
-  /* Punteado = un límite: cruzarlo cambia algo (Design System §6.2). Acá el
-     límite es un instante, no un lugar. */
-  .frontera { stroke: var(--line-on-tinta); stroke-width: 1; stroke-dasharray: 2 6; }
+  /*
+    Punteado = un límite: cruzarlo cambia algo (Design System §6.2). Acá el
+    límite es un instante, no un lugar.
+
+    **Mismo dibujo que la frontera de `UseCaseFigure`**, que es la otra —y única
+    otra— marca punteada del sitio: guion 3px, hueco 4px, trazo 1,25px. Medido
+    en la Home, donde su SVG va a escala 1. Antes acá se dibujaba a 3,09 y 9,28
+    con un trazo de 1px: el mismo signo con menos de la mitad de densidad, que
+    es justo lo que el §6.2 existe para evitar.
+
+    Va con `repeating-linear-gradient` y no con `border-left: dashed` porque el
+    `dashed` de CSS no deja fijar el guion ni el hueco: los elige el navegador.
+  */
+  .frontera {
+    position: absolute;
+    left: 36%;
+    top: 0;
+    bottom: 0;
+    width: 1.25px;
+    /* Centrada sobre el 36%, como el nodo. Sin esto su BORDE cae en el 36% y su
+       centro medio píxel más a la derecha: medido, 0,63px de desviación
+       respecto del punto que marca el mismo instante. */
+    transform: translateX(-50%);
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--line-on-tinta) 0 3px,
+      transparent 3px 7px
+    );
+  }
 
   /*
     El punto, en HTML. Dentro del SVG estirado saldría ovalado. Los dos
