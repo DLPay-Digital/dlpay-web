@@ -10,6 +10,7 @@
  * REQUIERE VALIDACIÓN DE COMPLIANCE.
  */
 import Legal from '../layouts/Legal.astro';
+import PendingNotice from '../components/PendingNotice.astro';
 import { contact } from '../lib/config/site.ts';
 
 const wa = contact.whatsappUrl(
@@ -60,11 +61,12 @@ const wa = contact.whatsappUrl(
     <a href={wa} target="_blank" rel="noopener">Escríbenos por WhatsApp</a>.
   </p>
 
-  <p>
-    {/* D19 cerrada por Sebastián el 2026-09-24: es el correo que indican los T&C.
-        Se importa de `site.ts`, nunca se teclea: una dirección de reclamos escrita
-        dos veces es una dirección que algún día diverge. */}
-    También puedes escribir a <a href={`mailto:${contact.email}`}>{contact.email}</a>, que es la
-    dirección formal para reclamos.
-  </p>
+  <PendingNotice title="Canal formal escrito: en definición">
+    <p>
+      La dirección de correo para reclamos formales y el detalle del procedimiento están en
+      revisión legal. No la publicamos hasta confirmarla, porque una dirección equivocada en un
+      canal de reclamos es peor que no tenerla.
+    </p>
+    <p>Mientras tanto, todo reclamo presentado por WhatsApp se registra y se responde igual.</p>
+  </PendingNotice>
 </Legal>
