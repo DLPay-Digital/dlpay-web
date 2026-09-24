@@ -492,7 +492,11 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
     Centrada: la invitación y su acción leen como una sola pieza.
   */
   .close { background: var(--papel-2); padding: var(--s-9) 0; text-align: center; }
-  .close h2 { color: var(--ink); font-size: var(--t-h3); margin-bottom: var(--s-2); }
+  /* Sin `font-size` propio: la banda de cierre es una sección como las demás y
+     toma la escala de `h2` de la página —23 en móvil, 32 desde 900—. Llevaba
+     `--t-h3` y salía a 20 mientras la misma banda de `/como-funciona` y
+     `/empresas` salía a 32. */
+  .close h2 { color: var(--ink); margin-bottom: var(--s-3); }
   .close p { color: var(--ink-mute); margin: 0 auto var(--s-5); max-width: 47ch; }
   .cta {
     display: inline-flex;
@@ -534,5 +538,11 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
     /* Tres bloques en fila: son tres afirmaciones del mismo rango, no una
        secuencia. Dentro del tope de cuatro hermanos con escalonado. */
     .bloques { grid-template-columns: repeat(3, 1fr); gap: var(--s-7); }
+    /*
+      El salto a la escala de escritorio, EXPLÍCITO. La regla `h2` de arriba no
+      los alcanza: `.seguro-banda h2` tiene más especificidad y se quedaba en
+      `--t-h2-m`, que es el tamaño MÓVIL, en una pantalla de 1280.
+    */
+    .seguro-banda h2 { font-size: var(--t-h2); }
   }
 </style>

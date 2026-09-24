@@ -222,6 +222,49 @@ modificar y usar comercialmente. Conservar el archivo de licencia junto a las fu
   > Factor medido en estas páginas: **1,315 a 1,395**, que confirma el 1,37 de arriba.
 - `text-wrap: balance` en titulares; `text-wrap: pretty` en párrafos.
 
+### 3.1b Auditoría de la escala  ·  *2026-09-24*
+
+**Medida sobre el build, a 390 y a 1280, en las once rutas.** El estado después de corregir:
+
+| | 390 px | 1280 px |
+|---|---|---|
+| H1 | **30** en todas | **32** en todas · 52 en la Home y en `/empresas` |
+| H2 de sección | **23** en todas | **32** en todas |
+| H3 | **17** en todas | **20** en todas |
+| Titular de la banda de cierre | **23** | **32** |
+
+**Ninguna página tiene dos tamaños para el mismo nivel.** Antes de la auditoría, siete titulares
+estaban fuera.
+
+#### La causa era una sola, y vuelve a pasar si no se sabe
+
+**Un titular con selector propio gana a la regla que lo sube a la escala de escritorio.** El patrón
+del sitio es declarar el tamaño móvil en la base y subirlo en `@media (min-width: 900px)` con una
+regla `h2 { … }`. Pero `.seguro-banda h2`, `.scope h2`, `.palabras h2` y `.qa h3` tienen más
+especificidad que esa regla suelta, así que **se quedaban en el tamaño MÓVIL en una pantalla de
+1280**: 23 px donde sus hermanos median 32, y 17 donde los demás H3 median 20.
+
+No se ve leyendo el CSS —cada regla es correcta por su cuenta— y no se ve en móvil, que es donde
+suele mirarse. **Se ve midiendo `fontSize` a 1280.**
+
+> **Al añadir un titular con selector propio, hay que subirlo también en la media query.** Si no,
+> hereda el móvil para siempre.
+
+#### Y un caso distinto: el que no heredaba nada
+
+El titular de la banda de cierre de `/preguntas` se dejó sin `font-size` para que tomara el de la
+página. Esa página **no tiene una regla `h2` suelta** —sus tamaños van por selector— así que no
+heredó nada y cayó al tamaño por defecto del navegador: **24 px**, que no está en la escala. Ahora
+lo declara.
+
+#### Lo que queda fuera de la regla, a propósito
+
+`/empresas` habla a `--t-display` (52 px) y §3.0.1 dice que **sólo la Home** lo hace: «son dos
+voces, no cinco». Es una excepción deliberada de `PageHero` (`titleSize="hero"`), aprobada con el
+rediseño de ese encabezado. **Se deja y se anota**: una excepción escrita no es un descuido.
+
+---
+
 ### 3.2 Antipatrones tipográficos (prohibidos)
 
 Eyebrow en MAYÚSCULAS sobre cada título · acentuar una sola palabra del titular en color/itálica ·

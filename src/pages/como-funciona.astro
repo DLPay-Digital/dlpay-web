@@ -291,7 +291,9 @@ const wa = contact.whatsappUrl();
     Centrada: la invitación y su acción leen como una sola pieza.
   */
   .close { background: var(--papel); padding: var(--s-9) 0; text-align: center; }
-  .close h2 { color: var(--ink); }
+  /* Sin `font-size` propio: toma la escala de `h2` de la página. Las cuatro
+     bandas de cierre del sitio hablan al mismo volumen. */
+  .close h2 { color: var(--ink); margin-bottom: var(--s-3); }
   .close p { color: var(--ink-mute); margin: 0 auto var(--s-5); max-width: 47ch; }
   .cta {
     display: inline-flex;

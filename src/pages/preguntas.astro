@@ -319,7 +319,19 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     Centrada: la invitación y su acción leen como una sola pieza.
   */
   .close { background: var(--papel); padding: var(--s-9) 0; text-align: center; }
-  .close h2 { color: var(--ink); font-size: var(--t-h3); margin-bottom: var(--s-2); }
+  /*
+    La escala de sección, explícita. Esta página no tiene una regla `h2` suelta
+    —los tamaños van por selector— así que dejarlo sin `font-size` no lo hacía
+    heredar nada: caía al tamaño por defecto del navegador, **24px**, que no
+    está en la escala. Medido a 390.
+  */
+  .close h2 {
+    color: var(--ink);
+    font-size: var(--t-h2-m);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: var(--s-3);
+  }
   .close p { color: var(--ink-mute); margin: 0 auto var(--s-5); max-width: 47ch; }
   .cta {
     display: inline-flex;
@@ -340,6 +352,11 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     .grupo { scroll-margin-top: var(--s-8); }
     .palabras { scroll-margin-top: var(--s-8); }
     .g-cab h2 { font-size: var(--t-h2); }
+    /* Los dos que faltaban: `.palabras h2` se quedaba en la escala móvil y las
+       preguntas, en la de H3 móvil, mientras todos los H3 del sitio van a 20. */
+    .palabras h2 { font-size: var(--t-h2); }
+    .close h2 { font-size: var(--t-h2); }
+    .qa h3 { font-size: var(--t-h3); }
     dt { font-size: var(--t-h3); }
     /* El término en su columna: el ojo baja por los ocho sin atravesar las
        definiciones. */

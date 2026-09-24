@@ -462,6 +462,12 @@ const waPlain = contact.whatsappUrl();
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
     h2 { font-size: var(--t-h2); }
+    /* Explícito: `.scope h2` gana a la regla de arriba por especificidad y se
+       quedaba en la escala móvil en escritorio. */
+    .scope h2 { font-size: var(--t-h2); }
+    /* «Ten esto a mano» es un H3 como los cuatro casos de uso, y se quedaba en
+       la escala móvil mientras aquéllos iban a 20. */
+    .sub { font-size: var(--t-h3); }
     .case-text h3 { font-size: var(--t-h3); }
 
     /* Zigzag. `--s-8` son exactamente los 4rem pedidos y sale de la escala.
