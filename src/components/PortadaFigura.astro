@@ -71,8 +71,27 @@ export type Figura = 'activo-tokenizado';
 
 interface Props {
   figura: Figura;
+  /**
+   * `banda` (por omisión) es la portada del artículo: a sangre, sobre tinta.
+   * `marca` es el mismo dibujo suelto, sin banda, para el índice del blog.
+   *
+   * Existe para que **el trazado viva en un solo sitio**. La alternativa era
+   * pegar el SVG otra vez en `blog/index.astro`, y entonces el día que el
+   * pictograma cambie habría dos versiones del mismo dibujo diciendo cosas
+   * distintas en dos páginas. Es el mismo motivo por el que el eje de alcance
+   * salió a componente.
+   */
+  variant?: 'banda' | 'marca';
+  /**
+   * Alto en px de la variante `marca`, en escritorio y bajo 900. Van por prop y
+   * no por CSS porque el ámbito de estilos de Astro **no alcanza al interior de
+   * un componente hijo**: la página no puede dimensionar este SVG desde fuera,
+   * ni con una media query.
+   */
+  size?: number;
+  sizeSm?: number;
 }
-const { figura } = Astro.props;
+const { figura, variant = 'banda', size = 112, sizeSm = 72 } = Astro.props;
 
 /*
   El nombre accesible sale de acá y no de la página: describe el dibujo, que es
@@ -84,7 +103,10 @@ const nombres: Record<Figura, string> = {
     'Una ficha marcada con una T, con el canto dividido en unidades, dentro de un bucle de circulación.',
 };
 ---
-<div class="portada">
+<div
+  class:list={['portada', variant]}
+  style={variant === 'marca' ? `--marca: ${size}px; --marca-sm: ${sizeSm}px` : undefined}
+>
   {figura === 'activo-tokenizado' && (
     <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" role="img"
          aria-label={nombres[figura]}>
@@ -108,14 +130,39 @@ const nombres: Record<Figura, string> = {
   /* Misma banda que `PortadaDato`: a sangre, en tinta, con el mismo relleno
      vertical. Lo único que difiere es el alto, porque acá lo fija la figura y
      allá el texto — 256 / 196 contra 226 / 174, medido en el build. */
-  .portada { background: var(--tinta); padding: var(--s-6) 0; }
+  .portada.banda { background: var(--tinta); padding: var(--s-6) 0; }
+
+  /*
+    ── La variante `marca`, para el índice ──────────────────────────────────
+
+    Mismo dibujo, sin banda y **sobre papel**, así que el verde cambia: sobre
+    claro `--verde` da 2,02:1 y no alcanza ni el 3:1 de un gráfico, mientras
+    `--verde-deep` da 5,44:1. Es la regla del Design System §6.2 —el fondo
+    elige el verde— aplicada a la misma marca en otra superficie.
+
+    **No se vuelve neutro.** Pintarlo en `--ink` lo quitaría del vocabulario:
+    el anillo verde es «una unidad de valor», y en el índice convive en la
+    misma columna con la marca de dato, que lleva su filete verde. Dos marcas
+    hermanas, una gris y otra verde, se leerían como dos cosas distintas.
+
+    El dibujo va ENTERO y no simplificado: las 24 marcas del canto significan
+    «hecho de unidades» y los arcos «circula». A 112px los trazos reales miden
+    1,82 / 2,18 / 1,43 px y se leen.
+  */
+  .portada.marca { display: grid; place-items: center; }
+  /* Móvil primero: bajo 900 el dibujo va más pequeño porque su columna también.
+     A 72px los trazos siguen por encima de 1px y el canto se distingue. */
+  .portada.banda svg { height: 132px; }
+  .portada.marca svg { height: var(--marca-sm); }
+  .portada.marca .token { stroke: var(--verde-deep); }
+  .portada.marca .flujo { stroke: var(--ink-mute); }
 
   /*
     El alto en CSS y el ancho en `auto`: así el dibujo no depende del ancho del
     contenedor. `max-width: 100%` es el seguro para 320 px, donde 132 px de alto
     dan 132 de ancho y sobra sitio, pero deja de sobrar si alguien sube el alto.
   */
-  .portada svg { display: block; margin: 0 auto; height: 132px; width: auto; max-width: 100%; }
+  .portada svg { display: block; margin: 0 auto; width: auto; max-width: 100%; }
 
   /* El trazo es todo lo que hay: sobre tinta un relleno da 1,07:1 y no se ve. */
   .token { fill: none; stroke: var(--verde); }
@@ -125,7 +172,8 @@ const nombres: Record<Figura, string> = {
   .unidad { stroke-width: 2.55; }
 
   @media (min-width: 900px) {
-    .portada { padding: var(--s-7) 0; }
-    .portada svg { height: 160px; }
+    .portada.banda { padding: var(--s-7) 0; }
+    .portada.banda svg { height: 160px; }
+    .portada.marca svg { height: var(--marca); }
   }
 </style>

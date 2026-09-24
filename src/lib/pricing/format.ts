@@ -30,6 +30,54 @@ export function formatRate(value: number): string {
 }
 
 /**
+ * La cifra de una MARCA del índice del blog: hasta dos decimales, **sin ceros
+ * de relleno**.
+ *
+ * Existe porque `formatRate` fuerza dos decimales siempre —lo que quiere un
+ * precio: «919,70» y no «919,7»— y en una marca del índice eso escribía
+ * «50.000,00» para un mínimo de CLP que no tiene centavos, y la cadena se salía
+ * de una columna de 132px y chocaba con el titular.
+ *
+ * La regla es que **el número se muestra como viene**: 3,75 conserva sus dos
+ * decimales porque los trae, 50.000 no los gana porque no los tiene.
+ *
+ * Vive acá y no en la página por el mismo motivo que sus hermanas: todo el
+ * formateo de cifras del sitio está en este archivo y tiene tests.
+ */
+export function formatFigure(value: number): string {
+  return new Intl.NumberFormat(LOCALE, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+/**
+ * Un INTERVALO de la marca del índice: «3,75–4,00», nunca «3,75–4».
+ *
+ * La precisión la decide **el par y no cada extremo**. Formateando cada número
+ * por su cuenta, un rango de 3,75 a 4,00 salía «3,75–4»: un lado con centésimas
+ * y el otro sin ellas, que en una tasa se lee como si fueran dos medidas
+ * distintas. Se toman los decimales del extremo que más necesita y se aplican a
+ * los dos.
+ *
+ * Un rango sin decimales en ninguno de los dos lados —50.000 a 60.000— sigue
+ * saliendo sin ellos, que es el motivo por el que existe `formatFigure`.
+ */
+export function formatFigureRange(min: number, max: number): string {
+  const decimales = (n: number): number => {
+    const s = String(n);
+    const punto = s.indexOf('.');
+    return punto === -1 ? 0 : Math.min(s.length - punto - 1, 2);
+  };
+  const d = Math.max(decimales(min), decimales(max));
+  const f = new Intl.NumberFormat(LOCALE, {
+    minimumFractionDigits: d,
+    maximumFractionDigits: d,
+  });
+  return `${f.format(min)}–${f.format(max)}`;
+}
+
+/**
  * Interpreta un monto escrito por una persona.
  *
  * Vive acá y no dentro del componente porque es la función que traduce **todo

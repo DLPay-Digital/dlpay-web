@@ -8,7 +8,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { formatCLP, formatUSD, formatRate, parseAmount } from '../src/lib/pricing/format.ts';
+import { formatCLP, formatUSD, formatRate, formatFigure, formatFigureRange, parseAmount } from '../src/lib/pricing/format.ts';
 import {
   buildQuote,
   clpAmount,
@@ -43,6 +43,28 @@ describe('formato de cifras chileno', () => {
 
   test('el precio conserva los dos decimales', () => {
     assert.equal(formatRate(919.7), '919,70');
+  });
+
+  test('la cifra de una marca se muestra como viene, sin ceros de relleno', () => {
+    // El caso que motivó la función: un mínimo de CLP no tiene centavos y
+    // «50.000,00» se salía de la columna del índice.
+    assert.equal(formatFigure(50000), '50.000');
+    // Y el caso contrario: los decimales que el dato SÍ trae se conservan.
+    assert.equal(formatFigure(3.75), '3,75');
+    assert.equal(formatFigure(4), '4');
+    // Un solo decimal no se rellena hasta dos.
+    assert.equal(formatFigure(919.7), '919,7');
+  });
+
+  test('un intervalo toma la precisión del par, no la de cada extremo', () => {
+    // El caso que lo motivó: la tasa de la Fed va de 3,75 a 4,00 y salía
+    // «3,75–4», con un lado en centésimas y el otro sin ellas.
+    assert.equal(formatFigureRange(3.75, 4), '3,75–4,00');
+    assert.equal(formatFigureRange(3.5, 3.75), '3,50–3,75');
+    // Sin decimales en ninguno de los dos, no se inventan.
+    assert.equal(formatFigureRange(50000, 60000), '50.000–60.000');
+    // Un decimal a un lado los pone a los dos, pero sólo uno.
+    assert.equal(formatFigureRange(1, 1.5), '1,0–1,5');
   });
 
   test('el monto se escribe con su moneda como la dice el equipo', () => {

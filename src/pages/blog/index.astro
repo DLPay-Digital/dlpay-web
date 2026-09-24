@@ -23,6 +23,8 @@ import Footer from '../../components/Footer.astro';
 import PageHero from '../../components/PageHero.astro';
 import Motion from '../../components/Motion.astro';
 import { publishedPosts } from '../../lib/blog.ts';
+import PortadaFigura from '../../components/PortadaFigura.astro';
+import { formatFigure, formatFigureRange } from '../../lib/pricing/format.ts';
 
 /* Ya vienen filtrados por el candado de publicación y ordenados. Ver lib/blog.ts. */
 const posts = await publishedPosts();
@@ -71,20 +73,63 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
           <p class="empty">Todavía no hay artículos publicados.</p>
         ) : (
           <ul class="posts" role="list">
-            {posts.map((post) => (
-              <li data-enter>
-                <a href={`/blog/${post.id}/`}>
-                  <span class="p-meta">
-                    <span class="cat">{post.data.category}</span>
-                    <time datetime={post.data.pubDate.toISOString()}>
-                      {fecha.format(post.data.pubDate)}
-                    </time>
-                  </span>
-                  <span class="p-title">{post.data.title}</span>
-                  <span class="p-desc">{post.data.description}</span>
-                </a>
-              </li>
-            ))}
+            {posts.map((post) => {
+              const p = post.data.portada;
+              /*
+                La cifra de la marca se arma acá y no en la plantilla porque un
+                rango son dos números y un separador, y eso dentro del JSX se
+                lee peor de lo que es. `formatFigure` y no `formatRate`: éste
+                fuerza dos decimales y escribía «50.000,00» para un mínimo que
+                no tiene centavos.
+              */
+              const cifra =
+                p === undefined || p.tipo === 'figura'
+                  ? ''
+                  : p.tipo === 'cifra'
+                    ? formatFigure(p.valor)
+                    : formatFigureRange(p.min, p.max);
+              return (
+                <li data-enter>
+                  <a href={`/blog/${post.id}/`}>
+                    {/*
+                      La marca es la PORTADA del propio artículo, no un dibujo
+                      nuevo: el pictograma sale de `PortadaFigura` en su variante
+                      `marca`, así que el trazado sigue viviendo en un solo sitio.
+
+                      Un artículo sin portada deja la columna vacía, y es
+                      decisión: rellenarla con algo genérico diría «acá hay una
+                      figura» donde no la hay, y quitar la columna dejaría el
+                      borde izquierdo de la lista dentado.
+                    */}
+                    <span class="marca">
+                      {p?.tipo === 'figura' && (
+                        <PortadaFigura figura={p.figura} variant="marca" />
+                      )}
+                      {p !== undefined && p.tipo !== 'figura' && (
+                        <span class:list={['marca-dato', { larga: cifra.length > 7 }]}>
+                          <span class="cifra">
+                            {cifra}<span class="u">{p.unidad}</span>
+                          </span>
+                          <span class="raya" aria-hidden="true"></span>
+                          <span class="et">{p.etiqueta}</span>
+                        </span>
+                      )}
+                    </span>
+
+                    <span class="texto">
+                      <span class="p-meta">
+                        <span class="cat">{post.data.category}</span>
+                        <time datetime={post.data.pubDate.toISOString()}>
+                          {fecha.format(post.data.pubDate)}
+                        </time>
+                      </span>
+                      <span class="p-title">{post.data.title}</span>
+                      <span class="p-desc">{post.data.description}</span>
+                    </span>
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
@@ -116,14 +161,72 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
   .posts { list-style: none; margin: 0; padding: 0; }
   .posts li { border-top: 1px solid var(--line); }
   .posts li:last-child { border-bottom: 1px solid var(--line); }
+  /*
+    Sigue siendo una lista de FILAS y no una rejilla de tarjetas: una tarjeta
+    obliga a recortar el titular, y acá el titular es el argumento.
+
+    Dos columnas desde el principio —la marca y el texto—, con la marca a un
+    ancho FIJO. Si fuera flexible, una cifra larga la ensancharía y el titular
+    de esa fila arrancaría en otro sitio que el de las demás.
+  */
   .posts a {
     display: grid;
-    gap: var(--s-2);
+    grid-template-columns: 88px 1fr;
+    column-gap: var(--s-5);
+    align-items: start;
     padding: var(--s-6) 0;
     text-decoration: none;
   }
+  .marca { display: grid; justify-items: start; }
+  .texto { display: grid; gap: var(--s-2); min-width: 0; }
 
-  /* La categoría y la fecha son metadato: tabulares y discretas. */
+  /* La marca de una portada de dato: la cifra, un filete y la etiqueta. Acá no
+     hay dibujo que duplicar —es tipografía—, así que no sale de `PortadaDato`;
+     lo único compartido es el formateo, que viene de `lib/pricing/format.ts`. */
+  .marca-dato {
+    display: grid;
+    /* `--s-2` y no `--s-1`: a 4px el filete se leía como el subrayado de la
+       cifra en vez de como una marca aparte. Medido mirándolo, que para una
+       distancia de 4px es la única forma. */
+    gap: var(--s-2);
+    justify-items: start;
+    font-family: var(--f-num);
+  }
+  .cifra {
+    font-size: var(--t-dato-m);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  /*
+    La cifra baja de cuerpo cuando la cadena es larga: **manda la columna, no la
+    escala**. Un rango de dos decimales a los dos lados —«3,75–4,00»— es el caso
+    que obliga, y son dos escalones porque son dos columnas.
+
+    En móvil la columna mide 88px y un rango de nueve caracteres en mono no cabe
+    en una línea a ningún cuerpo legible: a 20px pide 118px y a 16px, 86 más la
+    unidad. Medido, se salía **28,8px** y chocaba con el titular. Así que en
+    móvil la unidad baja a su propia línea, que es como la portada del artículo
+    ya la trata: cifra arriba, unidad debajo y en gris.
+  */
+  .marca-dato.larga .cifra { font-size: var(--t-body); }
+  .cifra .u { font-size: var(--t-dato-sm); color: var(--ink-mute); margin-left: 3px; }
+  .marca-dato.larga .cifra .u { display: block; margin-left: 0; }
+  .raya { width: 26px; border-top: 2px solid var(--verde-deep); }
+  .et {
+    font-size: var(--t-dato-sm);
+    line-height: 1.35;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  /* La categoría y la fecha son metadato: tabulares y discretas. Desde el
+     2026-09-24 van SOBRE el titular y no en columna propia: la columna es
+     ahora de la marca, y así el titular gana todo el ancho restante. */
   .p-meta {
     display: flex;
     gap: var(--s-3);
@@ -150,19 +253,19 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
     /*
-      La fecha gana columna propia. La colocación va EXPLÍCITA y no al flujo
-      automático: con tres hijos y dos columnas, el flujo manda la bajada a la
-      columna de la fecha. `.p-meta` ocupa las dos filas para que el titular y
-      su bajada compartan la columna ancha.
+      La marca sube a 132px, que es lo que el pictograma necesita para que sus
+      24 marcas de canto se distingan: a 112 los trazos reales miden 1,82 /
+      2,18 / 1,43 px; más pequeño se empastan y el dibujo diría menos.
+
+      Hasta el 2026-09-24 esta columna era de la fecha. El metadato se fue
+      sobre el titular y la columna quedó para la portada del artículo, que ya
+      existía y sólo se veía dentro del artículo.
     */
-    .posts a {
-      grid-template-columns: 160px 1fr;
-      column-gap: var(--s-7);
-      row-gap: var(--s-2);
-      align-items: start;
-    }
-    .p-meta { grid-column: 1; grid-row: 1 / span 2; flex-direction: column; gap: var(--s-1); }
-    .p-title { grid-column: 2; grid-row: 1; font-size: var(--t-h2-m); }
-    .p-desc { grid-column: 2; grid-row: 2; }
+    .posts a { grid-template-columns: 132px 1fr; column-gap: var(--s-7); }
+    .p-title { font-size: var(--t-h2-m); }
+    /* Con 132px la cadena larga cabe entera en una línea al cuerpo mayor, y la
+       unidad vuelve a su sitio junto a la cifra. */
+    .marca-dato.larga .cifra { font-size: var(--t-h3); }
+    .marca-dato.larga .cifra .u { display: inline; margin-left: 3px; font-size: var(--t-label); }
   }
 </style>

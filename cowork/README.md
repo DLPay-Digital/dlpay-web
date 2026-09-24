@@ -396,6 +396,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-24 | [`2026-09-24-indice-del-blog`](2026-09-24-indice-del-blog/ficha.md) — la portada de cada artículo, como marca del índice | **Integrada con cambios** | La estructura tal cual. El pictograma sale del componente y no se copia, el verde no se vuelve gris, y el rango toma la precisión del par |
 | 2026-09-24 | [`2026-09-24-precio-que-aceptas`](2026-09-24-precio-que-aceptas/ficha.md) — banda sobre tinta en `/precio`: el mercado se mueve, aceptas, y desde ahí tu precio es una recta mientras el gris sigue. **v2 · estrena la sexta familia del §6.2 y una enmienda de movimiento** | **Integrada** (`3dfded3`) | El dibujo y la geometría, literales. Todas mis cifras reproducen. Dos cosas mías corregidas por el agente: la frase que dibujo vive dentro de un `PendingNotice` y yo no leí el envoltorio (**regla 31**), y mi clase `.rot` pisaba una que `/precio` ya tenía (**regla 32**). Él generalizó la marca punteada del §6.2 de «frontera» a «un límite: cruzarlo cambia algo», que es mejor que abrir una fila nueva |
 | 2026-09-24 | [`2026-09-24-precio-que-aceptas`](2026-09-24-precio-que-aceptas/ficha.md) — la banda «No cambia después de que lo aceptas» de `/precio` | **Integrada con cambios** | Trazado y geometría literales. Firma de Compliance pedida antes de integrar, por dónde vivía la frase. Una colisión de clases que rompía la otra figura de la página |
 | 2026-09-23 | [`2026-09-23-precio`](2026-09-23-precio/ficha.md) — `/precio`: el cobro único. Dos barras del mismo largo y una tabla donde cinco filas dicen «Sin costo» y una dice dónde está el spread. **Copy firmado por Sebastián el 2026-09-23** | **Integrada** (`bcda1fe`) | El dibujo entero. La frase de volumen se importa como constante en vez de teclearse, y la medida pasa a 47ch. De aquí salen las reglas 28 y 29 |
@@ -1594,3 +1595,64 @@ piezas.
 
 La observación del §7 sobre el índice del blog es buena y está medida: **las dos portadas existen y
 no se ven ahí**. No se tocó, para no mezclar entregas.
+
+### Notas de la integración de `2026-09-24-indice-del-blog`
+
+`md5` el declarado. **El diagnóstico es el mejor de la entrega y era mío desde hace dos días sin
+resolver**: las dos portadas estaban dibujadas, aprobadas y sólo se veían dentro del artículo,
+mientras el índice —el sitio donde la gente elige qué leer— no tenía ninguna ancla visual.
+
+#### Lo que pedía la ficha y se hizo
+
+**El trazado no se copió.** `PortadaFigura` gana una variante `marca`: mismo componente, misma
+ruta, sin banda. La alternativa —pegar el SVG otra vez en el índice— habría dejado dos versiones
+del mismo dibujo en dos páginas, que es lo que `scope.ts` y `glossary.ts` existen para evitar. El
+tamaño va por prop y no por CSS porque **el ámbito de estilos de Astro no alcanza al interior de un
+componente hijo**: la página no puede dimensionar ese SVG desde fuera, ni con una media query.
+
+Para las portadas de dato **no hay dibujo que compartir**: son tipografía. Lo único común es el
+formateo, y eso sí sale de `lib/pricing/format.ts`.
+
+#### Tres cambios sobre la maqueta
+
+1. **El pictograma va en `--verde-deep`, no en gris.** La maqueta lo pinta en `--ink` sobre papel.
+   Pintarlo neutro lo saca del vocabulario: el anillo verde es «una unidad de valor» (§6.2), y en la
+   misma columna convive con la marca de dato, que sí lleva su filete verde — dos marcas hermanas,
+   una gris y otra verde, se leen como dos cosas distintas. `--verde-deep` sobre papel da 5,44:1;
+   `--verde` daría 2,02 y no alcanza ni el 3:1 de un gráfico.
+2. **El rango toma la precisión del par, no la de cada extremo.** Formateando cada número por su
+   cuenta, la tasa de la Fed salía **«3,75–4»**: un lado con centésimas y el otro sin ellas, que en
+   una tasa se lee como dos medidas distintas. Sale a `formatFigureRange` en `format.ts`, con tests.
+3. **Los cuerpos y los espacios salen de los tokens.** La maqueta usa 25px, 15px, 11,5px, 10,5px y
+   5px de hueco; ninguno existe en la escala. Van `--t-dato-m`, `--t-dato-sm`, `--t-label` y `--s-2`.
+
+#### El fallo que la ficha avisó, y que efectivamente falló
+
+§3.b decía: *«comprueba con un rango de dos decimales a los dos lados, que es el caso que a mí se me
+escapó a 390»*. Con `3,75–4,00` **la cifra se salía 28,8px de su columna de 88px y chocaba con el
+titular**. Nueve caracteres en mono no caben en 88px a ningún cuerpo legible: a 20px piden 118 y a
+16px, 86 más la unidad.
+
+Resuelto bajando a `--t-body` y **poniendo la unidad en su propia línea sólo en móvil**, que es como
+la portada del artículo ya la trata. En escritorio, con 132px, vuelve junto a la cifra. Medido
+después: la cifra queda **3px dentro** de la columna a 390 y a 320.
+
+Avisar de un caso que uno mismo no supo resolver, y decir exactamente cómo reproducirlo, vale más
+que entregarlo sin el aviso.
+
+#### Lo medido
+
+| | ficha | medido |
+|---|---|---|
+| Columna de la marca | 132 / 88 px | **132 / 88** |
+| Pictograma | 112 / 72 px | **112 / 72**, y es el mismo componente del artículo |
+| Choques marca ↔ titular a 320, 390, 1280 | 0 | **0** · holgura 48 px en escritorio, 24 en móvil |
+| Desborde de la columna | 0 | **−3 px** (dentro) en la fila de dato |
+| Scroll horizontal | no | **no** en los tres anchos |
+| Escalonado de las entradas | sólo del 2.º al 4.º | **0 s y 0,06 s**, intacto |
+
+#### Una decisión que se conserva y conviene que quede dicha
+
+**La fila sin portada deja su columna vacía.** Hoy no hay ninguna, porque los dos artículos tienen
+portada, pero el día que entre un artículo sin ella el hueco se lee como «éste no trae figura», que
+es verdad. Rellenarlo con algo genérico diría que sí la hay.
