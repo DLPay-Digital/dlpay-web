@@ -45,6 +45,23 @@ Son dos direcciones distintas para el mismo propósito, en dos documentos vigent
 La web **no publica ninguna** hasta que se confirme cuál es. Una dirección equivocada en un canal
 de reclamos es peor que no tenerla.
 
+### 2.1b Cerradas el 2026-09-24 — razón social y correo
+
+**Razón social: DLPZ PRO SpA** (D9). Se elige la de los T&C y la Política publicados, no la que la
+web venía usando. El motivo por el que D9 bloqueaba era la contradicción con el contrato vigente, y
+así desaparece.
+
+**Correo oficial: `contacto@dlpay.cl`** (D19), el que indican los T&C. Publicado en
+`/canal-de-denuncias`. **La Política de Privacidad publicada dice `contacto@dlpzpro.cl`**: eso es
+una discrepancia del documento, no de la web, y se corrige al reescribirlo (§2.4).
+
+**Lo que el cambio de razón social arrastra, y no está cerrado:** el pie publica «*[razón social]*
+está registrada y supervisada por la UAF» y «Socio de FinteChile». Las dos las afirmó Sebastián el
+2026-09-07 **sobre DLPZ INCZ SpA**. Un registro ante la UAF pertenece a un RUT y la membresía de un
+gremio también, así que hay que confirmar que ambas son de **DLPZ PRO SpA**. Anotado en
+`lib/config/alliances.ts`, donde el campo `verified` retira emblema y frase de una vez si hiciera
+falta.
+
 ### 2.3 El alcance descrito ya no coincide con el servicio
 
 Los T&C publicados describen **custodia de criptoactivos**, tesorería transfronteriza, pagos B2B y

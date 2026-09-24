@@ -26,8 +26,17 @@ function read(value: unknown, fallback: string): string {
 export const site = {
   /** Marca comercial. Protagoniza toda la comunicación. */
   name: 'DLPay',
-  /** Razón social. Sólo footer y páginas legales — nunca protagonista. */
-  legalName: 'DLPZ INCZ SpA',
+  /**
+   * Razón social. Sólo footer y páginas legales — nunca protagonista.
+   *
+   * **DLPZ PRO SpA desde el 2026-09-24 (D9 cerrada por Sebastián).** Antes
+   * decía «DLPZ INCZ SpA», que era la sociedad que la web nombraba y **no** la
+   * que firman los T&C y la Política publicados. Se elige la de los documentos:
+   * publicar bajo una entidad que contradiga el contrato vigente era el motivo
+   * por el que D9 bloqueaba los textos legales. Hay un reparto entre las dos
+   * sociedades, y la web habla por la que contrata con el cliente.
+   */
+  legalName: 'DLPZ PRO SpA',
   /**
    * Origen canónico, sin barra final. En un build está garantizado publicable:
    * la guarda de `astro.config.mjs` detiene el build antes si no lo es.
@@ -50,6 +59,15 @@ export const indexing = {
 const whatsappNumber = read(env.PUBLIC_WHATSAPP_NUMBER, '56977615921');
 
 export const contact = {
+  /**
+   * Correo oficial de contacto y de reclamos formales. **D19, cerrada por
+   * Sebastián el 2026-09-24.**
+   *
+   * Es el que indican los T&C. La Política de Privacidad publicada dice
+   * `contacto@dlpzpro.cl`, y esa discrepancia es del documento, no de la web:
+   * queda anotada en `legal-brief.md` para que se corrija al reescribirlo.
+   */
+  email: 'contacto@dlpay.cl',
   /** Formato internacional sin signos, como lo espera wa.me */
   whatsappNumber,
   /**

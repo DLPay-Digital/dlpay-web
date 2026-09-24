@@ -271,7 +271,11 @@ del sitio de Guita o de documentos anteriores. La paleta completa, neutros y sem
 `docs/design-system/design-system-v1.md`.
 
 **Nomenclatura:** **DLPay** es la marca y protagoniza toda la comunicación comercial.
-**DLPZ INCZ SpA** es la razón social: va en footer y páginas legales, no es protagonista.
+**DLPZ PRO SpA** es la razón social: va en footer y páginas legales, no es protagonista.
+*Cerrado el 2026-09-24 (D9).* Decía «DLPZ INCZ SpA», que no era la sociedad que firman los T&C y
+la Política publicados. Se elige la de los documentos, porque publicar bajo una entidad que
+contradiga el contrato vigente era justo lo que bloqueaba los textos legales. Existe un reparto
+entre las dos sociedades; la web habla por la que contrata con el cliente.
 
 **Tipografía (cerrada 2026-09-04): set T-C** — **Familjen Grotesk** (display, títulos y texto) +
 **Spline Sans Mono** (cifras). Ambas SIL OFL, variables, **auto-hospedadas** (nunca desde un CDN
@@ -516,8 +520,8 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | ~~D18~~ | ~~Fuente real de actividad reciente~~ | ✅ **Cerrada 2026-09-09: se descarta la funcionalidad.** El feed de «operaciones recientes» nunca salió de la investigación —cero menciones en `phase-2.5` y en `cotizador-spec`—; nació al construir `/cotizar` y se quedó sin página al eliminarla. Además chocaba con **D10**: un feed de actividad **es** una cifra de volumen, y publicarlo en continuo es una decisión de Compliance, no de ingeniería. `ActivityFeed.astro`, `lib/activity` y sus 15 tests se eliminaron (514 líneas). Si algún día se quiere prueba social, la puerta es **D10** y el punto de partida está en el historial, antes de `7577ffe` | — | — |
 | D28 | **¿Necesita la franja de notificación un botón de cerrar?** Hoy es estática y se oculta sola en la página que enlaza (ADR-0006). Cerrarla de verdad exige script síncrono en el `<head>` + `sessionStorage`, y con ello el fin de «cero almacenamiento» y de las cuatro legales en cero JS. Se reabre **con evidencia de que estorba**, no por incomodidad | No | Sebastián |
 | D27 | **Cabeceras del host**: `X-Robots-Tag: noindex` en Staging —la defensa robusta, porque `Disallow` impide leer el `noindex` del HTML— y evaluar un CSP por hash de los tres scripts en línea, que permitiría quitar `unsafe-inline`. Conjunto completo en `docs/arquitectura-produccion.md` §5.1 | No | Al cerrar D1b (proveedor) |
-| D9 | **Razón social**: se usa **DLPZ INCZ SpA**. Los T&C publicados dicen "DLPZ PRO SpA" (RUT 78.378.714-8) | **Sí — bloquea publicar los textos legales.** No se puede publicar bajo una entidad que contradiga el contrato vigente | `REQUIERE VALIDACIÓN DE COMPLIANCE` — Joaquín. **No reinvestigar.** |
-| D19 | **Correo oficial de contacto**: los T&C dicen `contacto@dlpay.cl`, la Política dice `contacto@dlpzpro.cl` | Sí, para el canal de denuncias. La web no publica ninguno hasta confirmarlo | Compliance |
+| ~~D9~~ | ~~Razón social~~ | ✅ **Cerrada 2026-09-24 por Sebastián: DLPZ PRO SpA**, la de los T&C y la Política publicados. Arrastra el sujeto de la frase institucional del pie: la UAF y FinteChile se afirmaron el 2026-09-07 sobre DLPZ INCZ SpA y **hay que confirmar que son de esta sociedad** — anotado en `alliances.ts` | — |
+| ~~D19~~ | ~~Correo oficial de contacto~~ | ✅ **Cerrada 2026-09-24 por Sebastián: `contacto@dlpay.cl`**, el de los T&C. Publicado en `/canal-de-denuncias` e importado de `site.ts`. La Política publicada dice `contacto@dlpzpro.cl`: la discrepancia es del documento y se corrige al reescribirlo | — |
 | D20 | **El alcance de los T&C ya no coincide con el servicio**: hablan de custodia y liquidaciones internacionales; el servicio real es cambio de divisas con entrega de dólar digital | Sí, antes de publicar los textos | Compliance |
 | D10 | **Testimonios, cifras de clientes/volumen, logos de empresas** | No — no se publican hasta verificar | DLPay (I15) |
 | ~~D25~~ | ~~Membresía en FinteChile~~ | ✅ Cerrada 2026-09-07: socio confirmado por Sebastián. Logo publicado en el pie | — |

@@ -56,11 +56,31 @@ export const alliancesHeading = 'Participación institucional';
 export const institutionalStatement =
   'está registrada y supervisada por la Unidad de Análisis Financiero (UAF).';
 
+/*
+  REQUIERE VALIDACIÓN DE COMPLIANCE — **la frase cambió de sujeto el 2026-09-24**
+  sin que cambiara una palabra de su redacción.
+
+  El pie compone `site.legalName` + esta frase. Hasta el 2026-09-24 decía «DLPZ
+  INCZ SpA está registrada y supervisada por la UAF»; al cerrarse D9 pasó a decir
+  **DLPZ PRO SpA**. Sebastián afirmó el registro ante la UAF y la membresía de
+  FinteChile el 2026-09-07, y lo hizo sobre la OTRA sociedad.
+
+  Un registro ante la UAF pertenece a un RUT, no a un grupo de empresas, y la
+  membresía de un gremio también. **Hay que confirmar que las dos son de DLPZ PRO
+  SpA**; si alguna fuera de DLPZ INCZ SpA, el pie estaría atribuyendo a una
+  sociedad un registro que es de otra, que es exactamente el tipo de claim que
+  este archivo existe para no dejar suelto.
+
+  Mientras no se confirme, el `verified` de cada alianza sigue siendo el candado:
+  ponerlo en `false` retira el emblema y la frase de una vez.
+*/
+
 export const alliances: readonly Alliance[] = [
   {
     id: 'fintechile',
     name: 'FinteChile',
-    // REQUIERE VALIDACIÓN DE COMPLIANCE — ¿DLPZ INCZ SpA es socio vigente?
+    // REQUIERE VALIDACIÓN DE COMPLIANCE — ¿DLPZ **PRO** SpA es socio vigente?
+    // La pregunta cambió de sujeto al cerrarse D9; ver la nota de arriba.
     // La membresía es verificable en el directorio público del gremio.
     relationship: 'Socio de FinteChile',
     file: '/alianzas/fintechile.png',
