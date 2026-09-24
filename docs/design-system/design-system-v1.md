@@ -260,8 +260,17 @@ lo declara.
 #### Lo que queda fuera de la regla, a propósito
 
 `/empresas` habla a `--t-display` (52 px) y §3.0.1 dice que **sólo la Home** lo hace: «son dos
-voces, no cinco». Es una excepción deliberada de `PageHero` (`titleSize="hero"`), aprobada con el
-rediseño de ese encabezado. **Se deja y se anota**: una excepción escrita no es un descuido.
+voces, no cinco».
+
+**Confirmado por Sebastián el 2026-09-24, al revisar esta auditoría: «`/empresas` y la Home son un
+caso aparte».** No es una excepción heredada del rediseño de ese encabezado: es una decisión
+vigente y tomada mirando la tabla de arriba.
+
+Así que la regla de §3.0.1 se lee con este matiz: **las dos páginas de entrada —la Home para
+personas y `/empresas` para empresas— hablan a `--t-display`; las interiores, a `--t-h2`.** Siguen
+siendo dos voces; lo que cambia es cuántas páginas usan la primera.
+
+**No se vuelve a levantar en la próxima auditoría.**
 
 ---
 
