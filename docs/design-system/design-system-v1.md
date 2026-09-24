@@ -561,32 +561,44 @@ hay que recalcular.
 
 ---
 
-### 6.3 La banda de cierre y el pie  ·  *añadido el 2026-09-24*
+### 6.3 La banda de cierre  ·  *añadido y revisado el 2026-09-24*
 
-**Una banda de llamada que precede al pie va en `--tinta-2`, nunca en `--tinta`, y el pie declara su
-propio borde superior en `--line-on-tinta`.**
+**Una banda de llamada que precede al pie va sobre PAPEL, centrada, y toma el tono que continúa la
+alternancia de su página.** El pie es `--tinta`, así que una banda clara se distingue de él por
+material y no por un filete.
 
-Cuatro páginas cierran así —`/como-funciona`, `/precio`, `/preguntas` y la banda de contacto de
-`/empresas`— y el pie es `--tinta`. Con la banda también en `--tinta` los dos bloques se fundían en
-uno solo: el lector no sabe dónde acaba la invitación y empieza la navegación.
+| página | sección de arriba | la banda |
+|---|---|---|
+| `/como-funciona` | `.scope` · `--papel-2` | `--papel` |
+| `/preguntas` | `.palabras` · `--papel-2` | `--papel` |
+| `/precio` | `.tres` · `--papel` | `--papel-2` |
+| `/empresas` | la FAQ · `--papel` | `--papel-2` |
 
-**Hacen falta las dos cosas, y se eligieron midiendo:**
+**El tono no es fijo: lo decide el vecino de arriba.** Una banda siempre en el mismo papel se funde
+con la sección anterior en la mitad de las páginas, que es el mismo defecto una fila más arriba.
+
+**Cómo se comprueba, y no es leyendo el archivo.** La sección anterior se mira con
+`previousElementSibling` **sobre el render**. Leerla del orden de los `<section>` del código falla
+cuando en medio hay un componente: en `/empresas` la FAQ está entre `.scope` y la banda, no aparece
+en un `grep` de `<section` y por eso la primera versión salió del mismo tono que la caja de encima.
+
+**Lo que se descartó, medido.** Dejar la banda oscura y separarla del pie con un filete:
 
 | | contraste contra `--tinta` | |
 |---|---|---|
-| `--tinta-2` | **1,068:1** | se distingue como superficie, **no** como línea |
-| El filete de `rgba(237,242,239,.1)` de la cabecera y la 404 | **1,27:1** | no se ve sobre tinta |
-| **`--line-on-tinta`** | **3,50:1** | el corte |
+| `--tinta-2` | 1,068:1 | se distingue como superficie, **no** como corte |
+| El filete de `rgba(237,242,239,.1)` de la cabecera y la 404 | 1,27:1 | no se ve sobre tinta |
+| `--line-on-tinta` | 3,50:1 | el corte, pero las dos cajas siguen pareciendo el mismo material |
 
-`--tinta-2` sólo da el cambio de material; el corte lo da el filete. Por separado ninguna de las dos
-basta, y por eso la regla las pide juntas.
+Funcionaba, y aun así la banda clara es mejor: **no necesita que nadie recuerde el filete.** El
+borde superior del pie se conserva porque no estorba y salva los casos futuros.
 
-**El borde vive en el pie y no en cada banda**, para que valga en todas las páginas. En las que
-cierran sobre papel queda contra una superficie clara y no se nota, que es lo correcto: ahí el corte
-ya se ve solo.
+**Un control fantasma sobre estas bandas no puede usar `--line`.** Mezclado da **1,34:1** sobre
+`--papel-2` y 1,35 sobre `--papel`, y WCAG 1.4.11 pide **3:1** al contorno de un control. Con alfa
+**0,46** da 3,00 y 3,06, así que un solo valor sirve para los dos papeles.
 
-Texto sobre `--tinta-2`, comprobado: `--on-tinta` 15,40:1 · `--on-tinta-mute` 7,66:1 ·
-`--verde` 7,92:1.
+> **PENDIENTE, medido y no corregido acá:** los fantasmas sobre papel que ya existían —`/como-funciona`
+> §kyc y `Steps.astro`— siguen con `--line` a 1,35:1. Es anterior a este cambio.
 
 ---
 

@@ -205,7 +205,7 @@ const waPlain = contact.whatsappUrl();
     */}
     <Faq items={faq} title="Preguntas de una empresa" />
 
-    <section class="contact on-tinta-surface" aria-labelledby="contact-title">
+    <section class="contact" aria-labelledby="contact-title">
       <div class="inner">
         <h2 id="contact-title">Hablemos de tu operación</h2>
         <p>
@@ -395,10 +395,24 @@ const waPlain = contact.whatsappUrl();
   */
   .tick { width: 20px; height: 20px; color: var(--verde-deep); flex: none; margin-top: 2px; }
 
-  .contact { background: var(--tinta-2); color: var(--on-tinta); padding: var(--s-8) 0; }
-  .contact h2 { color: var(--on-tinta); }
-  .contact p { color: var(--on-tinta-mute); max-width: 47ch; margin-bottom: var(--s-6); }
-  .actions { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+  /*
+    La banda de contacto va sobre papel (Design System §6.3, revisado el
+    2026-09-24): el pie es `--tinta`, así que una banda clara se distingue de él
+    sin depender de ningún filete.
+
+    **`--papel-2`, y el tono costó una corrección:** la sección inmediatamente
+    anterior es la FAQ, que va en `--papel`, no `.scope`. Lo leí del orden de
+    los `<section>` del archivo y me equivoqué —la FAQ es un componente y no
+    sale en ese grep—, así que la banda salió del mismo tono que la caja de
+    encima y las dos se fundían. Se vio con `previousElementSibling` sobre el
+    render.
+
+    Centrada: la invitación y sus dos acciones leen como una sola pieza.
+  */
+  .contact { background: var(--papel-2); padding: var(--s-9) 0; text-align: center; }
+  .contact h2 { color: var(--ink); }
+  .contact p { color: var(--ink-mute); max-width: 47ch; margin: 0 auto var(--s-6); }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--s-3); justify-content: center; }
   .cta {
     display: inline-flex;
     align-items: center;
@@ -416,12 +430,22 @@ const waPlain = contact.whatsappUrl();
   .ghost {
     display: inline-flex;
     align-items: center;
-    /* 0.40, no 0.28. Mezclado sobre `--tinta-2` de esta banda, el 0.28 daba
-       2.35:1 y WCAG 1.4.11 pide 3:1 al contorno de un control. 0.40 da 3.47:1
-       aquí y 3.50:1 sobre `--tinta`, así que un solo valor sirve para las dos
-       superficies oscuras y coincide con el fantasma de `Steps.astro`. */
-    border: 1px solid var(--line-on-tinta);
-    color: var(--on-tinta);
+    /*
+      El contorno se recalculó al pasar la banda a papel (2026-09-24). Antes era
+      `--line-on-tinta`, que sobre una superficie clara no se ve.
+
+      **No sirve `--line`**, que es lo que usan los fantasmas sobre papel del
+      resto del sitio: mezclado sobre `--papel-2` da **1,34:1** y WCAG 1.4.11 pide
+      **3:1** al contorno de un control. Con alfa **0,46** da **3,00:1** acá y
+      3,06 sobre `--papel`, así que un solo valor sirve para las dos. Va escrito a mano por lo mismo que los otros literales de alfa
+      del proyecto: `color-mix()` queda por debajo del objetivo de CSS.
+
+      PENDIENTE — los fantasmas sobre papel que ya existían (`/como-funciona`
+      §kyc y `Steps.astro`) siguen con `--line` a 1,35:1. Es anterior a este
+      cambio y no se toca acá, pero está medido.
+    */
+    border: 1px solid rgba(11, 19, 32, 0.46);
+    color: var(--ink);
     font-weight: 600;
     font-size: var(--t-body-sm);
     padding: var(--s-4) var(--s-5);
@@ -429,7 +453,7 @@ const waPlain = contact.whatsappUrl();
     text-decoration: none;
   }
   .ghost { transition: border-color var(--m-fast) var(--m-ease); }
-  .ghost:hover { border-color: var(--on-tinta); }
+  .ghost:hover { border-color: var(--ink); }
   .wa-icon { width: 16px; height: 16px; }
 
   @media (min-width: 760px) {
