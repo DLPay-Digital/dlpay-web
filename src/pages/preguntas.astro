@@ -26,8 +26,10 @@
  *   diga, porque un campo así podría contradecir a su propio origen.
  * · Los ocho términos: `glossary.ts`.
  *
- * Lo único escrito acá son los cinco títulos de preocupación, la frase que
- * explica la agrupación y el cierre. Son de esta página y de ninguna otra.
+ * Lo único escrito acá son los cinco títulos de preocupación y el cierre. Son
+ * de esta página y de ninguna otra. *(El párrafo que explicaba la agrupación se
+ * retiró el 2026-09-24, por decisión de Sebastián: los cinco títulos la dicen
+ * sin necesidad de introducirla.)*
  *
  * ── Sin índice y sin numerar, por decisión de Sebastián del 2026-09-24 ─────
  *
@@ -130,12 +132,6 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     <div class="cuerpo">
       <div class="inner">
         <div class="grupos">
-          <p class="tesis">
-            Las mismas cinco preocupaciones aparecen de los dos lados.
-            <strong>Tres son idénticas para una persona y para una empresa</strong> y sólo cambian de
-            palabras; las otras dos las hace un lado solo.
-          </p>
-
             {secciones.map((s) => (
               <section class="grupo" id={s.id} aria-labelledby={`${s.id}-t`}>
                 <header class="g-cab" data-enter>
@@ -218,8 +214,9 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     leería como una tabla.
   */
   .grupos { max-width: 760px; }
-  .tesis { color: var(--ink-mute); max-width: 47ch; margin-bottom: var(--s-8); }
-  .tesis strong { color: var(--ink); font-weight: 600; }
+  /* El primer grupo abre la página: sin el párrafo de entrada, su cabecera no
+     necesita el aire que separaba una cosa de la otra. */
+  .grupo:first-child .g-cab { padding-top: 0; }
 
   /* `scroll-margin-top` para que el ancla no deje el título pegado al borde ni
      debajo de la cabecera. */

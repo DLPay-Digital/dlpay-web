@@ -1816,3 +1816,19 @@ Y dos cosas que hubo que ajustar al quitarlos, y que sólo se ven midiendo:
 2. **Las dos secciones dejaron de acabar en el mismo sitio**: los grupos en 901px y el glosario en
    1.125. Un salto en el borde derecho entre dos secciones seguidas de la misma página. Igualadas
    en 901.
+
+#### Y dos más, del mismo día
+
+**Fuera el párrafo de entrada** —«Las mismas cinco preocupaciones aparecen de los dos lados…»—, por
+decisión de Sebastián. Los cinco títulos dicen lo mismo sin necesidad de presentarlo.
+
+**El pie se separa de la banda de cierre.** Sebastián vio que la invitación a escribir y el pie se
+fundían en un solo bloque oscuro: los dos son `--tinta`. Afecta a **cuatro páginas** —
+`/como-funciona`, `/precio`, `/preguntas` y la banda de contacto de `/empresas`— así que el borde va
+en el propio pie y no en cada banda.
+
+Medido antes de elegirlo: cambiar el pie a `--tinta-2` **no habría servido**, da **1,068:1** contra
+`--tinta`. Y el filete de 0,1 que usan la cabecera y la 404 da **1,27:1**, que tampoco se ve sobre
+tinta. Va `--line-on-tinta`, que da **3,50:1** y ya es un token del sistema. En las páginas que
+cierran sobre papel el borde queda contra una superficie clara y no se nota, que es lo correcto
+porque ese corte ya se ve solo.

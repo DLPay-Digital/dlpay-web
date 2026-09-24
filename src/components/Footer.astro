@@ -81,7 +81,29 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
-  .site-footer { background: var(--tinta); color: var(--on-tinta); padding: var(--s-8) 0 var(--s-6); }
+  /*
+    El pie declara su propio borde superior (2026-09-24).
+
+    Tres páginas cierran con una banda de llamada sobre `--tinta` —
+    `/como-funciona`, `/precio` y `/preguntas`— y el pie es `--tinta` también,
+    así que la banda y el pie se fundían en un solo bloque oscuro: el lector no
+    sabe dónde acaba la invitación y empieza la navegación.
+
+    Va `--line-on-tinta` y no el filete de 0,1 que usan la cabecera y la 404:
+    medido, ése da **1,27:1** contra tinta y no se ve; `--line-on-tinta` da
+    **3,50:1**, que es lo que hace falta para separar dos superficies del mismo
+    color. Cambiar el pie a `--tinta-2` no servía — contra `--tinta` da 1,068:1.
+
+    Va acá y no en cada banda para que valga en todas las páginas, también en
+    las que cierran sobre papel: ahí el borde queda contra una superficie clara
+    y no se nota, que es lo correcto porque ese corte ya se ve solo.
+  */
+  .site-footer {
+    background: var(--tinta);
+    color: var(--on-tinta);
+    padding: var(--s-8) 0 var(--s-6);
+    border-top: 1px solid var(--line-on-tinta);
+  }
   .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
 
   .cols { display: grid; gap: var(--s-7); }
