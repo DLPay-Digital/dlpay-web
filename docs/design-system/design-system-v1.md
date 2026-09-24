@@ -454,7 +454,8 @@ vocabulario geométrico ya no cabe en la regla dura de §6. Ésta es la semánti
 | Barra llena verde | una magnitud |
 | Filete `--ink-mute` | existe, es real, **no** es nuestro |
 | Canto dividido en unidades | la cosa está **hecha de unidades transferibles** |
-| Trazo **punteado** en `--line` | una **frontera** · es la única marca punteada del sistema |
+| Trazo **punteado** | un **límite**: cruzarlo cambia algo · es la única marca punteada del sistema |
+| Línea horizontal plana en verde, junto a otra que sigue moviéndose | **un valor que quedó fijo** · lo que ya no cambia |
 | `--line` | separador sin significado |
 
 **El color no es el portador del significado.** El verde dice «esta marca carga significado»; cuál
@@ -473,6 +474,13 @@ Comprobado: en todo `src/` hay **un solo** trazo punteado visible, el `stroke-da
 `.edge` en `UseCaseFigure`. (El `stroke-dasharray` de `tokens.css` no cuenta: es el mecanismo del
 movimiento M3 —el guion vale el largo del propio trazo y pasa a `none` al entrar—, no una marca.
 Nunca se lee como punteado.)
+
+**Generalizada el 2026-09-24, de «frontera» a «límite».** Nació describiendo el único punteado que
+existía —la frontera de `cruza`, que separa Chile del extranjero—. La banda de `/precio` estrenó un
+segundo: una vertical punteada en el instante en que el cliente acepta el precio. No es una frontera
+geográfica y es exactamente la misma palabra: **una línea que, al cruzarla, cambia lo que pasa
+después**. Un límite en el espacio y un límite en el tiempo son el mismo signo, y separarlos en dos
+filas habría creado dos marcas donde hay una.
 
 Lo que la fila resuelve, y es el motivo de escribirla:
 
@@ -498,6 +506,24 @@ activos tokenizados (`PortadaFigura.astro`) y quedó sin documentar; al aparecer
 pieza con el mismo significado —la figura del riel, en el cuerpo de ese mismo artículo— pasó el
 umbral que hizo nacer este §6.2 y se escribe. **El número de marcas no es un dato**: veinticuatro no
 significa veinticuatro de nada, y cambiarlo no cambia lo que la figura dice.
+
+**La sexta familia, añadida el 2026-09-24: la línea que deja de moverse.** Vive en la banda «No
+cambia después de que lo aceptas» de `/precio`, y es la primera figura del sitio cuyo significado lo
+lleva **una ausencia**: lo que la línea verde afirma es que *no* sube ni baja, y eso sólo se ve
+contra una línea gris que sí se mueve. De ahí salen dos condiciones que no son de estilo:
+
+1. **El tramo posterior de la línea gris no se recorta nunca.** Si el mercado se detiene en el punto
+   de aceptación, la figura deja de decir «tu precio se quedó quieto» y pasa a decir «el mercado se
+   detuvo», que es falso. La quietud necesita el movimiento al lado.
+2. **La línea gris no puede tener tendencia.** Si después del punto sube, la figura dice que aceptar
+   fue mal negocio; si baja, que fue bueno. Las dos son afirmaciones sobre el resultado de una
+   operación y ninguna se puede publicar. El camino se **construye** con excursión simétrica y media
+   próxima a cero, y se vuelve a medir si se toca: filtrando trazados al azar no sale ninguno que
+   cumpla.
+
+Va sobre tinta, y eso tampoco es estético: sobre papel `--verde` da **2,02:1** y no alcanza ni el
+3:1 de un gráfico. Si alguna vez se mueve a una superficie clara, el verde pasa a `--verde-deep` y
+hay que recalcular.
 
 **Cómo se comprueba una figura nueva, antes de dibujarla:**
 

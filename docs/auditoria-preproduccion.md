@@ -464,6 +464,31 @@ literales**: es una condición comercial, y dos copias que divergen serían dos 
 publicadas a la vez. Depende de D5 y de D6; cuando cualquiera de las dos se cierre, la frase cambia
 en un solo sitio.
 
+### Copy aprobado por Compliance — 2026-09-24
+
+**Firmado por Sebastián Villanueva Pereira como Compliance el 2026-09-24.**
+
+| Qué se aprobó | Dónde vive |
+|---|---|
+| **«No cambia después de que lo aceptas»** como titular destacado de `/precio` | `precio.astro`, banda sobre tinta |
+
+**Lo que esta firma cambia, y por qué había que pedirla.** Las palabras ya estaban publicadas, pero
+**dentro de `<PendingNotice title="Tabla de tarifas: en publicación">`** en `/tarifas` — es decir,
+bajo un borde de aviso, precedidas de «mientras tanto» y como parche mientras **D5** siga abierta.
+`PendingNotice` existe, con esas palabras en su propio código, «para no publicar nunca un texto
+inventado ocupando el lugar de uno que requiere revisión legal».
+
+La banda las convierte en el titular y el centro visual de la página. Mismas palabras, estatus
+contrario: de salvedad temporal a afirmación destacada. Eso es lo que se firmó.
+
+**El límite que sigue vigente:** la banda **no dice** «Precio garantizado» ni «Congelamos tu
+precio», que llevan su propio marcador en `Process.astro` y siguen sin firma. «Garantizado» es una
+promesa sobre el futuro; «no cambia después de que lo aceptas» describe cómo opera la mesa. No son
+sinónimos y no se pueden intercambiar.
+
+**Cuando D5 se cierre**, esta frase hay que volver a mirarla: si la tabla de tarifas publicada dice
+algo distinto sobre cuándo se fija el precio, el titular de `/precio` deja de ser cierto.
+
 ### Copy aprobado por Compliance — 2026-09-23
 
 **Firmado por Sebastián Villanueva Pereira como Compliance el 2026-09-23.** Va **sin** marcador

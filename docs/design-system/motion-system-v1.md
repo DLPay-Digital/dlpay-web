@@ -92,6 +92,24 @@ técnica —«cero JavaScript»— era la que de verdad protegía algo, y **no s
 entra sin una línea de script. La otra —«un documento legal no se presenta con movimiento»— hablaba
 del documento, y el documento sigue inmóvil.
 
+### Enmienda interna — 2026-09-24
+
+La banda **«No cambia después de que lo aceptas»** de `/precio` necesita una secuencia de
+**2.190 ms**, muy por encima del techo del catálogo. Mismo alcance acotado que ADR-0008 le dio al
+globo: **enmienda la pieza, no los seis movimientos ni el techo fuera de ella.**
+
+| Regla de este documento | Estado |
+|---|---|
+| §2c — techo de **280 ms** | **Enmendado, y sólo para esta banda.** Trazado del mercado 1.300 ms → brota el punto 300 ms → trazado de la recta 720 ms. **El tiempo ES el contenido**: la figura afirma que una línea se queda quieta mientras otra se mueve, y eso no se puede decir en 280 ms — sin la duración del trazado gris no hay contra qué comparar la quietud. Es el mismo argumento por el que M3 dibuja y no funde |
+| §4, regla dura 1 — **una sola vez** | **Intacto.** Lo dispara el observador del sitio, que hace `unobserve` al revelar |
+| §4, regla dura 3 — las cifras no entran | **No aplica.** La banda no lleva ninguna cifra |
+| §4, regla dura 5 — sin JavaScript todo se ve | **Intacto y verificado en los tres caminos.** El estado oculto cuelga de `.js-motion`, así que sin JS la figura se dibuja entera y quieta. Con la red de seguridad de `Motion.astro` disparándose, igual |
+| `prefers-reduced-motion` | **Intacto.** Las cuatro animaciones se apagan y la figura queda completa |
+
+**Lo que esta enmienda no abre.** No autoriza secuencias largas en otras piezas: autoriza **ésta**,
+cuya duración está justificada porque el movimiento es la afirmación. Una entrada decorativa de
+2.190 ms sigue prohibida por el §4, y sin esa distinción la enmienda sería un cheque en blanco.
+
 ---
 
 ## 1. Estado actual, verificado

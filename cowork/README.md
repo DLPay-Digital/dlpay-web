@@ -362,6 +362,8 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-24 | [`2026-09-24-precio-que-aceptas`](2026-09-24-precio-que-aceptas/ficha.md) — banda sobre tinta en `/precio`: el mercado se mueve, aceptas, y desde ahí tu precio es una recta mientras el gris sigue. **v2 · estrena la sexta familia del §6.2 y pide enmienda de movimiento** | **En revisión** | El camino no se filtra, se CONSTRUYE: tres octavas de ruido para que tenga textura de mercado, y cuatro correcciones que valen cero en el punto de aceptación para que no afirme que fijar el precio fue buen ni mal negocio. En la v1 el `slice` escondía el tercio derecho del mercado, que es donde la figura se juega lo que dice |
+| 2026-09-24 | [`2026-09-24-precio-que-aceptas`](2026-09-24-precio-que-aceptas/ficha.md) — la banda «No cambia después de que lo aceptas» de `/precio` | **Integrada con cambios** | Trazado y geometría literales. Firma de Compliance pedida antes de integrar, por dónde vivía la frase. Una colisión de clases que rompía la otra figura de la página |
 | 2026-09-23 | [`2026-09-23-iconos`](2026-09-23-iconos/ficha.md) — los cuatro iconos que el DS §7 ya nombraba y `Icon.astro` no tenía: documento, empresa, wallet, candado | **En revisión** | El set pasa de cinco a nueve sin estrenar nada. «empresa» va como maletín y no como edificio porque `bank` ya lo es y a 16 px colisionan. De aquí sale el largo de trazo como proxy del peso óptico |
 | 2026-09-23 | [`2026-09-23-precio`](2026-09-23-precio/ficha.md) — `/precio`: el cobro único. Dos barras del mismo largo y una tabla donde cinco filas dicen «Sin costo» y una dice dónde está el spread. **Copy firmado por Sebastián el 2026-09-23** | **Integrada** (`bcda1fe`) | El dibujo entero. La frase de volumen se importa como constante en vez de teclearse, y la medida pasa a 47ch. De aquí salen las reglas 28 y 29 |
 | 2026-09-23 | [`2026-09-23-iconos`](2026-09-23-iconos/ficha.md) — cuatro iconos nuevos y tres listas que dejan de llevar ticks idénticos | **Integrada con cambios** | Los cuatro trazados tal cual y las tres ubicaciones tal cual. El tamaño sube de 19 a 20px: 19 está fuera de la grilla del §7 |
@@ -1457,3 +1459,81 @@ el componente y **no aparece en ninguna de las catorce páginas**. El límite qu
 | Iconos anunciados por un lector de pantalla | 0 | **0** · todos con `aria-hidden` |
 | `candado` en alguna página | 0 | **0** |
 | Scroll horizontal a 320, 390 y 1280 | no | **no** |
+
+### Notas de la integración de `2026-09-24-precio-que-aceptas`
+
+`md5` el declarado. **El trazado va copiado literalmente** —2.137 bytes en una línea, extraídos por
+script del atributo `d` para no arriesgar un salto de línea— y la geometría no se tocó.
+
+#### Se pidió la firma antes de integrar, y no por lo que dice la ficha
+
+La ficha pide firma porque «ahí viven en un párrafo y aquí son un titular de 32px». Correcto, y hay
+un motivo más fuerte que no vio: **fui a ver dónde están publicadas esas palabras.** Están dentro de
+`<PendingNotice title="Tabla de tarifas: en publicación">`, bajo un borde de aviso, precedidas de
+«mientras tanto», como parche mientras D5 siga abierta. `PendingNotice` existe «para no publicar
+nunca un texto inventado ocupando el lugar de uno que requiere revisión legal».
+
+O sea: no era un párrafo que sube a titular, era **una salvedad provisional que pasa a ser el centro
+visual de una página**, con 2,2 segundos de animación encima. Sebastián lo firmó como Compliance el
+2026-09-24 y queda registrado en `auditoria-preproduccion.md` con lo que la firma cambia y con la
+nota de que **cuando D5 se cierre hay que volver a mirar esta frase**.
+
+La distinción que la ficha sí defiende bien y que se conserva: la banda **no dice** «Precio
+garantizado» ni «Congelamos tu precio». «Garantizado» es una promesa sobre el futuro; «no cambia
+después de que lo aceptas» describe cómo opera la mesa.
+
+#### Un fallo que introduje al trasladar, y cómo apareció
+
+La maqueta llama `.rot` a sus tres rótulos. **`/precio` ya usaba `.rot`** para los dos rótulos de la
+figura de las barras, sobre papel. Al pegar las reglas, esos dos quedaron en `position: absolute` y
+en `--on-tinta-mute` —un gris pensado para tinta— encima del papel.
+
+**No lo vi leyendo el CSS: apareció al contar los elementos del render** —medí tres rótulos y salieron
+cinco—. Renombrados a `seg-rot`. Es la lección de siempre en versión nueva: una maqueta trae nombres
+de clase pensados para una página vacía, y la página real ya tiene los suyos.
+
+#### Lo medido, sobre el build
+
+| | ficha | medido |
+|---|---|---|
+| Excursión arriba / abajo | 58,2 / 58,2 · dif 0,00 | **58,2 / 58,2 · dif 0,00** |
+| Cruces de la horizontal | 9 | **9** |
+| Último punto | 20,6 px · 35 % | **20,6 px · 35 %** |
+| Valor en el punto de aceptación | sin retoque visible | **y = 120,0 exacto** |
+| Grosores reales a 320 y 1280 | 1,5 y 3,4 px | **1,5 y 3,4 px** en los dos |
+| El punto es redondo | sí | **15 × 15** a 320 y a 1280 |
+| `<text>` dentro del SVG | 0 | **0** |
+| Las dos líneas llegan al borde | sí | **1.273 de 1.280** y **313 de 320** (el resto es la barra de scroll) |
+| Scroll horizontal a 320, 390, 1280 | no | **no** |
+| Contrastes sobre tinta | 8,18 · 8,45 · 3,51 | **8,176 · 8,453 · 3,497** |
+| `/precio` sin figura, antes | 1.610 px · 73 % | **1.610 px · 73 %**, al píxel |
+
+**Los tres caminos de movimiento terminan con todo visible**, verificados sobre el render: con JS,
+con `prefers-reduced-motion` y sin `.js-motion`. En el tercero la figura se dibuja entera y quieta,
+porque el estado oculto cuelga de esa clase.
+
+#### Una cifra con el signo al revés
+
+La media del tramo posterior: la ficha dice **+1,409** y sale **−1,398**. La magnitud reproduce; el
+signo, no. Dibujado, el tramo posterior queda de media 1,4 px **por debajo** de la línea aceptada en
+coordenadas del SVG. Son 2,4 % de la excursión, así que no se ve y no cambia nada — pero si el
+sentido de esa corrección importa, y en esta figura importa por definición, conviene que la ficha
+declare su convención de signo.
+
+#### Los dos documentos, escritos antes que el SVG
+
+Como pide el §0 de la ficha, y con un hallazgo de sistema que la entrega no traía: **la vertical
+punteada de esta banda es el segundo uso de la marca punteada**, y el §6.2 la tenía escrita como
+«frontera» desde ayer, describiendo un límite geográfico. Acá el límite es un instante. Se
+**generalizó la fila** —de «frontera» a «límite: cruzarlo cambia algo»— en vez de abrir una segunda:
+un límite en el espacio y un límite en el tiempo son el mismo signo.
+
+La enmienda de movimiento va con el alcance de ADR-0008: enmienda la pieza, no el techo. El
+argumento que se escribió es que **el tiempo es el contenido** —sin la duración del trazado gris no
+hay contra qué comparar la quietud— y con él el límite: no autoriza secuencias largas en otras
+piezas.
+
+#### Lo que queda para otro día
+
+La observación del §7 sobre el índice del blog es buena y está medida: **las dos portadas existen y
+no se ven ahí**. No se tocó, para no mezclar entregas.

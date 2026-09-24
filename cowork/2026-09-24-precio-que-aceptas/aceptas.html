@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>El precio que aceptas</title>
+<style>
+@font-face{font-family:'Familjen Grotesk';src:url(/fonts/familjen-grotesk-latin.woff2) format('woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Spline Sans Mono';src:url(/fonts/spline-sans-mono-latin.woff2) format('woff2');font-weight:100 900;font-display:swap}
+:root{--verde:#16C784;--verde-deep:#0A7250;--tinta:#0B1320;--tinta-2:#101A2B;
+--papel:#F6F5F1;--papel-2:#ECEAE3;--ink:#131A26;--ink-mute:#5A6472;
+--line:rgba(11,19,32,.14);--on-tinta:#EDF2EF;--on-tinta-mute:#9DB0AA;--line-on-tinta:rgba(237,242,239,.40);
+--f-text:'Familjen Grotesk',system-ui,sans-serif;--f-num:'Spline Sans Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--ink);font-family:var(--f-text);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.inner{max-width:1120px;margin:0 auto;padding:0 24px}
+.kicker{font-family:var(--f-num);font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 14px}
+.ctx{padding:36px 0;border-bottom:1px solid var(--line);opacity:.4}
+.ctx h3{margin:0 0 6px;font-size:19px}.ctx p{margin:0;color:var(--ink-mute);font-size:14px}
+.ctx.tinta{background:var(--tinta);color:var(--on-tinta);opacity:.5}.ctx.tinta p{color:var(--on-tinta-mute)}
+.ctx.p2{background:var(--papel-2)}
+
+.banda{background:var(--tinta);color:var(--on-tinta);padding:84px 0 90px;overflow:hidden}
+.banda .kicker{color:var(--on-tinta-mute)}
+.banda h2{font-size:32px;line-height:1.08;letter-spacing:-.012em;margin:0;max-width:16ch}
+.cab{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:end;margin-bottom:56px}
+.cab .lead{color:var(--on-tinta-mute);margin:0;font-size:15px;max-width:42ch;padding-bottom:4px}
+
+figure.seguro{margin:0}
+/* el lienzo sangra hasta el borde de la pantalla: las dos líneas SALEN del cuadro */
+.lienzo{position:relative;margin-right:calc(50% - 50vw)}
+svg.curva{display:block;width:100%;height:232px}
+.mercado{fill:none;stroke:var(--on-tinta-mute);stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.precio{fill:none;stroke:var(--verde);stroke-width:3.4;stroke-linecap:butt;vector-effect:non-scaling-stroke}
+/* x = 432/1200 del viewBox · y = (120-34)/150 del viewBox */
+.nodo{position:absolute;left:36%;top:57.33%;width:15px;height:15px;border-radius:50%;
+      background:var(--verde);transform:translate(-50%,-50%)}
+.frontera{stroke:var(--line-on-tinta);stroke-width:1;stroke-dasharray:2 6;vector-effect:non-scaling-stroke}
+
+.rotulos{position:relative;height:76px;margin-top:14px}
+.rot{position:absolute;top:0;font-family:var(--f-num);font-size:12px;line-height:1.55;letter-spacing:.02em;color:var(--on-tinta-mute);max-width:23ch;margin:0}
+.rot b{display:block;font-weight:500;color:var(--on-tinta);margin-bottom:3px}
+.rot.r-mercado{left:0}
+.rot.r-acepta{left:35.5%}
+.rot.r-precio{left:63%}
+.rot.r-precio b{color:var(--verde)}
+figcaption{margin:22px 0 0;color:var(--on-tinta-mute);font-size:14px;max-width:60ch}
+figcaption strong{color:var(--on-tinta);font-weight:400}
+
+html.mo .mercado{stroke-dasharray:1;stroke-dashoffset:1;animation:trazar 1300ms cubic-bezier(.25,.6,.35,1) 120ms forwards}
+html.mo .frontera{opacity:0;animation:aparecer 260ms linear 1230ms forwards}
+html.mo .nodo{transform:translate(-50%,-50%) scale(0);animation:brotar 300ms cubic-bezier(.34,1.32,.64,1) 1290ms forwards}
+html.mo .precio{stroke-dasharray:1;stroke-dashoffset:1;animation:trazar 720ms cubic-bezier(.2,.6,.35,1) 1470ms forwards}
+html.mo .rot{opacity:0;transform:translateY(7px);animation:subir 340ms ease-out forwards}
+html.mo .rot.r-mercado{animation-delay:1310ms}
+html.mo .rot.r-acepta{animation-delay:1430ms}
+html.mo .rot.r-precio{animation-delay:1900ms}
+@keyframes trazar{to{stroke-dashoffset:0}}
+@keyframes brotar{to{transform:translate(-50%,-50%) scale(1)}}
+@keyframes aparecer{to{opacity:1}}
+@keyframes subir{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+ html.mo .mercado,html.mo .precio{stroke-dasharray:none;stroke-dashoffset:0;animation:none}
+ html.mo .nodo{transform:translate(-50%,-50%);animation:none}
+ html.mo .frontera{opacity:1;animation:none}
+ html.mo .rot{opacity:1;transform:none;animation:none}
+}
+@media (max-width:860px){
+ .banda{padding:56px 0 64px}.banda h2{font-size:23px;max-width:none}
+ .cab{grid-template-columns:1fr;gap:16px;align-items:start;margin-bottom:34px}
+ svg.curva{height:168px}
+ .rotulos{position:static;height:auto;display:grid;gap:15px;margin-top:24px}
+ .rot{position:static;max-width:none}
+}
+</style></head><body>
+
+<section class="ctx tinta"><div class="inner"><h3>Un solo número</h3><p>…el héroe de /precio…</p></div></section>
+<section class="ctx"><div class="inner"><h3>Lo que ves y lo que pagas miden lo mismo</h3><p>…las dos barras…</p></div></section>
+<section class="ctx p2"><div class="inner"><h3>Qué cuesta y qué no</h3><p>…la tabla de seis filas…</p></div></section>
+
+<section class="banda">
+  <div class="inner">
+    <div class="cab">
+      <div>
+        <p class="kicker">El precio que aceptas</p>
+        <h2>No cambia después de que lo aceptas</h2>
+      </div>
+      <p class="lead">El precio aplicable te lo informa tu ejecutivo antes de que transfieras. El mercado sigue moviéndose; el tuyo ya no.</p>
+    </div>
+
+    <figure class="seguro">
+      <div class="lienzo">
+        <svg class="curva" viewBox="0 34 1200 150" preserveAspectRatio="none" aria-hidden="true">
+          <path class="frontera" d="M432 34V184"/>
+          <path class="mercado" pathLength="1" d="M0 40.0 L6 42.6 L12 48.5 L18 53.5 L24 57.4 L30 61.9 L36 66.2 L42 67.6 L48 66.1 L54 66.0 L60 69.7 L66 75.1 L72 78.4 L78 79.1 L84 79.3 L90 80.2 L96 82.6 L102 85.9 L108 89.3 L114 92.2 L120 95.0 L126 99.2 L132 102.8 L138 104.0 L144 105.7 L150 109.6 L156 114.2 L162 114.5 L168 109.6 L174 102.3 L180 95.6 L186 89.3 L192 82.7 L198 78.3 L204 76.0 L210 74.4 L216 73.5 L222 75.6 L228 80.2 L234 82.5 L240 80.7 L246 76.7 L252 74.4 L258 74.4 L264 74.7 L270 74.4 L276 72.8 L282 70.8 L288 69.5 L294 70.4 L300 73.3 L306 75.1 L312 73.5 L318 70.0 L324 69.1 L330 72.4 L336 77.5 L342 81.3 L348 84.3 L354 88.4 L360 91.7 L366 94.0 L372 96.2 L378 99.6 L384 102.7 L390 104.7 L396 107.3 L402 109.8 L408 110.9 L414 111.8 L420 114.4 L426 118.4 L432 120.0 L438 118.1 L444 114.5 L450 112.7 L456 113.0 L462 113.9 L468 114.7 L474 117.0 L480 120.9 L486 122.9 L492 122.2 L498 120.4 L504 119.9 L510 122.0 L516 125.1 L522 126.7 L528 124.9 L534 121.2 L540 119.0 L546 119.0 L552 119.4 L558 119.8 L564 121.2 L570 123.8 L576 125.5 L582 125.7 L588 125.2 L594 125.3 L600 126.4 L606 127.5 L612 127.3 L618 125.1 L624 122.4 L630 122.1 L636 125.4 L642 130.0 L648 132.4 L654 130.7 L660 126.1 L666 121.2 L672 116.2 L678 110.0 L684 102.1 L690 92.8 L696 83.3 L702 75.6 L708 72.6 L714 74.2 L720 75.6 L726 74.7 L732 73.7 L738 75.5 L744 79.8 L750 84.1 L756 87.2 L762 88.9 L768 89.3 L774 87.9 L780 84.8 L786 80.5 L792 75.8 L798 70.5 L804 65.0 L810 61.8 L816 61.8 L822 64.1 L828 68.0 L834 73.9 L840 81.7 L846 88.8 L852 93.6 L858 96.3 L864 98.0 L870 98.6 L876 99.2 L882 100.1 L888 101.2 L894 102.7 L900 104.8 L906 106.9 L912 109.0 L918 111.7 L924 117.0 L930 123.2 L936 125.6 L942 123.5 L948 120.1 L954 118.6 L960 118.6 L966 118.9 L972 122.4 L978 129.0 L984 137.0 L990 145.2 L996 155.3 L1002 167.3 L1008 175.9 L1014 178.2 L1020 176.1 L1026 174.8 L1032 174.4 L1038 172.6 L1044 169.8 L1050 166.7 L1056 163.7 L1062 161.0 L1068 161.2 L1074 164.5 L1080 166.0 L1086 165.1 L1092 164.0 L1098 163.3 L1104 160.9 L1110 156.2 L1116 153.0 L1122 152.3 L1128 153.1 L1134 153.5 L1140 154.5 L1146 157.0 L1152 158.9 L1158 157.1 L1164 152.5 L1170 150.2 L1176 151.9 L1182 154.5 L1188 153.9 L1194 148.4 L1200 140.6"/>
+          <path class="precio" pathLength="1" d="M432 120H1200"/>
+        </svg>
+        <span class="nodo" aria-hidden="true"></span>
+      </div>
+      <div class="rotulos">
+        <p class="rot r-mercado"><b>El mercado se mueve</b>Antes y después. No lo controla nadie.</p>
+        <p class="rot r-acepta"><b>Aceptas</b>Tu ejecutivo te dice el número y tú dices que sí.</p>
+        <p class="rot r-precio"><b>Tu precio, desde ahí</b>Es el que se aplica cuando transfieres.</p>
+      </div>
+      <figcaption>La línea verde no sube ni baja: <strong>es la misma altura desde el punto en que aceptas</strong>. Las dos se salen del cuadro porque ninguna de las dos termina ahí — y que la gris siga moviéndose es exactamente lo que hace que la verde signifique algo.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="ctx"><div class="inner"><h3>Precio transparente · Conversión justa · Volumen y frecuencia</h3><p>…las tres columnas…</p></div></section>
+<section class="ctx tinta"><div class="inner"><h3>¿Listo para ver tu precio?</h3><p>…la banda de cierre…</p></div></section>
+
+<script>document.documentElement.classList.add('mo')</script>
+</body></html>

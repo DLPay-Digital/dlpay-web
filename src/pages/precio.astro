@@ -126,6 +126,90 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
       </div>
     </section>
 
+    {/*
+      LA LÍNEA QUE DEJA DE MOVERSE — sexta familia de figura (Design System
+      §6.2, añadida el 2026-09-24).
+
+      Dibuja la frase que `/tarifas` publica: el precio te lo informa tu
+      ejecutivo antes de que transfieras y no cambia después de que lo aceptas.
+      Aprobada por Sebastián como Compliance el 2026-09-24, que es lo que la
+      saca del aviso «en publicación» donde vive en `/tarifas` y la admite como
+      titular.
+
+      **No dice «precio garantizado» ni «congelamos tu precio»**, y no es un
+      matiz: esas dos llevan marcador de Compliance en `Process.astro`.
+      «Garantizado» es una promesa sobre el futuro; «no cambia después de que lo
+      aceptas» describe cómo opera la mesa.
+
+      ── LAS DOS CONDICIONES QUE NO SE PUEDEN RELAJAR ─────────────────────────
+
+      1. **El tramo gris posterior al punto no se recorta.** La quietud de la
+         verde sólo significa algo contra una gris que sigue moviéndose; si el
+         mercado se detuviera ahí, la figura diría que se detuvo el mercado.
+      2. **El camino gris no puede tener tendencia.** Si sube después del punto,
+         afirma que aceptar fue mal negocio; si baja, que fue bueno. Está
+         CONSTRUIDO —no elegido— con excursión simétrica (58,2 arriba y 58,2
+         abajo, diferencia 0,00), 9 cruces de la horizontal y media de 1,4px
+         sobre una excursión de 58, y vale exactamente 120 en el punto de
+         aceptación, así que la corrección no se ve. **Si se toca, se vuelve a
+         medir.**
+
+      Va sobre tinta por contraste, no por gusto: `--verde` sobre papel da
+      2,02:1 y no alcanza ni el 3:1 de un gráfico. Sobre tinta, 8,45:1.
+    */}
+    <section class="seguro-banda" aria-labelledby="seguro-title">
+      <div class="inner">
+        <div class="cab">
+          <div>
+            <p class="kicker">El precio que aceptas</p>
+            <h2 id="seguro-title">No cambia después de que lo aceptas</h2>
+          </div>
+          <p class="lead">
+            El precio aplicable te lo informa tu ejecutivo antes de que transfieras. El mercado
+            sigue moviéndose; el tuyo ya no.
+          </p>
+        </div>
+
+        <figure class="seguro" data-enter>
+          <div class="lienzo">
+            {/*
+              El lienzo sangra hasta el borde de la pantalla y las dos líneas se
+              salen por la derecha: si terminaran dentro del cuadro, la figura
+              dejaría de decir que ninguna de las dos acaba ahí.
+
+              `aria-hidden` y cero `<text>`: los rótulos son HTML de verdad,
+              abajo. Dentro del SVG, a 320px caerían a 9px — es la corrección
+              que ya costó una versión en el riel tokenizado.
+            */}
+            <svg class="curva" viewBox="0 34 1200 150" preserveAspectRatio="none" aria-hidden="true">
+              <path class="frontera" d="M432 34V184" />
+              <path class="mercado" pathLength="1" d="M0 40.0 L6 42.6 L12 48.5 L18 53.5 L24 57.4 L30 61.9 L36 66.2 L42 67.6 L48 66.1 L54 66.0 L60 69.7 L66 75.1 L72 78.4 L78 79.1 L84 79.3 L90 80.2 L96 82.6 L102 85.9 L108 89.3 L114 92.2 L120 95.0 L126 99.2 L132 102.8 L138 104.0 L144 105.7 L150 109.6 L156 114.2 L162 114.5 L168 109.6 L174 102.3 L180 95.6 L186 89.3 L192 82.7 L198 78.3 L204 76.0 L210 74.4 L216 73.5 L222 75.6 L228 80.2 L234 82.5 L240 80.7 L246 76.7 L252 74.4 L258 74.4 L264 74.7 L270 74.4 L276 72.8 L282 70.8 L288 69.5 L294 70.4 L300 73.3 L306 75.1 L312 73.5 L318 70.0 L324 69.1 L330 72.4 L336 77.5 L342 81.3 L348 84.3 L354 88.4 L360 91.7 L366 94.0 L372 96.2 L378 99.6 L384 102.7 L390 104.7 L396 107.3 L402 109.8 L408 110.9 L414 111.8 L420 114.4 L426 118.4 L432 120.0 L438 118.1 L444 114.5 L450 112.7 L456 113.0 L462 113.9 L468 114.7 L474 117.0 L480 120.9 L486 122.9 L492 122.2 L498 120.4 L504 119.9 L510 122.0 L516 125.1 L522 126.7 L528 124.9 L534 121.2 L540 119.0 L546 119.0 L552 119.4 L558 119.8 L564 121.2 L570 123.8 L576 125.5 L582 125.7 L588 125.2 L594 125.3 L600 126.4 L606 127.5 L612 127.3 L618 125.1 L624 122.4 L630 122.1 L636 125.4 L642 130.0 L648 132.4 L654 130.7 L660 126.1 L666 121.2 L672 116.2 L678 110.0 L684 102.1 L690 92.8 L696 83.3 L702 75.6 L708 72.6 L714 74.2 L720 75.6 L726 74.7 L732 73.7 L738 75.5 L744 79.8 L750 84.1 L756 87.2 L762 88.9 L768 89.3 L774 87.9 L780 84.8 L786 80.5 L792 75.8 L798 70.5 L804 65.0 L810 61.8 L816 61.8 L822 64.1 L828 68.0 L834 73.9 L840 81.7 L846 88.8 L852 93.6 L858 96.3 L864 98.0 L870 98.6 L876 99.2 L882 100.1 L888 101.2 L894 102.7 L900 104.8 L906 106.9 L912 109.0 L918 111.7 L924 117.0 L930 123.2 L936 125.6 L942 123.5 L948 120.1 L954 118.6 L960 118.6 L966 118.9 L972 122.4 L978 129.0 L984 137.0 L990 145.2 L996 155.3 L1002 167.3 L1008 175.9 L1014 178.2 L1020 176.1 L1026 174.8 L1032 174.4 L1038 172.6 L1044 169.8 L1050 166.7 L1056 163.7 L1062 161.0 L1068 161.2 L1074 164.5 L1080 166.0 L1086 165.1 L1092 164.0 L1098 163.3 L1104 160.9 L1110 156.2 L1116 153.0 L1122 152.3 L1128 153.1 L1134 153.5 L1140 154.5 L1146 157.0 L1152 158.9 L1158 157.1 L1164 152.5 L1170 150.2 L1176 151.9 L1182 154.5 L1188 153.9 L1194 148.4 L1200 140.6" />
+              <path class="precio" pathLength="1" d="M432 120H1200" />
+            </svg>
+            {/*
+              El punto va en HTML y no como `<circle>`: con el SVG estirado por
+              `preserveAspectRatio="none"` un círculo sale ovalado. El 36% y el
+              57,33% son 432/1200 y (120-34)/150 del viewBox — si el viewBox
+              cambia, estos dos números se recalculan.
+            */}
+            <span class="nodo" aria-hidden="true"></span>
+          </div>
+
+          <div class="rotulos">
+            <p class="seg-rot r-mercado"><b>El mercado se mueve</b>Antes y después. No lo controla nadie.</p>
+            <p class="seg-rot r-acepta"><b>Aceptas</b>Tu ejecutivo te dice el número y tú dices que sí.</p>
+            <p class="seg-rot r-precio"><b>Tu precio, desde ahí</b>Es el que se aplica cuando transfieres.</p>
+          </div>
+
+          <figcaption>
+            La línea verde no sube ni baja: <strong>es la misma altura desde el punto en que
+            aceptas</strong>. Las dos se salen del cuadro porque ninguna de las dos termina ahí, y
+            que la gris siga moviéndose es exactamente lo que hace que la verde signifique algo.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
     <section class="tres" aria-labelledby="tres-title">
       <div class="inner">
         <h2 id="tres-title" class="sr-only">Cómo trabajamos el precio</h2>
@@ -229,6 +313,142 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
   .bloque h3 { font-size: var(--t-h3-m); font-weight: 600; margin-bottom: var(--s-2); }
   .bloque p { color: var(--ink-mute); max-width: 47ch; }
 
+  /* ── La banda «No cambia después de que lo aceptas» ──────────────────── */
+  .seguro-banda {
+    background: var(--tinta);
+    color: var(--on-tinta);
+    padding: var(--s-9) 0;
+    /* El lienzo sangra hacia la derecha; sin esto abriría scroll lateral. */
+    overflow: hidden;
+  }
+  .seguro-banda .kicker { color: var(--on-tinta-mute); }
+  .seguro-banda h2 {
+    font-size: var(--t-h2-m);
+    color: var(--on-tinta);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: 0;
+  }
+  .cab { margin-bottom: var(--s-7); }
+  .cab .lead {
+    color: var(--on-tinta-mute);
+    font-size: var(--t-body-sm);
+    max-width: 47ch;
+    margin-top: var(--s-3);
+  }
+
+  figure.seguro { margin: 0; }
+  /*
+    El lienzo se sale hasta el borde de la pantalla y las dos líneas cruzan el
+    cuadro entero. Si terminaran dentro, la figura dejaría de decir que ninguna
+    de las dos acaba ahí, que es la mitad de lo que afirma.
+  */
+  .lienzo { position: relative; margin-right: calc(50% - 50vw); }
+  .curva { display: block; width: 100%; height: 168px; }
+
+  /* Grosores en px REALES: `non-scaling-stroke` los libra del estirado del
+     `preserveAspectRatio="none"`, que si no los deformaría junto al dibujo. */
+  .mercado,
+  .precio,
+  .frontera { fill: none; vector-effect: non-scaling-stroke; }
+  .mercado {
+    stroke: var(--on-tinta-mute);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .precio { stroke: var(--verde); stroke-width: 3.4; stroke-linecap: butt; }
+  /* Punteado = un límite: cruzarlo cambia algo (Design System §6.2). Acá el
+     límite es un instante, no un lugar. */
+  .frontera { stroke: var(--line-on-tinta); stroke-width: 1; stroke-dasharray: 2 6; }
+
+  /*
+    El punto, en HTML. Dentro del SVG estirado saldría ovalado. Los dos
+    porcentajes son 432/1200 y (120-34)/150 del `viewBox`: si el viewBox cambia,
+    se recalculan. Los 15px son una dimensión de dibujo, no un espaciado.
+  */
+  .nodo {
+    position: absolute;
+    left: 36%;
+    top: 57.33%;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--verde);
+    transform: translate(-50%, -50%);
+  }
+
+  /* En móvil los tres rótulos se apilan: colocados bajo su tramo no caben. */
+  .rotulos { display: grid; gap: var(--s-4); margin-top: var(--s-5); }
+  /*
+    `seg-rot` y no `rot`: esta página YA usa `.rot` para los dos rótulos de la
+    figura de las barras, sobre papel. Reutilizar el nombre les puso
+    `position: absolute` y `--on-tinta-mute` —un gris pensado para tinta— encima
+    del papel. Se vio midiendo el render, no leyendo el CSS.
+  */
+  .seg-rot {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    line-height: 1.55;
+    color: var(--on-tinta-mute);
+    margin: 0;
+  }
+  .seg-rot b { display: block; font-weight: 500; color: var(--on-tinta); margin-bottom: 2px; }
+  .seg-rot.r-precio b { color: var(--verde); }
+  figcaption {
+    margin-top: var(--s-5);
+    color: var(--on-tinta-mute);
+    font-size: var(--t-body-sm);
+    max-width: 47ch;
+  }
+  figcaption strong { color: var(--on-tinta); font-weight: 400; }
+
+  /*
+    ── El movimiento (Motion System, enmienda del 2026-09-24) ──────────────
+
+    2.190 ms en total, muy por encima del techo de 280. La enmienda está escrita
+    y su argumento es que **el tiempo es el contenido**: la figura afirma que
+    una línea se queda quieta mientras otra se mueve, y sin la duración del
+    trazado gris no hay contra qué comparar la quietud.
+
+    El estado oculto cuelga de `.js-motion`, así que **sin JavaScript la figura
+    se dibuja entera y quieta** (regla dura 5). Lo dispara `.is-in`, que pone el
+    observador del sitio y que hace `unobserve` al revelar: una sola vez.
+  */
+  .js-motion .seguro .mercado,
+  .js-motion .seguro .precio { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .js-motion .seguro .frontera { opacity: 0; }
+  .js-motion .seguro .nodo { transform: translate(-50%, -50%) scale(0); }
+  .js-motion .seguro .seg-rot { opacity: 0; transform: translateY(7px); }
+
+  .js-motion .seguro.is-in .mercado {
+    animation: trazar 1300ms cubic-bezier(0.25, 0.6, 0.35, 1) 120ms forwards;
+  }
+  .js-motion .seguro.is-in .frontera { animation: aparecer 260ms linear 1230ms forwards; }
+  .js-motion .seguro.is-in .nodo {
+    animation: brotar 300ms cubic-bezier(0.34, 1.32, 0.64, 1) 1290ms forwards;
+  }
+  .js-motion .seguro.is-in .precio {
+    animation: trazar 720ms cubic-bezier(0.2, 0.6, 0.35, 1) 1470ms forwards;
+  }
+  .js-motion .seguro.is-in .seg-rot { animation: subir 340ms ease-out forwards; }
+  .js-motion .seguro.is-in .r-mercado { animation-delay: 1310ms; }
+  .js-motion .seguro.is-in .r-acepta { animation-delay: 1430ms; }
+  .js-motion .seguro.is-in .r-precio { animation-delay: 1900ms; }
+
+  @keyframes trazar { to { stroke-dashoffset: 0; } }
+  @keyframes brotar { to { transform: translate(-50%, -50%) scale(1); } }
+  @keyframes aparecer { to { opacity: 1; } }
+  @keyframes subir { to { opacity: 1; transform: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js-motion .seguro .mercado,
+    .js-motion .seguro .precio { stroke-dasharray: none; stroke-dashoffset: 0; animation: none; }
+    .js-motion .seguro .frontera { opacity: 1; animation: none; }
+    .js-motion .seguro .nodo { transform: translate(-50%, -50%); animation: none; }
+    .js-motion .seguro .seg-rot { opacity: 1; transform: none; animation: none; }
+  }
+
   .close { background: var(--tinta); padding: var(--s-8) 0; }
   .close h2 { color: var(--on-tinta); font-size: var(--t-h3); margin-bottom: var(--s-2); }
   .close p { color: var(--on-tinta-mute); margin-bottom: var(--s-5); }
@@ -248,6 +468,26 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
 
   @media (min-width: 900px) {
     h2 { font-size: var(--t-h2); }
+    .curva { height: 232px; }
+    /* El titular y la bajada, hombro con hombro. */
+    .cab {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: var(--s-7);
+      align-items: end;
+      margin-bottom: var(--s-8);
+    }
+    .cab .lead { margin-top: 0; max-width: 42ch; }
+    .seguro-banda h2 { max-width: 16ch; }
+    /*
+      Cada rótulo bajo su tramo: los porcentajes son los del `viewBox` y no se
+      eligen a ojo. En móvil se apilan porque a ese ancho no caben tres.
+    */
+    .rotulos { position: relative; display: block; height: 76px; }
+    .seg-rot { position: absolute; top: 0; max-width: 23ch; }
+    .seg-rot.r-mercado { left: 0; }
+    .seg-rot.r-acepta { left: 35.5%; }
+    .seg-rot.r-precio { left: 63%; }
     .bloque h3 { font-size: var(--t-h3); }
     /* Tres bloques en fila: son tres afirmaciones del mismo rango, no una
        secuencia. Dentro del tope de cuatro hermanos con escalonado. */
