@@ -45,6 +45,31 @@ Son dos direcciones distintas para el mismo propósito, en dos documentos vigent
 La web **no publica ninguna** hasta que se confirme cuál es. Una dirección equivocada en un canal
 de reclamos es peor que no tenerla.
 
+### 2.2b Lo que arrastra cambiar la razón social  ·  *medido el 2026-09-24*
+
+**No es un cambio de una línea, y conviene saberlo antes de decidir D9.** El pie compone
+`site.legalName` con dos frases que ya están publicadas:
+
+> *[razón social]* **está registrada y supervisada por la Unidad de Análisis Financiero (UAF).**
+> **Socio de FinteChile.**
+
+Sebastián afirmó las dos el 2026-09-07, **sobre DLPZ INCZ SpA**. Si la razón social pasa a DLPZ PRO
+SpA, esas dos frases cambian de sujeto sin que cambie una palabra de su redacción — y **un registro
+ante la UAF pertenece a un RUT, no a un grupo de empresas**; la membresía de un gremio, también.
+
+**La pregunta para el equipo, entonces, son tres y no una:**
+
+1. ¿Bajo qué sociedad se publica la web?
+2. ¿De cuál de las dos es el registro ante la UAF?
+3. ¿De cuál es la membresía de FinteChile?
+
+Si las respuestas no coinciden, el pie atribuiría a una sociedad un registro que es de otra. El
+candado existe y es inmediato: el campo `verified` de cada alianza en `lib/config/alliances.ts`
+retira emblema y frase a la vez.
+
+*Se probó el cambio completo el 2026-09-24 y se revirtió el mismo día, a la espera de esta
+aclaración. La medición queda porque el hallazgo es independiente de la decisión.*
+
 ### 2.3 El alcance descrito ya no coincide con el servicio
 
 Los T&C publicados describen **custodia de criptoactivos**, tesorería transfronteriza, pagos B2B y

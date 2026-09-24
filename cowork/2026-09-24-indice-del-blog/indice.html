@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Índice del blog</title>
+<style>
+@font-face{font-family:'Familjen Grotesk';src:url(/fonts/familjen-grotesk-latin.woff2) format('woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Spline Sans Mono';src:url(/fonts/spline-sans-mono-latin.woff2) format('woff2');font-weight:100 900;font-display:swap}
+:root{--verde:#16C784;--verde-deep:#0A7250;--tinta:#0B1320;--tinta-2:#101A2B;
+--papel:#F6F5F1;--papel-2:#ECEAE3;--ink:#131A26;--ink-mute:#5A6472;
+--line:rgba(11,19,32,.14);--on-tinta:#EDF2EF;--on-tinta-mute:#9DB0AA;
+--f-text:'Familjen Grotesk',system-ui,sans-serif;--f-num:'Spline Sans Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--ink);font-family:var(--f-text);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.inner{max-width:1120px;margin:0 auto;padding:0 24px}
+.hero{background:var(--tinta);color:var(--on-tinta);padding:72px 0 76px}
+.hero h1{font-size:32px;line-height:1.1;letter-spacing:-.012em;margin:0 0 10px}
+.hero p{margin:0;color:var(--on-tinta-mute);max-width:46ch}
+.aviso{font-family:var(--f-num);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-mute);padding:26px 0 0;margin:0}
+
+.lista{padding:14px 0 76px}
+ul.posts{list-style:none;margin:0;padding:0}
+ul.posts li{border-bottom:1px solid var(--line)}
+ul.posts li:first-child{border-top:1px solid var(--line)}
+ul.posts a{display:grid;grid-template-columns:132px 1fr;gap:34px;align-items:center;
+  padding:26px 0;text-decoration:none;color:inherit}
+ul.posts a:hover .p-title{color:var(--verde-deep)}
+
+/* ── la marca: es la PORTADA del artículo, no un dibujo nuevo ── */
+.marca{display:grid;place-items:center;height:112px}
+.marca svg{display:block;width:112px;height:112px}
+.flujo{fill:none;stroke:var(--ink-mute);stroke-linejoin:miter;stroke-width:3.25}
+.token{fill:none;stroke:var(--ink);stroke-linecap:butt}
+.aro{stroke-width:3.25}
+.signo{stroke-width:3.9}
+.unidad{stroke-width:2.55}
+
+.marca-dato{display:grid;gap:5px;justify-items:start;font-family:var(--f-num);width:100%}
+.marca-dato .cifra{font-size:25px;line-height:1;letter-spacing:-.01em;color:var(--ink);font-weight:500;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.marca-dato .cifra .u{font-size:15px;color:var(--ink-mute);margin-left:3px}
+.marca-dato .raya{width:26px;height:0;border-top:2px solid var(--verde-deep)}
+.marca-dato.larga .cifra{font-size:20px}
+.marca-dato.larga .cifra .u{font-size:12px}
+.marca-dato .et{font-size:10.5px;line-height:1.35;letter-spacing:.02em;color:var(--ink-mute);
+  text-transform:uppercase;max-width:15ch}
+
+.p-meta{display:flex;gap:14px;align-items:baseline;font-family:var(--f-num);font-size:11.5px;
+  letter-spacing:.04em;color:var(--ink-mute);margin-bottom:7px}
+.p-meta .cat{color:var(--verde-deep);text-transform:uppercase}
+.p-title{display:block;font-size:23px;line-height:1.2;letter-spacing:-.006em;font-weight:700;
+  margin-bottom:7px;max-width:34ch;transition:color .18s ease}
+.p-desc{display:block;color:var(--ink-mute);font-size:14.5px;line-height:1.5;max-width:52ch}
+
+@media (max-width:760px){
+  .hero{padding:52px 0 56px}.hero h1{font-size:23px}
+  ul.posts a{grid-template-columns:88px 1fr;gap:16px;align-items:start;padding:22px 0}
+  .marca{height:72px}.marca svg{width:72px;height:72px}
+  .marca-dato .cifra{font-size:15px}.marca-dato .cifra .u{font-size:10px}
+  .marca-dato.larga .cifra{font-size:13px}.marca-dato.larga .cifra .u{font-size:9px}
+  .marca-dato .et{display:none}
+  .p-title{font-size:18px}.p-desc{font-size:13.5px}
+}
+</style></head><body>
+
+<section class="hero"><div class="inner">
+  <h1>Blog</h1>
+  <p>Qué mueve el precio del dólar y cómo leerlo antes de operar.</p>
+</div></section>
+
+<section class="lista"><div class="inner">
+  <p class="aviso">Los dos artículos reales · después, seis simulados para ver si la forma aguanta</p>
+  <ul class="posts" role="list" id="lista"></ul>
+</div></section>
+
+<script>
+const PICTO = `<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+  <path class="flujo" d="M175.18 72.64 A80 80 0 0 0 24.82 72.64"/>
+  <path class="flujo" d="M34.533 65.585 L24.825 72.638 L21.922 60.995"/>
+  <path class="flujo" d="M24.82 127.36 A80 80 0 0 0 175.18 127.36"/>
+  <path class="flujo" d="M165.467 134.415 L175.175 127.362 L178.078 139.005"/>
+  <circle class="token aro" cx="100" cy="100" r="46"/>
+  <circle class="token aro" cx="100" cy="100" r="38"/>
+  <path class="token unidad" d="M138.00 100.00 L146.00 100.00 M136.71 109.84 L144.43 111.91 M132.91 119.00 L139.84 123.00 M126.87 126.87 L132.53 132.53 M119.00 132.91 L123.00 139.84 M109.84 136.71 L111.91 144.43 M100.00 138.00 L100.00 146.00 M90.16 136.71 L88.09 144.43 M81.00 132.91 L77.00 139.84 M73.13 126.87 L67.47 132.53 M67.09 119.00 L60.16 123.00 M63.29 109.84 L55.57 111.91 M62.00 100.00 L54.00 100.00 M63.29 90.16 L55.57 88.09 M67.09 81.00 L60.16 77.00 M73.13 73.13 L67.47 67.47 M81.00 67.09 L77.00 60.16 M90.16 63.29 L88.09 55.57 M100.00 62.00 L100.00 54.00 M109.84 63.29 L111.91 55.57 M119.00 67.09 L123.00 60.16 M126.87 73.13 L132.53 67.47 M132.91 81.00 L139.84 77.00 M136.71 90.16 L144.43 88.09"/>
+  <path class="token signo" d="M82.00 74.43 H118.00"/>
+  <path class="token signo" d="M100 74.43 V125.57"/>
+</svg>`;
+
+const n = v => Number.isInteger(v)
+  ? v.toLocaleString('es-CL')
+  : v.toLocaleString('es-CL',{minimumFractionDigits:2, maximumFractionDigits:2});
+
+function marca(p){
+  if(!p) return '<div class="marca"></div>';
+  if(p.tipo==='figura') return `<div class="marca" data-marca="figura">${PICTO}</div>`;
+  const cifra = p.tipo==='rango'
+    ? `${n(p.min)}–${n(p.max)}<span class="u">${p.unidad}</span>`
+    : `${n(p.valor)}<span class="u">${p.unidad}</span>`;
+  // el cuerpo de la cifra baja si la cadena es larga: la columna manda
+  const crudo = cifra.replace(/<[^>]+>/g,'');
+  const larga = crudo.length > 7 ? ' larga' : '';
+  return `<div class="marca" data-marca="${p.tipo}"><div class="marca-dato${larga}">
+      <span class="cifra">${cifra}</span><span class="raya"></span>
+      <span class="et">${p.etiqueta}</span></div></div>`;
+}
+
+const POSTS = [
+  { cat:'Mercado', fecha:'21-09-2026', real:true,
+    t:'Activos tokenizados: qué son, quién los está construyendo y por qué la conversación se aceleró.',
+    d:'Qué son, quién los está construyendo y qué rol cumplen las stablecoins como capa de settlement en el ecosistema global.',
+    portada:{tipo:'figura'} },
+  { cat:'Mercado', fecha:'16-09-2026', real:true,
+    t:'La Fed cerró su reunión de septiembre. Cómo llegó la señal al peso.',
+    d:'El FOMC se reunió el 15 y 16 de septiembre. Qué comunicó, con qué voto y cómo se está traduciendo al mercado cambiario chileno, sin pronósticos.',
+    portada:{tipo:'rango',min:3.75,max:4.00,unidad:'%',etiqueta:'Tasa de fondos federales'} },
+  // ── simulados, sólo para probar la forma ──
+  { cat:'Mercado', fecha:'09-09-2026', t:'Qué mira una mesa de cambio cuando el dólar se mueve de golpe.',
+    d:'Los tres datos que un operador revisa antes de dar un precio, y por qué ninguno es un pronóstico.',
+    portada:{tipo:'cifra',valor:919.70,unidad:'CLP',etiqueta:'Referencia de mercado'} },
+  { cat:'Producto', fecha:'02-09-2026', t:'Cómo se compone el precio que ves en el cotizador.',
+    d:'De la referencia de mercado al número final, paso a paso y sin letra chica.',
+    portada:{tipo:'figura'} },
+  { cat:'Mercado', fecha:'26-08-2026', t:'Por qué el dólar digital se mueve en minutos y una transferencia no.',
+    d:'Dos infraestructuras distintas, dos relojes distintos. Qué depende de tu banco y qué no.',
+    portada:{tipo:'rango',min:3.50,max:3.75,unidad:'%',etiqueta:'Tasa de fondos federales'} },
+  { cat:'Producto', fecha:'19-08-2026', t:'Qué le pedimos a una empresa antes de la primera operación.',
+    d:'Los documentos, por qué se piden y qué pasa con ellos después.',
+    portada:null },
+  { cat:'Mercado', fecha:'12-08-2026', t:'Settlement: la palabra que explica por qué esto no es una transferencia.',
+    d:'Qué significa liquidar una operación y dónde ocurre realmente.',
+    portada:{tipo:'figura'} },
+  { cat:'Producto', fecha:'05-08-2026', t:'Un cotizador no es una promesa de precio. Por qué lo decimos antes.',
+    d:'La diferencia entre una referencia y el número que se aplica, dicha de frente.',
+    portada:{tipo:'cifra',valor:50000,unidad:'CLP',etiqueta:'Operación mínima'} },
+];
+
+document.getElementById('lista').innerHTML = POSTS.map(p => `
+  <li${p.real?' data-real':''}>
+    <a href="#">
+      ${marca(p.portada)}
+      <div>
+        <span class="p-meta"><span class="cat">${p.cat}</span><time>${p.fecha}</time></span>
+        <span class="p-title">${p.t}</span>
+        <span class="p-desc">${p.d}</span>
+      </div>
+    </a>
+  </li>`).join('');
+</script>
+</body></html>
