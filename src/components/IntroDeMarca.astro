@@ -1,0 +1,192 @@
+---
+/**
+ * La intro de marca: 830 ms de telón sobre `--tinta` en los que el isotipo se
+ * separa por su propio eje y se vuelve a unir.
+ *
+ * **Sólo en la Home, y se monta en el `<head>`** (`<IntroDeMarca slot="head" />`),
+ * porque tiene que correr síncrona y antes de `<body>`. Si se difiere vuelve
+ * entero el fallo de más abajo.
+ *
+ * ── Qué reglas enmienda, y quién lo decidió ────────────────────────────────
+ *
+ * **ADR-0010** (`motion-v1-e3`), aceptada por Sebastián el 2026-09-25. Enmienda
+ * dos reglas del Motion System y sólo para esta pieza:
+ *
+ *   · El techo de **280 ms** — esto dura 830.
+ *   · La regla dura **2**, «el cotizador no entra» — el telón lo tapa 937 ms.
+ *
+ * La segunda es la que importa y conviene leerla con cuidado, porque la regla
+ * protege dos cosas distintas y **sólo una está en juego**:
+ *
+ *   1. *Que el cotizador no tenga entrada propia.* Se cumple entero: la tarjeta
+ *      está renderizada y operativa bajo el telón desde el primer fotograma.
+ *      Medido: 8.102 px de altura con intro y sin ella, 25 ocultos de 419 en los
+ *      dos casos, y 1.087,31 para 1.000.000 en los dos.
+ *   2. *Que nada se interponga entre quien llega y el instrumento.* Esto sí se
+ *      rompe, 937 ms, una vez por sesión y entrando por la Home.
+ *
+ * **Se autoriza TAPAR el cotizador, nunca animarlo.** Si una versión futura
+ * hiciera entrar la tarjeta, el precio o cualquier control, ADR-0010 no la cubre
+ * y hace falta otra decisión.
+ *
+ * ── El fallo que costó cinco versiones, y por qué el telón es un ::before ───
+ *
+ * La v1 colgaba la capa de `DOMContentLoaded`, que es lo natural porque cuando
+ * corre el script de la cabecera todavía no hay `<body>`. Sin frenos no se nota;
+ * con la CPU frenada, medido en píxeles, **la portada se pintaba entera antes de
+ * que la taparan: 641 ms visibles a ×4 y 721 ms a ×6**, con el titular y el
+ * cotizador ya puestos. El usuario veía la web, se la tapaban, y al levantarse
+ * aparecía lo mismo. Eso es peor que no tener intro.
+ *
+ * Por eso el telón **no es el `<div>`: es un pseudo-elemento de `<html>`**, que
+ * sí existe cuando corre este script, así que pinta en el primer fotograma.
+ *
+ * **Tres cosas que no se pueden relajar al tocar esto:**
+ *
+ *   · La clase `intro-va` se pone **antes** de construir el SVG. Si se pone
+ *     después de armar el marcado se pierden los milisegundos que justifican
+ *     todo el cambio.
+ *   · La red de seguridad se arma **junto con la clase**, no dentro de `poner()`.
+ *     El telón sube antes que nada; si el hilo muere entre la cabecera y
+ *     `<body>` y no hay red, la pantalla se queda azul para siempre. Es el riesgo
+ *     que este diseño introduce y ésta es su contención.
+ *   · **`muerto=true` se pone al entrar en `fundir()`**, no sólo al limpiar. Sin
+ *     esa línea, a ×20 el logo asomaba a 3.474 ms y desaparecía 113 ms después.
+ *
+ * ── Sin JavaScript no pasa nada, y eso es por construcción ──────────────────
+ *
+ * La regla dura 5 —«sin JavaScript, todo se ve»— se cumple **por construcción y
+ * no por una red de seguridad**: sin JS no se pone la clase, no hay telón y la
+ * página se ve entera. Es lo contrario de `Motion.astro`, que oculta primero y
+ * revela después, y que por eso necesitó una red tras el incidente del
+ * 2026-09-15. Aquí ese fallo no puede ocurrir.
+ *
+ * ── El isotipo no se redibuja ───────────────────────────────────────────────
+ *
+ * `A` y `B` son los dos subtrazos del atributo `d` de `Logo.astro`, partido por
+ * la segunda `M`. **Verificado byte a byte**, y tiene que seguir siéndolo: si se
+ * redibujan o se redondean, el logo se rompe por dentro. `fill-rule="evenodd"` y
+ * el `viewBox` `0 0 100 75.11` tampoco se tocan.
+ *
+ * El eje de separación es el del propio isotipo —**33,954°**, el corte diagonal
+ * del que sale todo el sistema geométrico (ADR-0001 §2–§3)—. Es lo que hace que
+ * el movimiento sea de DLPay y no de cualquiera.
+ *
+ * ── `is:global`, y no hay atajo ─────────────────────────────────────────────
+ *
+ * Astro escopa los estilos por clase (`scopedStyleStrategy: 'class'`) y aquí eso
+ * no sirve por dos motivos: `.intro` lo **crea el script en tiempo de ejecución**,
+ * así que nunca llevaría la clase de ámbito, y `html.intro-va` tampoco puede
+ * escoparse porque `<html>` no está en la plantilla de este componente, vive en
+ * `Base.astro`. Meter el `<style>` allí lo evitaría, pero mandaría 1,3 KB de CSS
+ * a todas las páginas para algo que sólo se ve en una.
+ *
+ * ── Cuándo se ve ────────────────────────────────────────────────────────────
+ *
+ * Una vez por inicio de sesión de pestaña, y **sólo si la Home fue la puerta de
+ * entrada**. Lo deciden dos comprobaciones, en este orden:
+ *
+ *   1. `window.__dlpayInicio`, que pone el marcador de `Base.astro`. Si falta,
+ *      vale `undefined` y **no hay intro nunca** — fallo silencioso del lado
+ *      seguro.
+ *   2. El **respaldo de referente**: si venimos de nuestro propio origen, esto no
+ *      es una entrada, es una navegación por dentro. Tapa el hueco de las cinco
+ *      páginas que no llevan marcador porque no ejecutan nada.
+ *
+ * **El respaldo depende de recibir referente**, y eso es un acoplamiento que
+ * conviene que se vea: `docs/arquitectura-produccion.md` §5.1 planea
+ * `Referrer-Policy: strict-origin-when-cross-origin`, que lo manda en navegación
+ * interna. El día que alguien lo endurezca a `no-referrer`, esta comprobación
+ * deja de hacer nada **en silencio** y la intro reaparece a mitad de visita.
+ */
+---
+<style is:global>
+  /* el telón: pinta en el primer fotograma, antes de que exista <body> */
+  html.intro-va::before{content:"";position:fixed;inset:0;background:var(--tinta);z-index:9998}
+  html.intro-va{overflow:hidden}
+
+  .intro{position:fixed;inset:0;z-index:9999;background:var(--tinta);
+    display:grid;place-items:center;will-change:opacity}
+  .intro svg{width:132px;height:99.15px;color:var(--on-tinta);overflow:visible}
+  .intro .pieza{will-change:transform}
+  /* separadas por el eje del propio isotipo: 33,954°, el corte de la marca */
+  .intro .a{transform:translate(9.5px,-6.4px)}
+  .intro .b{transform:translate(-9.5px,6.4px)}
+  .intro.unir .a,.intro.unir .b{transform:translate(0,0);
+    transition:transform 300ms cubic-bezier(.16,.84,.34,1)}
+  .intro .brillo{opacity:0}
+  .intro.destello .brillo{animation:barrer 150ms linear forwards}
+  @keyframes barrer{
+    0%{opacity:0;transform:translate(-78px,52px)}
+    22%{opacity:1}
+    78%{opacity:1}
+    100%{opacity:0;transform:translate(78px,-52px)}
+  }
+  /* telón y capa se van juntos, o se ve el corte entre los dos */
+  .intro.salir{opacity:0;pointer-events:none;
+    transition:opacity 380ms cubic-bezier(.4,0,.2,1)}
+  html.intro-sale::before{opacity:0;transition:opacity 380ms cubic-bezier(.4,0,.2,1)}
+  .intro.salir svg{transform:scale(1.045);
+    transition:transform 380ms cubic-bezier(.4,0,.2,1)}
+  @media (prefers-reduced-motion:reduce){ .intro{display:none} html.intro-va::before{display:none} }
+</style>
+<script is:inline>
+(function(){
+  try{
+    var m=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)');
+    if(m&&m.matches) return;                          // regla dura 6
+  }catch(e){ return; }
+  /* Una sola vez por inicio de sesión, y sólo si la home fue la puerta de
+     entrada. Lo decide el marcador global de la §A: aquí no se consulta
+     sessionStorage, se lee lo que el marcador vio ANTES de escribir.
+     Si no está el marcador, esto vale undefined y no hay intro nunca. */
+  if(!window.__dlpayInicio) return;
+  /* Respaldo para las páginas que no llevan marcador porque no ejecutan nada:
+     si el visitante viene de una dirección nuestra, esto no es una entrada,
+     es una navegación por dentro. El marcador manda; esto sólo tapa su hueco. */
+  try{ if(document.referrer && new URL(document.referrer).origin===location.origin) return; }catch(e){}
+
+  var raiz=document.documentElement, muerto=false, red;
+  raiz.classList.add('intro-va');                     // el telón, ya
+
+  function quitar(){ muerto=true; clearTimeout(red);
+    raiz.classList.remove('intro-va','intro-sale');
+    var v=document.querySelector('.intro'); if(v) v.remove(); }
+  function fundir(){ if(muerto) return; muerto=true;   /* nada más puede aparecer */
+    var v=document.querySelector('.intro'); if(v) v.classList.add('salir');
+    raiz.classList.add('intro-sale'); setTimeout(quitar,380); }
+  /* Se arma aquí y se rearma en poner(). El tope absoluto es 2.500 ms desde el
+     arranque: si <body> llegó tarde por red lenta —no por aparato lento— la
+     animación sigue teniendo sus 900 ms, pero nunca se pasa del tope. */
+  red=setTimeout(fundir,1400);
+
+  var A="M9.33 0 L72.89 0.44 L80.89 2.67 L87.11 5.78 L90.67 8.44 L95.56 14.22 L98.22 19.56 L100 26.67 L99.11 40 L95.11 48.44 L91.11 54.22 L84 60.44 L76.44 65.33 L69.33 68.44 L58.22 71.56 L45.78 73.33 L7.56 74.22 L36 56.89 L46.67 49.33 L54.22 49.33 L63.56 45.78 L69.78 40.44 L72.44 34.67 L72.44 29.78 L71.11 26.67 L68 24 L64 22.67 L17.78 22.22 L8.89 0.44 Z", B="M19.56 35.11 L50.67 35.56 L0 75.11 L19.11 35.56 Z";
+  var el=document.createElement('div');
+  el.className='intro'; el.setAttribute('aria-hidden','true');
+  el.innerHTML='<svg viewBox="0 0 100 75.11" fill="currentColor" fill-rule="evenodd">'
+    +'<clipPath id="ic"><path d="'+A+'"/><path d="'+B+'"/></clipPath>'
+    +'<linearGradient id="ig" x1="0" y1="1" x2="1" y2="0">'
+    +'<stop offset="0" stop-color="#fff" stop-opacity="0"/>'
+    +'<stop offset=".46" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".72"/><stop offset=".54" stop-color="#fff" stop-opacity="0"/>'
+    +'<stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>'
+    +'<path class="pieza a" d="'+A+'"/><path class="pieza b" d="'+B+'"/>'
+    +'<g clip-path="url(#ic)"><rect class="brillo" x="-46" y="-30" width="150" height="140" fill="url(#ig)" transform-origin="50 37.5"/></g>'
+    +'</svg>';
+
+  function poner(){
+    if(muerto) return;
+    var t=performance.now();
+    clearTimeout(red);
+    red=setTimeout(fundir, Math.max(0, Math.min(Math.max(1400, t+900), 2500) - t));
+    document.body.appendChild(el);
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      el.classList.add('unir');
+      setTimeout(function(){ el.classList.add('destello'); }, 280);
+      setTimeout(function(){ el.classList.add('salir'); raiz.classList.add('intro-sale'); }, 430);
+      setTimeout(quitar, 830);   // el fundido acaba en 810; aquí se libera el scroll
+    });});
+  }
+  if(document.body) poner();
+  else document.addEventListener('DOMContentLoaded', poner, {once:true});
+})();
+</script>

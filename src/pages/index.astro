@@ -19,6 +19,7 @@ import Faq from '../components/Faq.astro';
 import { faq } from '../content/home.ts';
 import Footer from '../components/Footer.astro';
 import Motion from '../components/Motion.astro';
+import IntroDeMarca from '../components/IntroDeMarca.astro';
 ---
 <Base
   title="DLPay"
@@ -26,6 +27,12 @@ import Motion from '../components/Motion.astro';
   path="/"
   hasQuoter
 >
+  {/*
+    La intro de marca (ADR-0010). Va al `<head>` y no al cuerpo porque tiene
+    que correr síncrona y antes de `<body>`: es la única forma de que el telón
+    pinte en el primer fotograma. Sólo la Home la monta.
+  */}
+  <IntroDeMarca slot="head" />
   <Motion />
   <Header />
   <main id="main">

@@ -359,6 +359,22 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     hace hoy el comentario de `Legal.astro`. Se cuenta descartando la última línea de cada párrafo,
     que nunca llena.
 
+34. **Un instrumento roto no avisa: devuelve ceros, y un cero parece un resultado.**
+    La primera corrida de la prueba de la intro dijo «0 fotogramas, capa null» en los ocho caminos.
+    Leído sin sospecha, eso era «la intro no se ejecuta nunca». No era eso: la sonda llamaba a
+    `MutationObserver.observe(document.documentElement)` en `document-start`, donde `documentElement`
+    todavía no existe; la excepción abortaba el resto de la sonda en silencio. Antes de creerle un
+    cero a un instrumento, hay que probar que el instrumento mide.
+
+    *Añadido por el agente de Claude Code el 2026-09-25, al integrarla:* la regla se cobró su
+    segunda pieza el mismo día y del otro lado. Mis catorce caminos dieron **`false` en los
+    catorce** —los que debían verse y los que no—, y esa uniformidad era la señal: un instrumento
+    sano no acierta nunca. La sonda estaba bien; lo roto era la integración. **El corolario
+    operativo es que un cero uniforme se diagnostica midiendo algo que SÍ debe salir distinto de
+    cero**, y por eso el caso 0 de la prueba —«¿existe el marcador y qué dice?»— va ahora antes que
+    los catorce, y `tests/zero-js.test.ts` se comprobó contando los scripts de una página que sí
+    tiene, no sólo de las que no.
+
 ---
 
 ## 5. Protocolo con el agente de Claude Code
@@ -406,6 +422,7 @@ Las subcarpetas se crean **cuando hay una entrega real que las pida** (Principio
 
 | Fecha | Entrega | Estado | Veredicto de revisión |
 |---|---|---|---|
+| 2026-09-24 | [`2026-09-24-intro-de-marca`](2026-09-24-intro-de-marca/ficha.md) — micro intro de 830 ms: las dos piezas de la D se unen por la diagonal del isotipo, un destello, y la capa se retira sobre la Home | **En revisión** | La D **ya viene partida en dos subtrazos** dentro del `path` de `Logo.astro`: no hay que inventar el corte. Separarlas cambia el 0,16 % de los píxeles, todo antialias. El marcado lo inyecta el script, así que sin JS no hay intro y la página se ve. Pide enmienda de movimiento y choca con la regla dura 2, el cotizador |
 | 2026-09-24 | [`2026-09-24-preguntas-v2`](2026-09-24-preguntas-v2/ficha.md) — `/preguntas` rehecha con **las mismas nueve preguntas**: agrupadas por preocupación en vez de por público, respuestas abiertas, índice pegajoso sin JS y el glosario como pliego | **En revisión** | Sebastián dijo que la primera versión era copiar y pegar, y tenía razón. La estructura sale del contenido: tres de las cinco preocupaciones emparejan una pregunta de persona con una de empresa, una a una |
 | 2026-09-24 | [`2026-09-24-comparacion-estructural`](2026-09-24-comparacion-estructural/nota.md) — la comparación de dos recorridos, propuesta 3 de las oportunidades | **Descartada con motivo** | Dos paredes: el §1 prohíbe **sugerir** que somos otra vía al mismo destino, y dibujar dos recorridos en paralelo lo sugiere por su forma; y la versión honesta —que los destinos son distintos— ya la dibuja `EjeDeAlcance`, que es «la regla dura del §1 dibujada». La propuse yo con el aviso ya escrito y sin comprobarlo |
 | 2026-09-24 | [`2026-09-24-preguntas-v2`](2026-09-24-preguntas-v2/ficha.md) — `/preguntas` agrupada en cinco preocupaciones, con índice y respuestas abiertas | **Integrada** | La estructura y la decisión de ingeniería, tal cual. El enlace del cierre nace con mensaje prellenado para no engrosar D22 |
@@ -1832,3 +1849,74 @@ Medido antes de elegirlo: cambiar el pie a `--tinta-2` **no habría servido**, d
 tinta. Va `--line-on-tinta`, que da **3,50:1** y ya es un token del sistema. En las páginas que
 cierran sobre papel el borde queda contra una superficie clara y no se nota, que es lo correcto
 porque ese corte ya se ve solo.
+
+---
+
+### Notas de la integración de `2026-09-25-intro-de-marca`
+
+**Veredicto: integrada, con dos decisiones de Sebastián por delante y un fallo mío por el camino.**
+Entrega `04e5c6f5…` / bloque `7a51e0fd…`, verificados tras copiar.
+
+#### Antes del código: tres versiones y una carpeta que mentía
+
+La entrega llegó tres veces en dos días, y las dos primeras no se podían integrar por motivos que
+no eran de diseño:
+
+- **La v2 nunca llegó a `cowork/`.** Su `prompt-agente.md` mandaba copiar un `bloque.txt` que no
+  existía en la carpeta y declaraba un md5 de `intro.html` que no coincidía con el archivo en disco.
+  Los archivos estaban en `Claude outputs/`, que está en `.gitignore`. **La carpeta de la entrega
+  tenía la v1 mientras el prompt describía la v2.**
+- **Y la v1 era la versión que el propio prompt declaraba rota.** Comprobado en el código y no en la
+  ficha: colgaba de `DOMContentLoaded`, sin `intro-va`, sin `muerto`, con la red dentro de `poner()`.
+  Las cuatro comprobaciones de aquella ficha se habían corrido contra esa versión, y la que fallaba
+  —«¿aparece un fotograma de la página antes del telón?»— no estaba en su tabla.
+
+Sebastián pidió borrar las carpetas anteriores para que no quedaran dos versiones con md5 distinto.
+Hecho: hoy hay **una sola** carpeta de intro.
+
+#### Lo que se verificó contra `src/`, y no contra la ficha
+
+| Afirmación | Cómo se comprobó |
+|---|---|
+| «el isotipo son los dos subtrazos del `d` de `Logo.astro`, literales» | Concatenadas las constantes `A` y `B` y comparadas con el `d` real: **`867f10ac…` las dos**. Idéntico antes y después de copiar |
+| «`/tarifas` está en el grupo de las cinco sin marcador» | `Legal.astro` **no tiene cabecera propia**: envuelve a `Base.astro`, que es el único `<head>` del sitio. Las cuatro legales y la 404 quedan del mismo lado |
+| «el `<style>` necesita `is:global`» | Correcto, y por partida doble: `.intro` lo crea el script, y `html.intro-va` no puede escoparse porque `<html>` vive en `Base.astro` |
+| el respaldo de referente | Funciona, **y depende de algo que no estaba escrito**: `arquitectura-produccion.md` §5.1 planea `Referrer-Policy: strict-origin-when-cross-origin`, que manda referente en navegación interna. Con `no-referrer` el respaldo moriría en silencio. Anotado en el código y en esa sección |
+
+#### El fallo fue mío, y lo encontró la regla 34 el mismo día que se escribía
+
+El marcador lo escribí envuelto en una plantilla literal —`{\`(function(){…})();\`}`—. Astro trata
+el contenido de un `<script>` como **texto crudo**, así que las llaves salieron al HTML tal cual: el
+navegador recibía un error de sintaxis, `window.__dlpayInicio` quedaba `undefined` y **la intro no se
+veía jamás**. Exactamente el fallo silencioso que la ficha advertía.
+
+Lo delató la forma del resultado, no el resultado: los catorce caminos dieron `false`, **los que
+debían verse y los que no**. Un instrumento sano no acierta nunca. Está escrito como corolario en la
+regla 34.
+
+#### Lo que se midió después, navegando de verdad
+
+Las **quince** situaciones en verde, con clics reales y contextos nuevos por caso —un `goto` no manda
+referente y habría dado un falso resultado en cuatro de ellas—. Incluye las tres que sólo se pueden
+ver navegando: entrar por `/tarifas`, por `/terminos` y por la 404 y hacer clic en el logo.
+
+Y una que **no estaba en la tabla de Cowork**, porque es la colisión de esta pieza con el
+instrumento: **llegar de fuera a `/#cotizador`**, que es la URL que `CLAUDE.md` §6 nombra como
+reemplazo del `/cotizar` eliminado. La sospecha era que `overflow: hidden` sobre `<html>` se comiera
+el salto al ancla. **No ocurre:** `scrollY` 173 con intro y 173 sin ella, el cotizador en `top: 0`
+en los dos.
+
+- **CPU ×4:** telón a los 33 ms · **0 fotogramas** con la portada destapada antes de los 900 ms.
+- **CPU ×6:** telón a los 117 ms · **0 fotogramas**.
+- Altura **8.102 px** y los mismos ocultos tras la pasada de scroll, con intro y sin ella.
+- `overflow` vuelve a `visible`, no queda `.intro` ni `intro-va`, y el cotizador da **1.087,31** para
+  1.000.000 en los dos caminos.
+
+#### Lo que la integración añadió por su cuenta
+
+Una prop `zeroJs` en `Base.astro` y **`tests/zero-js.test.ts`**: 19 pruebas que fijan lo que era una
+propiedad sin vigilante. Fallan si una de las cinco páginas estrena un `<script>`, si el marcador
+llega donde no debe, si la intro se monta fuera de la Home, o si en la Home el marcador quedara
+**después** de la intro — el fallo silencioso de arriba, convertido en test rojo.
+
+Se comprobó que el detector mide: cuenta **6** scripts ejecutables en la Home y **0** en `/tarifas`.

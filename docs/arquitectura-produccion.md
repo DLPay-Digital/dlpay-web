@@ -21,7 +21,7 @@ Reverificado el 2026-09-08 — cero `fetch`, `XMLHttpRequest`, `WebSocket`, `Eve
 | Momento | Qué ocurre |
 |---|---|
 | **Build** | Se valida la configuración de despliegue (URL canónica y política de indexación), se resuelve el precio (`ConfigPriceSource`), se lee la configuración, se compone el HTML de las **diez** páginas —nueve rutas fijas más una por artículo del blog—, se genera el sitemap y el robots. Todo queda escrito en `dist/`. |
-| **Cliente** | Entre **0 y 45,6 KB** de JavaScript según la página (tabla abajo). Tres scripts, y el peso está concentrado en la Home. |
+| **Cliente** | Entre **0 y 50,3 KB** de JavaScript según la página (tabla abajo). Cinco scripts en la Home, cuatro en las otras siete con JavaScript, **ninguno** en las cinco restantes; el peso está concentrado en la Home. |
 | **Fuera del sistema** | La conversación por WhatsApp, la verificación bancaria y la ejecución de la operación. Nada de eso pasa por la web. |
 
 ### 1.1 El JavaScript que se envía — inventario exacto
@@ -32,17 +32,36 @@ reloj del feed»). Ni eran dos páginas ni es un reloj.
 > **Rehecho sobre el build del 2026-09-15.** La tabla anterior —dos scripts, ocho rutas— quedó
 > obsoleta con `/blog` y, sobre todo, con el globo del héroe.
 
-| Página | `is:inline` | Motion | Quoter | Globo | Total |
-|---|---|---|---|---|---|
-| `/` | 56 B | 489 B | 4 528 B | 40 525 B | **45,6 KB** |
-| `/como-funciona/`, `/confianza/`, `/empresas/`, `/blog/`, `/blog/<slug>/` | 56 B | 489 B | — | — | **0,5 KB** |
-| `/terminos/`, `/privacidad/`, `/tarifas/`, `/canal-de-denuncias/` | — | — | — | — | **0 B** |
-| `404.html` | — | — | — | — | **0 B** |
+> **Rehecho otra vez el 2026-09-25**, con la intro de marca (ADR-0010) y su marcador de visita.
+> Aparecen dos columnas nuevas y entran `/precio` y `/preguntas`, que faltaban desde el 2026-09-23.
+> Medido sobre el build: bytes de los `<script>` ejecutables, en línea y de módulo.
+
+| Página | `is:inline` | Motion | Marcador | Intro | Quoter | Globo | Total |
+|---|---|---|---|---|---|---|---|
+| `/` | 56 B | 489 B | 319 B | 6 293 B | 4 528 B | 40 525 B | **50,3 KB** |
+| `/como-funciona/`, `/confianza/`, `/empresas/`, `/precio/`, `/preguntas/`, `/blog/`, `/blog/<slug>/` | 56 B | 489 B | 319 B | — | — | — | **1,1 KB** |
+| `/terminos/`, `/privacidad/`, `/tarifas/`, `/canal-de-denuncias/` | — | — | — | — | — | — | **0 B** |
+| `404.html` | — | — | — | — | — | — | **0 B** |
+
+La intro añade además **≈1,2 KB de CSS**, y sólo a la hoja de la Home: ninguna otra página la carga.
 
 **Cinco páginas en cero bytes ejecutables**: las cuatro legales y la 404, añadida el 2026-09-15. Lo
 único que llevan es el bloque `application/ld+json`, que es dato y no se ejecuta. La 404 no figura
 entre las rutas porque no lo es: el host la sirve bajo cualquier URL que no exista, va con
 `noindex` y sin canónico, y queda fuera del sitemap.
+
+**Desde el 2026-09-25 eso deja de depender de que alguien se acuerde.** Que estas cinco no ejecuten
+nada era una propiedad del build sin nadie que la vigilara, y la intro de marca fue la primera pieza
+que quiso ponerlas a ejecutar —Sebastián lo rechazó, es la «opción C» de ADR-0010—. `tests/zero-js.test.ts`
+la fija: falla si una de las cinco estrena un `<script>`, si el marcador llega donde no debe, o si
+en la Home el marcador quedara **después** de la intro, que es el fallo silencioso que dejaría la
+intro sin verse nunca.
+
+**El sitio deja de estar en «cero almacenamiento».** El marcador escribe una llave de sesión
+(`dlpay-visita`). No contradice lo que publica la Política de Privacidad —habla de cookies *de
+seguimiento* y analítica *de terceros*— pero sí vacía el argumento con el que **D28** sigue
+aparcada: a partir de hoy, dejar la franja de notificación sin botón de cerrar es una decisión de
+diseño y no de arquitectura.
 
 **El tercer script es el globo, y conviene mirarlo de frente.** De sus 40 525 B, casi todo son las
 coordenadas del mapamundi incrustadas en línea; el código que las proyecta y las rota son unas
@@ -81,9 +100,13 @@ Los tres scripts y qué hace cada uno:
 ### Lo que esto implica
 
 - **No hay servidor.** Nada que parchear, escalar, monitorear ni exponer.
-- **No hay superficie de datos.** Cero formularios que envíen, cero `localStorage`, cero cookies.
+- **No hay superficie de datos.** Cero formularios que envíen, cero cookies, cero `localStorage`.
   Los montos que el usuario escribe **no salen del navegador**: viajan sólo dentro del mensaje que
   él mismo envía por WhatsApp.
+  *Matizado el 2026-09-25:* desde la intro de marca hay **una** llave de `sessionStorage`,
+  `dlpay-visita`, que vale `'1'` y se borra al cerrar la pestaña. No identifica a nadie, no viaja a
+  ninguna parte y no se lee desde el servidor —no hay servidor—, pero la frase «cero almacenamiento»
+  ya no es exacta y no conviene seguir diciéndola. Ver ADR-0010.
 - **No hay claves.** Todas las variables son `PUBLIC_*` y son configuración, no secretos.
 - **No hay dependencias en producción.** Las **cuatro** declaradas son de build: `astro`,
   `@astrojs/check`, `typescript` y `@types/node` (este último sólo para que `astro check` verifique
@@ -214,14 +237,25 @@ Conjunto recomendado, a aplicar al elegir proveedor:
 | `Content-Security-Policy` | `default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action 'none'; frame-ancestors 'none'; base-uri 'self'` | El sitio no llama a nadie: `connect-src 'none'` es literalmente cierto y cierra la exfiltración. `unsafe-inline` es necesario porque Astro inlinea el script y los estilos. |
 | `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` | Sólo tras confirmar que todos los subdominios sirven HTTPS. |
 | `X-Content-Type-Options` | `nosniff` | |
-| `Referrer-Policy` | `strict-origin-when-cross-origin` | Que WhatsApp no reciba la ruta completa. |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | Que WhatsApp no reciba la ruta completa. **No endurecer a `no-referrer` sin leer la nota de abajo.** |
 | `Permissions-Policy` | `geolocation=(), camera=(), microphone=(), payment=()` | El sitio no usa ninguna. |
 | `X-Frame-Options` | `DENY` | Redundante con `frame-ancestors`, para navegadores viejos. |
 | `X-Robots-Tag` | `noindex, nofollow` — **sólo en Staging** | La defensa robusta contra la indexación de un despliegue que no es el sitio público. El HTML ya lleva `noindex` y el robots un `Disallow: /`, pero `Disallow` impide el rastreo y un buscador que no rastrea **nunca lee el `noindex`**: podría indexar una URL descubierta por un enlace externo. Como cabecera HTTP el veto no depende de que la página se lea. **Nunca en producción.** |
 
-Sobre el `unsafe-inline` de `script-src`: los tres scripts en línea (62 B, 489 B y 2 336 B) los
-genera el build y son estables, así que se pueden fijar por **hash** y dejar el CSP estricto sin
-`unsafe-inline`. Vale evaluarlo al elegir proveedor; requiere calcular los hashes en el build.
+**Sobre `Referrer-Policy`, un acoplamiento del 2026-09-25 que conviene que se vea.** La intro de
+marca decide si se muestra con dos comprobaciones, y la segunda es un respaldo que descarta la
+visita cuando `document.referrer` es de nuestro propio origen (ADR-0010, «opción C»). Ese respaldo
+es lo único que impide que la intro se dispare a mitad de visita a quien entró por una de las cinco
+páginas que no llevan marcador. `strict-origin-when-cross-origin` manda referente en la navegación
+interna, así que funciona; **`no-referrer` lo dejaría sin efecto en silencio** —ningún error, ningún
+test rojo, sólo una intro apareciendo donde no debe—. Si algún día hace falta endurecerlo, el camino
+es reabrir la opción A de ADR-0010, no quitar el respaldo.
+
+Sobre el `unsafe-inline` de `script-src`: los scripts en línea los genera el build y son estables,
+así que se pueden fijar por **hash** y dejar el CSP estricto sin `unsafe-inline`. Vale evaluarlo al
+elegir proveedor; requiere calcular los hashes en el build. **Eran tres hasta el 2026-09-25**; con
+el marcador de visita y la intro de marca son **cinco en la Home y cuatro en las otras siete
+páginas con JavaScript**, más un bloque de estilo que ya cubre el `style-src`.
 
 ### 5.2 Caché
 

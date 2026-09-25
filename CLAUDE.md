@@ -27,6 +27,14 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   **Una segunda, del 2026-09-15:** el globo, con **dos** movimientos infinitos —la rotación de la
   esfera y el pulso del marcador de Chile—. Ver ADR-0008. Con eso son tres en todo el sitio, y la
   regla dura 1 («una sola vez») sigue valiendo para todo lo demás.
+  **Una tercera, del 2026-09-25:** la **intro de marca** de la Home —830 ms de telón en los que el
+  isotipo se separa por su propio eje y se une—. Enmienda dos reglas a la vez: el techo de 280 ms y,
+  sobre todo, la regla dura 2 («el cotizador no entra»), porque el telón lo **tapa** 937 ms. Se
+  autoriza taparlo, nunca animarlo: la tarjeta está renderizada y operativa debajo desde el primer
+  fotograma, y eso está medido. Ver ADR-0010. **Con ella el sitio deja de estar en «cero
+  almacenamiento»** —el marcador de visita escribe una llave en `sessionStorage`—, lo que vacía el
+  argumento con el que D28 sigue aparcada. Las cuatro legales y la 404 **siguen en cero bytes
+  ejecutables**: no reciben ni el marcador ni la intro.
 - **Auditoría previa a producción hecha, en dos revisiones (2026-09-04 y 2026-09-08).** La segunda
   cerró dos fallos críticos que no se veían en localhost: la guarda de `PUBLIC_SITE_URL` se
   esquivaba con `astro build` directo y sólo comprobaba presencia —`.env.example` traía
@@ -61,10 +69,12 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   `npm run build` en verde, fuentes T-C auto-hospedadas, tokens del Design System en código, y la
   cadena `PriceSource → Quote` en pie. Ver `docs/development.md`.
   **Sobre el JavaScript, que ya no es cero:** el esqueleto se levantó sin una sola línea en el
-  cliente y así siguen las cuatro legales y la 404. Hoy la Home envía **45,6 KB**: el cotizador
-  (4,5 KB), el Motion System (0,5 KB) y el globo (40,5 KB, casi todo coordenadas). Las dos
-  excepciones están autorizadas y acotadas —ADR-0009 y ADR-0008—; el inventario exacto, por página,
-  está en `docs/arquitectura-produccion.md` §1.1.
+  cliente y así siguen las cuatro legales y la 404. Hoy la Home envía **50,3 KB**: el cotizador
+  (4,5 KB), el Motion System (0,5 KB), el globo (40,5 KB, casi todo coordenadas) y la intro de marca
+  (6,3 KB). Las excepciones están autorizadas y acotadas —ADR-0009, ADR-0008 y ADR-0010—; el
+  inventario exacto, por página, está en `docs/arquitectura-produccion.md` §1.1.
+  **Que las cinco páginas en cero sigan en cero ya no depende de la memoria de nadie:**
+  `tests/zero-js.test.ts` lo comprueba sobre el build.
 - **Fase 3 cerrada.** Lo siguiente es **Fase 4: construir el sitio público**, empezando por la
   Home con el cotizador (`phase-2.5-definicion-experiencia.md` §2).
 - **Numeración de fases (única y definitiva — la del repositorio):**

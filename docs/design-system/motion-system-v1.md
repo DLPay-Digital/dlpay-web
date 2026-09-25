@@ -110,6 +110,29 @@ globo: **enmienda la pieza, no los seis movimientos ni el techo fuera de ella.**
 cuya duración está justificada porque el movimiento es la afirmación. Una entrada decorativa de
 2.190 ms sigue prohibida por el §4, y sin esa distinción la enmienda sería un cheque en blanco.
 
+### Enmienda externa — 2026-09-25
+
+La tercera excepción al sistema, **razonada y aceptada en ADR-0010** (`motion-v1-e3`): la **intro
+de marca** de la Home. 830 ms de telón sobre `--tinta` en los que el isotipo se separa por su
+propio eje —33,954°— y se une. Mismo alcance acotado que el globo: **enmienda la pieza, no los seis
+movimientos ni el techo fuera de ella.**
+
+| Regla de este documento | Estado |
+|---|---|
+| §4, regla dura **2** — **«el cotizador no entra»** | **Enmendado, y sólo para esta pieza.** La regla protege dos cosas y sólo una está en juego. *Que el cotizador no tenga entrada propia* **se cumple entero y está medido**: la tarjeta está renderizada y operativa bajo el telón desde el primer fotograma —8.102 px de altura con intro y sin ella, 25 ocultos de 419 en los dos casos, 1.087,31 para 1.000.000 en los dos—. Lo que se rompe es *que nada se interponga*: 937 ms, una vez por sesión, entrando por la Home. **Se autoriza taparlo, nunca animarlo** |
+| §2c — techo de **280 ms** | **Enmendado, y sólo para esta pieza.** 830 ms de animación, 937 de bloqueo de scroll, y una red de seguridad que corta en 2.500 ms desde el arranque de la navegación pase lo que pase. Son un techo, no un objetivo |
+| §4, regla dura 1 — **una sola vez** | **Intacto.** Una vez por inicio de sesión de pestaña, y sólo si la Home fue la puerta de entrada. No se re-anima nunca |
+| §4, regla dura 3 — las cifras no entran | **Intacto.** El telón tapa; no anima ninguna cifra de la página |
+| §4, regla dura 5 — sin JavaScript todo se ve | **Intacto, y por construcción.** Sin JS no se pone la clase, no hay telón, y la página se ve entera. Es al revés de `Motion.astro` —que oculta primero y revela después— así que el incidente del 2026-09-15 no puede repetirse aquí |
+| §6 — las cuatro legales y la 404 en **0 bytes ejecutables** | **Intacto, y es la decisión de fondo.** `/tarifas`, `/terminos`, `/privacidad`, `/canal-de-denuncias` y la 404 no reciben ni el marcador ni la intro. Es la **opción C** de ADR-0010 |
+| `prefers-reduced-motion` | **Intacto.** No hay intro en absoluto: el script sale antes de tocar el DOM y el CSS anula telón y capa por separado |
+
+**Lo que esta enmienda no abre.** Cualquier otra capa a pantalla completa —un aviso de cookies, un
+modal de bienvenida, una pantalla de carga, una transición entre páginas— **necesita enmienda
+propia**. Autoriza *la intro de marca*, no *las capas a pantalla completa*, y mucho menos volver a
+poner algo delante del cotizador. Con la franja y el globo son **tres** excepciones: si aparece una
+cuarta, la pregunta deja de ser si se aprueba y pasa a ser si V1 necesita revisión.
+
 ---
 
 ## 1. Estado actual, verificado

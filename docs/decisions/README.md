@@ -14,6 +14,7 @@ evaluadas, decisión y consecuencias**. La documentación explica el *porqué*, 
 | [0007](0007-paleta-cartografica.md) | Paleta cartográfica acotada a la sección del globo — coexiste con ADR-0001 | Aceptada | 4 |
 | [0008](0008-motion-v1-e2-globo-rotativo.md) | Motion V1, segunda excepción — rotación continua y pulso, sólo en el globo | Aceptada | 4 |
 | [0009](0009-cero-js-e1-globo-rotativo.md) | Primera excepción a «cero JS al cliente» — runtime acotado al globo | Aceptada | 4 |
+| [0010](0010-motion-v1-e3-intro-de-marca.md) | Motion V1, tercera excepción — intro de marca en la Home, 830 ms sobre el cotizador | Aceptada | 4 |
 
 **Convención:** numeración correlativa, un archivo por decisión, nunca se reescribe una decisión
 aceptada — se **enmienda** dejando visible lo anterior, o se supera con un ADR nuevo que la cite.

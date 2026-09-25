@@ -31,6 +31,26 @@ interface Props {
    * una tarjeta Open Graph sin URL queda inválida.
    */
   noindex?: boolean;
+  /**
+   * Esta página **no ejecuta un solo byte** y así se queda: no recibe el
+   * marcador de visita de la intro de marca (ADR-0010).
+   *
+   * Lo usan las cuatro legales —vía `Legal.astro`— y la 404. Son las cinco
+   * páginas que `docs/arquitectura-produccion.md` §1.1 declara en **0 bytes
+   * ejecutables**, y esa propiedad es lo que ADR-0010 llamó «opción C»:
+   * Sebastián eligió no ponerlas a ejecutar por una animación de entrada,
+   * porque es exactamente lo que **D28** se negó a pagar para darle botón de
+   * cerrar a la franja de notificación.
+   *
+   * Lo que cuesta dejarlas fuera está escrito en ADR-0010 y no se esconde:
+   * quien entre por una de estas cinco y después **escriba** la dirección de
+   * la Home verá la intro, porque sin marcador y sin referente no hay forma de
+   * distinguir ese caso de una llegada nueva. El clic sí queda cubierto.
+   *
+   * No hace falta acordarse: `tests/zero-js.test.ts` falla si una de las cinco
+   * empieza a ejecutar algo.
+   */
+  zeroJs?: boolean;
 }
 
 const {
@@ -39,6 +59,7 @@ const {
   path = Astro.url.pathname,
   hasQuoter = false,
   noindex = false,
+  zeroJs = false,
 } = Astro.props;
 const canonical = new URL(path, site.url).href;
 const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
@@ -63,6 +84,41 @@ const organization = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    {/*
+      ── Marcador de visita ─────────────────────────────────────────────────
+
+      Va **lo primero**, antes que cualquier otro script del documento, y su
+      único trabajo es responder a una pregunta: ¿es ésta la primera página que
+      esta pestaña ve de nuestro sitio? Lo hace **leyendo antes de escribir**.
+
+      Quien lo consume es la intro de marca de la Home (ADR-0010). Está acá y no
+      en la Home porque la pregunta se responde en la página de ENTRADA, sea cual
+      sea; si sólo la Home dejara rastro, entrar por `/precio` y llegar después a
+      la Home dispararía la intro a mitad de visita.
+
+      **Ojo con el orden**: si este bloque quedara después del componente de la
+      intro, `window.__dlpayInicio` valdría `undefined` allí y **la intro no se
+      vería nunca**. El fallo cae del lado seguro, pero es silencioso: si algún
+      día deja de verse, es esto.
+
+      `catch` → `false`, y no `true`: sin almacenamiento no se puede saber si es
+      una entrada, y ante la duda no se tapa la página.
+    */}
+    {!zeroJs && (
+      <script is:inline>
+        (function () {
+          try {
+            var visto = sessionStorage.getItem('dlpay-visita');
+            sessionStorage.setItem('dlpay-visita', '1');
+            window.__dlpayInicio = !visto;
+          } catch (e) {
+            window.__dlpayInicio = false;
+          }
+        })();
+      </script>
+    )}
+
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     {!noindex && <link rel="canonical" href={canonical} />}
@@ -121,6 +177,16 @@ const organization = {
       type="application/ld+json"
       set:html={JSON.stringify(organization).replace(/</g, '\\u003c')}
     />
+
+    {/*
+      Lo que una página necesite en la cabecera y no sea de todas. Hoy lo usa
+      una sola: la Home, para montar la intro de marca (ADR-0010), que tiene que
+      correr síncrona y antes de `<body>`.
+
+      Va al final del `<head>` a propósito, para que el marcador de arriba
+      siempre corra primero.
+    */}
+    <slot name="head" />
   </head>
   <body>
     <slot />

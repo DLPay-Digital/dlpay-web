@@ -1,0 +1,146 @@
+═════════════════════════════════════════════════════════════════════════════
+  INTRO DE MARCA · DLPay — opción C, decidida por Sebastián el 2026-09-25
+═════════════════════════════════════════════════════════════════════════════
+
+  Dos piezas. Las dos hacen falta y el orden importa.
+
+  A · MARCADOR DE VISITA
+      En el <head>, lo primero, SÓLO en las páginas que YA ejecutan JavaScript.
+      NO va en estas cinco, que hoy están en cero bytes ejecutables y así se
+      quedan:   /tarifas   /terminos   /privacidad   /canal-de-denuncias   404
+
+  B · LA INTRO
+      Sólo en el <head> de la home, después del marcador. Lleva dentro el
+      respaldo de referente, que es lo que tapa el hueco de esas cinco páginas.
+
+  El <style> de B va con is:global. Astro escopa por clase y `html.intro-va`
+  no puede escoparse: la clase de ámbito se le pone a los elementos de la
+  plantilla del componente y <html> vive en Base.astro.
+═════════════════════════════════════════════════════════════════════════════
+
+
+═════ A · MARCADOR DE VISITA ═════
+
+<script is:inline>
+/* ══ MARCADOR DE VISITA · va en el <head> de TODAS las páginas, lo primero ═══
+   Lee antes de escribir: window.__dlpayInicio es verdadero sólo en la primera
+   página de la sesión de esta pestaña. Con eso la intro sabe si la home fue la
+   puerta de entrada o si el visitante ya venía navegando por dentro.
+   ═════════════════════════════════════════════════════════════════════════ */
+(function(){ try{
+  var y=sessionStorage.getItem('dlpay-visita');
+  sessionStorage.setItem('dlpay-visita','1');
+  window.__dlpayInicio=!y;
+}catch(e){ window.__dlpayInicio=false; } })();
+</script>
+
+
+═════ B · LA INTRO — sólo en la home, después del marcador ═════
+
+<!-- ══ INTRO · maqueta de Cowork ═════════════════════════════════════════
+     Tres cambios sobre la v1, los tres salidos de medir y no de pensarlo:
+
+     1. El telón no es el <div>: es un pseudo-elemento de <html>. Cuando el
+        script de la cabecera corre, <html> ya existe y <body> no, así que el
+        telón pinta en el primer fotograma. La v1 esperaba a DOMContentLoaded y
+        con la CPU frenada la página se pintaba entera antes de que la taparan:
+        medido en píxeles, 641 ms de portada visible a 4× y 721 ms a 6×, con el
+        titular y el cotizador ya puestos. Eso es peor que no tener intro.
+     2. La red de seguridad se arma en la cabecera, no dentro de poner(): si el
+        hilo muere entre la cabecera y <body>, el telón tiene que caerse igual.
+     3. La red corta con el mismo fundido de 380 ms de la salida normal. Un
+        corte seco se lee como un fallo.
+
+     Sin JavaScript no se pone la clase, no hay telón y la página se ve entera:
+     la regla dura 5 se sigue cumpliendo por construcción, no por la red.
+     ══════════════════════════════════════════════════════════════════════════ -->
+<style>
+  /* el telón: pinta en el primer fotograma, antes de que exista <body> */
+  html.intro-va::before{content:"";position:fixed;inset:0;background:var(--tinta);z-index:9998}
+  html.intro-va{overflow:hidden}
+
+  .intro{position:fixed;inset:0;z-index:9999;background:var(--tinta);
+    display:grid;place-items:center;will-change:opacity}
+  .intro svg{width:132px;height:99.15px;color:var(--on-tinta);overflow:visible}
+  .intro .pieza{will-change:transform}
+  /* separadas por el eje del propio isotipo: 33,954°, el corte de la marca */
+  .intro .a{transform:translate(9.5px,-6.4px)}
+  .intro .b{transform:translate(-9.5px,6.4px)}
+  .intro.unir .a,.intro.unir .b{transform:translate(0,0);
+    transition:transform 300ms cubic-bezier(.16,.84,.34,1)}
+  .intro .brillo{opacity:0}
+  .intro.destello .brillo{animation:barrer 150ms linear forwards}
+  @keyframes barrer{
+    0%{opacity:0;transform:translate(-78px,52px)}
+    22%{opacity:1}
+    78%{opacity:1}
+    100%{opacity:0;transform:translate(78px,-52px)}
+  }
+  /* telón y capa se van juntos, o se ve el corte entre los dos */
+  .intro.salir{opacity:0;pointer-events:none;
+    transition:opacity 380ms cubic-bezier(.4,0,.2,1)}
+  html.intro-sale::before{opacity:0;transition:opacity 380ms cubic-bezier(.4,0,.2,1)}
+  .intro.salir svg{transform:scale(1.045);
+    transition:transform 380ms cubic-bezier(.4,0,.2,1)}
+  @media (prefers-reduced-motion:reduce){ .intro{display:none} html.intro-va::before{display:none} }
+</style>
+<script is:inline>
+(function(){
+  try{
+    var m=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)');
+    if(m&&m.matches) return;                          // regla dura 6
+  }catch(e){ return; }
+  /* Una sola vez por inicio de sesión, y sólo si la home fue la puerta de
+     entrada. Lo decide el marcador global de la §A: aquí no se consulta
+     sessionStorage, se lee lo que el marcador vio ANTES de escribir.
+     Si no está el marcador, esto vale undefined y no hay intro nunca. */
+  if(!window.__dlpayInicio) return;
+  /* Respaldo para las páginas que no llevan marcador porque no ejecutan nada:
+     si el visitante viene de una dirección nuestra, esto no es una entrada,
+     es una navegación por dentro. El marcador manda; esto sólo tapa su hueco. */
+  try{ if(document.referrer && new URL(document.referrer).origin===location.origin) return; }catch(e){}
+
+  var raiz=document.documentElement, muerto=false, red;
+  raiz.classList.add('intro-va');                     // el telón, ya
+
+  function quitar(){ muerto=true; clearTimeout(red);
+    raiz.classList.remove('intro-va','intro-sale');
+    var v=document.querySelector('.intro'); if(v) v.remove(); }
+  function fundir(){ if(muerto) return; muerto=true;   /* nada más puede aparecer */
+    var v=document.querySelector('.intro'); if(v) v.classList.add('salir');
+    raiz.classList.add('intro-sale'); setTimeout(quitar,380); }
+  /* Se arma aquí y se rearma en poner(). El tope absoluto es 2.500 ms desde el
+     arranque: si <body> llegó tarde por red lenta —no por aparato lento— la
+     animación sigue teniendo sus 900 ms, pero nunca se pasa del tope. */
+  red=setTimeout(fundir,1400);
+
+  var A="M9.33 0 L72.89 0.44 L80.89 2.67 L87.11 5.78 L90.67 8.44 L95.56 14.22 L98.22 19.56 L100 26.67 L99.11 40 L95.11 48.44 L91.11 54.22 L84 60.44 L76.44 65.33 L69.33 68.44 L58.22 71.56 L45.78 73.33 L7.56 74.22 L36 56.89 L46.67 49.33 L54.22 49.33 L63.56 45.78 L69.78 40.44 L72.44 34.67 L72.44 29.78 L71.11 26.67 L68 24 L64 22.67 L17.78 22.22 L8.89 0.44 Z", B="M19.56 35.11 L50.67 35.56 L0 75.11 L19.11 35.56 Z";
+  var el=document.createElement('div');
+  el.className='intro'; el.setAttribute('aria-hidden','true');
+  el.innerHTML='<svg viewBox="0 0 100 75.11" fill="currentColor" fill-rule="evenodd">'
+    +'<clipPath id="ic"><path d="'+A+'"/><path d="'+B+'"/></clipPath>'
+    +'<linearGradient id="ig" x1="0" y1="1" x2="1" y2="0">'
+    +'<stop offset="0" stop-color="#fff" stop-opacity="0"/>'
+    +'<stop offset=".46" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".72"/><stop offset=".54" stop-color="#fff" stop-opacity="0"/>'
+    +'<stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>'
+    +'<path class="pieza a" d="'+A+'"/><path class="pieza b" d="'+B+'"/>'
+    +'<g clip-path="url(#ic)"><rect class="brillo" x="-46" y="-30" width="150" height="140" fill="url(#ig)" transform-origin="50 37.5"/></g>'
+    +'</svg>';
+
+  function poner(){
+    if(muerto) return;
+    var t=performance.now();
+    clearTimeout(red);
+    red=setTimeout(fundir, Math.max(0, Math.min(Math.max(1400, t+900), 2500) - t));
+    document.body.appendChild(el);
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      el.classList.add('unir');
+      setTimeout(function(){ el.classList.add('destello'); }, 280);
+      setTimeout(function(){ el.classList.add('salir'); raiz.classList.add('intro-sale'); }, 430);
+      setTimeout(quitar, 830);   // el fundido acaba en 810; aquí se libera el scroll
+    });});
+  }
+  if(document.body) poner();
+  else document.addEventListener('DOMContentLoaded', poner, {once:true});
+})();
+</script>
