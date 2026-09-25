@@ -43,9 +43,10 @@ export const mechanisms: Mechanism[] = [
  * Va acá y no escrito en la página porque son DATOS, igual que `mechanisms`:
  * el día que cambie el banco o el recorrido, se cambia en un sitio.
  *
- * Nada de esto es un claim nuevo. Que la transferencia llega a la cuenta de
- * DLPay en BCI ya lo publica `mechanisms`, con su marcador; «lo tenemos
- * nosotros» es la misma afirmación dicha en primera persona.
+ * Nada de esto es un claim nuevo, y desde el 2026-09-25 afirma **menos** que
+ * antes: el nombre del banco salió de `phases` al subir la figura a la portada
+ * y se queda sólo en `mechanisms`, con su marcador. «Lo tenemos nosotros» es la
+ * misma afirmación dicha en primera persona.
  */
 export interface Phase {
   /** Dónde está el dinero. */
@@ -61,9 +62,28 @@ export interface Phase {
 export const phases: readonly Phase[] = [
   { place: 'En tu cuenta bancaria', who: 'Lo tienes tú' },
   {
-    // REQUIERE VALIDACIÓN DE COMPLIANCE — mención del banco por nombre, la
-    // misma que ya lleva `mechanisms`.
-    place: 'En la cuenta de DLPay en BCI',
+    /*
+      **Sin el nombre del banco, por decisión de Sebastián del 2026-09-25**, al
+      subir esta figura a la portada de `/confianza`.
+
+      Decía «En la cuenta de DLPay en BCI» y llevaba el marcador de Compliance
+      que acompaña a toda mención del banco por nombre. En mitad de la página
+      era una frase más; sobre el pliegue, en verde y rotulando el único tramo
+      nuestro, pasaba a ser lo primero que alguien lee en la página cuyo
+      argumento es «confianza que se comprueba». Es el error del `PendingNotice`
+      con otra ropa: un claim pendiente de validación que gana peso al cambiar
+      de sitio.
+
+      **Quitar el nombre ESTRECHA la afirmación, no la amplía**, así que no
+      necesita firma nueva: decir «la cuenta de DLPay» afirma menos que decir en
+      qué banco está. Y por eso este campo ya no lleva marcador — el claim que
+      lo pedía dejó de estar aquí.
+
+      El banco **sigue publicado en la página**, una vez, en `mechanisms`, con
+      su marcador y a la altura donde siempre estuvo. De tres menciones se pasó
+      a una.
+    */
+    place: 'En la cuenta de DLPay',
     who: 'Lo tenemos nosotros',
     ours: true,
     note: 'Acá confirmamos que llegó, antes de mover nada',

@@ -37,11 +37,70 @@ const wa = contact.whatsappUrl();
   <Motion />
   <Header />
   <main id="main">
+    {/*
+      ── La línea de tenencia, subida a la portada el 2026-09-25 ─────────────
+
+      La bajada promete «un mecanismo que puedes revisar paso a paso» y el
+      mecanismo estaba **337 px más abajo**, con 96 px de tinta vacía en medio:
+      la promesa y la prueba separadas por un scroll. Ahora la prueba está en la
+      misma pantalla que la promesa.
+
+      `stacked` **sin `--montaje`**: la figura no monta sobre la costura, se
+      queda dentro de la banda. Sin ese valor el saliente es cero y la variante
+      degrada a «una columna centrada», que es exactamente lo que hace falta.
+
+      **El marcado y el dato no cambiaron de forma**, sólo de sitio: la misma
+      `figure.track`, la misma `ol.phases` y el mismo `phases` de `trust.ts`.
+      Lo que cambia por vivir sobre tinta es la paleta, y eso está razonado
+      abajo, en `.phase-bar`.
+    */}
     <PageHero
       title="Confianza que se comprueba"
       lead="No tenemos un sello que mostrarte. Tenemos un mecanismo que puedes revisar paso a paso, y la disciplina de no afirmar lo que no podemos probar."
       sequence
-    />
+      layout="stacked"
+    >
+      {/*
+        La línea de tiempo de TENENCIA. No es un SVG y es una decisión medida:
+        el texto de un SVG escala con el `viewBox`, así que a 390 px estos
+        rótulos caían a unos 5 px. En HTML usan la escala tipográfica del
+        sistema, en móvil las tres fases apilan —que además es la lectura
+        correcta de una secuencia— y el corchete del tramo nuestro se convierte
+        en el canto izquierdo del bloque.
+
+        Efecto lateral que importa: la figura no necesita `aria-hidden` ni un
+        `aria-label` que reescriba lo que dice. El texto es texto. Lo único
+        decorativo son las tres barras, y ésas sí van ocultas.
+
+        La regla general: si una figura es texto más rectángulos, es HTML. El
+        SVG es para trazos que una caja no puede hacer —planos recortados,
+        cuñas, `clip-path`—, como las cuatro figuras de /empresas.
+      */}
+      <figure class="track" slot="aside">
+        <ol class="phases" role="list">
+          {phases.map((phase) => (
+            <li class:list={['phase', { 'is-ours': phase.ours }]}>
+              <p class="phase-place">{phase.place}</p>
+              <span class:list={['phase-bar', { 'is-ours-bar': phase.ours }]} aria-hidden="true"></span>
+              <p class:list={['phase-who', { 'is-ours-who': phase.ours }]}>{phase.who}</p>
+              {phase.note && <p class="phase-note">{phase.note}</p>}
+            </li>
+          ))}
+        </ol>
+        {/*
+          Sin el nombre del banco, por la misma decisión que lo quitó de
+          `trust.ts`: era la segunda de las dos menciones que subían al pliegue,
+          y la única de las tres de esta página que nunca llevó marcador. Sigue
+          publicado abajo, en `mechanisms`, que es donde tiene su firma
+          pendiente.
+        */}
+        <figcaption>
+          Tu dinero no pasa por ningún intermediario fuera de Chile ni por cuentas de terceros:
+          <strong> de tu banco a una cuenta de DLPay, y de ahí a tu billetera</strong>. El
+          tramo verde es el único que es nuestro.
+        </figcaption>
+      </figure>
+    </PageHero>
 
     <section class="mech" aria-labelledby="mech-title">
       <div class="inner">
@@ -49,40 +108,6 @@ const wa = contact.whatsappUrl();
           <h2 id="mech-title" data-enter>Qué pasa con tu plata</h2>
           <p>Tres cosas que puedes verificar tú mismo en tu próxima operación.</p>
         </header>
-        {/*
-          La línea de tiempo de TENENCIA. No es un SVG y es una decisión medida:
-          el texto de un SVG escala con el `viewBox`, así que a 390 px estos
-          rótulos caían a unos 5 px. En HTML usan la escala tipográfica del
-          sistema, en móvil las tres fases apilan —que además es la lectura
-          correcta de una secuencia— y el corchete del tramo nuestro se
-          convierte en el canto izquierdo del bloque.
-
-          Efecto lateral que importa: la figura no necesita `aria-hidden` ni un
-          `aria-label` que reescriba lo que dice. El texto es texto. Lo único
-          decorativo son las tres barras, y ésas sí van ocultas.
-
-          La regla general: si una figura es texto más rectángulos, es HTML. El
-          SVG es para trazos que una caja no puede hacer —planos recortados,
-          cuñas, `clip-path`—, como las cuatro figuras de /empresas.
-        */}
-        <figure class="track">
-          <ol class="phases" role="list">
-            {phases.map((phase) => (
-              <li class:list={['phase', { 'is-ours': phase.ours }]}>
-                <p class="phase-place">{phase.place}</p>
-                <span class:list={['phase-bar', { 'is-ours-bar': phase.ours }]} aria-hidden="true"></span>
-                <p class:list={['phase-who', { 'is-ours-who': phase.ours }]}>{phase.who}</p>
-                {phase.note && <p class="phase-note">{phase.note}</p>}
-              </li>
-            ))}
-          </ol>
-          <figcaption>
-            Tu dinero no pasa por ningún intermediario fuera de Chile ni por cuentas de terceros:
-            <strong> de tu banco a una cuenta de DLPay en BCI, y de ahí a tu billetera</strong>. El
-            tramo verde es el único que es nuestro.
-          </figcaption>
-        </figure>
-
         <ul class="list" role="list">
           {mechanisms.map((item) => (
             <li class="item">
@@ -207,45 +232,60 @@ const wa = contact.whatsappUrl();
   /* ── La línea de tiempo de tenencia ──────────────────────────────────────
      Texto y tres rectángulos: por eso es HTML y no un SVG. Ver la nota del
      marcado. */
-  .track { margin: 0 0 var(--s-8); }
+  /*
+    ── La figura, ahora sobre tinta ──────────────────────────────────────────
+
+    **Repintada el 2026-09-25 al subir a la portada, y ése es medio motivo del
+    cambio entero.** Sobre papel los dos tramos que NO son nuestros iban en
+    `--ink` a **16,00:1** y el que SÍ lo es en `--verde-deep` a **5,44:1**: lo
+    ajeno se dibujaba tres veces más fuerte que lo propio, justo encima de una
+    leyenda que dice «el tramo verde es el único que es nuestro». El dibujo
+    contradecía a su pie.
+
+    El Design System §6.2 tiene la marca exacta para lo ajeno —«existe, es real,
+    no es nuestro»— y esta figura no la usaba. Sobre tinta el equivalente es
+    `--line-on-tinta`: presente, legible, y claramente por detrás del verde.
+
+    Y el verde cambia de token por la misma regla del §6.2 —**el fondo elige el
+    verde**—: sobre papel manda `--verde-deep` porque el de marca da 2,02:1;
+    sobre tinta manda `--verde`, que da 8,45:1.
+  */
+  .track { margin: 0; width: 100%; text-align: left; }
   .phases { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
   .phase-place {
     font-family: var(--f-num);
     font-size: var(--t-dato-sm);
     font-weight: 600;
-    color: var(--ink);
+    color: var(--on-tinta);
   }
   /* La barra es lo único decorativo de la figura, y va `aria-hidden`. */
   .phase-bar {
     display: block;
     height: 20px;
     border-radius: var(--r-1);
-    background: var(--ink);
+    background: var(--line-on-tinta);
     margin: var(--s-3) 0;
   }
-  /* `--verde-deep` y no `--verde`: la barra CARGA significado —marca el único
-     tramo que es nuestro— y sobre papel el verde de marca no llega (DS §2.4).
-     4,90:1 frente a 2,02:1. */
-  .phase-bar.is-ours-bar { background: var(--verde-deep); }
-  .phase-who { font-family: var(--f-num); font-size: var(--t-dato-sm); color: var(--ink-mute); }
-  .phase-who.is-ours-who { color: var(--verde-deep); font-weight: 600; }
+  .phase-bar.is-ours-bar { background: var(--verde); }
+  .phase-who { font-family: var(--f-num); font-size: var(--t-dato-sm); color: var(--on-tinta-mute); }
+  .phase-who.is-ours-who { color: var(--verde); font-weight: 600; }
   /* El corchete marca el punto exacto donde el dinero pasa a estar en nuestra
      cuenta. En móvil se convierte en el canto del bloque: misma función, dos
      formatos. */
-  .phase.is-ours { border-left: 2px solid var(--verde-deep); padding-left: var(--s-4); }
+  .phase.is-ours { border-left: 2px solid var(--verde); padding-left: var(--s-4); }
   .phase-note {
     font-family: var(--f-num);
     font-size: var(--t-dato-sm);
-    color: var(--ink-mute);
+    color: var(--on-tinta-mute);
     margin-top: var(--s-2);
   }
   .track figcaption {
     margin-top: var(--s-6);
-    color: var(--ink-mute);
+    color: var(--on-tinta-mute);
     font-size: var(--t-body-sm);
-    max-width: 47ch;
+    max-width: 62ch;
   }
-  .track figcaption strong { color: var(--ink); font-weight: 600; }
+  .track figcaption strong { color: var(--on-tinta); font-weight: 600; }
 
   /* La mención institucional cierra la sección de requisitos. Discreta a
      propósito: informa por qué se piden documentos, no hace de sello. */
