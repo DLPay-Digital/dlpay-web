@@ -1937,3 +1937,76 @@ llega donde no debe, si la intro se monta fuera de la Home, o si en la Home el m
 **después** de la intro — el fallo silencioso de arriba, convertido en test rojo.
 
 Se comprobó que el detector mide: cuenta **6** scripts ejecutables en la Home y **0** en `/tarifas`.
+
+---
+
+### Notas de la integración de `2026-09-25-tarifas-v2`
+
+**Veredicto: integrada, después de corregir la premisa.** Entrega `a7c2c544…`, verificada.
+
+#### La afirmación central era falsa, y la entrega lo pedía comprobar
+
+La ficha y el prompt decían, con estas palabras, «**no es una excepción a ninguna regla**». Eran
+tres, y no se vieron porque la copia de `src/` que tenía Cowork son dos archivos:
+
+| Dónde | Qué decía |
+|---|---|
+| **DS §4.5** | `--elev-card` → «**Sólo** la tarjeta del cotizador sobre la tinta» |
+| **DS §4.5** | `--elev-pop` → «Menús/popovers (futuro)» |
+| **`tokens.css`** | `--r-card` → «sólo la tarjeta del cotizador flotando sobre tinta» |
+
+Esos tokens no se quedaban en la portada por descuido: estaban acotados por escrito. Y la regla no
+estaba muerta —`BusinessEmblem.astro` lleva escrito que le quitaron `--elev-card` por §4.5— pero
+tampoco se cumplía: `Header.astro` y `Steps.astro` la incumplían desde antes.
+
+**Sebastián eligió reescribir §4.5 en vez de excepcionarla**, que era la salida honesta: una regla
+que el propio proyecto incumple dos veces no protege nada. La versión nueva elige la elevación por
+lo que el objeto ES y trae tres límites duros, incluido el que la entrega ya proponía por su cuenta
+— la superficie alterna con el papel.
+
+**El segundo dato también era falso, y por un motivo que conviene recordar al medir:** «las páginas
+interiores no usan esos tokens» sale de mirar las hojas de estilo por página. Los usan **todas**, a
+través de `Header.astro`. Un `grep` por hoja de página no ve lo que entra por un componente
+compartido.
+
+#### Lo que la integración cambió respecto a la maqueta
+
+- **Las cifras no van escritas a mano.** Salen de `ConfigPriceSource → convert`, la misma cadena
+  del cotizador. Esta página no puede desincronizarse de lo que el cotizador aplica.
+- **«El monto» tenía dos `<text>` de 11 px dentro de un SVG que escala** — la regla que la propia
+  ficha fija en su §4 y que vuelve a romper en la misma entrega. A 320 px la tarjeta mide ~280 y
+  habrían caído a **10,2 px**, por debajo de su propio piso. Salieron del SVG.
+- **Una octava cadena que no estaba en la lista de siete:** «El filete gris del borde es la marca
+  que el sistema ya usa para lo que existe, es real y no es nuestro». Es la página explicándole al
+  lector su gramática visual — una nota de diseño colada en el copy. No se integró.
+- **La maqueta había perdido el enlace de WhatsApp del `PendingNotice`.** Es la única salida de la
+  página. Se conservó.
+- **No se inventó un segundo mecanismo de montaje.** `PageHero` ya tiene `layout="stacked"` con
+  `--montaje`, construido para que una pieza sobresalga de la banda oscura; es lo que usa el
+  portátil de `/empresas`.
+
+#### Un fallo mío, del tipo que no da error
+
+La tarjeta vive **dentro** de la ranura de `PageHero`, que es una banda en tinta y fija
+`color: var(--on-tinta)`. Sin declarar `color`, la cifra «2.000.000» heredaba blanco roto sobre
+papel: **ilegible, y sin un solo error en ninguna parte**. Lo vi en la captura, no en el código.
+Ahora da 14,5:1.
+
+#### Comprobado sobre el render, no sobre la maqueta
+
+Sin scroll horizontal a 320, 390 y 1280 · rótulo más pequeño **13 px** en los tres, contra el piso
+de 11 que fijó la entrega · cero `<text>` dentro de SVG · la barra no está partida y después del
+punteado no hay nada · **un solo `--elev-card`** en la página, que es el límite nuevo · barra en
+`--verde-deep` sobre papel y cifra en `--verde` sobre tinta · orden de lectura en el móvil
+`barra → el precio que ves → acá termina`.
+
+Y la página **sigue en cero bytes ejecutables**: salió de `Legal.astro` pero `zeroJs` viaja igual, y
+`tests/zero-js.test.ts` lo comprueba sobre el build.
+
+El `main` pasa de **1.428 px a 2.464 px** a 1280 — la ficha estimaba 2.787.
+
+#### Dos cosas de su §7
+
+La columna descentrada de `/preguntas` **ya está resuelta** (`8e11a53`): se quitó el tope de 760 en
+vez de centrarla, porque el borde izquierdo coincidía con el del titular. Y las cifras de planicie
+que cita —1.428 y 4.479 px— salen del build del 24; la de `/tarifas` ya no vale.
