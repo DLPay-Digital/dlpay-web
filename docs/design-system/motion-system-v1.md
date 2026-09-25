@@ -110,6 +110,47 @@ globo: **enmienda la pieza, no los seis movimientos ni el techo fuera de ella.**
 cuya duración está justificada porque el movimiento es la afirmación. Una entrada decorativa de
 2.190 ms sigue prohibida por el §4, y sin esa distinción la enmienda sería un cheque en blanco.
 
+### Enmienda interna — 2026-09-25 (b)
+
+Pedida por Sebastián: **que los tres mecanismos de `/confianza` entren cada uno por su lado.** Es
+la primera vez que algo del sitio entra fuera de la diagonal de la marca.
+
+| Regla de este documento | Estado |
+|---|---|
+| `tokens.css` — «el eje diagonal del isotipo (~34°): la dirección propia de la marca. **Todo lo que entra, entra sobre este vector — nunca sobre un translateY**» | **Enmendado, y sólo para los tres `.item` de `/confianza` en escritorio.** Entran en horizontal, cada uno desde el lado que ocupa |
+| §4, **M5** — escalonado, máximo cuatro hermanos | **Intacto.** Son tres, y el desfase es el `--m-stagger` del sistema |
+| §2c — techo de 280 ms | **Intacto.** `--m-base`, 200 ms, sin tocar |
+| §4, regla dura 1 — una sola vez | **Intacto.** Lo dispara el observador del sitio, que hace `unobserve` al revelar |
+| §4, regla dura 5 — sin JavaScript todo se ve | **Intacto.** El estado oculto cuelga de `.js-motion` |
+| `prefers-reduced-motion` | **Intacto.** Apaga las tres, como todo lo demás |
+
+**Por qué podía enmendarse, y no es «porque queda bien».** El propio documento ya tiene el caso, en
+la aclaración sobre el eje del 2026-09-07: la **barra fija móvil** entra desde el borde inferior y
+no sobre la diagonal, porque *«no entra en la página, se acopla al borde donde vive: distinto eje
+porque es distinto el gesto físico»*.
+
+Un bloque del zigzag está en la misma situación. **Vive en un lado**, y llegar desde ese lado es su
+gesto físico — el de la derecha llegando desde la derecha. El movimiento no adorna la composición:
+dice de dónde es cada bloque, que es exactamente la información que el zigzag carga. Si entraran
+los tres sobre la diagonal, el movimiento contradiría al layout.
+
+**Tres guardarrieles, y el primero es el que impide que esto se extienda:**
+
+1. **El eje sigue al layout, no al gusto.** Sólo donde hay dos lados de verdad. Bajo 900 px el
+   zigzag no existe —una sola columna— y los tres vuelven a la diagonal de la marca sin excepción
+   que aplicar. La regla es *«donde hay dos lados, cada bloque entra por el suyo; donde hay una
+   columna, manda la diagonal»*.
+2. **La magnitud no crece.** La diagonal desplaza 10,8 px (−6, 9); el horizontal desplaza **12**.
+   Un deslizamiento largo dejaría de ser una entrada y pasaría a ser una animación decorativa, que
+   prohíbe el Principio 3 del `CLAUDE.md`.
+3. **No se estrena nada.** El sistema ya expone `--m-shift-x` y `--m-shift-y` como tokens; esto los
+   redefine por elemento. No hay un movimiento nuevo, ni una sigla nueva, ni un byte más de
+   JavaScript: son los mismos `[data-enter]` que el observador del sitio ya revela.
+
+**Lo que esta enmienda no abre.** No autoriza entradas horizontales en general. Autoriza que **una
+composición de dos lados** haga entrar cada lado desde el suyo. Una lista en una columna que entre
+desde la izquierda sigue estando fuera del sistema, porque ahí el eje no significaría nada.
+
 ### Enmienda externa — 2026-09-25
 
 La tercera excepción al sistema, **razonada y aceptada en ADR-0010** (`motion-v1-e3`): la **intro

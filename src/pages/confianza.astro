@@ -124,7 +124,10 @@ const wa = contact.whatsappUrl();
         </header>
         <ul class="list" role="list">
           {mechanisms.map((item) => (
-            <li class="item">
+            /* Los tres entran (M5, tres hermanos de un máximo de cuatro) y en
+               escritorio cada uno lo hace desde el lado que ocupa. El eje está
+               abajo, en el bloque de 900 px, junto al zigzag que lo justifica. */
+            <li class="item" data-enter>
               <IconBadge name={item.icon} size="sm" />
               <div>
                 <h3>{item.title}</h3>
@@ -489,5 +492,35 @@ const wa = contact.whatsappUrl();
     /* El `h3` tiene medida propia (34ch); sin esto se quedaría pegado al borde
        izquierdo de su celda mientras el texto se alinea a la derecha. */
     .item:nth-child(even) h3 { margin-inline-start: auto; }
+
+    /*
+      ── Cada bloque entra por su lado ──────────────────────────────────────
+
+      Enmienda del Motion System del 2026-09-25 (b), pedida por Sebastián. El
+      eje por omisión es la diagonal de la marca y `tokens.css` lo dice sin
+      matices: «todo lo que entra, entra sobre este vector». Acá no.
+
+      **El argumento es el mismo que el documento ya acepta para la barra fija
+      móvil:** aquélla asoma desde el borde inferior porque «no entra en la
+      página, se acopla al borde donde vive — distinto eje porque es distinto el
+      gesto físico». Un bloque del zigzag vive en un lado, y llegar desde ese
+      lado es su gesto. Si los tres entraran sobre la diagonal, el movimiento
+      contradiría a la composición.
+
+      **Va dentro de esta media query a propósito**, pegado al zigzag que lo
+      justifica: bajo 900 px hay una sola columna, no hay dos lados, y los tres
+      vuelven a la diagonal sin que haya excepción que aplicar. El eje sigue al
+      layout, no al gusto.
+
+      La magnitud no crece: la diagonal desplaza 10,8 px y esto desplaza 12. Un
+      deslizamiento largo dejaría de ser una entrada y sería una animación
+      decorativa (Principio 3).
+
+      No se estrena nada: `--m-shift-x` y `--m-shift-y` ya son tokens del
+      sistema y esto los redefine por elemento. Cero JavaScript nuevo — son los
+      mismos `[data-enter]` que el observador del sitio ya revela.
+    */
+    .item:nth-child(odd) { --m-shift-x: -12px; --m-shift-y: 0px; }
+    .item:nth-child(even) { --m-shift-x: 12px; --m-shift-y: 0px; }
   }
 </style>
