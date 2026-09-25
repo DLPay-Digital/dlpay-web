@@ -2079,3 +2079,58 @@ Un teléfono se eleva con su bisel y no gasta el `--elev-card` de la página. Es
 #### Y lo de siempre
 
 Borrado `cowork/_tmp-dist.tar.gz` (356 KB), como pedían.
+
+---
+
+### Notas de la integración de `2026-09-25-confianza-v2`
+
+**Veredicto: integrada, con el nombre del banco fuera de la portada.** Entrega `d254b371…`.
+
+#### Su diagnóstico, verificado entero
+
+La banda mide **322 px exactos**, la figura empezaba **337 px** bajo la bajada, la figura es HTML
+con cero SVG, y la entrega no trae **ni una** cadena nueva. Todo correcto.
+
+#### Su mejor hallazgo no dependía de mover nada
+
+Sobre papel, los dos tramos que **no** son nuestros iban en `--ink` a **16,00:1** y el que sí lo es
+en `--verde-deep` a **5,44:1**: lo ajeno se dibujaba **2,9 veces más fuerte** que lo propio, justo
+encima de una leyenda que dice «el tramo verde es el único que es nuestro». El dibujo contradecía a
+su pie, y el §6.2 tiene la marca exacta para lo ajeno sin que esta figura la usara.
+
+Sobre tinta queda al derecho: ajeno **3,50:1**, nuestro **8,45:1** — lo propio pesa 2,4 veces más.
+
+#### Su §3 dimensionaba corto, y era la parte que decidía Sebastián
+
+Decían «la mención de BCI sube a la portada», en singular. **Eran dos**: el rótulo del tramo nuestro
+en `phases` y el `figcaption`. Y la del `figcaption` era **la única de las tres de la página sin
+marcador**.
+
+Sebastián eligió su tercera salida —que ellos no proponían—: la figura sube y el nombre no. El
+tramo del medio se lee «En la cuenta de DLPay» y el banco se queda abajo, en `mechanisms`, con su
+marcador.
+
+**Quitar el nombre estrecha el claim, no lo amplía**, así que no necesitó firma nueva. La página
+pasa de **tres menciones del banco a una**, y es la que sí está marcada.
+
+#### Un error propio que casi reporto como hallazgo
+
+La primera medición de la barra ajena sobre tinta dio **16,44:1** — que habría sido peor que antes
+de moverla, y me habría hecho reportar un empeoramiento inexistente. Era la sonda leyendo
+`rgba(237,242,239,.40)` sin componerlo contra la tinta: se quedaba con los tres primeros números e
+ignoraba el alfa. Compuesto da 3,50:1.
+
+Es **la regla 1 de evidencia** —«todo color con alfa declara contra qué compone»— y la rompí en el
+instrumento, no en la pieza. Vale la pena que quede: la regla se escribió para las propuestas, y se
+aplica igual a las mediciones que las comprueban.
+
+#### Una nota de composición
+
+Su render conserva el titular a la izquierda, pero la ranura `aside` de `PageHero` sólo ofrece
+`split` —la figura apretada en media columna— o `stacked`, que **centra el titular**. Va `stacked`
+sin `--montaje`: la figura se queda dentro de la banda, que es lo que la maqueta enseña. `/confianza`
+es la cuarta página con esa portada.
+
+#### Y lo de siempre
+
+Borrado `cowork/_tmp-dist-borrar.tar.gz` (361 KB), como pedían.
