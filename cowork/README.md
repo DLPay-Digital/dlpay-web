@@ -2010,3 +2010,72 @@ El `main` pasa de **1.428 px a 2.464 px** a 1280 — la ficha estimaba 2.787.
 La columna descentrada de `/preguntas` **ya está resuelta** (`8e11a53`): se quitó el tope de 760 en
 vez de centrarla, porque el borde izquierdo coincidía con el del titular. Y las cifras de planicie
 que cita —1.428 y 4.479 px— salen del build del 24; la de `/tarifas` ya no vale.
+
+---
+
+### Notas de la integración de `2026-09-25-como-funciona-v2`
+
+**Veredicto: integrada, con el teléfono montado.** Entrega `e6ab9aea…`, verificada.
+
+#### Su diagnóstico era correcto, y esta vez lo comprobaron antes de dibujar
+
+Todo lo que afirman se sostiene contra el build de hoy: **3.001 px de `main`** (decían 3.007),
+**cero anclas** de más de 24×24, **cero sombras** en todo el `main`, `WhatsAppMockup` usado sólo por
+`Process` y `MacbookMockup`, el reparto saliendo de `step.who`, y el tiempo del paso 06 con su
+marcador de Compliance.
+
+**Y la decisión que mejor habla de la entrega es la que NO tomaron:** descartaron su propia idea
+principal —agrandar los tiempos de los seis pasos— al leer que el del paso 06 lleva
+`REQUIERE VALIDACIÓN DE COMPLIANCE`. Agrandar una cifra sin validar a tamaño de titular es el error
+del `PendingNotice`, dos veces corregido. Es la primera entrega que comprueba la regla antes de
+dibujar en vez de justificarse después.
+
+#### Dos afirmaciones que no se sostienen
+
+- **«La página sigue en cero bytes ejecutables si hoy lo está» — no lo está.** `/como-funciona`
+  lleva cuatro `<script>`, uno de ellos un módulo. Es una de las ocho páginas con JavaScript. Las
+  cinco que sí hay que cuidar son otras, y siguen intactas.
+- **«En móvil el suelo es lo único que marca el reparto» — tampoco.** A 390 px siguen visibles
+  **cuatro marcas de traspaso**. El suelo no carga solo, y menos aún haciendo 1,10:1.
+
+#### El suelo va al revés que la maqueta, y el motivo importa
+
+La entrega ponía los pasos de DLPay sobre `--papel-2`. Eso obligaba a pasar `.detail` a `--papel`
+— **un tercer cambio que la entrega no declaraba**. Y habría roto algo: la página alterna sus
+cuatro secciones a propósito (papel-2 · papel · papel-2 · papel), y con ese cambio `.detail` y
+`.prep` quedaban las dos claras y pegadas.
+
+Así que la sección se queda y **lo que se aclara es el paso**. La información es idéntica —el suelo
+cambia donde cambia de manos— y el contraste mejora: 16:1 contra 14,5:1.
+
+**Comprobado que sale del dato y no de una lista** (su comprobación 5): al cambiar el `who` del paso
+04 en `process.ts`, se mueven el suelo **y** las marcas de traspaso; al revertir, vuelven los tres.
+
+#### El hilo pasa a tener un solo dueño
+
+Las tres burbujas eran literales de `Process.astro`. Copiarlas habría dejado **dos dueños de la
+misma línea** en dos páginas — el fallo que D24 cerró para el monto mínimo y el que llevó
+`content/scope.ts` a existir. Salieron a `content/process.ts` como `chatLines(monto, tasa)`, y
+`Process.astro` lee de ahí. Comprobado que el HTML de la Home y el de esta página quedan **byte a
+byte idénticos** tras la extracción.
+
+#### Un fallo mío, el de anteayer al revés
+
+Escribí el pie del teléfono en `--on-tinta` porque el teléfono está en la banda oscura. Pero el
+bloque **monta**, y el pie es lo último que hay dentro: cae entero sobre la sección clara —la banda
+termina en 769 px y el pie empieza en 839—. Blanco roto sobre claro, ilegible, sin error en ninguna
+parte. En `/tarifas` fue la herencia de color hacia dentro; acá, el desbordamiento hacia fuera. **La
+misma trampa tiene dos direcciones.**
+
+#### Una aclaración que el §4.5 necesitaba
+
+Su comprobación 2 pedía «una sola sombra en la página» y el render da **cuatro**: el bisel del
+teléfono y el filete de 1 px de cada burbuja. No es un fallo — son cromo del propio mockup, que
+describe un objeto de otra marca, y el componente ya declara esos tonos fuera del sistema.
+
+El §4.5 ahora lo dice: **el límite de uno por página cuenta tokens de elevación, no `box-shadow`.**
+Un teléfono se eleva con su bisel y no gasta el `--elev-card` de la página. Esta página usa **cero**.
+
+#### Y lo de siempre
+
+Borrado `cowork/_tmp-dist.tar.gz` (356 KB), como pedían.
