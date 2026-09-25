@@ -194,10 +194,17 @@ function positiveInt(raw: string | undefined): number | undefined {
  * Hasta ese día el valor por defecto era `50_000` y estaba marcado como
  * placeholder; con esto se cierra la mitad de **D6**.
  *
- * PENDIENTE DE DECISIÓN — precio de muestra del cotizador (CLAUDE.md §13, D6).
- * Lo que sigue sin confirmar es el PRECIO con el que `ConfigPriceSource`
- * cotiza, no el mínimo. `samplePayClp` (2 000 000) es el monto que el cotizador
- * carga al abrir y es una decisión de presentación, no un dato de negocio.
+ * **Y `samplePayClp` también está confirmado**: CLP 2.000.000, ratificado por
+ * Sebastián el mismo día. Con eso **D6 se cierra entera**.
+ *
+ * Conviene no confundir tres cosas que el registro llamaba parecido:
+ *
+ *   · `minPayClp`   — el mínimo que se APLICA y se PUBLICA. Dato de negocio.
+ *   · `samplePayClp`— el monto que el cotizador trae escrito al abrir. Es
+ *                     presentación: no bloquea nada y no afirma nada.
+ *   · **el precio** — la tasa con la que se cotiza, que NO vive acá sino en
+ *                     `ConfigPriceSource` (`PUBLIC_QUOTE_SAMPLE_RATE`, hoy
+ *                     919,70). Ése es el que sigue abierto, y es **D7**, no D6.
  * PENDIENTE DE DECISIÓN — monto máximo (CLAUDE.md §13, D21). Sin variable, el
  * estado `above_max` no se activa: es una regla de negocio y no se inventa acá.
  */
