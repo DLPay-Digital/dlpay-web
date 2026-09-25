@@ -47,19 +47,23 @@ export const options: readonly string[] = [
   'Lo conviertes a moneda local en destino',
 ];
 
-/** El tramo que sí hacemos, en la Home. */
-export const ourLeg: readonly Milestone[] = [
-  { what: 'Tus pesos, en tu banco en Chile', data: 'CLP' },
-  { what: 'Cambiamos y verificamos', data: 'una persona cierra' },
-  // REQUIERE VALIDACIÓN DE COMPLIANCE — el tiempo de ~5 minutos es el mismo
-  // claim que ya publica `process.ts`, con su propio marcador.
-  { what: 'Dólar digital en tu billetera', data: 'USD · ~5 min desde el pago' },
-];
-
 /**
- * El mismo tramo en vocabulario de empresa. La bisagra cambia de posesivo
- * —«nuestra parte» y no «nuestra operación»— porque en /empresas el interlocutor
- * es la sociedad y no la persona.
+ * El tramo que sí hacemos, en vocabulario de empresa.
+ *
+ * **Su gemelo para personas —`ourLeg`— se retiró el 2026-09-25**, cuando
+ * Sebastián sacó el eje de alcance de la banda del globo y esa Home se quedó
+ * con titular, bajada y globo. Era su único consumidor, así que el dato quedaba
+ * sin nadie que lo leyera: un `export` que nadie importa es código muerto con
+ * apariencia de contenido, y el día que alguien lo vuelva a usar no sabría si
+ * sigue siendo lo que el sitio afirma.
+ *
+ * Decía, palabra por palabra, «tus pesos, en tu banco en Chile» · «cambiamos y
+ * verificamos» · «dólar digital en tu billetera», y está en el historial si
+ * vuelve a hacer falta. La asimetría de este archivo —bisagra y opciones para
+ * los dos públicos, hitos sólo para empresas— es esa decisión y no un olvido.
+ *
+ * La bisagra cambia de posesivo —«nuestra parte» y no «nuestra operación»—
+ * porque en /empresas el interlocutor es la sociedad y no la persona.
  */
 export const ourLegBusiness: readonly Milestone[] = [
   { what: 'Los pesos de tu empresa', data: 'CLP' },

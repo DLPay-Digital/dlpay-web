@@ -387,7 +387,7 @@ El riesgo de un sistema de movimiento es que crezca por acumulación. Tres compr
 |---|---|
 | **M1** `press` | Cabecera, pie, cotizador, FAQ, botones de todas las páginas |
 | **M2** `settle` | Precio del cotizador, sólo cuando el valor **cambia** |
-| **M3** `draw` | Cuñas de traspaso de `/como-funciona` y costura de `EjeDeAlcance` (Home, `/como-funciona`, `/empresas`). Las cuñas del héroe **no** son M3: son M6 — ver la nota de la fila M3 |
+| **M3** `draw` | Cuñas de traspaso de `/como-funciona` y costura de `EjeDeAlcance` (`/como-funciona`, `/empresas`, artículo del blog). *Ya no en la Home: el eje salió de la banda del globo el 2026-09-25.* Las cuñas del héroe **no** son M3: son M6 — ver la nota de la fila M3 |
 | **M4** `enter` | 3 titulares en Home, 3 en `/empresas`, 2 en `/confianza`, 1 en `/como-funciona` |
 | **M5** `stagger` | 3 tarjetas de usos (Home) y 4 casos (`/empresas`). Nada más |
 | **M6** `sequence` | Héroe de la Home: la tarjeta ya está, entra el texto. Encabezado de `/empresas`: titular, bajada, botones y el portátil. En los dos, el titular entra **palabra por palabra** (enmienda del 2026-09-10) y **las cuñas del fondo con un fundido de opacidad** |

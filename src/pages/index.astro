@@ -8,8 +8,6 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import GloboRotativo from '../components/hero/GloboRotativo.astro';
-import EjeDeAlcance from '../components/EjeDeAlcance.astro';
-import { hinge, options, ourLeg } from '../content/scope.ts';
 import UseCases from '../components/UseCases.astro';
 import Steps from '../components/Steps.astro';
 import Process from '../components/Process.astro';
@@ -53,10 +51,11 @@ import IntroDeMarca from '../components/IntroDeMarca.astro';
     */}
     <section class="globo" aria-labelledby="globo-title">
       <div class="globo-inner">
-        {/* Cascada al hacer scroll: tres hermanos con `data-enter`, el mismo
-            M4+M5 de los demás titulares. Tres, no cuatro: el globo no entra —
-            ya tiene su propio movimiento y superponerle un fundido sería
-            animar dos veces la misma cosa. */}
+        {/* Cascada al hacer scroll: dos hermanos con `data-enter`, el mismo
+            M4+M5 de los demás titulares. Eran tres hasta el 2026-09-25, cuando
+            salió el eje de alcance. El globo sigue sin entrar: ya tiene su
+            propio movimiento y superponerle un fundido sería animar dos veces
+            la misma cosa. */}
         <header class="globo-head">
           {/*
             El titular nombra el límite en vez de prometer alcance. La bajada ya
@@ -71,21 +70,33 @@ import IntroDeMarca from '../components/IntroDeMarca.astro';
         </header>
 
         {/*
-          El eje va ENTRE el texto y el globo, que es donde hace falta: el globo
-          dibuja ocho arcos saliendo de Chile, y ésta es la pieza que dice hasta
-          dónde de ese dibujo es nuestro. CLAUDE.md §1 no prohíbe sólo afirmar:
-          prohíbe «afirmar o SUGERIR», y una figura sin con qué desambiguarla es
-          exactamente lo segundo.
-        */}
-        <div data-enter>
-          <EjeDeAlcance milestones={ourLeg} hinge={hinge} options={options}>
-            <Fragment slot="caveat">
-              Ese último paso es un proceso distinto, con otros servicios, y
-              <strong>no lo realiza DLPay</strong>.
-            </Fragment>
-          </EjeDeAlcance>
-        </div>
+          Aquí vivía el eje de alcance, RETIRADO el 2026-09-25 por decisión de
+          Sebastián: la banda se queda con titular, bajada y globo.
 
+          Lo que sostiene el límite ahora es el titular —«Nuestro tramo termina
+          en tu billetera»— más la bajada, las dos líneas justo encima del dibujo.
+          Es lo que CLAUDE.md §1 exige: no basta con no afirmar de más, hay que
+          no SUGERIR de más, y ocho arcos saliendo de Chile sin nada que los
+          acote sugieren «entregamos en ocho países». El titular lo acota; lo
+          hacía ya antes de que el eje existiera.
+
+          **Lo que se perdió de esta página, y dónde está ahora.** Se fueron la
+          bisagra —«ahí termina nuestra operación: desde ese punto decides tú»—
+          y la tercera salida —«lo conviertes a moneda local en destino»— con su
+          salvedad «no lo realiza DLPay». Las dos siguen publicadas en
+          `/como-funciona`, en la sección «Dónde termina nuestra operación», que
+          es la página que CLAUDE.md §1 nombra para declarar el límite de frente.
+          **Comprobado sobre el build, no supuesto:** ninguna de las dos aparecía
+          en otro sitio de esta Home, así que el sitio ya no las dice acá.
+
+          Lo que la Home **sí** sigue diciendo, además del titular, es la nota
+          del cotizador: «no depositamos en cuentas bancarias en el extranjero».
+          Es la frase más literal de §1 y está sobre el pliegue, antes que esta
+          banda.
+
+          Si algún día vuelve, vuelve entero: el eje sin su salvedad es la lista
+          con adornos que el Design System §6 describe.
+        */}
         <GloboRotativo />
       </div>
     </section>
@@ -111,9 +122,12 @@ import IntroDeMarca from '../components/IntroDeMarca.astro';
     padding: 0 var(--pad-section-m);
   }
 
-  /* Titular, bajada y botones centrados. `margin-inline: auto` además del
-     `text-align`: el `max-width` en ch conserva la medida de lectura, y sin él
-     la caja quedaría pegada a la izquierda con el texto centrado dentro. */
+  /* Titular y bajada centrados. `margin-inline: auto` además del `text-align`:
+     el `max-width` en ch conserva la medida de lectura, y sin él la caja
+     quedaría pegada a la izquierda con el texto centrado dentro.
+
+     El `margin-bottom` era la separación con el eje de alcance y desde el
+     2026-09-25 lo es con el globo, que es el único que queda debajo. */
   .globo-head {
     max-width: 44ch;
     margin: 0 auto var(--s-8);

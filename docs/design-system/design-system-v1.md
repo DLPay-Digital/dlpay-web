@@ -598,8 +598,14 @@ hay que recalcular.
 1. **Quítale los rótulos.** Lo que quede es lo que la figura afirma por su cuenta. Si eso es más de
    lo que el sitio puede afirmar, la figura no sirve por mucho que el texto la corrija. *El globo
    falla esta prueba: sin rótulos, ocho arcos saliendo de Chile dicen «entregamos en ocho países»,
-   y por eso lleva el eje de alcance al lado.* Si sólo funciona con los rótulos puestos, es una
-   lista con adornos.
+   y por eso no va nunca solo.* Si sólo funciona con los rótulos puestos, es una lista con adornos.
+
+   **Matizado el 2026-09-25, cuando el eje de alcance salió de la banda del globo.** Hasta ese día
+   esta nota decía «y por eso lleva el eje de alcance al lado», y eso confundía el requisito con
+   una de sus soluciones. Lo que la prueba exige es que **algo acote la figura**; lo que acota al
+   globo hoy es el titular que tiene encima —«Nuestro tramo termina en tu billetera»— más su
+   bajada, que dicen el límite en palabras y no en trazos. La prueba no se relaja: una figura que
+   afirma de más sigue sin poder ir sola. Lo que cambia es que el acotador puede ser texto.
 2. **Comprueba que cada marca signifique lo mismo que en las demás figuras.** Si necesitas que el
    verde signifique algo nuevo, no dibujes: escribe antes acá por qué.
 3. **La forma sale del dato, no al revés.** Si la estructura que quieres dibujar no está en
@@ -726,10 +732,10 @@ cada una, no qué significa.
 | **Emblema de caso** | Las cuatro operaciones de `/empresas` | El canto del isotipo como frontera; el dinero es un canal hueco dentro del plano y macizo fuera |
 | **Línea de tenencia** | `/confianza`: de quién es la cuenta donde está el dinero | HTML, no SVG. Un solo tramo es nuestro |
 | **Carril de dos columnas** | `/como-funciona`: qué hace cada parte y dónde cambia de manos | La colocación en rejilla va **explícita**: el flujo automático deshace el carril |
-| **Eje de alcance** | Hasta dónde llega el servicio | `EjeDeAlcance`, en tres páginas. Es la regla dura de `CLAUDE.md` §1 dibujada, y por eso es un componente y no CSS repetido |
+| **Eje de alcance** | Hasta dónde llega el servicio | `EjeDeAlcance`, en **tres** páginas: `/como-funciona`, `/empresas` y el artículo del blog. *Salió de la Home el 2026-09-25.* Es la regla dura de `CLAUDE.md` §1 dibujada, y por eso es un componente y no CSS repetido |
 | **Portada de dato** | La cifra de la que habla un artículo | Dos tipos: `cifra` y `rango`. **La cuña no entra** (§6.1). `fuente` es obligatoria |
 | **Índice del blog** | `/blog` | Filas con filete y fecha tabular en columna propia. Se ve igual con un artículo que con cincuenta |
-| **Globo rotativo** | El alcance del dólar digital, en la Home | Tres excepciones autorizadas: ADR-0007, 0008 y 0009. **Va con el eje de alcance al lado**, porque sin él el dibujo afirma de más |
+| **Globo rotativo** | El alcance del dólar digital, en la Home | Tres excepciones autorizadas: ADR-0007, 0008 y 0009. **No va nunca solo**, porque sin nada que lo acote el dibujo afirma de más. Hasta el 2026-09-25 lo acotaba el eje de alcance; desde que Sebastián lo retiró, lo acota el titular de su banda —«Nuestro tramo termina en tu billetera»— y la bajada. **Si algún día se cambia ese titular por uno que no nombre el límite, el globo se queda desnudo** |
 | **Franja de notificación** | Aviso a todo el ancho | ADR-0006. Se oculta sola en la página que enlaza |
 | **404** | Dirección inexistente | Reusa `PageHero`. `noindex`, fuera del sitemap y en cero bytes de JavaScript |
 | **Bloque institucional** | Los emblemas de FinteChile y la UAF, en el pie | `Alliances.astro`. El claim regulatorio se dice **con palabras**, no colgado de un emblema, y el dato declara el alcance de su propio claim |
