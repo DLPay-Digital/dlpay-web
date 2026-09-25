@@ -88,17 +88,31 @@ const wa = contact.whatsappUrl();
           ))}
         </ol>
         {/*
-          Sin el nombre del banco, por la misma decisión que lo quitó de
-          `trust.ts`: era la segunda de las dos menciones que subían al pliegue,
-          y la única de las tres de esta página que nunca llevó marcador. Sigue
-          publicado abajo, en `mechanisms`, que es donde tiene su firma
-          pendiente.
+          ── Aquí vivía el pie, RETIRADO el 2026-09-25 ──────────────────────
+
+          Decía: «Tu dinero no pasa por ningún intermediario fuera de Chile ni
+          por cuentas de terceros: de tu banco a una cuenta de DLPay, y de ahí a
+          tu billetera. El tramo verde es el único que es nuestro.»
+
+          Lo quitó Sebastián porque la figura ya lo explica, y en su mayor parte
+          es exacto: el recorrido de tres tramos lo dibujan los tres bloques, y
+          «el tramo verde es el único que es nuestro» es la leyenda de un dibujo
+          que ya rotula «Lo tienes tú / Lo tenemos nosotros». Una figura que
+          necesita que le expliquen lo que enseña está mal dibujada.
+
+          **Lo que sí dejó de decir el sitio, y conviene que se sepa:** que el
+          dinero no pasa por ningún intermediario **fuera de Chile**. Esa era la
+          única vez que aparecía, comprobado por `grep` en todo `src/`. Lo más
+          cercano que queda es «no por un intermediario opaco» en el título de
+          `mechanisms` —que habla de opacidad, no de geografía— y «sin lidiar con
+          bancos intermediarios» en la Home, que habla de tiempos.
+
+          La otra mitad no se perdió: «ni por cuentas de terceros» sigue publicada
+          dos bloques más abajo, en el cuerpo del primer mecanismo.
+
+          Si algún día quiere volver, el sitio natural es ese mismo cuerpo, y es
+          copy nuevo sobre un texto con marcador de Compliance: pasa por firma.
         */}
-        <figcaption>
-          Tu dinero no pasa por ningún intermediario fuera de Chile ni por cuentas de terceros:
-          <strong> de tu banco a una cuenta de DLPay, y de ahí a tu billetera</strong>. El
-          tramo verde es el único que es nuestro.
-        </figcaption>
       </figure>
     </PageHero>
 
@@ -250,7 +264,14 @@ const wa = contact.whatsappUrl();
     verde**—: sobre papel manda `--verde-deep` porque el de marca da 2,02:1;
     sobre tinta manda `--verde`, que da 8,45:1.
   */
-  .track { margin: 0; width: 100%; text-align: left; }
+  /*
+    El margen inferior NO es decorativo: lo daba el pie, y al retirarlo el
+    2026-09-25 la banda cerraba a ras de la figura — cortaba «mover nada», la
+    nota del tramo del medio, por la mitad. `PageHero` en `stacked` pone
+    `padding-bottom: 0` porque da por hecho que la pieza monta sobre la costura,
+    y aquí no monta. Lo repone la figura.
+  */
+  .track { margin: 0 0 var(--s-8); width: 100%; text-align: left; }
   .phases { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
   .phase-place {
     font-family: var(--f-num);
@@ -279,13 +300,6 @@ const wa = contact.whatsappUrl();
     color: var(--on-tinta-mute);
     margin-top: var(--s-2);
   }
-  .track figcaption {
-    margin-top: var(--s-6);
-    color: var(--on-tinta-mute);
-    font-size: var(--t-body-sm);
-    max-width: 62ch;
-  }
-  .track figcaption strong { color: var(--on-tinta); font-weight: 600; }
 
   /* La mención institucional cierra la sección de requisitos. Discreta a
      propósito: informa por qué se piden documentos, no hace de sello. */
