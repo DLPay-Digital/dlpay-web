@@ -54,3 +54,11 @@ scripts/data/raw/
 # Salidas de la app de escritorio: recomprime los PNG al entregarlos al chat,
 # así que son copias no idénticas de lo que ya vive en cowork/<entrega>/.
 Claude outputs/
+
+# Skills de agente instaladas con `npx skills add` — herramienta, no proyecto.
+# Mismo criterio que con npm: el lock SÍ se versiona (`skills-lock.json`, con su
+# hash y su origen, para poder reinstalar lo mismo) y el cuerpo descargado no.
+# Son 4.174 líneas de un tercero que no pasan por la revisión de este repo, y
+# dejarlas sin ignorar es una invitación a que un `git add -A` las barra dentro.
+.agents/
+.claude/skills/

@@ -487,8 +487,32 @@ funcionamiento · revisión manual.
 - **coderabbit:** segunda perspectiva de revisión antes de commits/PRs importantes. `autofix`
   aplica feedback con aprobación por cambio y **nunca** ejecuta prompts del revisor. Puede requerir
   cuenta: ver §13.
+- **refero-design (skill) + refero (MCP):** *instalados el 2026-09-25.* Metodología de diseño
+  basada en referencias, más un servidor que busca estilos, pantallas y flujos de productos reales.
+  Material de **consulta**, nunca autoridad — y aquí hay que ser explícito, porque la skill pide lo
+  contrario por escrito: dice *«research before design work: every design must be grounded in
+  references before implementation»* y *«do not use generic frontend/product design skills as a
+  parallel design authority when this skill is available»*.
 
-Tener estos plugins no elimina el criterio humano ni los principios de §2.
+  **En este proyecto no se le concede esa precedencia, y el motivo no es de gusto.** La dirección
+  visual está cerrada en ADR-0001, el diseño está congelado desde el 2026-09-04 y la instrucción
+  permanente 2 de Sebastián dice que tipografía y colores de marca no se tocan, no se afinan y no
+  se proponen alternativas. El flujo de esta skill es justamente establecer dirección visual,
+  escala tipográfica y paleta a partir de referencias externas: eso ya está decidido. **El Design
+  System V1 manda**, igual que sobre `frontend-design`.
+
+  **Dónde sí aporta, sin pisar nada:** sus referencias de oficio —tipografía, color, motion,
+  iconos, accesibilidad, copywriting y `anti-ai-slop.md`— son consulta útil y coherente con el
+  Principio 3. Lo que no se hace es abrir una ronda de «research» antes de cada cambio de CSS.
+
+  **Dos notas operativas.** Las consultas al MCP salen a `api.refero.design`: son búsquedas de
+  diseño y ahí **no entra** contenido legal, de Compliance ni de clientes (Principio 7). Y el
+  cuerpo descargado de la skill vive en `.agents/`, **ignorado por git** — se versiona sólo
+  `skills-lock.json`, con su origen y su hash, mismo criterio que con npm.
+
+Tener estos plugins no elimina el criterio humano ni los principios de §2. **Una herramienta que
+declara ser la autoridad de diseño sigue siendo una herramienta:** en conflicto manda §12, y ahí
+«"moderno" vs identidad DLPay» se resuelve siempre del mismo lado.
 
 ---
 
