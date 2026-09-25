@@ -213,7 +213,29 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     grupo y sus filetes cruzarían los 1.200px del contenedor y la página se
     leería como una tabla.
   */
-  .grupos { max-width: 760px; }
+  /*
+    Sin tope propio: la columna la limita `.inner`, como en el resto del sitio.
+
+    **Tuvo `max-width: 760px` hasta el 2026-09-25**, y el efecto medido a 1280 px
+    era éste: el bloque empezaba en 141 y terminaba en 901, con **365 px de papel
+    muerto a la derecha** contra 141 a la izquierda. Lo detectó Cowork; lo que su
+    medición no tenía es que el titular de la página empieza también en 141,
+    porque `PageHero` usa el mismo `.inner`. O sea que el borde izquierdo era el
+    correcto y el que sobraba era el derecho.
+
+    **Por qué no se centró, que era el arreglo obvio.** Centrar habría movido la
+    columna a 253 y la habría despegado del titular. Sebastián eligió lo otro:
+    dejar el borde izquierdo donde está y quitar el hueco. Quitando el tope, el
+    bloque ocupa los 984 px del contenedor y queda en **141 a la izquierda y 140 a
+    la derecha** — simétrico por construcción, sin mover un píxel el borde que ya
+    estaba bien.
+
+    **La medida de lectura no depende de esto y por eso se puede soltar.** Quien
+    la fija es `.qa .r { max-width: 47ch }`, que no se toca. Lo que se ensancha es
+    la ESTRUCTURA —el filete de cada cabecera y el rótulo `persona y empresa` que
+    vive en su extremo—, no el texto.
+  */
+  .grupos { }
   /* El primer grupo abre la página: sin el párrafo de entrada, su cabecera no
      necesita el aire que separaba una cosa de la otra. */
   .grupo:first-child .g-cab { padding-top: 0; }
@@ -288,7 +310,11 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     secciones dejaron de acabar en el mismo sitio —901 contra 1.125 px— y el
     borde derecho de la página daba un salto entre una y otra.
   */
-  dl { margin: 0; max-width: 760px; border-top: 1px solid var(--line); }
+  /* Mismo caso y misma razón que `.grupos`: el tope de 760 salía sobrando por
+     la derecha. Las definiciones ya están acotadas por `dd { max-width: 47ch }`,
+     así que soltar el contenedor ensancha la rejilla y no la lectura. Los dos
+     bloques siguen alineados porque los dos los limita `.inner`. */
+  dl { margin: 0; border-top: 1px solid var(--line); }
   .term { border-bottom: 1px solid var(--line); padding: var(--s-5) 0; }
   dt { font-size: var(--t-h3-m); font-weight: 700; margin-bottom: var(--s-2); }
   dd { margin: 0; color: var(--ink-mute); max-width: 47ch; }
