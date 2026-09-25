@@ -77,7 +77,8 @@
   --r-1:3px;
   --r-2:6px;
   --r-3:10px;
-  --r-card:14px;          /* sólo la tarjeta del cotizador flotando sobre tinta */
+  --r-card:14px;          /* una tarjeta elevada; va siempre con una sombra. Ver DS §4.5,
+                             reescrita el 2026-09-25: decía "sólo la del cotizador" */
   --r-block:20px;         /* bloque contenido: una banda en tinta dentro de una
                              sección clara. Mayor que --r-card A PROPÓSITO: la
                              tarjeta vive DENTRO del bloque y dos radios iguales
@@ -85,7 +86,13 @@
                              radio más amplio del sistema y el techo: por encima
                              se pierde el registro A×C de "radios discretos". */
 
-  /* ── Elevación (mínima, por rol) ───────────────────────────────────────── */
+  /* ── Elevación (mínima, por rol — DS §4.5) ─────────────────────────────── */
+  /* Se elige por lo que el objeto ES, no por cuánto se quiere que destaque.
+     --elev-card: el objeto del que trata la página, sobre una banda en tinta o
+     cruzándola. Como mucho UNO por página.
+     --elev-pop:  todo lo demás que está por encima — un panel que se abre, una
+     tarjeta levantada del papel, un elemento dentro de una maqueta.
+     Por omisión no hay sombra: la jerarquía la dan la tipografía y el espacio. */
   --elev-card:0 24px 60px -24px rgba(11,19,32,.45);
   --elev-pop:0 8px 24px -12px rgba(11,19,32,.25);
 

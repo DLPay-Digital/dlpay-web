@@ -348,7 +348,7 @@ reconocerlos antes de repetirlos.
 | `--r-1` | 3 px | Botones y campos en registro "A puro" / elementos densos. |
 | `--r-2` | 6 px | Botones, campos, chips (default A×C). |
 | `--r-3` | 10 px | Tarjetas contenedoras (cotizador, bloques de confianza). |
-| `--r-card` | 14 px | Sólo la tarjeta del cotizador cuando "flota" sobre la tinta. |
+| `--r-card` | 14 px | **Una tarjeta elevada.** Va siempre con `--elev-card` o `--elev-pop`: el radio y la sombra son la misma decisión. *Decía «sólo la tarjeta del cotizador» hasta el 2026-09-25; ver §4.5.* |
 | `--r-block` | 20 px | **Bloque contenido**: una banda en tinta dentro de una sección clara. Añadido 2026-09-08. |
 
 Botones **nunca** con `border-radius` tipo píldora.
@@ -363,13 +363,54 @@ para no romper el registro y para continuar la progresión existente (0 · 3 · 
 Hoy lo usa una sola pieza, el bloque oscuro de `Steps.astro` en la Home. Si aparece un segundo
 caso, conviene revisar si sigue siendo "bloque contenido" o si se está usando como radio genérico.
 
-### 4.5 Elevación (mínima, por rol)
+### 4.5 Elevación (mínima, por rol) — **reescrita el 2026-09-25**
 
-| Token | Valor | Uso |
+> **Qué decía antes, y por qué se cambió.** La versión anterior era una lista de nombres propios:
+> `--elev-card` «**sólo** la tarjeta del cotizador sobre la tinta» y `--elev-pop` «menús/popovers
+> (futuro)». Se escribió cuando el sitio era el cotizador y poco más. Hoy son once rutas, y la
+> regla **no describía el sitio**: al auditarla aparecieron cuatro usos y sólo uno encajaba en su
+> letra. Una regla que el propio proyecto incumple no protege nada — genera deuda registrada y
+> obliga a pedir una excepción cada vez que alguien hace lo evidente.
+>
+> Lo detonó la entrega `2026-09-25-tarifas-v2`, que afirmaba no necesitar excepción alguna y
+> necesitaba tres. Sebastián eligió reescribir la regla en vez de excepcionarla.
+>
+> **Lo que NO cambia:** los dos valores, el token `--elev-0` como respuesta por omisión, y el
+> fundamento de ADR-0001 — la jerarquía la dan la tipografía y el espacio, no las sombras.
+
+**La elevación se elige por lo que el objeto ES, no por cuánto se quiere que destaque.**
+
+| Token | Valor | Qué eleva |
 |---|---|---|
-| `--elev-0` | ninguna | Casi todo. La jerarquía la dan tipografía y espacio, no sombras. |
-| `--elev-card` | `0 24px 60px -24px rgba(11,19,32,.45)` | **Sólo** la tarjeta del cotizador sobre la tinta. |
-| `--elev-pop` | `0 8px 24px -12px rgba(11,19,32,.25)` | Menús/popovers (futuro). |
+| `--elev-0` | ninguna | **Casi todo, y sigue siendo la respuesta por omisión.** Una sección no se eleva por ser importante. |
+| `--elev-card` | `0 24px 60px -24px rgba(11,19,32,.45)` | **El objeto del que trata la página**, cuando se apoya sobre una banda en tinta o la cruza. Es la afirmación más fuerte que hace el sistema: esto está encima de todo lo demás. |
+| `--elev-pop` | `0 8px 24px -12px rgba(11,19,32,.25)` | **Todo lo demás que está por encima de la página**: un panel que se abre (menú, cajón), una tarjeta levantada del papel, un elemento dentro de una maqueta de producto. |
+
+**Tres límites duros, y el primero es el que impide que esto se convierta en papel tapiz:**
+
+1. **Como mucho un `--elev-card` por página.** Si hay dos, ninguno es «el objeto del que trata la
+   página». Es el equivalente en superficie de la regla de una sola acción primaria por pantalla.
+2. **La superficie alterna con el papel.** Si todo va sobre tarjeta, la tarjeta deja de significar
+   algo: **lo elevado es lo que el cliente mira, lo plano es lo que lee.** Una página entera de
+   tarjetas es una plantilla, y eso lo prohíbe el Principio 3 de `CLAUDE.md`.
+3. **La sombra nunca es decorativa.** Eleva algo que de verdad está delante de otra cosa. No se usa
+   para separar dos bloques que van seguidos: para eso está el filete, y si no basta el filete, lo
+   que falla es el espacio.
+
+**Auditoría del 2026-09-25 — los cuatro usos que había, con su veredicto bajo la regla nueva:**
+
+| Dónde | Token | Veredicto |
+|---|---|---|
+| `Quoter.astro:169` — la tarjeta del cotizador flotando sobre la tinta del héroe | `--elev-card` | **Correcto.** Es el caso canónico y el que da nombre al token |
+| `Header.astro:370` — el desplegable «Información» del escritorio | `--elev-card` → **`--elev-pop`** | **Corregido el 2026-09-25.** Es un panel que se abre, que es literalmente para lo que se declaró `--elev-pop`. Llevaba la sombra fuerte sin motivo |
+| `Header.astro:517` — el cajón del móvil | `--elev-pop` | **Correcto**, y es el que demuestra que el token ya se usaba bien |
+| `Steps.astro:232` — una tarjeta sobre papel, en la Home y en `/como-funciona` | `--elev-card` | **Debería ser `--elev-pop`**, y **no se toca hoy**. Está en la Home, que es diseño congelado y «caso aparte» por decisión de Sebastián; se corrige el día que alguien abra ese componente por otro motivo. Queda escrito para que no se lea como precedente |
+
+**Y el uso que estrena la regla:** `/tarifas` monta la tarjeta del cotizador en miniatura sobre su
+portada en tinta. Es «el objeto del que trata la página» cruzando una banda oscura, uno solo, y con
+el resto de la página alternando papel — los tres límites cumplidos, sin excepción que escribir.
+Eso es lo que la regla nueva permite y la vieja no: **que el lenguaje de superficie salga de la
+portada sin pedir permiso cada vez.**
 
 ### 4.5.1 Apilamiento (`z-index`) — añadido 2026-09-09
 

@@ -367,7 +367,10 @@ const infoIsCurrent = navInfo.some((item) => isCurrent(item.href));
     background: var(--tinta-2);
     border: 1px solid var(--line-on-tinta);
     border-radius: var(--r-3);
-    box-shadow: var(--elev-card);
+    /* Un panel que se abre: `--elev-pop`, que es para lo que se declaró.
+       Llevaba `--elev-card` —la sombra del objeto principal de la página—
+       sin motivo; corregido al reescribir DS §4.5 el 2026-09-25. */
+    box-shadow: var(--elev-pop);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;

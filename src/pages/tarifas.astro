@@ -3,79 +3,595 @@
  * /tarifas — divulgación tarifaria.
  *
  * Los T&C publicados obligan a DLPay a mantener esta página con la tabla de
- * comisiones, tipo de cambio y spread (Fase 0, Frente 11). Hoy la ruta daba 404,
- * incumpliendo el propio contrato.
+ * comisiones, tipo de cambio y spread (Fase 0, Frente 11). Se publica lo que SÍ
+ * está respaldado —cómo se compone el precio y qué lo mueve— y se marca de
+ * frente lo que falta, en vez de inventar una tabla.
  *
- * Se publica lo que SÍ está respaldado —cómo se compone el precio y qué lo
- * mueve— y se marca de frente lo que falta, en vez de inventar una tabla.
+ * ── Rehecha el 2026-09-25 · entrega `2026-09-25-tarifas-v2` ────────────────
+ *
+ * Sebastián pidió que el sitio deje de verse como un documento y empiece a
+ * verse como el de una empresa establecida. Esta es la primera página interior
+ * que usa el lenguaje de superficie del sistema —tarjeta elevada, el producto
+ * como figura, la cifra como objeto— que hasta hoy vivía casi entero en la
+ * portada.
+ *
+ * **El orden de la página no cambia y el texto tampoco.** Los cuatro bloques
+ * son los mismos y en el mismo orden; lo que cambia es que ganan una superficie
+ * y dos figuras. Todo el cuerpo es texto ya publicado, movido de sitio pero no
+ * reescrito.
+ *
+ * ── Por qué ya no usa `Legal.astro` ────────────────────────────────────────
+ *
+ * Porque `Legal.astro` es una columna de prosa de 760 px y nada más, y acá hace
+ * falta que una tarjeta se monte sobre la portada. **Lo que esa salida NO se
+ * lleva por delante, y por eso el cambio es seguro:**
+ *
+ * · `zeroJs` sigue pasándose a `Base`. Esta página está en **0 bytes
+ *   ejecutables** y `tests/zero-js.test.ts` falla si deja de estarlo. Las
+ *   figuras son HTML y CSS; no hay una línea de script.
+ * · La línea de razón social del pie se conserva, literal.
+ * · `PendingNotice` sigue siendo el componente, no una copia suya. Es un
+ *   compromiso de los T&C, no un bloque de diseño, y no se disfraza de tarjeta.
+ *
+ * Sigue siendo una página legal a todos los efectos: vive en el pie, la enlaza
+ * `/precio` y ahí aterrizará **D5** el día que se cierre.
+ *
+ * ── Las cifras salen de donde salen las del cotizador ──────────────────────
+ *
+ * El cotizador en miniatura NO trae números escritos a mano: los calcula con la
+ * misma cadena `ConfigPriceSource → convert` que usan la Home, `Steps` y
+ * `Process`. Es la razón de D24 aplicada otra vez — esta página publica por
+ * construcción lo mismo que el cotizador aplica, y no puede desincronizarse.
+ *
+ * ── Qué autoriza la superficie ─────────────────────────────────────────────
+ *
+ * **Design System §4.5, reescrita el 2026-09-25.** La tarjeta que monta sobre
+ * la portada es «el objeto del que trata la página cruzando una banda en
+ * tinta»: `--elev-card`, **una sola en la página**, que es el límite duro. Las
+ * dos tarjetas de «qué mueve el precio» son tarjetas levantadas del papel:
+ * `--elev-pop`. Y entre medias el texto va sobre papel sin superficie, que es
+ * el segundo límite: **lo elevado es lo que el cliente mira, lo plano es lo que
+ * lee.**
+ *
+ * ── Tres cosas del dibujo que no se pueden relajar ─────────────────────────
+ *
+ * 1. **La barra no se parte en dos.** La página dice «un solo número, con el
+ *    spread ya incorporado»; una barra dividida en referencia y spread afirma
+ *    lo contrario, que se pueden ver por separado. La llave abarca la barra
+ *    entera y nombra lo que hay dentro.
+ * 2. **El vacío después del punteado es el argumento, no un margen.** La frase
+ *    más fuerte de la página —«no hay una comisión aparte que se sume al
+ *    final»— no se ilustra: se demuestra dejando el espacio vacío. No se mete
+ *    nada ahí ni se recorta para ganar altura.
+ * 3. **«El monto» no lleva barras ascendentes.** Escalones afirman tramos, y
+ *    los tramos son el dato bloqueado **D5** («ninguna por ahora»). Va una
+ *    línea, un límite sin marcar dónde cae, y al otro lado dos palabras.
+ *
+ * Las marcas son las del Design System §6.2 en su significado publicado: barra
+ * llena = una magnitud · punteado = un límite, cruzarlo cambia algo · filete
+ * `--ink-mute` = existe, es real, no es nuestro. **No se estrena familia.**
+ *
+ * ── Las siete cadenas nuevas, y quién las firmó ───────────────────────────
+ *
+ * Todo el cuerpo de esta página es texto ya publicado. Lo ÚNICO nuevo son los
+ * rótulos y las leyendas de la figura, y **los aprobó Sebastián como Compliance
+ * el 2026-09-25**:
+ *
+ *   1. «lo que ves al cotizar»
+ *   2. «la referencia de mercado y nuestro spread, los dos adentro»
+ *   3. «el precio que ves»
+ *   4. «acá termina» · «y no se suma nada»
+ *   5. «La barra no está partida porque el número tampoco lo está: no se ven
+ *      por separado.»
+ *   6. «El punteado es un límite. Cruzarlo cambiaría el precio, y no lo cruza
+ *      nada.»
+ *   7. «El spread ya está adentro del número»
+ *
+ * **Lo que se le señaló antes de firmar, y queda escrito porque es lo que un
+ * revisor futuro va a querer saber:** la 7 es una reformulación de «con el
+ * spread ya incorporado», que sí está publicado, pero subirla a titular cambia
+ * el peso de la afirmación; y la 4 y la 6 afirman en absoluto —«no se suma
+ * nada», «no lo cruza nada»— sobre un precio cuyos tramos siguen bloqueados en
+ * **D5**. Firmó con eso delante.
+ *
+ * **Dos cadenas que NO entraron, y por qué:**
+ *
+ * · «Dos cosas, y ninguna es una tarifa oculta», que la entrega proponía como
+ *   titular de «Qué mueve el precio». La retiró su propia autora antes de
+ *   entregar: parafrasear una frase sensible para que pegue más es el error del
+ *   `PendingNotice`. La sección se llama como en la página publicada.
+ * · «El filete gris del borde es la marca que el sistema ya usa para lo que
+ *   existe, es real y no es nuestro.» Estaba en la maqueta, **no estaba en la
+ *   lista de siete** y es la página explicándole al lector su propia gramática
+ *   visual. Una nota de diseño que se coló en el copy; no se integró.
+ *
+ * Y **no se usan** «Precio garantizado» ni «Congelamos tu precio», que llevan el
+ * marcador `REQUIERE VALIDACIÓN DE COMPLIANCE` en `Process.astro`.
+ *
+ * ── Los rótulos son texto, nunca `<text>` dentro de un SVG que escale ──────
+ *
+ * Es la corrección del riel tokenizado. Un `<text>` dentro de un `viewBox` que
+ * se encoge cae a unos 5 px en el teléfono. La maqueta la respetaba en la
+ * figura grande y **la rompía en «El monto»**, con dos `<text>` de 11 px: a
+ * 320 px esa tarjeta mide ~280 y el rótulo habría caído a 10,2 px, por debajo
+ * del piso que la propia entrega fijó. Acá los dos salieron del SVG.
  */
-import Legal from '../layouts/Legal.astro';
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
 import PendingNotice from '../components/PendingNotice.astro';
+import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
+import { convert, formatAmount } from '../lib/pricing/quote.ts';
 import { formatCLP } from '../lib/pricing/format.ts';
-import { contact, quoteLimits } from '../lib/config/site.ts';
+import { contact, quoteLimits, site } from '../lib/config/site.ts';
+
+const price = await new ConfigPriceSource().getPrice();
 
 /* El mínimo que ESTA página publica es, por construcción, el mismo que el
-   cotizador aplica: ambos leen quoteLimits (D24). El pendiente D6 vive junto al
-   valor, en environment.ts. */
+   cotizador aplica: ambos leen `quoteLimits` (D24). El pendiente D6 vive junto
+   al valor, en `environment.ts`. */
 const minPay = quoteLimits.minPayClp;
+
+/* Y la muestra del cotizador en miniatura, por el mismo motivo: es el monto que
+   el cotizador carga al abrir, convertido con el precio del build. */
+const samplePay = quoteLimits.samplePayClp;
+const sampleGet = convert('to_usd', samplePay, price.rate);
+
 const wa = contact.whatsappUrl();
 ---
-<Legal
+<Base
   title="Tarifas"
   description="Cómo se compone el precio en DLPay: un solo precio que ya incluye el spread, sin comisiones que aparezcan después. Qué mueve ese precio y qué es referencial."
   path="/tarifas/"
-  lead="Un solo número, y ese número ya lo incluye todo. Acá está cómo se compone y qué lo mueve."
+  zeroJs
 >
-  <h2>Cómo se compone el precio</h2>
-  <p>
-    DLPay toma una <strong>referencia de mercado</strong> y le aplica su <strong>spread</strong>.
-    El resultado es el precio que ves en el cotizador: un solo número, con el spread ya
-    incorporado.
-  </p>
-  <p>
-    Esto significa que <strong>no hay una comisión aparte que se sume al final</strong>. Tampoco
-    hay un tipo de cambio inflado por dentro para esconder un cobro. Lo que ves al cotizar es la
-    base de lo que el ejecutivo te confirma.
-  </p>
+  <Header />
+  <main id="main">
+    <PageHero
+      title="Tarifas"
+      lead="Un solo número, y ese número ya lo incluye todo. Acá está cómo se compone y qué lo mueve."
+      sequence
+      layout="stacked"
+    >
+      {/*
+        La tarjeta va en la ranura `aside` de `PageHero`, que es el mecanismo de
+        montaje que `/empresas` ya usa para su portátil. **No se inventa un
+        segundo**: aquella variante existe justamente para que una pieza sobresalga
+        de la banda oscura, con el saliente decidido por la página en `--montaje`.
+      */}
+      <div class="tarjeta" slot="aside">
+        <p class="eyebrow">lo que ves al cotizar</p>
 
-  <h2>Qué mueve el precio</h2>
-  <dl>
-    <dt>El mercado</dt>
-    <dd>
-      El valor del dólar cambia durante el día. Por eso el precio de la web es
-      <strong>referencial</strong> y el precio final te lo confirma tu ejecutivo en el momento
-      de cerrar.
-    </dd>
-    <dt>El monto</dt>
-    <dd>
-      Las operaciones de mayor volumen se conversan con el ejecutivo. Si operas montos grandes o
-      de forma recurrente, las condiciones se acuerdan contigo.
-    </dd>
-  </dl>
+        {/* El producto, no un diagrama del producto: las dos filas que el
+            cotizador enseña al abrirse, con sus cifras de verdad. */}
+        <div class="cotiza">
+          <div class="fila">
+            <span class="rot">Das</span>
+            <span class="num">{formatCLP(samplePay)} <span class="div">CLP</span></span>
+          </div>
+          <div class="fila destacada">
+            <span class="rot">Recibes</span>
+            <span class="num">{formatAmount(sampleGet, 'USD').replace('US$ ', '')} <span class="div">USD</span></span>
+          </div>
+        </div>
 
-  <h2>Monto mínimo</h2>
-  <p>
-    La operación mínima es de <strong>CLP {formatCLP(minPay)}</strong>. Bajo ese monto puedes
-    escribirnos igual y te orientamos.
-  </p>
+        <figure class="figura">
+          <p class="fig-rot">la referencia de mercado y nuestro spread, los dos adentro</p>
+          {/* La llave abarca la barra ENTERA. Ver la nota 1 de la cabecera. */}
+          <div class="llave" aria-hidden="true"></div>
+          <div class="fig-cuerpo">
+            <div class="tramo">
+              <div class="barra" aria-hidden="true"></div>
+              <div class="limite" aria-hidden="true"></div>
+              <p class="fig-pie">el precio que ves</p>
+            </div>
+            {/* Y a la derecha del punteado no hay nada. Ver la nota 2. */}
+            <p class="fin"><b>acá termina</b><span>y no se suma nada</span></p>
+          </div>
+        </figure>
 
-  <PendingNotice title="Tabla de tarifas: en publicación">
-    <p>
-      Los Términos y Condiciones de DLPay comprometen la publicación de una tabla con las
-      comisiones aplicables, el tipo de cambio y el spread informado. Esa tabla está en
-      revisión y se publica en esta misma página.
-    </p>
-    <p>
-      Mientras tanto, el precio aplicable a tu operación te lo informa tu ejecutivo antes de que
-      transfieras, y no cambia después de que lo aceptas.
-      <a href={wa} target="_blank" rel="noopener">Consúltalo por WhatsApp</a>.
-    </p>
-  </PendingNotice>
+        <div class="leyenda">
+          <p>
+            <span class="sw sw-barra" aria-hidden="true"></span>
+            <span><b>La barra no está partida</b> porque el número tampoco lo está: no se ven por separado.</span>
+          </p>
+          <p>
+            <span class="sw sw-linea" aria-hidden="true"></span>
+            <span><b>El punteado es un límite.</b> Cruzarlo cambiaría el precio, y no lo cruza nada.</span>
+          </p>
+        </div>
+      </div>
+    </PageHero>
 
-  <h2>Qué no está incluido acá</h2>
-  <p>
-    DLPay entrega dólar digital en tu billetera. Lo que hagas después con ese dólar digital
-    (moverlo a otra billetera, convertirlo a moneda local en otro país) puede tener costos de
-    los servicios que uses para eso, que son ajenos a DLPay.
-  </p>
-</Legal>
+    <div class="cuerpo">
+      <div class="inner">
+        <section class="bloque" aria-labelledby="compone-t">
+          <p class="eyebrow" data-enter>cómo se compone</p>
+          <h2 id="compone-t">El spread ya está adentro del número</h2>
+          <p>
+            DLPay toma una <strong>referencia de mercado</strong> y le aplica su
+            <strong>spread</strong>. El resultado es el precio que ves en el cotizador: un solo
+            número, con el spread ya incorporado.
+          </p>
+          <p class="mute">
+            Esto significa que <strong>no hay una comisión aparte que se sume al final</strong>.
+            Tampoco hay un tipo de cambio inflado por dentro para esconder un cobro. Lo que ves al
+            cotizar es la base de lo que el ejecutivo te confirma.
+          </p>
+        </section>
+
+        <section class="bloque" aria-labelledby="mueve-t">
+          <p class="eyebrow" data-enter>qué lo mueve</p>
+          {/*
+            «Qué mueve el precio», como en la página publicada. La entrega traía
+            «Dos cosas, y ninguna es una tarifa oculta» y su propia autora lo
+            retiró antes de entregar: parafrasear una frase sensible para que
+            suene mejor es el error del `PendingNotice`. Si Compliance quiere algo
+            más vivo, lo escribe Compliance.
+          */}
+          <h2 id="mueve-t">Qué mueve el precio</h2>
+          {/* `<dl>` de verdad, como en la versión publicada: son dos términos
+              con su definición y un lector de pantalla lo anuncia como tal. La
+              tarjeta es presentación, no estructura. */}
+          <dl class="par">
+            <div class="mini">
+              <svg class="fig-mini" viewBox="0 0 300 56" role="img"
+                   aria-label="Una línea que sube y baja: el precio se mueve durante el día.">
+                <path d="M0 40 C18 40 22 22 40 22 S62 34 80 31 100 16 120 19 142 37 160 33 180 14 200 18 222 33 240 27 262 12 280 16 296 22 300 24"
+                      fill="none" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+              <dt>El mercado</dt>
+              <dd>
+                El valor del dólar cambia durante el día. Por eso el precio de la web es
+                <strong>referencial</strong> y el precio final te lo confirma tu ejecutivo en el
+                momento de cerrar.
+              </dd>
+            </div>
+            <div class="mini">
+              {/*
+                Ni escalones ni barras ascendentes: afirmarían tramos, y los
+                tramos son D5. Una línea, un límite SIN marcar dónde cae, y al
+                otro lado dos palabras — que van en HTML, no en un `<text>`.
+              */}
+              <div class="fig-monto" aria-hidden="true">
+                <span class="linea"></span>
+                <span class="corte"></span>
+                <span class="nota">acá se<br />conversa</span>
+              </div>
+              <dt>El monto</dt>
+              <dd>
+                Las operaciones de mayor volumen se conversan con el ejecutivo. Si operas montos
+                grandes o de forma recurrente, las condiciones se acuerdan contigo.
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="bloque" aria-labelledby="minimo-t">
+          {/* La cifra como objeto y no dentro de un párrafo. Es tarjeta levantada
+              del papel, así que `--elev-pop`: el `--elev-card` de la página ya
+              está gastado arriba, y §4.5 permite uno solo. */}
+          <div class="tarjeta plana">
+            {/*
+              El encabezado existe y no se ve. En la versión anterior este bloque
+              tenía su «Monto mínimo» en el esquema del documento, y quien navega
+              por encabezados lo usaba para llegar; el dibujo lo convierte en
+              rótulo y ese nivel se perdía.
+
+              **Y va aparte del rótulo, no vestido de rótulo**, por el Design
+              System §3.1b: un `h2` de 13 px junto a otros de 32 en la misma
+              página se lee como un descuido cuando alguien audita la escala. Así
+              el esquema conserva su entrada y la escala conserva un tamaño por
+              nivel.
+            */}
+            <h2 id="minimo-t" class="sr-only">Monto mínimo</h2>
+            <p class="eyebrow" aria-hidden="true">monto mínimo</p>
+            <div class="dato">
+              <span class="n">CLP {formatCLP(minPay)}</span>
+              <span class="u">Bajo ese monto puedes escribirnos igual y te orientamos.</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="bloque">
+          <PendingNotice title="Tabla de tarifas: en publicación">
+            <p>
+              Los Términos y Condiciones de DLPay comprometen la publicación de una tabla con las
+              comisiones aplicables, el tipo de cambio y el spread informado. Esa tabla está en
+              revisión y se publica en esta misma página.
+            </p>
+            <p>
+              Mientras tanto, el precio aplicable a tu operación te lo informa tu ejecutivo antes de
+              que transfieras, y no cambia después de que lo aceptas.
+              <a href={wa} target="_blank" rel="noopener">Consúltalo por WhatsApp</a>.
+            </p>
+          </PendingNotice>
+        </section>
+
+        <section class="bloque" aria-labelledby="ajeno-t">
+          {/* Filete `--ink-mute`: «existe, es real, no es nuestro» (DS §6.2). Sin
+              superficie a propósito — lo que no es nuestro no se eleva. */}
+          <div class="ajeno">
+            <h2 id="ajeno-t">Qué no está incluido acá</h2>
+            <p class="mute">
+              DLPay entrega dólar digital en tu billetera. Lo que hagas después con ese dólar
+              digital (moverlo a otra billetera, convertirlo a moneda local en otro país) puede
+              tener costos de los servicios que uses para eso, que son ajenos a DLPay.
+            </p>
+          </div>
+        </section>
+
+        {/* La misma línea que pone `Legal.astro` en las otras tres. Se conserva
+            literal al salir de ese layout: esta sigue siendo una página legal. */}
+        <footer class="meta">
+          <p>{site.legalName}, que opera bajo la marca {site.name}.</p>
+        </footer>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  /*
+    Cuánto sobresale la tarjeta de la banda oscura. Mismo mecanismo que
+    `/empresas`: lo decide la página porque depende del alto de la pieza.
+  */
+  main { --montaje: 132px; }
+  @media (min-width: 900px) { main { --montaje: 168px; } }
+
+  .cuerpo {
+    background: var(--papel);
+    /* El relleno superior absorbe el saliente: si no, la primera sección se
+       metería debajo de la tarjeta. */
+    padding: calc(var(--montaje) + var(--s-8)) 0 var(--s-9);
+  }
+  .inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 var(--pad-section-m);
+  }
+
+  /*
+    ── La tarjeta ────────────────────────────────────────────────────────────
+
+    `--r-block` y no `--r-card`: es el contenedor, y dentro viven las dos filas
+    con su propio radio. Dos radios iguales anidados se leen como un error de
+    encaje — está razonado en `tokens.css`, junto al token.
+
+    `--elev-card` es **el único de la página**, que es el límite duro de §4.5.
+  */
+  .tarjeta {
+    background: var(--papel);
+    /*
+      `color` explícito, y no es una redundancia: esta tarjeta vive DENTRO de la
+      ranura de `PageHero`, que es una banda en tinta y fija `color:
+      var(--on-tinta)`. Sin esta línea todo lo que no declare color propio lo
+      hereda —y lo primero que lo hereda es la cifra «2.000.000», que salía en
+      blanco roto sobre papel: ilegible, y sin error en ninguna parte.
+    */
+    color: var(--ink);
+    border-radius: var(--r-block);
+    box-shadow: var(--elev-card);
+    padding: var(--s-6) var(--s-5);
+    width: 100%;
+    max-width: 760px;
+    text-align: left;
+  }
+  /* La del mínimo: levantada del papel, no cruzando una banda. */
+  .tarjeta.plana {
+    box-shadow: var(--elev-pop);
+    border-radius: var(--r-card);
+    max-width: none;
+  }
+
+  .eyebrow {
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    letter-spacing: var(--ls-label);
+    color: var(--ink-mute);
+    margin: 0 0 var(--s-3);
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+  }
+  /* La rayita de acento va con ancho FIJO, no `flex: 1`: con titulares de
+     distinto largo cada raya saldría de un ancho distinto (DS §4.3). */
+  .eyebrow::before {
+    content: '';
+    width: 18px;
+    height: 2px;
+    background: var(--verde-deep);
+    flex: none;
+  }
+
+  /* ── El cotizador en miniatura ─────────────────────────────────────────── */
+  .cotiza { display: grid; gap: var(--s-3); }
+  .fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--s-4);
+    padding: var(--s-4);
+    border-radius: var(--r-3);
+    background: var(--papel-2);
+  }
+  .fila .rot { font-size: var(--t-body-sm); color: var(--ink-mute); }
+  /* `.num` es una utilidad global del sitio y ya trae la familia, las cifras
+     tabulares y el interletraje. No se vuelve a declarar acá. */
+  .fila .num { font-size: var(--t-dato-m); line-height: var(--lh-dato); }
+  .fila .div { font-size: var(--t-body-sm); color: var(--ink-mute); }
+  .destacada { background: var(--tinta); color: var(--on-tinta); }
+  .destacada .rot { color: var(--on-tinta-mute); }
+  /* Sobre tinta el verde vivo da 8,45:1; el `--verde-deep` de la barra es para
+     papel. El fondo elige el verde (DS §6.2). */
+  .destacada .num { color: var(--verde); }
+  .destacada .div { color: var(--on-tinta-mute); }
+
+  /* ── La figura de composición ──────────────────────────────────────────── */
+  .figura { margin: var(--s-6) 0 0; }
+  .fig-rot {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+    margin: 0 0 var(--s-2);
+  }
+  /* La llave: bordes, no un SVG. Así el rótulo de arriba es texto de verdad y
+     la punta no se deforma al escalar. */
+  .llave {
+    height: 9px;
+    border: 1.5px solid var(--ink-mute);
+    border-bottom: 0;
+    position: relative;
+    margin-bottom: var(--s-3);
+  }
+  .llave::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--ink-mute);
+    border-bottom: 0;
+  }
+  .fig-cuerpo { display: grid; gap: var(--s-3); }
+  .tramo { position: relative; padding-right: 2px; }
+  /* Una sola magnitud, sin partir. Ver la nota 1 de la cabecera. */
+  .barra { height: 16px; border-radius: 2px; background: var(--verde-deep); }
+  .limite {
+    position: absolute;
+    right: 0;
+    top: -14px;
+    bottom: -14px;
+    border-left: 1.5px dashed var(--ink);
+  }
+  .fig-pie { margin: var(--s-2) 0 0; color: var(--ink); }
+  .fin {
+    margin: 0;
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    line-height: 1.5;
+  }
+  .fin b { display: block; color: var(--ink); font-weight: 400; }
+  .fin span { color: var(--ink-mute); }
+
+  .leyenda { display: grid; gap: var(--s-2); margin-top: var(--s-4); }
+  .leyenda p {
+    display: flex;
+    gap: var(--s-3);
+    align-items: center;
+    margin: 0;
+    font-size: var(--t-body-sm);
+    color: var(--ink-mute);
+  }
+  .leyenda b { font-weight: 600; color: var(--ink); }
+  /* Las dos muestras también son CSS: son la barra y el punteado a tamaño de
+     texto, y dibujarlas en SVG habría metido otro `viewBox` que escalar. */
+  .sw { width: 34px; flex: none; }
+  .sw-barra { height: 8px; border-radius: 2px; background: var(--verde-deep); }
+  .sw-linea {
+    height: 12px;
+    border-left: 1.5px dashed var(--ink);
+    /* Centrada en sus 34 px, como el trazo que representa. */
+    margin: 0 16px;
+    width: 0;
+  }
+
+  /* ── El cuerpo, sobre papel y sin superficie ───────────────────────────── */
+  .bloque { padding: var(--s-8) 0 0; }
+  .bloque:first-child { padding-top: 0; }
+  h2 {
+    font-size: var(--t-h2-m);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin: 0 0 var(--s-5);
+    font-weight: 700;
+  }
+  .cuerpo p { margin: 0 0 var(--s-4); max-width: 47ch; }
+  .cuerpo p:last-child { margin-bottom: 0; }
+  .mute { color: var(--ink-mute); }
+  .mute strong { color: var(--ink); }
+
+  /* ── Qué mueve el precio ───────────────────────────────────────────────── */
+  .par { display: grid; gap: var(--s-4); margin: 0; }
+  .mini {
+    background: var(--papel);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    box-shadow: var(--elev-pop);
+    padding: var(--s-5);
+  }
+  .mini dt {
+    font-size: var(--t-h3-m);
+    line-height: var(--lh-h3);
+    font-weight: 600;
+    margin: var(--s-4) 0 var(--s-2);
+  }
+  .mini dd { margin: 0; font-size: var(--t-body-sm); color: var(--ink-mute); }
+  .mini dd strong { color: var(--ink); }
+  .fig-mini { display: block; width: 100%; height: 56px; color: var(--ink-mute); }
+
+  /* «El monto»: una línea, un corte y dos palabras. Sin escalones — ver la
+     nota 3 de la cabecera. Todo en CSS para que la nota sea texto real. */
+  .fig-monto {
+    position: relative;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+  }
+  .fig-monto .linea { flex: 1; height: 3px; background: var(--ink-mute); }
+  .fig-monto .corte {
+    width: 0;
+    height: 36px;
+    border-left: 1.5px dashed var(--ink);
+    flex: none;
+  }
+  .fig-monto .nota {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    line-height: 1.3;
+    color: var(--verde-deep);
+    flex: none;
+  }
+
+  /* ── El dato solo ──────────────────────────────────────────────────────── */
+  .dato { display: flex; align-items: baseline; gap: var(--s-3); flex-wrap: wrap; }
+  .dato .n {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-m);
+    letter-spacing: var(--ls-dato);
+    line-height: var(--lh-dato);
+  }
+  .dato .u { color: var(--ink-mute); font-size: var(--t-body-sm); }
+
+  /* ── Lo que no es nuestro ──────────────────────────────────────────────── */
+  .ajeno { border-left: 3px solid var(--ink-mute); padding-left: var(--s-5); }
+  .ajeno h2 { margin-bottom: var(--s-3); }
+
+  .meta {
+    margin-top: var(--s-9);
+    padding-top: var(--s-6);
+    border-top: 1px solid var(--line);
+    color: var(--ink-mute);
+    font-size: var(--t-body-sm);
+  }
+
+  @media (min-width: 760px) {
+    .fig-cuerpo { grid-template-columns: 1fr 168px; align-items: center; gap: var(--s-5); }
+    /* La llave y su rótulo miden lo que mide la barra, no lo que mide la
+       rejilla: si llegaran hasta el borde, nombrarían también el vacío. */
+    .llave, .fig-rot { margin-right: 184px; }
+    .par { grid-template-columns: 1fr 1fr; gap: var(--s-5); }
+  }
+  @media (min-width: 900px) {
+    .inner { padding-inline: var(--pad-section); }
+    .tarjeta { padding: var(--s-7); }
+    h2 { font-size: var(--t-h2); }
+    .fila .num { font-size: var(--t-dato); }
+    .mini dt { font-size: var(--t-h3); }
+    .dato .n { font-size: var(--t-dato); }
+  }
+</style>

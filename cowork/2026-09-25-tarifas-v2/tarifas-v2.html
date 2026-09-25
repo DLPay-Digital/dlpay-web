@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tarifas · maqueta v2 — Cowork</title>
+<link rel="stylesheet" href="/_astro/Footer.qVU33EK2.css">
+<style>
+  /* ══ Maqueta de Cowork. No inventa tokens: usa los que el proyecto ya declara.
+        Lo único nuevo es DÓNDE se usan: la superficie elevada existe desde el
+        principio (--r-card 14px, --r-block 20px, --elev-card, --elev-pop) y hoy
+        vive casi sólo en la home y el pie. Acá entra a una página interior. ══ */
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--papel);color:var(--ink);
+    font-family:var(--f-text);font-size:var(--t-body);line-height:var(--lh-body)}
+  .inner{max-width:var(--container);margin:0 auto;padding:0 var(--pad-section-m)}
+  @media(min-width:900px){.inner{padding:0 var(--pad-section)}}
+  .col{max-width:760px;margin:0 auto}
+
+  /* ── portada ── */
+  .hero{background:var(--tinta);color:var(--on-tinta);padding:var(--s-9) 0 var(--s-10);position:relative;overflow:hidden}
+  .hero h1{font-size:var(--t-display-m);line-height:var(--lh-display);letter-spacing:var(--ls-display);margin:0 0 var(--s-4);font-weight:700}
+  .hero p{color:var(--on-tinta-mute);margin:0;max-width:34ch}
+  @media(min-width:900px){.hero h1{font-size:var(--t-display)}}
+  .diag{position:absolute;inset:0;pointer-events:none;opacity:.5}
+  .diag i{position:absolute;top:-40%;height:180%;width:84px;background:#16c78412;
+    transform:rotate(33.954deg);transform-origin:top left}
+
+  /* ── la tarjeta: la superficie que las páginas interiores no usan ── */
+  .tarjeta{background:var(--papel);border-radius:var(--r-block);box-shadow:var(--elev-card);
+    padding:var(--s-6) var(--s-5)}
+  @media(min-width:900px){.tarjeta{padding:var(--s-7)}}
+  .sube{margin-top:calc(var(--s-8) * -1);position:relative;z-index:2}
+
+  section{padding:var(--s-8) 0}
+  .eyebrow{font-family:var(--f-num);font-size:var(--t-label);letter-spacing:var(--ls-label);
+    color:var(--ink-mute);text-transform:lowercase;margin:0 0 var(--s-3);display:flex;align-items:center;gap:var(--s-2)}
+  .eyebrow::before{content:"";width:18px;height:2px;background:var(--verde-deep);flex:none}
+  h2{font-size:var(--t-h2-m);line-height:var(--lh-h2);letter-spacing:var(--ls-h2);margin:0 0 var(--s-5);font-weight:700}
+  @media(min-width:900px){h2{font-size:var(--t-h2)}}
+  h3{font-size:var(--t-h3-m);line-height:var(--lh-h3);margin:0 0 var(--s-2);font-weight:600}
+  p{margin:0 0 var(--s-4);max-width:47ch}
+  p.mute{color:var(--ink-mute)}
+
+  /* ── el producto como figura: el cotizador, en miniatura ── */
+  .cotiza{display:grid;gap:var(--s-3)}
+  .fila{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s-4);
+    padding:var(--s-4);border-radius:var(--r-3);background:var(--papel-2)}
+  .fila .rot{font-size:var(--t-body-sm);color:var(--ink-mute)}
+  .fila .num{font-family:var(--f-num);font-size:var(--t-dato-m);letter-spacing:var(--ls-dato);line-height:var(--lh-dato)}
+  @media(min-width:900px){.fila .num{font-size:var(--t-dato)}}
+  .fila .div{font-family:var(--f-num);font-size:var(--t-body-sm);color:var(--ink-mute)}
+  .destacada{background:var(--tinta);color:var(--on-tinta)}
+  .destacada .rot{color:var(--on-tinta-mute)}
+  .destacada .num{color:var(--verde)}
+
+  /* ── la figura de composición: sólo marcas ya publicadas del §6.2 ── */
+  /* La figura se dibuja en HTML y CSS, no dentro de un SVG escalado: un <text>
+     dentro de un SVG que se encoge cae a 5 px en móvil. Es la corrección del
+     riel tokenizado, y la volví a romper una vez antes de acordarme. */
+  .figura{margin:var(--s-6) 0 0}
+  .fig-rot{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);margin:0 0 var(--s-2);max-width:none}
+  .fig-pie{margin:var(--s-2) 0 0;color:var(--ink)}
+  .llave{height:9px;border:1.5px solid var(--ink-mute);border-bottom:0;position:relative;margin-bottom:var(--s-3)}
+  .llave::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);
+    border:6px solid transparent;border-top-color:var(--ink-mute);border-bottom:0}
+  .cuerpo{display:grid;grid-template-columns:1fr;gap:var(--s-3)}
+  .tramo{position:relative;padding-right:2px}
+  .barra{height:16px;border-radius:2px;background:var(--verde-deep)}
+  .limite{position:absolute;right:0;top:-14px;bottom:-14px;
+    border-left:1.5px dashed var(--ink)}
+  .fin{margin:0;max-width:none;font-family:var(--f-num);font-size:var(--t-dato-sm);line-height:1.5}
+  .fin b{display:block;color:var(--ink);font-weight:400}
+  .fin span{color:var(--ink-mute)}
+  @media(min-width:760px){
+    .cuerpo{grid-template-columns:1fr 168px;align-items:center;gap:var(--s-5)}
+    .llave{margin-right:184px}
+    .fig-rot{margin-right:184px}
+  }
+  .figura svg{display:block;width:100%;height:auto}
+  .leyenda{display:grid;gap:var(--s-2);margin-top:var(--s-4);font-size:var(--t-body-sm)}
+  .leyenda div{display:flex;gap:var(--s-3);align-items:center;color:var(--ink-mute)}
+  .leyenda b{font-weight:600;color:var(--ink)}
+  .sw{width:34px;height:12px;flex:none;display:block}
+
+  /* ── dos tarjetas: qué mueve el precio ── */
+  .par{display:grid;gap:var(--s-4)}
+  @media(min-width:760px){.par{grid-template-columns:1fr 1fr;gap:var(--s-5)}}
+  .mini{background:var(--papel);border-radius:var(--r-card);box-shadow:var(--elev-pop);padding:var(--s-5)}
+  .mini svg{display:block;width:100%;height:56px;margin-bottom:var(--s-4)}
+  .mini p{margin:0;font-size:var(--t-body-sm);color:var(--ink-mute);max-width:none}
+
+  /* ── el dato solo ── */
+  .dato{display:flex;align-items:baseline;gap:var(--s-3);flex-wrap:wrap}
+  .dato .n{font-family:var(--f-num);font-size:var(--t-dato);letter-spacing:var(--ls-dato);line-height:var(--lh-dato)}
+  .dato .u{color:var(--ink-mute);font-size:var(--t-body-sm)}
+
+  /* ── lo que no es nuestro: filete --ink-mute, su significado publicado ── */
+  .ajeno{border-left:3px solid var(--ink-mute);padding-left:var(--s-5);margin:0}
+  .ajeno h3{margin-bottom:var(--s-3)}
+  .aviso{border-left:3px solid var(--aviso);padding-left:var(--s-5)}
+  .aviso h3{color:var(--aviso-deep)}
+  .pie{padding:var(--s-8) 0;border-top:1px solid var(--line);color:var(--ink-mute);font-size:var(--t-body-sm)}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="diag"><i style="left:-6%"></i><i style="left:22%"></i><i style="left:54%"></i></div>
+  <div class="inner"><div class="col">
+    <h1>Tarifas</h1>
+    <p>Un solo número, y ese número ya lo incluye todo. Acá está cómo se compone y qué lo mueve.</p>
+  </div></div>
+</header>
+
+<div class="inner"><div class="col">
+
+  <!-- ══ 1 · el producto es la figura ══ -->
+  <div class="tarjeta sube">
+    <p class="eyebrow">lo que ves al cotizar</p>
+    <div class="cotiza">
+      <div class="fila">
+        <span class="rot">Das</span>
+        <span class="num">2.000.000 <span class="div">CLP</span></span>
+      </div>
+      <div class="fila destacada">
+        <span class="rot">Recibes</span>
+        <span class="num">2.174,62 <span class="div">USD</span></span>
+      </div>
+    </div>
+
+    <figure class="figura" style="margin-inline:0">
+      <p class="fig-rot">la referencia de mercado y nuestro spread, los dos adentro</p>
+      <div class="llave" aria-hidden="true"></div>
+      <div class="cuerpo">
+        <div class="tramo">
+          <div class="barra"></div>
+          <div class="limite" aria-hidden="true"></div>
+          <p class="fig-pie">el precio que ves</p>
+        </div>
+        <p class="fin"><b>acá termina</b><span>y no se suma nada</span></p>
+      </div>
+    </figure>
+
+    <div class="leyenda">
+      <div><svg class="sw" viewBox="0 0 34 12"><rect y="2" width="34" height="8" rx="2" fill="#0a7250"/></svg>
+        <span><b>La barra no está partida</b> porque el número tampoco lo está: no se ven por separado.</span></div>
+      <div><svg class="sw" viewBox="0 0 34 12"><line x1="17" y1="0" x2="17" y2="12" stroke="#131a26" stroke-width="1.5" stroke-dasharray="2 4"/></svg>
+        <span><b>El punteado es un límite.</b> Cruzarlo cambiaría el precio, y no lo cruza nada.</span></div>
+    </div>
+  </div>
+
+  <!-- ══ 2 · cómo se compone ══ -->
+  <section>
+    <p class="eyebrow">cómo se compone</p>
+    <h2>El spread ya está adentro del número</h2>
+    <p>DLPay toma una <b>referencia de mercado</b> y le aplica su <b>spread</b>. El resultado es el precio
+      que ves en el cotizador: un solo número, con el spread ya incorporado.</p>
+    <p class="mute">Esto significa que <b style="color:var(--ink)">no hay una comisión aparte que se sume al final</b>.
+      Tampoco hay un tipo de cambio inflado por dentro para esconder un cobro. Lo que ves al cotizar es la
+      base de lo que el ejecutivo te confirma.</p>
+  </section>
+
+  <!-- ══ 3 · qué lo mueve ══ -->
+  <section>
+    <p class="eyebrow">qué lo mueve</p>
+    <h2>Qué mueve el precio</h2>
+    <div class="par">
+      <div class="mini">
+        <svg viewBox="0 0 300 56" aria-hidden="true">
+          <path d="M0 40 C18 40 22 22 40 22 S62 34 80 31 100 16 120 19 142 37 160 33 180 14 200 18 222 33 240 27 262 12 280 16 296 22 300 24"
+            fill="none" stroke="#5a6472" stroke-width="1.5"></path>
+        </svg>
+        <h3>El mercado</h3>
+        <p>El valor del dólar cambia durante el día. Por eso el precio de la web es referencial y el precio
+          final te lo confirma tu ejecutivo en el momento de cerrar.</p>
+      </div>
+      <div class="mini">
+        <!-- Nada de barras ascendentes: dibujar escalones afirmaría tramos, y los
+             tramos son dato bloqueado. Una línea, un límite sin marcar dónde, y
+             al otro lado una palabra. -->
+        <svg viewBox="0 0 300 56" aria-hidden="true">
+          <rect x="0" y="32" width="196" height="3" fill="#5a6472"></rect>
+          <line x1="196" y1="14" x2="196" y2="50" stroke="#131a26" stroke-width="1.5" stroke-dasharray="2 6"></line>
+          <text x="208" y="30" fill="#0a7250" font-family="Spline Sans Mono, monospace" font-size="11">acá se</text>
+          <text x="208" y="44" fill="#0a7250" font-family="Spline Sans Mono, monospace" font-size="11">conversa</text>
+        </svg>
+        <h3>El monto</h3>
+        <p>Las operaciones de mayor volumen se conversan con el ejecutivo. Si operas montos grandes o de
+          forma recurrente, las condiciones se acuerdan contigo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 4 · el mínimo, como dato ══ -->
+  <section>
+    <div class="tarjeta">
+      <p class="eyebrow">monto mínimo</p>
+      <div class="dato">
+        <span class="n">CLP 50.000</span>
+        <span class="u">Bajo ese monto puedes escribirnos igual y te orientamos.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 5 · la tabla pendiente, sin disfraz ══ -->
+  <section>
+    <div class="aviso">
+      <h3>Tabla de tarifas: en publicación</h3>
+      <p class="mute">Los Términos y Condiciones de DLPay comprometen la publicación de una tabla con las
+        comisiones aplicables, el tipo de cambio y el spread informado. Esa tabla está en revisión y se
+        publica en esta misma página.</p>
+      <p class="mute">Mientras tanto, el precio aplicable a tu operación te lo informa tu ejecutivo antes de
+        que transfieras, y no cambia después de que lo aceptas.</p>
+    </div>
+  </section>
+
+  <!-- ══ 6 · lo que existe, es real, y no es nuestro ══ -->
+  <section>
+    <div class="ajeno">
+      <h3>Qué no está incluido acá</h3>
+      <p class="mute">DLPay entrega dólar digital en tu billetera. Lo que hagas después con ese dólar digital
+        (moverlo a otra billetera, convertirlo a moneda local en otro país) puede tener costos de los
+        servicios que uses para eso, que son ajenos a DLPay.</p>
+      <p class="mute" style="font-size:var(--t-body-sm)">El filete gris del borde es la marca que el sistema ya
+        usa para lo que existe, es real y no es nuestro.</p>
+    </div>
+  </section>
+
+  <div class="pie">DLPZ INCZ SpA, que opera bajo la marca DLPay.</div>
+</div></div>
+</body>
+</html>
