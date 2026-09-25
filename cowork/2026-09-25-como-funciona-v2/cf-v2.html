@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cómo funciona · maqueta v2 — Cowork</title>
+<link rel="stylesheet" href="/_astro/Footer.Hhc1FeXj.css">
+<style>
+  /* ══ Maqueta de Cowork sobre el build del 25.
+     Dos cambios, y sólo dos. El resto de la página no se toca: el cierre ya es
+     una figura (`EjeDeAlcance`) y los tiempos no se agrandan porque el del
+     paso 06 lleva REQUIERE VALIDACIÓN DE COMPLIANCE.
+     El §4.5 nuevo, aplicado: UN solo --elev-card, el del chat, cruzando la
+     banda de tinta; el suelo de los carriles es color, no sombra. ══ */
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--papel);color:var(--ink);
+    font-family:var(--f-text);font-size:var(--t-body);line-height:var(--lh-body)}
+  .inner{max-width:var(--container);margin:0 auto;padding:0 var(--pad-section-m)}
+  @media(min-width:900px){.inner{padding:0 var(--pad-section)}}
+
+  /* ── portada con el chat montado. Mecanismo: PageHero layout="stacked". ── */
+  main{--montaje:0px}
+  @media(min-width:900px){main{--montaje:0px}}
+  .hero{background:var(--tinta);color:var(--on-tinta);padding:var(--s-9) 0 0;position:relative}
+  .diag-caja{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+  .hero .col{max-width:760px;margin:0 auto}
+  .hero h1{font-size:var(--t-display-m);line-height:var(--lh-display);letter-spacing:var(--ls-display);margin:0 0 var(--s-4);font-weight:700}
+  .hero p.lead{color:var(--on-tinta-mute);margin:0;max-width:42ch}
+  @media(min-width:900px){.hero h1{font-size:var(--t-display)}}
+  .diag{position:absolute;inset:0;pointer-events:none;opacity:.5}
+  .diag i{position:absolute;top:-40%;height:180%;width:84px;background:#16c78412;
+    transform:rotate(33.954deg);transform-origin:top left}
+  .montura{margin-top:var(--s-8);display:flex;justify-content:center;position:relative;z-index:2}
+  .hero{padding-bottom:var(--s-8)}
+
+  /* el teléfono: ÚNICO --elev-card de la página */
+  .fono{width:250px;background:#0f1722;border-radius:26px;padding:8px;
+    box-shadow:var(--elev-card);border:1px solid #edf2ef1f}
+  .pantalla{background:var(--papel-2);border-radius:20px;overflow:hidden}
+  .barra{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--tinta-2);color:var(--on-tinta)}
+  .barra .av{width:22px;height:22px;border-radius:50%;background:var(--verde);display:grid;place-items:center;
+    color:var(--tinta);font-weight:700;font-size:12px}
+  .barra .qn{font-size:var(--t-body-sm);font-weight:600}
+  .chat{padding:12px;display:grid;gap:8px;min-height:190px;align-content:start}
+  .bu{max-width:88%;padding:8px 10px;border-radius:var(--r-3);font-size:var(--t-body-sm);line-height:1.4;margin:0}
+  .bu.out{justify-self:end;background:var(--verde);color:var(--on-verde);border-bottom-right-radius:var(--r-1)}
+  .bu.in{justify-self:start;background:var(--papel);color:var(--ink);border-bottom-left-radius:var(--r-1);
+    border:1px solid var(--line)}
+  .pie-fono{margin:var(--s-4) 0 0;font-size:var(--t-body-sm);color:var(--on-tinta-mute);text-align:center;max-width:36ch}
+  .pie-fono b{color:var(--on-tinta);font-weight:600}
+
+  section{padding:var(--s-9) 0 var(--s-8);position:relative}
+  section + section{padding-top:var(--s-8)}
+  .head h2{font-size:var(--t-h2-m);line-height:var(--lh-h2);letter-spacing:var(--ls-h2);margin:0 0 var(--s-2);font-weight:700}
+  @media(min-width:900px){.head h2{font-size:var(--t-h2)}}
+  .head p{color:var(--ink-mute);margin:0 0 var(--s-7);max-width:47ch}
+
+  /* ── los carriles: el suelo cambia de manos ───────────────────────────── */
+  .carriles{position:relative}
+  .rotulos{display:none}
+  @media(min-width:760px){
+    .rotulos{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-7);margin-bottom:var(--s-3)}
+    .rotulos p{margin:0;font-family:var(--f-num);font-size:var(--t-label);letter-spacing:var(--ls-label);color:var(--ink-mute)}
+    .rotulos .der{text-align:right;color:var(--verde-deep)}
+  }
+  .pasos{list-style:none;margin:0;padding:0;display:grid;gap:var(--s-4)}
+  @media(min-width:760px){
+    .pasos{grid-template-columns:1fr 1fr;gap:0;column-gap:var(--s-7);position:relative}
+    .paso{grid-column:1;padding:var(--s-5) var(--s-5) var(--s-5) 0}
+    /* el suelo cambia POR PASO, que es donde cambia de manos */
+    .paso.us{grid-column:2;position:relative;background:var(--papel-2);
+      border-radius:var(--r-3);padding:var(--s-5);border-top-color:transparent}
+  }
+  .paso{position:relative;border-top:1px solid var(--line);padding:var(--s-5) 0}
+  @media(max-width:759px){
+    .paso.us{background:var(--papel-2);border-radius:var(--r-3);
+      padding:var(--s-5);margin-inline:calc(var(--pad-section-m) * -1);
+      padding-inline:var(--pad-section-m);border-top-color:transparent}
+  }
+  .arriba{display:flex;align-items:baseline;gap:var(--s-3)}
+  .arriba .n{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute)}
+  .arriba h3{font-size:var(--t-h3-m);line-height:var(--lh-h3);margin:0;font-weight:600}
+  @media(min-width:900px){.arriba h3{font-size:var(--t-h3)}}
+  .paso p{color:var(--ink-mute);margin:var(--s-2) 0 var(--s-3);max-width:44ch}
+  .quien{display:none}
+  .tiempo{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute)}
+  .paso.us .tiempo{color:var(--verde-deep)}
+  /* la marca de traspaso, como ya está en la página: se calcula, no se lista */
+  .traspaso::before{content:"";position:absolute;top:-1px;left:0;right:0;height:1px;background:var(--verde)}
+  @media(min-width:760px){.traspaso::before{width:56px}}
+  .nota{margin-top:var(--s-7);font-size:var(--t-body-sm);color:var(--ink-mute);max-width:52ch}
+</style>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <div class="diag-caja"><div class="diag"><i style="left:-6%"></i><i style="left:26%"></i><i style="left:58%"></i></div></div>
+    <div class="inner">
+      <div class="col">
+        <h1>Cómo funciona una operación</h1>
+        <p class="lead">El recorrido es el mismo cambies pesos por dólares o al revés. La web te deja
+          listo y una persona cierra. Acá está todo, en orden y con los tiempos reales.</p>
+      </div>
+      <div class="montura">
+        <div>
+          <div class="fono" aria-hidden="true">
+            <div class="pantalla">
+              <div class="barra"><span class="av">D</span><span class="qn">DLPay</span></div>
+              <div class="chat">
+                <p class="bu out">Hola, necesito convertir 2.000.000 CLP. ¿Me confirman el precio?</p>
+                <p class="bu in">Precio confirmado a 919,70. ¿Cerramos la operación?</p>
+                <p class="bu out">Sí, acepto.</p>
+              </div>
+            </div>
+          </div>
+          <p class="pie-fono"><b>Acá pasa de la web a una persona.</b> El chat se abre con tu
+            operación ya escrita.</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="inner">
+      <div class="head">
+        <h2>Paso a paso</h2>
+        <p>Marcamos quién hace qué, para que no quede ninguna zona gris.</p>
+      </div>
+
+      <div class="carriles">
+        <div class="rotulos" aria-hidden="true">
+          <p>Lo haces tú</p>
+          <p class="der">Lo hacemos nosotros</p>
+        </div>
+        <ol class="pasos" role="list">
+          <li class="paso you">
+            <div class="arriba"><span class="n">01</span><h3>Dices qué necesitas</h3></div>
+            <p>Pasar pesos a dólares o volver a pesos. Escribes el monto y ves al instante el precio
+              referencial y cuánto recibes. No necesitas cuenta para esto.</p>
+            <span class="tiempo">ahora mismo</span>
+          </li>
+          <li class="paso you">
+            <div class="arriba"><span class="n">02</span><h3>Escribes por WhatsApp</h3></div>
+            <p>El botón abre el chat con tu operación ya escrita. No tienes que repetir nada: el
+              ejecutivo ve el contexto de entrada.</p>
+            <span class="tiempo">un toque</span>
+          </li>
+          <li class="paso us traspaso">
+            <div class="arriba"><span class="n">03</span><h3>Un ejecutivo confirma el precio</h3></div>
+            <p>El precio de la web es referencial porque el mercado se mueve. Una persona te confirma
+              el precio final, te pide la billetera de destino y te da los datos para transferir.</p>
+            <span class="tiempo">minutos</span>
+          </li>
+          <li class="paso you traspaso">
+            <div class="arriba"><span class="n">04</span><h3>Transfieres en pesos</h3></div>
+            <p>Desde tu banco a la cuenta de DLPay. Si es tu primera operación, antes te pedimos
+              registro y verificación de identidad.</p>
+            <span class="tiempo">según tu banco</span>
+          </li>
+          <li class="paso us traspaso">
+            <div class="arriba"><span class="n">05</span><h3>Verificamos la transferencia</h3></div>
+            <p>Confirmamos que el dinero está acreditado antes de ejecutar nada. Es el paso que no se
+              salta nunca.</p>
+            <span class="tiempo">al acreditarse</span>
+          </li>
+          <li class="paso us">
+            <div class="arriba"><span class="n">06</span><h3>Recibes el dólar digital</h3></div>
+            <p>Enviamos el dólar digital a la billetera que nos indicaste y te confirmamos por el
+              mismo chat. Ahí termina nuestra operación: desde ese punto decides tú.</p>
+            <span class="tiempo">~5 min desde el pago</span>
+          </li>
+        </ol>
+
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

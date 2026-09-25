@@ -14,10 +14,35 @@ import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
 import EjeDeAlcance from '../components/EjeDeAlcance.astro';
 import { hinge, options } from '../content/scope.ts';
-import { detailedSteps, checklist } from '../content/process.ts';
-import { contact, platform } from '../lib/config/site.ts';
+import WhatsAppMockup from '../components/WhatsAppMockup.astro';
+import { detailedSteps, checklist, chatLines } from '../content/process.ts';
+import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
+import { formatCLP, formatRate } from '../lib/pricing/format.ts';
+import { contact, platform, quoteLimits } from '../lib/config/site.ts';
 
 const wa = contact.whatsappUrl();
+
+/*
+  El teléfono de la portada.
+
+  La página que explica la conversación no enseñaba la conversación: el mockup
+  existía desde hacía semanas y sólo lo usaban la Home y `/empresas`.
+
+  **El hilo no se teclea.** Las tres frases salen de `chatLines`, que es la
+  misma fuente de la que bebe `Process.astro`; el monto y la tasa salen de
+  `ConfigPriceSource` y `quoteLimits`, que es de donde salen las del cotizador.
+  Ninguna cifra de esta página puede contradecir a la Home.
+
+  Es el momento que los pasos 02 y 03 describen con palabras: el mensaje que el
+  botón escribe solo, y el ejecutivo confirmando.
+*/
+const price = await new ConfigPriceSource().getPrice();
+const chat = chatLines(formatCLP(quoteLimits.samplePayClp), formatRate(price.rate));
+const hilo = [
+  { sender: 'user', text: chat.pide },
+  { sender: 'dlpay', text: chat.confirma },
+  { sender: 'user', text: chat.acepta },
+] as const;
 ---
 <Base
   title="Cómo funciona"
@@ -27,11 +52,29 @@ const wa = contact.whatsappUrl();
   <Motion />
   <Header />
   <main id="main">
+    {/*
+      `stacked` y `--montaje`: el mismo mecanismo del portátil de `/empresas` y
+      de la tarjeta de `/tarifas`. **Tercer uso, no tercera forma de hacer lo
+      mismo.** Lo eligió Sebastián el 2026-09-25 sabiendo lo que arrastra: esta
+      variante centra el titular y la bajada, que hasta hoy iban a la izquierda.
+    */}
     <PageHero
       title="Cómo funciona una operación"
       lead="El recorrido es el mismo cambies pesos por dólares o al revés. La web te deja listo y una persona cierra. Acá está todo, en orden y con los tiempos reales."
       sequence
-    />
+      layout="stacked"
+    >
+      <div class="telefono" slot="aside">
+        {/* `bare`: el pie de la variante `proof` está escrito para papel —usa
+            `--ink` y `--ink-mute`— y acá el teléfono se apoya en tinta. El pie
+            lo pone la página, con los colores de la banda. */}
+        <WhatsAppMockup variant="bare" thread={hilo} />
+        <p class="pie-tel">
+          <b>Acá pasa de la web a una persona.</b>
+          El chat se abre con tu operación ya escrita.
+        </p>
+      </div>
+    </PageHero>
 
     <section class="detail" aria-labelledby="detail-title">
       <div class="inner">
@@ -181,7 +224,35 @@ const wa = contact.whatsappUrl();
   }
 
 
-  .detail { background: var(--papel-2); padding: var(--s-9) 0; }
+  /*
+    Cuánto sobresale el teléfono de la banda. Lo decide la página porque depende
+    del alto de la pieza; mismo contrato que en `/empresas` y `/tarifas`.
+  */
+  main { --montaje: 96px; }
+  @media (min-width: 900px) { main { --montaje: 120px; } }
+
+  .telefono { display: grid; justify-items: center; gap: var(--s-4); }
+  /*
+    El pie va con los colores del PAPEL, y esto costó una captura.
+
+    Lo escribí primero en `--on-tinta` porque el teléfono está en la banda
+    oscura. Pero el bloque **monta** sobre la sección siguiente, y el pie es lo
+    último que hay dentro: cae entero sobre `--papel-2`. Medido — la banda
+    termina en 769 px y el pie empieza en 839. En blanco roto sobre claro no se
+    leía nada, y no había error en ninguna parte.
+    Queda dicho para quien toque `--montaje`: **el pie vive del lado claro.**
+  */
+  .pie-tel {
+    color: var(--ink-mute);
+    text-align: center;
+    max-width: 42ch;
+    margin: 0;
+  }
+  .pie-tel b { color: var(--ink); font-weight: 600; }
+
+  /* El relleno superior absorbe el saliente: sin él, el primer titular quedaría
+     debajo del teléfono. */
+  .detail { background: var(--papel-2); padding: calc(var(--montaje) + var(--s-8)) 0 var(--s-9); }
   .head { max-width: 46ch; margin-bottom: var(--s-7); }
   h2 {
     font-size: var(--t-h2-m);
@@ -231,6 +302,35 @@ const wa = contact.whatsappUrl();
   .step.you .who { color: var(--ink-mute); }
   .step.us { border-top-color: var(--verde-deep); }
   .step.us .who { color: var(--verde-deep); }
+
+  /*
+    ── El suelo cambia donde cambia de manos ─────────────────────────────────
+
+    Sale del DATO, no de una lista: `.us` lo pone `step.who !== 'tú'`, que es el
+    mismo campo del que ya salían la cuña de traspaso y el color del filete. Si
+    mañana cambia el reparto en `process.ts`, el suelo se mueve solo.
+
+    **Va al revés que la maqueta, y el motivo es el ritmo de la página.** La
+    entrega ponía los pasos de DLPay sobre `--papel-2`, lo que obligaba a pasar
+    esta sección a `--papel`… y entonces `.detail` y `.prep` quedaban las dos
+    claras y pegadas. La página alterna sus cuatro secciones a propósito —
+    papel-2, papel, papel-2, papel— y eso valía más que el sentido del contraste.
+    Así que la sección se queda como estaba y lo que se aclara es el paso.
+
+    La información es la misma: el suelo cambia donde cambia de manos. Y el
+    contraste sale mejor — sobre `--papel` el texto da 16:1 y el tiempo en
+    `--verde-deep` 5,44:1, contra 14,5 y 4,93 sobre `--papel-2`.
+
+    El margen negativo saca el suelo hacia fuera en lugar de meter el texto
+    hacia dentro: así los seis pasos conservan el mismo borde izquierdo, que en
+    móvil —una sola columna— es lo que impide que la escalera se vea torcida.
+  */
+  .step.us {
+    background: var(--papel);
+    border-radius: var(--r-3);
+    margin-inline: calc(-1 * var(--s-4));
+    padding: var(--s-4) var(--s-4) var(--s-5);
+  }
   .time {
     display: inline-block;
     margin-top: var(--s-2);

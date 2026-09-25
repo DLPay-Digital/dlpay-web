@@ -397,6 +397,14 @@ caso, conviene revisar si sigue siendo "bloque contenido" o si se está usando c
    para separar dos bloques que van seguidos: para eso está el filete, y si no basta el filete, lo
    que falla es el espacio.
 
+**Qué cuenta para el límite de uno por página, aclarado el 2026-09-25** al montar el teléfono en
+`/como-funciona`: se cuentan **los tokens de elevación del sistema**, no todas las sombras del
+render. Un mockup trae su propio cromo —el bisel del teléfono y el filete de 1 px de cada burbuja
+de chat— y esas sombras describen **un objeto de otra marca**, igual que los grises del bisel, que
+el propio componente declara locales y fuera del sistema. Un teléfono que se apoya en la banda se
+eleva con su bisel y **no gasta el `--elev-card` de la página**; ponerle además el token sería
+duplicar la sombra. La comprobación correcta es contar `--elev-card`, no contar `box-shadow`.
+
 **Auditoría del 2026-09-25 — los cuatro usos que había, con su veredicto bajo la regla nueva:**
 
 | Dónde | Token | Veredicto |

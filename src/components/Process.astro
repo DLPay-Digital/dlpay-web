@@ -31,6 +31,7 @@ import WhatsAppMockup from './WhatsAppMockup.astro';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { formatCLP, formatRate } from '../lib/pricing/format.ts';
 import { quoteLimits } from '../lib/config/site.ts';
+import { chatLines } from '../content/process.ts';
 
 interface ChatMessage {
   sender: 'user' | 'dlpay';
@@ -49,13 +50,16 @@ const price = await new ConfigPriceSource().getPrice();
 const SAMPLE_PAY = quoteLimits.samplePayClp;
 const monto = formatCLP(SAMPLE_PAY);
 const tasa = formatRate(price.rate);
+/* Las frases viven en `content/process.ts` desde el 2026-09-25: la portada de
+   `/como-funciona` usa tres de ellas y no puede haber dos dueños de una línea. */
+const chat = chatLines(monto, tasa);
 
 const steps: readonly Step[] = [
   {
     title: '1. Inicias el chat',
     body: 'Tu operación llega escrita automáticamente desde nuestro cotizador.',
     thread: [
-      { sender: 'user', text: `Hola, necesito convertir ${monto} CLP. ¿Me confirman el precio?` },
+      { sender: 'user', text: chat.pide },
     ],
   },
   {
@@ -73,16 +77,16 @@ const steps: readonly Step[] = [
     // quiere nombrar su operación.
     body: 'Un ejecutivo confirma tu tasa en tiempo real por la mesa de dinero.',
     thread: [
-      { sender: 'dlpay', text: `Precio confirmado a ${tasa}. ¿Cerramos la operación?` },
-      { sender: 'user', text: 'Sí, acepto.' },
+      { sender: 'dlpay', text: chat.confirma },
+      { sender: 'user', text: chat.acepta },
     ],
   },
   {
     title: '3. Transfieres con seguridad',
     body: 'Envías tus pesos a nuestra cuenta bancaria en Chile.',
     thread: [
-      { sender: 'user', text: 'Transferencia enviada.' },
-      { sender: 'dlpay', text: 'Fondos recibidos. Procesando...' },
+      { sender: 'user', text: chat.transfiere },
+      { sender: 'dlpay', text: chat.recibido },
     ],
   },
   {
@@ -92,7 +96,7 @@ const steps: readonly Step[] = [
     title: '4. Recibes en minutos',
     body: 'Sin esperar días hábiles ni lidiar con bancos intermediarios.',
     thread: [
-      { sender: 'dlpay', text: '¡Listo! Dólares digitales enviados a tu billetera.' },
+      { sender: 'dlpay', text: chat.entregado },
     ],
   },
 ];
