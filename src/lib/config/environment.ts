@@ -190,14 +190,20 @@ function positiveInt(raw: string | undefined): number | undefined {
  * web publicara un mínimo y aplicara otro. Ahora hay un solo valor y un solo
  * sitio donde cambiarlo.
  *
- * PENDIENTE DE DECISIÓN — monto mínimo real (CLAUDE.md §13, D6). 50 000 es un
- * placeholder.
+ * **El mínimo real es CLP 500.000**, confirmado por Sebastián el 2026-09-25.
+ * Hasta ese día el valor por defecto era `50_000` y estaba marcado como
+ * placeholder; con esto se cierra la mitad de **D6**.
+ *
+ * PENDIENTE DE DECISIÓN — precio de muestra del cotizador (CLAUDE.md §13, D6).
+ * Lo que sigue sin confirmar es el PRECIO con el que `ConfigPriceSource`
+ * cotiza, no el mínimo. `samplePayClp` (2 000 000) es el monto que el cotizador
+ * carga al abrir y es una decisión de presentación, no un dato de negocio.
  * PENDIENTE DE DECISIÓN — monto máximo (CLAUDE.md §13, D21). Sin variable, el
  * estado `above_max` no se activa: es una regla de negocio y no se inventa acá.
  */
 export function resolveQuoteLimits(env: SiteEnv): QuoteLimits {
   return {
-    minPayClp: positiveInt(env.PUBLIC_QUOTE_MIN_CLP) ?? 50_000,
+    minPayClp: positiveInt(env.PUBLIC_QUOTE_MIN_CLP) ?? 500_000,
     maxPayClp: positiveInt(env.PUBLIC_QUOTE_MAX_CLP),
     samplePayClp: 2_000_000,
   };

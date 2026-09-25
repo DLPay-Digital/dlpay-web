@@ -158,7 +158,7 @@ describe('límites del cotizador (D24)', () => {
   // valores por defecto viven aquí y en ningún otro sitio.
   test('sin variables, aplica los valores por defecto documentados', () => {
     const q = resolveQuoteLimits({});
-    assert.equal(q.minPayClp, 50_000);
+    assert.equal(q.minPayClp, 500_000);
     assert.equal(q.maxPayClp, undefined);
     assert.equal(q.samplePayClp, 2_000_000);
   });
@@ -172,7 +172,7 @@ describe('límites del cotizador (D24)', () => {
   test('basura, cero o negativo caen al valor por defecto, nunca a NaN', () => {
     for (const raw of ['', 'abc', '0', '-5000', 'NaN']) {
       const q = resolveQuoteLimits({ PUBLIC_QUOTE_MIN_CLP: raw, PUBLIC_QUOTE_MAX_CLP: raw });
-      assert.equal(q.minPayClp, 50_000, `mínimo con ${JSON.stringify(raw)}`);
+      assert.equal(q.minPayClp, 500_000, `mínimo con ${JSON.stringify(raw)}`);
       assert.equal(q.maxPayClp, undefined, `máximo con ${JSON.stringify(raw)}`);
     }
   });

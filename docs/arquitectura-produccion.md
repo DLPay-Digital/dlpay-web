@@ -317,17 +317,27 @@ Detalle completo en `docs/auditoria-preproduccion.md`, revisión 2026-09-08.
 
 ### 🟠 El monto mínimo tiene dos fuentes de verdad
 
-`PUBLIC_QUOTE_MIN_CLP` se lee en **dos lugares**, cada uno con su propio valor por defecto:
+> **Resuelto el 2026-09-09 por D24.** Lo que sigue describe el problema y se conserva porque
+> explica por qué la solución es la que es; el «no corregido» del final ya no vale.
+
+`PUBLIC_QUOTE_MIN_CLP` se leía en **dos lugares**, cada uno con su propio valor por defecto:
 
 - `components/Quoter.astro` — lo **aplica** (bloquea la operación)
 - `pages/tarifas.astro` — lo **publica** (se lo dice al usuario)
 
-Hoy coinciden porque leen la misma variable y repiten el mismo `50000`. Pero si alguien cambia un
-valor por defecto, **la web publicaría un mínimo y aplicaría otro** — en una página de tarifas,
-que es exactamente donde una discrepancia es un problema de confianza.
+Coincidían porque leían la misma variable y repetían el mismo número. Pero bastaba con que alguien
+cambiara un valor por defecto para que **la web publicara un mínimo y aplicara otro** — en una
+página de tarifas, que es exactamente donde una discrepancia es un problema de confianza.
 
-Corresponde moverlo a `lib/config`, junto al resto de la configuración de negocio. Es consolidación,
-sin efecto en la UI. **No corregido:** esta revisión es de análisis; queda propuesto.
+**Hoy hay un solo resolutor**, `resolveQuoteLimits` en `lib/config/environment.ts`, y los cinco
+consumidores leen su resultado. La discrepancia dejó de ser posible por construcción, no por
+disciplina, y `tests/config.test.ts` fija que los valores por defecto viven ahí y en ningún otro
+sitio.
+
+**Y se estrenó el 2026-09-25**, que es la prueba de que la consolidación servía para algo: Sebastián
+confirmó el mínimo real —**CLP 500.000**, contra los 50.000 que eran placeholder— y el cambio fue
+**una línea**. La página publica y el cotizador aplica el mismo número sin que nadie tenga que
+acordarse de los dos sitios.
 
 ### 🟡 Las fuentes no llevan hash de contenido
 
