@@ -62,8 +62,3 @@ Claude outputs/
 # dejarlas sin ignorar es una invitación a que un `git add -A` las barra dentro.
 .agents/
 .claude/skills/
-
-# La captura de referencia de la plataforma que Sebastián dejó para recrear la
-# pantalla del portátil (2026-09-25). El resultado está en código, en
-# `MacbookMockup.astro`; el PNG era el material de partida y no entra al repo.
-Imagen macbook ejemplo/
