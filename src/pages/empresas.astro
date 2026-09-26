@@ -65,7 +65,7 @@ const waPlain = contact.whatsappUrl();
         </a>
         {/* Misma ruta que el botón de la cabecera: la plataforma de Guita, que
             es donde vive el registro. La web nueva no lo reconstruye. */}
-        <a class="ghost" href={platform.registerUrl}>Crea tu cuenta</a>
+        <a class="ghost sobre-tinta" href={platform.registerUrl}>Crea tu cuenta</a>
       </Fragment>
       <MacbookMockup slot="aside" />
     </PageHero>
@@ -454,6 +454,33 @@ const waPlain = contact.whatsappUrl();
   }
   .ghost { transition: border-color var(--m-fast) var(--m-ease); }
   .ghost:hover { border-color: var(--ink); }
+
+  /*
+    ── El fantasma del encabezado vive sobre TINTA ───────────────────────────
+
+    **Corrige un fallo introducido el 2026-09-24 y encontrado el 2026-09-25.**
+    Esta página tiene DOS `.ghost`: éste, en el encabezado sobre `--tinta`, y el
+    de la banda de cierre, sobre papel. Aquel día la banda de cierre pasó a
+    papel y recalculé el contorno para ella —`--ink` y un alfa de tinta al
+    0,46—, sin ver que la misma clase vestía al otro. Sobre la tinta del
+    encabezado eso daba **1,07:1 el texto y 1,00:1 el borde**: el botón «Crea tu
+    cuenta» era literalmente invisible.
+
+    Y así es como apareció: Sebastián reportó que el botón verde «se veía tirado
+    a la izquierda». No lo estaba —el par va centrado al píxel, 633 contra 632
+    del titular—; lo que pasaba es que **su vecino había desaparecido**, y una
+    pareja con un miembro invisible se lee como un botón descentrado. El síntoma
+    estaba a 76 px del problema.
+
+    Sobre tinta mandan los tokens de tinta: `--on-tinta` da 16,44:1 al texto y
+    `--line-on-tinta` 3,50:1 al contorno, por encima del 3:1 que WCAG 1.4.11
+    pide a un control.
+  */
+  .ghost.sobre-tinta {
+    border-color: var(--line-on-tinta);
+    color: var(--on-tinta);
+  }
+  .ghost.sobre-tinta:hover { border-color: var(--on-tinta); }
   .wa-icon { width: 16px; height: 16px; }
 
   @media (min-width: 760px) {

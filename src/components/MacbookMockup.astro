@@ -20,15 +20,25 @@
  * dispositivo es cromo —va `aria-hidden`, no tiene ningún control y el contexto
  * lo dan las palabras de al lado—, y lo que se ve en pantalla NO se teclea.
  *
- * ── REGLA DURA heredada del teléfono ────────────────────────────────────────
+ * ── Qué enseñaba antes, y por qué cambió (2026-09-25) ───────────────────────
  *
- * Las cifras salen de `quoteLimits` y de `lib/pricing`, el origen único que
- * alimenta al cotizador (D24), con la MISMA función `convert()` que usa el
- * instrumento. Así es imposible que este mockup muestre un monto o un precio
- * que contradiga a lo que el cotizador calcula.
+ * Enseñaba un panel de «Conversión B2B» —envías, recibes, precio referencial—,
+ * que era una mesa de operaciones dibujada. Sebastián lo retiró porque se leía
+ * como una mesa de dinero, y eso es justo lo que la web no puede insinuar: «la
+ * mesa de dinero» es uno de los claims con `REQUIERE VALIDACIÓN DE COMPLIANCE`
+ * que arrastra `Process.astro`.
  *
- * El precio sigue siendo de MUESTRA (ConfigPriceSource, D7) y la línea
- * "referencial" se queda: la web nunca muestra un precio cerrado (CLAUDE.md §6).
+ * ── Por qué ya no hay ninguna cifra ─────────────────────────────────────────
+ *
+ * Hasta hoy la regla dura de esta pieza era que los montos salieran de
+ * `quoteLimits` y `lib/pricing` —el origen único del cotizador (D24)— para que
+ * fuera imposible contradecirlo.
+ *
+ * **La pantalla real no tiene ninguna cifra**: es una confirmación de estado. Al
+ * recrearla desaparecieron los montos y con ellos la posibilidad de contradecir
+ * nada, así que la regla se quedó sin a qué aplicarse. Si algún día vuelve a
+ * haber una cifra aquí, vuelve también la regla: **de `lib/pricing`, y nunca
+ * tecleada.**
  *
  * ── Anatomía del chasis ─────────────────────────────────────────────────────
  *
@@ -55,14 +65,6 @@
  * token neutro, no el semáforo de macOS: el cromo se abstrae, no se copia
  * —misma regla que el teléfono, que tampoco imita a WhatsApp.
  */
-import { formatUSD } from '../lib/pricing/format.ts';
-import { convert } from '../lib/pricing/quote.ts';
-import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
-import { quoteLimits } from '../lib/config/site.ts';
-
-const price = await new ConfigPriceSource().getPrice();
-const pay = quoteLimits.samplePayClp;
-const get = convert('to_usd', pay, price.rate);
 ---
 <figure class="mac" aria-hidden="true">
   <div class="mac-screen">
@@ -75,41 +77,58 @@ const get = convert('to_usd', pay, price.rate);
             <span class="dot"></span>
           </span>
           <span class="app-name">DLPay</span>
+          {/*
+            El chip de la derecha, como en la plataforma. **Sin el nombre real
+            que traía la captura**: es una persona, y un nombre propio dentro de
+            una maqueta se publica igual que en cualquier otro sitio de la web.
+          */}
+          <span class="user-chip">Mi cuenta</span>
         </div>
 
         <div class="body">
           {/*
-            La navegación real del producto. Son siete en la plataforma; acá van
-            cinco, que es lo que cabe legible a este tamaño — quitar dos filas es
-            recortar, y recortar no afirma nada; inventar una sí. `Retirar` va
-            activo porque es la pantalla que se está enseñando.
+            La barra lateral del producto, con sus SIETE entradas y en el orden
+            en que están. Los dos separadores agrupan como agrupa la plataforma.
+            `Retirar` va activa porque es la pantalla que se enseña.
+
+            Los glifos se dibujan acá y no salen de `Icon.astro`: el set del
+            sistema es el vocabulario de ESTA web —banco, reloj, personas…— y
+            ninguno de sus ocho nombra «portafolio» ni «notificaciones». Meterlos
+            a la fuerza haría que un icono significara dos cosas distintas en dos
+            sitios, que es justo lo que el Design System §7 evita.
           */}
           <nav class="side">
-            {['Portafolio', 'Historial', 'Precio', 'Retirar', 'Documentos'].map((n) => (
-              <span class:list={['mac-nav', { on: n === 'Retirar' }]}>
-                <span class="mac-nav-mark"></span>{n}
-              </span>
+            {[
+              { n: 'Portafolio', d: 'M1.8 4h7.4a1 1 0 0 1 1 1v3.6a1 1 0 0 1-1 1H1.8zM7.6 6.7h1.4' },
+              { n: 'Historial', d: 'M6 2.2a3.8 3.8 0 1 1-3.5 2.3M6 3.8v2.4l1.7 1' },
+              { n: 'Precio', d: 'M1.8 9.4 4.4 5.8l2 1.7 3.4-4.4' },
+              { n: 'Retirar', d: 'M6 9.6V2.4M3.4 5 6 2.4 8.6 5' },
+              { n: 'Notificaciones', d: 'M3.2 8.2h5.6L7.9 6.9V5.2a1.9 1.9 0 0 0-3.8 0v1.7zM5 9.4a1 1 0 0 0 2 0' },
+              { n: 'Documentos', d: 'M3.2 2.2h3.4l2.2 2.2v5.4H3.2zM6.6 2.2v2.2h2.2' },
+              { n: 'Soporte', d: 'M1.9 3.4h8.2v5.2H1.9zM1.9 3.4 6 6.5l4.1-3.1' },
+            ].map((it, i) => (
+              <>
+                {(i === 4 || i === 6) && <span class="side-sep"></span>}
+                <span class:list={['mac-nav', { on: it.n === 'Retirar' }]}>
+                  <svg class="mac-nav-ico" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                    <path d={it.d} />
+                  </svg>
+                  {it.n}
+                </span>
+              </>
             ))}
           </nav>
 
           <div class="canvas">
             <div class="card">
-              {/* El visto: dos trazos, el mismo gesto que el resto del sistema
-                  dibuja con `stroke` y no con un glifo tipográfico. */}
+              <p class="card-head">Retirar dólar digital</p>
+              {/* El visto: trazo, no glifo tipográfico. */}
               <svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle cx="12" cy="12" r="10" />
                 <path d="m7.5 12.4 3.1 3.1 6-6.4" />
               </svg>
               <p class="card-title">Retiro iniciado</p>
-              {/*
-                La cifra sale de la misma cadena que el cotizador (D24): es lo
-                que `convert()` devuelve para el monto de muestra. No se teclea.
-              */}
-              <p class="card-amount">
-                <b class="num">{formatUSD(get)}</b>
-                <span class="cur">USD</span>
-              </p>
-              <p class="card-note">Puedes ver esta operación en Historial</p>
+              <p class="card-note">Puedes ver esta operación en <u>Historial</u></p>
               <span class="card-btn">Cerrar</span>
             </div>
           </div>
@@ -234,12 +253,26 @@ const get = convert('to_usd', pay, price.rate);
 
   /* ── Barra de título ─────────────────────────────────────────────────────
      Tres círculos en variaciones de opacidad de un mismo neutro. */
+  /* En la plataforma la barra superior es verde y va pegada a la lateral, así
+     que acá también: el cromo oscuro se queda para el bisel del portátil. */
   .titlebar {
     display: flex;
     align-items: center;
     gap: var(--s-3);
     padding: var(--s-2) var(--s-3);
-    border-bottom: 1px solid var(--line-on-tinta);
+    background: var(--pf-verde);
+  }
+  .dot { background: rgba(255, 255, 255, .55); }
+  .app-name { color: #FFFFFF; }
+  .user-chip {
+    margin-left: auto;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .18);
+    color: #FFFFFF;
+    font-size: var(--t-label);
+    letter-spacing: 0;
+    white-space: nowrap;
   }
   .dots { display: flex; gap: var(--s-2); flex: none; }
   .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line-on-tinta); }
@@ -252,78 +285,119 @@ const get = convert('to_usd', pay, price.rate);
     color: var(--on-tinta-mute);
   }
 
-  /* ── La plataforma ───────────────────────────────────────────────────────
-     Dos columnas: la barra de navegación y el lienzo con la tarjeta. El ancho
-     de la barra va en `ch` y no en píxeles para que acompañe al cuerpo de letra
-     si algún día cambia la escala. */
+  /*
+    ── La plataforma ────────────────────────────────────────────────────────
+
+    **Los colores son los del producto, muestreados del PNG de referencia, no
+    estimados a ojo:** barra y lateral `#54836F`, entrada abierta `#19A071`,
+    lienzo `#F9FAFB`, tarjeta blanca, visto `#16A34A`.
+
+    Van como tokens locales por el mismo motivo que los grises del chasis:
+    describen **otra interfaz**, no el sistema visual de esta web. Ninguno es
+    token del Design System y ninguno debe salir de este archivo.
+
+    Esto importa más de lo que parece. La primera recreación usó la paleta de la
+    web —fondo oscuro, `--verde` de marca— y el resultado no se parecía al
+    producto. Lo dijo Sebastián y tenía razón: **enseñaba una infraestructura que
+    no es la nuestra, que es el mismo problema que la mesa de operaciones a la
+    que sustituyó.** Una recreación que no se parece afirma algo falso igual que
+    un dibujo inventado.
+
+    ── Y un hallazgo sobre el producto, que NO se corrige aquí ───────────────
+
+    Medidos esos colores, **la barra lateral de la plataforma no llega a AA**:
+    blanco sobre `#54836F` da **4,33:1** y sobre el verde de la entrada activa
+    **3,33:1**, contra el piso de 4,5 que pide el texto normal. El visto da 3,30
+    sobre la tarjeta, que sí pasa el piso de 3 de un elemento gráfico.
+
+    **No se ajusta acá, y es a propósito.** Subir el contraste de esta maqueta
+    dejaría de reproducir el producto —que es justo el motivo por el que esta
+    versión existe— y además escondería el dato. La pieza va `aria-hidden` y no
+    la lee nadie con lector de pantalla; lo que hay es una observación **sobre la
+    plataforma**, no sobre esta web, y quien decida sobre ella es Sebastián.
+    Si algún día el producto sube su contraste, se actualizan estos tokens.
+  */
+  .ui {
+    --pf-verde: #54836F;
+    --pf-activo: #19A071;
+    --pf-lienzo: #F9FAFB;
+    --pf-tarjeta: #FFFFFF;
+    --pf-visto: #16A34A;
+    --pf-tinta: #1F2937;
+    --pf-tenue: #6B7280;
+  }
+
   .body {
     flex: 1;
     display: grid;
-    grid-template-columns: 11ch 1fr;
+    grid-template-columns: 31% 1fr;
     min-height: 0;
+    background: var(--pf-lienzo);
   }
 
   .side {
     display: flex;
     flex-direction: column;
-    gap: var(--s-1);
-    padding: var(--s-2) var(--s-1);
-    border-right: 1px solid var(--line-on-tinta);
-  }
-  .mac-nav {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 6px;
-    border-radius: var(--r-1);
-    font-size: var(--t-label);
-    letter-spacing: var(--ls-label);
-    color: var(--on-tinta-mute);
-    white-space: nowrap;
+    gap: 1px;
+    padding: 6px 0;
+    background: var(--pf-verde);
+    min-width: 0;
   }
   /* Prefijo `mac-` a propósito: `.nav-item` ya existe en `Header.astro` para el
      desplegable «Información». El ámbito de Astro las separa, pero un nombre
      compartido obliga a comprobarlo cada vez que alguien mida — es la regla 32
-     del `cowork/README.md`, y sale más barato el prefijo.
-     El punto de cada entrada: un cuadrado diminuto, no un icono. A este tamaño
-     un icono de 20px del sistema se convertiría en una mancha, y una mancha
-     reconocible a medias es peor que una marca que no pretende serlo. */
-  .mac-nav-mark {
-    width: 5px;
-    height: 5px;
-    border-radius: 1px;
-    background: var(--line-on-tinta);
-    flex: none;
+     del `cowork/README.md`, y sale más barato el prefijo. */
+  .mac-nav {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 7px;
+    font-size: var(--t-label);
+    letter-spacing: 0;
+    color: #FFFFFF;
+    white-space: nowrap;
+    min-width: 0;
   }
-  /* La entrada activa en verde de marca: 6,64:1 sobre la pantalla del mockup,
-     el mismo par que ya usaba la cifra viva del panel anterior. */
+  .mac-nav-ico {
+    width: 11px;
+    height: 11px;
+    flex: none;
+    stroke: currentColor;
+    stroke-width: 1.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  /* La entrada abierta: bloque más claro y el filete blanco del borde
+     izquierdo, que es como la marca el producto. */
   .mac-nav.on {
-    background: rgba(22, 199, 132, .14);
-    color: var(--verde);
+    background: var(--pf-activo);
+    box-shadow: inset 3px 0 0 #FFFFFF;
     font-weight: 600;
   }
-  .mac-nav.on .mac-nav-mark { background: var(--verde); }
+  /* Los dos separadores agrupan igual que en la plataforma. */
+  .side-sep {
+    height: 1px;
+    margin: 5px 7px;
+    background: rgba(255, 255, 255, .28);
+  }
 
-  .canvas { display: grid; place-items: center; padding: var(--s-3); min-height: 0; }
+  .canvas { display: grid; place-items: center; padding: var(--s-3); min-width: 0; }
 
   /*
-    Bajo 360 px la barra se retira y la tarjeta ocupa la pantalla entera.
+    Bajo 380 px la barra se retira y la tarjeta ocupa la pantalla entera.
 
-    **El corte está medido, no elegido a ojo, y hubo que medirlo dos veces.** La
-    barra mide 100 px fijos; con la pantalla del portátil en 235 px —lo que da un
-    viewport de 320— la tarjeta se recortaba y se perdían la «D» de USD y el
-    final de «Historial». Puse el corte en 359 y **seguía desbordando 6 px a
-    360**: el fallo no acababa donde yo había supuesto. De ahí los 380, ya con
-    holgura, y de ahí también el `max-width` de la tarjeta y el relleno más
-    estrecho del lienzo bajo 420 — que es lo que hace que no dependa del píxel
-    exacto.
+    **El corte está medido, no elegido a ojo, y hubo que medirlo dos veces.** A
+    320 px la tarjeta se recortaba y se perdía el final de sus líneas. Lo puse en
+    359 y **seguía desbordando 6 px a 360**: el fallo no acababa donde yo había
+    supuesto. De ahí los 380, ya con holgura, y de ahí también el `max-width` de
+    la tarjeta y el relleno más estrecho del lienzo bajo 420 — que es lo que hace
+    que no dependa del píxel exacto.
 
     Y no es un apaño: una ventana estrecha de verdad también pliega su barra
-    lateral. Lo que se conserva en ese ancho es el mensaje —la confirmación—,
-    que es lo que la pantalla viene a enseñar.
+    lateral. Lo que se conserva en ese ancho es el mensaje, que es a lo que la
+    pantalla viene.
   */
   @media (max-width: 420px) {
-    /* El respiro del lienzo se estrecha antes que el contenido. */
     .canvas { padding: var(--s-2); }
   }
   @media (max-width: 380px) {
@@ -331,70 +405,47 @@ const get = convert('to_usd', pay, price.rate);
     .side { display: none; }
   }
 
-  /* La tarjeta de confirmación. Lleva superficie propia porque en la plataforma
-     la lleva: es una capa por encima del lienzo, no una sección de él. */
   .card {
     display: grid;
     justify-items: center;
-    /* Que pueda encoger: su ancho lo marca el texto, y el texto envuelve. Sin
-       esto la tarjeta impone un mínimo y lo que cede es la pantalla. */
+    gap: 4px;
     max-width: 100%;
-    gap: 5px;
     padding: var(--s-3) var(--s-4);
     border-radius: var(--r-2);
-    background: var(--tinta);
-    border: 1px solid var(--line-on-tinta);
+    background: var(--pf-tarjeta);
+    box-shadow: 0 1px 3px rgba(31, 41, 55, .14);
     text-align: center;
   }
+  .card-head { font-size: var(--t-dato-sm); font-weight: 700; color: var(--pf-tinta); }
   .tick {
-    width: 22px;
-    height: 22px;
-    stroke: var(--verde);
-    stroke-width: 1.75;
+    width: 24px;
+    height: 24px;
+    margin: 2px 0;
+    stroke: var(--pf-visto);
+    stroke-width: 1.9;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
-  .card-title {
-    font-size: var(--t-dato-sm);
-    font-weight: 600;
-    color: var(--on-tinta);
-  }
-  /* La cifra manda, como en toda cifra monetaria del sitio (DS §5). */
-  .card-amount { display: flex; align-items: baseline; gap: 5px; }
-  .card-amount b {
-    font-family: var(--f-num);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: var(--ls-dato);
-    font-weight: 600;
-    font-size: var(--t-h3);
-    line-height: var(--lh-dato);
-    color: var(--verde);
-  }
-  .cur {
-    font-family: var(--f-num);
-    font-size: var(--t-dato-sm);
-    font-weight: 500;
-    color: var(--on-tinta-mute);
-  }
-  .card-note { font-size: var(--t-label); color: var(--on-tinta-mute); }
+  .card-title { font-size: var(--t-dato-sm); font-weight: 700; color: var(--pf-tinta); }
+  .card-note { font-size: var(--t-label); color: var(--pf-tenue); }
   /* Botón dibujado, no `<button>`: el dispositivo es cromo y no tiene controles
      —regla heredada del teléfono—, así que nada de aquí dentro es pulsable. */
   .card-btn {
-    margin-top: 3px;
-    padding: 3px 14px;
+    margin-top: 4px;
+    align-self: stretch;
+    padding: 4px 16px;
     border-radius: var(--r-1);
-    background: var(--verde);
-    color: var(--on-verde);
+    background: var(--pf-verde);
+    color: #FFFFFF;
     font-size: var(--t-label);
     font-weight: 600;
   }
 
   @media (min-width: 900px) {
-    .titlebar { padding: var(--s-3) var(--s-4); }
-    .body { gap: var(--s-3); padding: var(--s-4); }
-    /* Bloque superior y bloque inferior, apilados: acá la columna sí da el
-       ancho para que la etiqueta viva encima de su cifra. */
-    .block { flex-direction: column; align-items: flex-start; gap: var(--s-1); }
-    .figure b { font-size: var(--t-dato-m); }
+    .titlebar { padding: var(--s-2) var(--s-4); }
+    /* `.body` y `.figure` salieron de esta media query el 2026-09-25: apuntaban
+       al panel de conversión que ya no existe, y el `padding` que le ponían a
+       `.body` habría metido el lienzo dentro de un marco que ahora es la propia
+       pantalla. */
   }
 </style>
