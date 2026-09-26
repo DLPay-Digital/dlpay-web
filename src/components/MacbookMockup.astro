@@ -1,6 +1,20 @@
 ---
 /**
- * Un portátil dibujado en CSS con la mesa de operaciones dentro. Cero imágenes.
+ * Un portátil dibujado en CSS con **la plataforma de DLPay** dentro. Cero
+ * imágenes: la pantalla es HTML y CSS, no un PNG.
+ *
+ * ── Qué enseñaba antes, y por qué cambió (2026-09-25) ───────────────────────
+ *
+ * Enseñaba un panel de «Conversión B2B» —envías, recibes, precio referencial—,
+ * que era una mesa de operaciones dibujada. Sebastián lo retiró porque **se leía
+ * como una mesa de dinero**, y eso es justo lo que la web no puede insinuar: «la
+ * mesa de dinero» es uno de los claims con `REQUIERE VALIDACIÓN DE COMPLIANCE`
+ * que arrastra `Process.astro`.
+ *
+ * En su lugar va lo que el cliente ve de verdad: **la pantalla de la plataforma**
+ * —barra lateral con su navegación real y la confirmación de un retiro—,
+ * recreada a partir de una captura del producto. Deja de ser una metáfora del
+ * servicio y pasa a ser el servicio.
  *
  * Hermano del teléfono de `WhatsAppMockup.astro` y con sus mismas reglas: el
  * dispositivo es cromo —va `aria-hidden`, no tiene ningún control y el contexto
@@ -41,7 +55,7 @@
  * token neutro, no el semáforo de macOS: el cromo se abstrae, no se copia
  * —misma regla que el teléfono, que tampoco imita a WhatsApp.
  */
-import { formatCLP, formatRate, formatUSD } from '../lib/pricing/format.ts';
+import { formatUSD } from '../lib/pricing/format.ts';
 import { convert } from '../lib/pricing/quote.ts';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { quoteLimits } from '../lib/config/site.ts';
@@ -60,39 +74,45 @@ const get = convert('to_usd', pay, price.rate);
             <span class="dot"></span>
             <span class="dot"></span>
           </span>
-          <span class="app-name">Conversión B2B</span>
+          <span class="app-name">DLPay</span>
         </div>
 
         <div class="body">
-          <div class="block">
-            <span class="label">Envías</span>
-            <p class="figure">
-              <b class="num">{formatCLP(pay)}</b>
-              <span class="cur">CLP</span>
-            </p>
-          </div>
+          {/*
+            La navegación real del producto. Son siete en la plataforma; acá van
+            cinco, que es lo que cabe legible a este tamaño — quitar dos filas es
+            recortar, y recortar no afirma nada; inventar una sí. `Retirar` va
+            activo porque es la pantalla que se está enseñando.
+          */}
+          <nav class="side">
+            {['Portafolio', 'Historial', 'Precio', 'Retirar', 'Documentos'].map((n) => (
+              <span class:list={['mac-nav', { on: n === 'Retirar' }]}>
+                <span class="mac-nav-mark"></span>{n}
+              </span>
+            ))}
+          </nav>
 
-          {/* El paso, en la gramática geométrica del sistema: la misma cuña de
-              `convierte` en UseCaseFigure. No es un separador decorativo. */}
-          <div class="connector">
-            <svg class="wedge" width="12" height="22" viewBox="0 0 12 22" fill="none" aria-hidden="true">
-              <path d="M6 0v5l3 3-6 3 3 3v8" />
-            </svg>
+          <div class="canvas">
+            <div class="card">
+              {/* El visto: dos trazos, el mismo gesto que el resto del sistema
+                  dibuja con `stroke` y no con un glifo tipográfico. */}
+              <svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <path d="m7.5 12.4 3.1 3.1 6-6.4" />
+              </svg>
+              <p class="card-title">Retiro iniciado</p>
+              {/*
+                La cifra sale de la misma cadena que el cotizador (D24): es lo
+                que `convert()` devuelve para el monto de muestra. No se teclea.
+              */}
+              <p class="card-amount">
+                <b class="num">{formatUSD(get)}</b>
+                <span class="cur">USD</span>
+              </p>
+              <p class="card-note">Puedes ver esta operación en Historial</p>
+              <span class="card-btn">Cerrar</span>
+            </div>
           </div>
-
-          <div class="block get">
-            <span class="label">Recibes aprox.</span>
-            <p class="figure">
-              <b class="num">{formatUSD(get)}</b>
-              <span class="cur">USD</span>
-            </p>
-          </div>
-
-          <p class="price">
-            Precio referencial
-            <span class="num">{formatRate(price.rate)}</span>
-            CLP por dólar
-          </p>
         </div>
       </div>
     </div>
@@ -232,63 +252,142 @@ const get = convert('to_usd', pay, price.rate);
     color: var(--on-tinta-mute);
   }
 
-  /* ── Panel de conversión ─────────────────────────────────────────────────
-     En móvil cada bloque va en una línea —etiqueta y cifra enfrentadas— y en
-     escritorio se apila. No es capricho: apilado en una columna estrecha el
-     panel crece tanto que el marco deja de tener proporción de portátil. */
+  /* ── La plataforma ───────────────────────────────────────────────────────
+     Dos columnas: la barra de navegación y el lienzo con la tarjeta. El ancho
+     de la barra va en `ch` y no en píxeles para que acompañe al cuerpo de letra
+     si algún día cambia la escala. */
   .body {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: var(--s-2);
-    padding: var(--s-3);
+    display: grid;
+    grid-template-columns: 11ch 1fr;
+    min-height: 0;
   }
 
-  .block { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-3); }
-  .label { font-size: var(--t-dato-sm); color: var(--on-tinta-mute); }
-  .figure { display: flex; align-items: baseline; gap: var(--s-2); }
+  .side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+    padding: var(--s-2) var(--s-1);
+    border-right: 1px solid var(--line-on-tinta);
+  }
+  .mac-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 6px;
+    border-radius: var(--r-1);
+    font-size: var(--t-label);
+    letter-spacing: var(--ls-label);
+    color: var(--on-tinta-mute);
+    white-space: nowrap;
+  }
+  /* Prefijo `mac-` a propósito: `.nav-item` ya existe en `Header.astro` para el
+     desplegable «Información». El ámbito de Astro las separa, pero un nombre
+     compartido obliga a comprobarlo cada vez que alguien mida — es la regla 32
+     del `cowork/README.md`, y sale más barato el prefijo.
+     El punto de cada entrada: un cuadrado diminuto, no un icono. A este tamaño
+     un icono de 20px del sistema se convertiría en una mancha, y una mancha
+     reconocible a medias es peor que una marca que no pretende serlo. */
+  .mac-nav-mark {
+    width: 5px;
+    height: 5px;
+    border-radius: 1px;
+    background: var(--line-on-tinta);
+    flex: none;
+  }
+  /* La entrada activa en verde de marca: 6,64:1 sobre la pantalla del mockup,
+     el mismo par que ya usaba la cifra viva del panel anterior. */
+  .mac-nav.on {
+    background: rgba(22, 199, 132, .14);
+    color: var(--verde);
+    font-weight: 600;
+  }
+  .mac-nav.on .mac-nav-mark { background: var(--verde); }
 
-  /* La cifra manda: lo más grande de la pantalla y en Spline Sans Mono, como
-     toda cifra monetaria del sitio (Design System §5). */
-  .figure b {
+  .canvas { display: grid; place-items: center; padding: var(--s-3); min-height: 0; }
+
+  /*
+    Bajo 360 px la barra se retira y la tarjeta ocupa la pantalla entera.
+
+    **El corte está medido, no elegido a ojo, y hubo que medirlo dos veces.** La
+    barra mide 100 px fijos; con la pantalla del portátil en 235 px —lo que da un
+    viewport de 320— la tarjeta se recortaba y se perdían la «D» de USD y el
+    final de «Historial». Puse el corte en 359 y **seguía desbordando 6 px a
+    360**: el fallo no acababa donde yo había supuesto. De ahí los 380, ya con
+    holgura, y de ahí también el `max-width` de la tarjeta y el relleno más
+    estrecho del lienzo bajo 420 — que es lo que hace que no dependa del píxel
+    exacto.
+
+    Y no es un apaño: una ventana estrecha de verdad también pliega su barra
+    lateral. Lo que se conserva en ese ancho es el mensaje —la confirmación—,
+    que es lo que la pantalla viene a enseñar.
+  */
+  @media (max-width: 420px) {
+    /* El respiro del lienzo se estrecha antes que el contenido. */
+    .canvas { padding: var(--s-2); }
+  }
+  @media (max-width: 380px) {
+    .body { grid-template-columns: 1fr; }
+    .side { display: none; }
+  }
+
+  /* La tarjeta de confirmación. Lleva superficie propia porque en la plataforma
+     la lleva: es una capa por encima del lienzo, no una sección de él. */
+  .card {
+    display: grid;
+    justify-items: center;
+    /* Que pueda encoger: su ancho lo marca el texto, y el texto envuelve. Sin
+       esto la tarjeta impone un mínimo y lo que cede es la pantalla. */
+    max-width: 100%;
+    gap: 5px;
+    padding: var(--s-3) var(--s-4);
+    border-radius: var(--r-2);
+    background: var(--tinta);
+    border: 1px solid var(--line-on-tinta);
+    text-align: center;
+  }
+  .tick {
+    width: 22px;
+    height: 22px;
+    stroke: var(--verde);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .card-title {
+    font-size: var(--t-dato-sm);
+    font-weight: 600;
+    color: var(--on-tinta);
+  }
+  /* La cifra manda, como en toda cifra monetaria del sitio (DS §5). */
+  .card-amount { display: flex; align-items: baseline; gap: 5px; }
+  .card-amount b {
     font-family: var(--f-num);
     font-variant-numeric: tabular-nums;
     letter-spacing: var(--ls-dato);
     font-weight: 600;
     font-size: var(--t-h3);
     line-height: var(--lh-dato);
-    color: var(--on-tinta);
+    color: var(--verde);
   }
-  /* Lo que se recibe es el dato vivo, y para eso está definido el verde de
-     marca. Sobre la pantalla del mockup da 6.64:1. */
-  .get .figure b { color: var(--verde); }
-
   .cur {
     font-family: var(--f-num);
     font-size: var(--t-dato-sm);
     font-weight: 500;
     color: var(--on-tinta-mute);
   }
-
-  .connector { display: flex; align-items: center; gap: var(--s-3); }
-  .connector::after { content: ''; flex: 1; height: 1px; background: var(--line-on-tinta); }
-  .wedge {
-    flex: none;
-    stroke: var(--verde);
-    stroke-width: 1.25;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+  .card-note { font-size: var(--t-label); color: var(--on-tinta-mute); }
+  /* Botón dibujado, no `<button>`: el dispositivo es cromo y no tiene controles
+     —regla heredada del teléfono—, así que nada de aquí dentro es pulsable. */
+  .card-btn {
+    margin-top: 3px;
+    padding: 3px 14px;
+    border-radius: var(--r-1);
+    background: var(--verde);
+    color: var(--on-verde);
+    font-size: var(--t-label);
+    font-weight: 600;
   }
-
-  .price {
-    margin-top: var(--s-1);
-    padding-top: var(--s-2);
-    border-top: 1px solid var(--line-on-tinta);
-    font-size: var(--t-dato-sm);
-    color: var(--on-tinta-mute);
-  }
-  .price .num { color: var(--on-tinta); font-weight: 600; }
 
   @media (min-width: 900px) {
     .titlebar { padding: var(--s-3) var(--s-4); }
