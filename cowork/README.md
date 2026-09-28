@@ -394,6 +394,16 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     Antes de poner un umbral de tiempo, hay que preguntarse qué se cree que mide — y si la cosa que
     de verdad importa ya está protegida por otro mecanismo.
 
+36. **El §9 concede la categoría; el catálogo del Motion System especifica el movimiento. «No pide
+    excepción» hay que comprobarlo contra los dos.** Del 2026-09-28. Cowork propuso animar la cifra
+    del cotizador argumentando —con razón— que el §9 permite «el dato que cambia» y que por tanto
+    sólo faltaba aplicarlo. Pero ese movimiento **ya estaba especificado y ya estaba
+    implementado**: es el **M2** `settle`, opacidad y 2 px sobre el valor nuevo, 160 ms, y vive en
+    `Quoter.astro`. Lo que proponía no aplicaba el M2: lo **sustituía** por un recorrido de 17
+    valores intermedios. El §9 es una lista de permisos de seis palabras; el catálogo es la
+    especificación. Si el catálogo ya nombra la pieza, lo que se propone no es aplicar: es
+    **enmendar**, y entonces sí hace falta pedirlo.
+
 ---
 
 ## 5. Protocolo con el agente de Claude Code
@@ -2189,3 +2199,191 @@ v5 al lado de la final la reabre.
 Los tres borrados. **Y conviene que quede la pauta**, porque van cuatro veces en cinco días: el
 instrumental de medición de Cowork no vive en `cowork/`. Si hace falta un volcado del build, lo
 prepara el agente de Claude Code y va fuera del repositorio, como el zip que se les pasa.
+
+---
+
+### Notas de la integración de `2026-09-28-movimiento-que-ya-esta-permitido`
+
+Tres puntos, **uno integrado y dos no**. Y los dos que no fallaron por el mismo motivo de método:
+comprobaron una regla y no la otra.
+
+#### B · Integrado, y mejor de lo que pedía  ·  `eb7e6e8`
+
+Su auditoría —«303 interactivos, 72 sin ninguna transición»— **es correcta**. Repetida sobre las
+once rutas, que son más de las ocho que midieron: **93 de 405**. Su criterio de dejar `a.skip` en
+paz también era el bueno; ese enlace sólo existe al recibir el foco y ahí manda su `outline`.
+
+Entró como **base en `tokens.css` con `:where()`** en vez de como 82 reglas nuevas: 24 líneas, cero
+JavaScript, 93 → 0, y **un control que se añada mañana lo hereda sin que nadie se acuerde**. La
+especificidad cero de `:where()` es lo que permite que cualquier componente siga pisándolo.
+
+#### A · Rechazado — el §9 lo permite, pero el M2 ya lo especifica
+
+Ver la **regla 36**, que nace de acá. Además de la cuestión de método hay una de contenido, y es la
+que cierra la puerta: los 17 valores intermedios de su recorrido **son precios que nunca fueron el
+precio**, en la página cuya disciplina entera consiste en no publicar cifras que no son. El
+comentario de `Quoter.astro` ya lo decía —«no es un conteo desde cero: eso mostraría precios
+falsos»— y arrancar del valor anterior en lugar de cero no lo arregla. La segunda línea del mismo
+comentario descarta el resto: animar al teclear añade el retardo percibido que este cotizador
+existe para no tener.
+
+#### C · Rechazado por Sebastián — y la ficha decía la página equivocada
+
+Su §4 se titulaba «el dibujo de la geometría en `/empresas`» y afirmaba que `UseCaseFigure` tiene
+nueve trazos ahí. **`/empresas` tiene cero.** Los nueve están en **la Home**, en «Tres usos»:
+`UseCases.astro` es lo único que renderiza esa figura y sólo lo importa `index.astro`. Un
+`grep -rln UseCases src/pages/` lo dice en un segundo.
+
+Eso convirtió la propuesta en otra cosa sin que su autor lo supiera: no era añadir movimiento a una
+página interior plana, era **cambiar la Home**, que es la página que Sebastián declaró «caso
+aparte». Se le llevó como decisión suya y dijo **«no lo quiero, al final traería más problemas que
+venir a resolver algo»**. Queda cerrado: no se vuelve a proponer para la Home.
+
+Lo que sí era bueno del punto C y conviene no perder: sus dos trampas. `.edge` lleva
+`stroke-dasharray="3 4"` y `data-draw` lo destruiría. *(Sobre `--draw-len`: el runtime de
+`Motion.astro` ya lo fija por trazo con `getTotalLength()` —comprobado, un trazo de 49 recibe 50—,
+así que el 120 por omisión sólo muerde en la ventana anterior a que corra el módulo.)*
+
+#### Un fallo mío al verificarlo, que es la regla 34 por tercera vez
+
+Mi primera medición del punto B dio **«0 controles sin transición»** y estuve a punto de reportar
+que su auditoría estaba inflada. Era falsa: corrí el navegador con `prefers-reduced-motion` activo,
+y en este sitio ese modo le pone `transition-duration: .01ms !important` a **todo**. Nada podía
+leerse como sin transición. El instrumento medía el modo, no el sitio. El número real es 93.
+
+**Van tres veces en cinco días.** La conclusión operativa, que también se le pasó a Cowork: cuando
+una medición devuelve el número que esperabas o un cero redondo, hay que sospechar del instrumento
+antes de escribir la conclusión.
+
+Se les pasó un texto de corrección con todo esto para hablarlo, a pedido de Sebastián.
+
+---
+
+### Notas de la integración de `2026-09-28-puente-home-tarifas`  ·  `3a32854` + `59f904b`
+
+La primera pieza de una familia de cinco: un bloque partido por la diagonal de la marca, **papel
+donde está el texto —que es la página en la que estás— y tinta donde está la figura —que es la
+otra—**. El umbral no se dibuja con un marco: es el fondo.
+
+#### Su §8 pedía medir antes de integrar, y algo había cambiado
+
+Su copia era de `9ce2684` y ese mismo día el cotizador adelgazó: el héroe bajó 87 px y todo lo de
+abajo se movió entre 77 y 91. **Pero las dos cifras que sostienen la elección de la posición no
+cambiaron**, y por un motivo que conviene entender: el cotizador vive *dentro* del héroe, así que
+encogerlo acortó la banda oscura y no el papel.
+
+- El papel seguido entre las dos bandas oscuras sigue siendo **5.284 px exactos**.
+- La distancia desde la última aparición del precio es **1.290 px** contra los 1.300 que citaban.
+
+**La decisión de la posición E no hay que rehacerla.** Y la junta sale limpia: `process` es papel,
+`trust` es papel-2, así que la mitad de tinta toca papel-2 por abajo — sin oscuro contra oscuro en
+ninguna costura.
+
+#### La excepción quedó escrita antes del código
+
+**Design System §4.7.** Una sección tiene un fondo y eso sigue siendo la regla; la excepción es para
+un bloque **cuyo asunto es cruzar**, con cinco límites escritos —hoy seis— incluido el que impide
+que se extienda: no autoriza dos fondos en general, sino que un puente entre dos páginas enseñe las
+dos. No gasta elevación, así que el límite de uno por página del §4.5 queda intacto.
+
+#### Un archivo, no una carcasa con ranura — y la carcasa el mismo día
+
+La entrega proponía ya `Puente.astro` + `FiguraTarifas.astro` porque vienen cuatro más. Entró como
+**un archivo suelto**, citando el Principio 5: la carcasa se extrae «cuando aparezca el segundo, con
+dos casos reales delante en vez de con uno y una previsión». Ellos habían dejado esa puerta abierta.
+
+**El segundo apareció el mismo día**, así que la condición se cumplió y la carcasa salió en
+`59f904b`, con dos casos delante y no con la previsión de cinco. Comprobado que no cambia nada:
+alturas del puente de la Home **534 / 534 / 529 / 490 / 490** antes y después, y la llave sigue
+midiendo exactamente lo que mide la barra en los cinco anchos.
+
+El refactor trajo además una mejora que no estaba pedida: **el `id` del titular se deriva del
+titular** en vez de ir escrito a mano. Con dos puentes y tres por venir, un `id` fijo se repetiría
+el día que dos convivan en la misma página y `aria-labelledby` apuntaría al equivocado — es el mismo
+fallo silencioso que se cerró en `Faq.astro`.
+
+#### Qué firmó Sebastián
+
+Como Compliance: «el número que viste» y «Ver las tarifas», las dos nuevas —cero apariciones previas
+en `src/`—, y el párrafo del cuerpo, que es un **empalme de dos frases ya publicadas de
+`/tarifas`**. La frase unida no existía publicada; no sube el peso de ninguna de las dos, pero las
+junta, y eso fue a propósito. Queda en la cabecera del componente con el reparo delante.
+
+#### Reproducido, con dos sondas mías mal hechas por el camino
+
+Alturas 534 / 534 / 529 / 490 / 490 contra sus 534 / 529 / 529 / 490 / 490. Holgura contra el corte:
+**78–82 px** por la figura, su rango exacto, y **112–196** por el texto. Los siete contrastes de su
+tabla, clavados. Cero desborde y cero scroll de 320 a 2560. Texto mínimo 13 px. Con
+`prefers-reduced-motion`, opacidad 1 y sin transformación; sin JavaScript, las cuatro piezas
+visibles.
+
+Las dos sondas: primero medí la holgura entre las dos esquinas más cercanas y me dijo que texto y
+figura estaban «del mismo lado del corte», que era falso —lo desmintió la captura—; después medí el
+borde de la **columna** del texto en vez de donde acaba su tinta, y me dio −68 px.
+
+---
+
+### Notas de la integración de `2026-09-28-puente-tarifas-confianza`  ·  `9d1eb60`
+
+La segunda pieza, y la que convirtió la carcasa en carcasa. La línea de tenencia al otro lado del
+corte, **en la misma carcasa que la primera sin tocarle una línea**. Entra justo bajo la frase que
+la justifica —«te lo informa tu ejecutivo antes de que transfieras»— y su rótulo la repite literal.
+
+#### La decisión que no pudieron medir, medida
+
+Proponían dos caminos para que una banda a todo el ancho viva dentro de un contenedor con relleno,
+y **no pudieron comprobar el riesgo del segundo porque su navegador usa barras superpuestas**. El
+mío usa barras clásicas de 15 px, así que se pudo: con `margin-inline: calc(50% - 50vw)`, `50vw`
+incluye la barra y `50%` no, y el bloque cruza el borde. El `.lienzo` de `/precio`, que ya usa esa
+técnica, **se sale 2 px hoy** en ese caso — la página no llega a tener scroll horizontal, algo lo
+absorbe, pero la tinta cruza.
+
+Así que va la opción que recomendaban: **el cuerpo se parte en dos y el puente queda hermano suyo**,
+como en la Home. Cero riesgo y las dos piezas de la familia construidas igual. *Hicieron lo correcto: dejaron el
+riesgo marcado como no comprobado en vez de resolverlo por el lado que su entorno hacía parecer
+seguro. Es la misma familia que la instrucción permanente 11 —una medida es una foto de un build—
+ampliada a otra cosa: **también es una foto del navegador que la tomó.** Una barra superpuesta y
+una clásica no miden lo mismo, y acá la diferencia era 2 px de tinta fuera del contenedor.*
+
+#### Dónde no va, y eso sirve para los tres que faltan
+
+**Al final de una página interior, no.** La mitad de tinta desembocaría en el pie, que también es
+tinta, y las dos se funden: el bloque pierde su canto inferior y la figura parece del pie. Le pasa a
+las cuatro páginas interiores porque todas terminan en el mismo pie oscuro. Queda escrito en el
+**§4.7** como sexto límite. Acá el puente entra a media página y le quedan **489 px de papel** por
+debajo.
+
+#### `subgrid`, y no era cosmética
+
+Los tres rótulos no miden lo mismo —«En la cuenta de DLPay» ocupa dos líneas y «En tu billetera»
+una— y sin filas compartidas las tres barras quedarían a tres alturas distintas: **la línea de
+tenencia dejaría de leerse como una línea**, que es lo único que la figura viene a decir.
+Comprobado, las tres barras alineadas a los seis anchos.
+
+La figura lee de `content/trust.ts`, el mismo origen que `/confianza`, así que **hereda el dato ya
+estrechado del 2026-09-25** —el nombre del banco salió de `phases`— y no puede reintroducirlo.
+
+Y no trae la nota «Acá confirmamos que llegó, antes de mover nada»: 45 caracteres en una columna de
+177 px son cuatro líneas que desarman la miniatura. El argumento no se pierde porque **esa frase
+pasa al rótulo del bloque**.
+
+#### Qué firmó Sebastián
+
+«Ver Confianza», nueva, y el párrafo del cuerpo, que empalma la segunda mitad de la bajada de
+`/confianza` con la entradilla de «Qué pasa con tu plata». El reparo de Cowork queda en la cabecera:
+juntas suenan a promesa de verificación, aunque ninguna de las dos afirme nada que `/confianza` no
+afirme.
+
+#### Reproducido
+
+Alturas **644 / 624 / 564 / 525 / 525 / 525** a 320, 390, 768, 960, 1280 y 2560 — su tabla exacta.
+Texto mínimo 13 px, cero desborde, cero scroll horizontal, cero elementos ocultos.
+
+**Su petición sobre el §4.7 era correcta y la cifra no.** Pedían ampliar el rango de la familia por
+el lado de la figura «de 78–82 a 61–82». Medido acá da **60 px planos** a partir de 960, así que el
+§4.7 dice ahora **60 a 82** — y el piso sigue siendo 40, que queda lejos. Por el lado del texto,
+93–196.
+
+Y **`/tarifas` sigue en cero bytes ejecutables**: no carga `Motion.astro`, así que ahí el puente se
+ve completo y quieto, con cero elementos en `opacity: 0`. Ése es el estado base del §9 y no una
+degradación.
