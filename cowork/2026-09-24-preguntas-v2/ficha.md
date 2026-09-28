@@ -114,3 +114,74 @@ hasta que lo compruebo.
    de una página de precio.
 
 Nada de esto está integrado. `cowork/` es sólo visualización.
+
+---
+
+# Revisión de lo integrado — 2026-09-24
+
+Medido sobre el build, no sobre lo que dice nadie.
+
+## Lo que quedó mejor que lo que pedí
+
+**El `concern` no sólo está tipado: hay un guardia en tiempo de construcción.** Si una pregunta
+queda sin grupo, `preguntas.astro` lanza y dice cuántas faltan. Yo pedí que el compilador lo
+atrapara; esto atrapa además el caso de un `Concern` válido sin entrada en `grupos`, que el tipo no
+ve.
+
+**`PageHero` en vez de mi héroe propio.** Mejor: mi maqueta traía una cabecera inventada para una
+página suelta, y el sitio ya tiene una para las nueve rutas que no son la Home. Es la regla 32 otra
+vez, y esta vez no la cometí yo.
+
+## Lo que se quitó, y qué cuesta cada cosa
+
+| se quitó | qué pasa |
+|---|---|
+| Las cifras del héroe (05 · 09 · 08) | Nada. Era adorno mío. |
+| La frase que explica la agrupación | Se pierde el **porqué**: la página está ordenada por preocupación y ya no dice que lo está ni por qué. La agrupación queda como un hecho, no como un hallazgo. |
+| Los numerales 01–05 | Nada. |
+| **El índice pegajoso** | **Esto sí cuesta.** |
+
+**Las respuestas abiertas y el índice eran una sola decisión.** Abrir las nueve era lo honesto y
+tenía un precio medido —la página crece—; el índice era lo que pagaba ese precio. Sin él queda el
+coste sin la compensación:
+
+| | mi maqueta | integrado |
+|---|---|---|
+| Alto a 1280 | 4.023 px | **5.155 px** |
+| Alto a 390 | 4.967 px | **6.581 px** |
+| Formas de saltar a una sección | 6 | **0** |
+
+**Las seis secciones tienen `id`** —`que-recibo-y-cuando`, `cuanto-cuesta`, `hasta-donde-llegamos`,
+`que-te-pedimos`, `quien-te-atiende`, `las-palabras`—, así que los enlaces profundos funcionan y se
+pueden compartir. Lo único que falta es algo que enlace a ellos desde la propia página. En móvil son
+**6.581 px, unas diecisiete pantallas**, sin un solo salto.
+
+No lo pido de vuelta: es decisión de Sebastián y la página funciona. Lo dejo medido.
+
+## Una cosa pequeña y concreta que sí revisaría
+
+**La columna de 760 px no está centrada, y las otras dos del sitio sí.**
+
+| | ancho | dentro de | ¿centrada? |
+|---|---|---|---|
+| `/preguntas` · `.grupos` | 760 px | 1.112 px | **no** — va de 148 a 908 |
+| Legales · `.prose` | 760 px | — | sí, `margin: 0 auto` |
+| Artículo del blog · `.post` | 760 px | — | sí, `margin: 0 auto` |
+
+Quedan **288 px vacíos a la derecha del bloque**, y la línea de respuesta más larga termina en 683
+con **513 px de blanco a su derecha**. Es justo el hueco donde estaba el índice. Con el índice, esa
+asimetría era la composición; sin él, se lee como que falta algo.
+
+Centrarla es una línea. Y si se prefiere el bloque a la izquierda, entonces el hueco de la derecha
+pide contenido — que es el argumento por el que el índice estaba ahí.
+
+## Lo que está bien y conviene que quede escrito
+
+- **Medida de lectura: 60 caracteres** contados en una respuesta. Dentro de la banda del sitio
+  —las páginas de producto están en 62— y lejos de los 112 de las legales y el blog. Correcto para
+  una página que se barre.
+- **Cero `<details>` en el contenido**: las nueve respuestas se ven sin hacer clic. El único
+  `<details>` de la página es el desplegable «Información» de la cabecera.
+- `<dl>` / `<dt>` / `<dd>` = **1 / 8 / 8**.
+- Sin scroll horizontal a 390 ni a 1280.
+- La Home y `/empresas` conservan su acordeón.

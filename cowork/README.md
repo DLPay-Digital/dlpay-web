@@ -383,14 +383,16 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     todavía no existe; la excepción abortaba el resto de la sonda en silencio. Antes de creerle un
     cero a un instrumento, hay que probar que el instrumento mide.
 
-    *Añadido por el agente de Claude Code el 2026-09-25, al integrarla:* la regla se cobró su
-    segunda pieza el mismo día y del otro lado. Mis catorce caminos dieron **`false` en los
-    catorce** —los que debían verse y los que no—, y esa uniformidad era la señal: un instrumento
-    sano no acierta nunca. La sonda estaba bien; lo roto era la integración. **El corolario
-    operativo es que un cero uniforme se diagnostica midiendo algo que SÍ debe salir distinto de
-    cero**, y por eso el caso 0 de la prueba —«¿existe el marcador y qué dice?»— va ahora antes que
-    los catorce, y `tests/zero-js.test.ts` se comprobó contando los scripts de una página que sí
-    tiene, no sólo de las que no.
+35. **Tiempo transcurrido no es aparato lento, y una salvaguarda que los confunde mata lo que
+    protege.** Rescatada el 2026-09-28 de una ficha extraviada de la intro de marca, porque la
+    versión final la perdió. Cowork había escrito un presupuesto: si `<body>` llegaba después de
+    700 ms, no se enseñaba el logo. **La medición lo tumbó.** Con 600 ms de retardo en el CSS el
+    telón subía a 651 ms y el presupuesto mataba el logo — pero ahí **nunca hubo riesgo**, porque
+    una hoja de estilos pendiente ya bloquea el pintado por su cuenta. El presupuesto medía el
+    reloj de pared y creía estar midiendo la capacidad del aparato. La salvaguarda correcta no era
+    un plazo sino un **tope absoluto**: cuando la red decide terminar, nada puede aparecer después.
+    Antes de poner un umbral de tiempo, hay que preguntarse qué se cree que mide — y si la cosa que
+    de verdad importa ya está protegida por otro mecanismo.
 
 ---
 
@@ -2134,3 +2136,56 @@ es la cuarta página con esa portada.
 #### Y lo de siempre
 
 Borrado `cowork/_tmp-dist-borrar.tar.gz` (361 KB), como pedían.
+
+---
+
+### Revisión del material pendiente de Cowork  ·  2026-09-28
+
+**Cero entregas nuevas desde el 25 por la noche.** Lo que había eran cuatro cosas sin resolver, y
+dos de ellas no eran trabajo: eran restos.
+
+#### 1 · Su revisión de `/preguntas` v2 — medida contra el build de hoy
+
+Cowork dejó 71 líneas de revisión en la ficha de `2026-09-24-preguntas-v2` y nunca se habían
+commiteado. Su petición concreta —«la columna de 760 px no está centrada, las otras dos del sitio
+sí»— **ya está resuelta** desde `8e11a53`, y por el camino contrario al que proponía: en vez de
+centrar una columna de 760 se retiró el tope, porque el borde izquierdo coincidía con el del
+titular. Medido hoy: **141 / 141 a 1280 y 20 / 20 a 390**. Los 288 px vacíos que reportaba no
+existen.
+
+**Lo que sigue en pie, y no lo pide de vuelta:** la página mide **5.155 px a 1280 y 6.681 a 390**
+—unas diecisiete pantallas— con **cero** formas de saltar a una sección desde la propia página. Las
+seis secciones tienen `id` y los enlaces profundos funcionan; lo que no hay es nada que enlace a
+ellos. El índice pegajoso lo retiró Sebastián por estética el 2026-09-24, y esto es el coste medido
+de esa decisión, no una objeción a ella.
+
+*Una corrección a su medición:* decía «513 px de blanco a la derecha de la línea más larga». Hoy son
+**589**, y no es un empeoramiento: el texto no se movió —la respuesta más larga sigue midiendo
+423 px, acotada por sus 47ch— y lo que creció fue el bloque, cuyos filetes y rótulos `persona y
+empresa` ahora llegan al borde. Lo que antes era un hueco sin marcar hoy tiene un marco.
+
+#### 2 · Una lección rescatada de una ficha extraviada
+
+En la carpeta de `precio-que-aceptas` había un `ficha-1.md` que no era de esa entrega: era la ficha
+**v5** de la intro de marca, caída ahí por el renombrado de descargas. La versión final no conserva
+su §4, y ahí había algo que merecía sobrevivir — está ahora como **regla 35**: un presupuesto de
+tiempo que confunde reloj de pared con aparato lento mata justo lo que pretende proteger.
+
+Extraída la lección, el archivo se borra. **Dos fichas de la misma pieza con md5 distintos en dos
+carpetas distintas es exactamente la trampa que nos costó dos días con esta entrega**, y guardar la
+v5 al lado de la final la reabre.
+
+#### 3 · Restos de instrumental
+
+- `ziKncPYB` — 385 KB, un zip sin extensión, del 25 a las 16:48. Mismo minuto que el
+  `_tmp-dist.tar.gz` que pidieron borrar ese día: es otro volcado del build para medir desde el
+  contenedor.
+- `_tmp-dist-cowork.zip` — **0 bytes**. Un volcado que falló.
+- `datos-tmp.json` — 4,9 KB, y éste **estaba versionado**. Es la copia de las nueve preguntas que
+  Cowork usó para maquetar `/preguntas`, con su texto duplicado fuera de `home.ts` y
+  `business.ts`. Nadie lo cita. Es contenido con dos dueños esperando a divergir, que es el fallo
+  que `content/scope.ts` y `chatLines()` existen para evitar.
+
+Los tres borrados. **Y conviene que quede la pauta**, porque van cuatro veces en cinco días: el
+instrumental de medición de Cowork no vive en `cowork/`. Si hace falta un volcado del build, lo
+prepara el agente de Claude Code y va fuera del repositorio, como el zip que se les pasa.
