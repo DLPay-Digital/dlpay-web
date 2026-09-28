@@ -182,6 +182,47 @@ button,a[role="button"],input,select{min-height:44px}
   .has-dock body{padding-bottom:76px}
 }
 
+/* ── M1 · microinteracción en controles (base del sistema) ──────────────────
+   Añadido el 2026-09-28. El Design System §9 permite «microinteracciones en
+   **controles**» desde el 2026-09-07 y el Motion System las cataloga como M1,
+   pero cada componente las declaraba por su cuenta: medido sobre las once
+   rutas, **93 de 405 interactivos no tenían ninguna transición**. No era una
+   decisión, era una omisión repartida.
+
+   Esta es la base y va acá por eso: un control nuevo la hereda sin que nadie se
+   acuerde. Los componentes que ya declaran su propia `transition` la sustituyen
+   y ninguno pierde lo que tenía.
+
+   **Sólo color, borde y fondo.** Nada de tamaño, sombra ni posición: el §9
+   prohíbe el hover en tarjetas y las sombras que crecen, y una microinteracción
+   que mueve la caja empuja el texto de al lado. `--m-fast` son 120 ms, el
+   escalón que M1 fija.
+
+   `:where()` mantiene la especificidad en cero, así que cualquier regla de
+   componente gana sin tener que subir de peso. */
+:where(a, button, summary, input, select, textarea, [role="button"]) {
+  transition: color var(--m-fast) var(--m-ease),
+              background-color var(--m-fast) var(--m-ease),
+              border-color var(--m-fast) var(--m-ease),
+              text-decoration-color var(--m-fast) var(--m-ease);
+}
+
+/* La pulsación hunde el control sobre el eje del isotipo —~34°—, nunca sobre
+   un `translateY` vertical, que es lo que el §9 descarta por su nombre. Va en
+   `:active` y no en `:hover`: el hover en una superficie es lo prohibido; el
+   acuse de una pulsación es lo permitido.
+
+   Se excluye el salto al contenido: existe sólo al recibir el foco y ahí lo que
+   importa es su `outline`, no un desplazamiento. Y los campos del cotizador,
+   porque hundir el campo donde alguien escribe le mueve el texto bajo el cursor. */
+:where(a, button, summary, [role="button"]):not(.skip):active {
+  transform: translate(-1px, 1.5px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(a, button, summary, [role="button"]):active { transform: none; }
+}
+
 /* ── Entrada sobre el eje diagonal (M4) ─────────────────────────────────────
    El estado oculto se aplica SÓLO si `.js-motion` confirma que el observador
    está activo. Sin JavaScript la página se ve completa e inmóvil: no es una

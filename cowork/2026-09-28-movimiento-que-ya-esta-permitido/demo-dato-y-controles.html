@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>El dato que cambia · demo — Cowork</title>
+<link rel="stylesheet" href="/_astro/Footer.Hhc1FeXj.css">
+<style>
+  /* ══ Demo de Cowork. Nada de esto pide excepción: el §9 del Design System
+     PERMITE «microinteracciones en controles» y «el dato que cambia».
+     Lo que prohíbe es el «conteo de cifras desde cero», que es otra cosa —y
+     por eso acá el número nunca arranca de cero: sale del valor anterior. ══ */
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--papel);color:var(--ink);
+    font-family:var(--f-text);font-size:var(--t-body);line-height:var(--lh-body)}
+  .inner{max-width:760px;margin:0 auto;padding:var(--s-8) var(--pad-section-m) var(--s-10)}
+  h1{font-size:var(--t-h2);line-height:var(--lh-h2);letter-spacing:var(--ls-h2);margin:0 0 var(--s-2);font-weight:700}
+  .lead{color:var(--ink-mute);margin:0 0 var(--s-7);max-width:48ch}
+  h2{font-size:var(--t-h3);margin:var(--s-8) 0 var(--s-2);font-weight:600}
+  h2:first-of-type{margin-top:var(--s-6)}
+  .nota{color:var(--ink-mute);font-size:var(--t-body-sm);margin:0 0 var(--s-5);max-width:52ch}
+
+  /* ── el cotizador, con el dato que cambia ─────────────────────────────── */
+  .cotiza{background:var(--papel);border-radius:var(--r-block);box-shadow:var(--elev-card);
+    padding:var(--s-6);display:grid;gap:var(--s-3)}
+  .fila{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s-4);
+    padding:var(--s-4);border-radius:var(--r-3);background:var(--papel-2)}
+  .fila.oscura{background:var(--tinta)}
+  .rot{font-size:var(--t-body-sm);color:var(--ink-mute)}
+  .fila.oscura .rot{color:var(--on-tinta-mute)}
+  input.monto{font-family:var(--f-num);font-variant-numeric:tabular-nums;letter-spacing:var(--ls-dato);
+    font-size:var(--t-dato);line-height:var(--lh-dato);background:none;border:0;text-align:right;
+    color:var(--ink);width:6.2em;padding:0;min-width:0}
+  input.monto:focus-visible{outline:2px solid var(--verde-deep);outline-offset:4px;border-radius:2px}
+  .salida{font-family:var(--f-num);font-variant-numeric:tabular-nums;letter-spacing:var(--ls-dato);
+    font-size:var(--t-dato);line-height:var(--lh-dato);color:var(--verde)}
+  .div{font-family:var(--f-num);font-size:var(--t-body-sm);color:var(--ink-mute)}
+  .fila.oscura .div{color:var(--on-tinta-mute)}
+  .tasa{font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--ink-mute);margin:var(--s-2) 0 0}
+
+  /* ── microinteracciones en controles ──────────────────────────────────── */
+  .botones{display:flex;gap:var(--s-3);flex-wrap:wrap;margin-top:var(--s-4)}
+  .btn{font:inherit;font-weight:600;border-radius:var(--r-2);padding:var(--s-4) var(--s-6);
+    border:1px solid transparent;cursor:pointer;text-decoration:none;display:inline-block}
+  .btn.cta{background:var(--verde);color:var(--on-verde)}
+  .btn.ghost{background:none;border-color:var(--line);color:var(--ink)}
+  .btn:focus-visible{outline:2px solid var(--focus,var(--verde-deep));outline-offset:2px}
+  /* la capa nueva: 120 ms, sobre el eje del isotipo, sólo en CONTROLES */
+  .vivo .btn{transition:background-color 120ms var(--m-ease), border-color 120ms var(--m-ease),
+    transform 120ms var(--m-ease), box-shadow 120ms var(--m-ease)}
+  .vivo .btn.cta:hover{background:var(--verde-hi)}
+  .vivo .btn.ghost:hover{border-color:var(--verde-deep);color:var(--verde-deep)}
+  .vivo .btn:active{transform:translate(-1px,1.5px)}   /* ~34°, el eje de la marca */
+  .enlaces{display:grid;gap:var(--s-2);margin-top:var(--s-4)}
+  .enlaces a{color:var(--verde-deep);text-decoration:none;width:fit-content;
+    border-bottom:1px solid transparent;padding-bottom:1px}
+  .vivo .enlaces a{transition:border-color 120ms var(--m-ease)}
+  .vivo .enlaces a:hover{border-bottom-color:var(--verde-deep)}
+  .enlaces a:focus-visible{outline:2px solid var(--verde-deep);outline-offset:3px}
+
+  .conmutador{display:flex;align-items:center;gap:var(--s-3);margin:var(--s-7) 0 0;
+    padding:var(--s-4);border:1px dashed var(--line);border-radius:var(--r-3);font-size:var(--t-body-sm)}
+  .conmutador button{font:inherit;font-weight:600;cursor:pointer;background:var(--tinta);color:var(--on-tinta);
+    border:0;border-radius:var(--r-2);padding:var(--s-2) var(--s-4)}
+  @media(prefers-reduced-motion:reduce){ .vivo .btn,.vivo .enlaces a{transition:none} }
+</style>
+</head>
+<body class="vivo">
+<div class="inner">
+  <h1>El dato que cambia, y los controles que responden</h1>
+  <p class="lead">Las dos cosas que el §9 del Design System <b>ya permite</b> y que el sitio hoy no
+    hace. Teclea en el campo y pasa el ratón por los botones. Abajo puedes apagarlo y comparar.</p>
+
+  <h2>1 · El dato que cambia</h2>
+  <p class="nota">Hoy el resultado salta de un valor al otro en un solo paso, 49 ms después de
+    teclear. Acá recorre la distancia en 240 ms, y <b>nunca arranca de cero</b>: sale de donde
+    estaba. El conteo desde cero es lo que el §9 prohíbe; esto es otra cosa.</p>
+  <div class="cotiza">
+    <div class="fila">
+      <span class="rot">Das</span>
+      <span style="display:flex;align-items:baseline;gap:8px">
+        <input class="monto" id="da" inputmode="numeric" value="2.000.000" aria-label="Monto en pesos">
+        <span class="div">CLP</span></span>
+    </div>
+    <div class="fila oscura">
+      <span class="rot">Recibes</span>
+      <span style="display:flex;align-items:baseline;gap:8px">
+        <span class="salida" id="rec">2.174,62</span><span class="div">USD</span></span>
+    </div>
+    <p class="tasa">1 USD = 919,70 CLP · precio referencial</p>
+  </div>
+
+  <h2>2 · Microinteracciones en controles</h2>
+  <p class="nota">Medido sobre el sitio: <b>303 elementos interactivos y 72 sin ninguna
+    transición</b>. Los que sí tienen, mueven sólo el color en 120 ms. Acá el relleno responde, el
+    borde responde, y al pulsar el botón se hunde 1 px sobre el eje del isotipo. No hay sombras ni
+    tarjetas que se levanten: eso el §9 lo prohíbe y no hace falta.</p>
+  <div class="botones">
+    <a class="btn cta" href="#0">Escribir por WhatsApp</a>
+    <a class="btn ghost" href="#0">Ver el cotizador</a>
+    <button class="btn ghost" type="button">Crear cuenta</button>
+  </div>
+  <div class="enlaces">
+    <a href="#0">Cómo funciona una operación</a>
+    <a href="#0">Tarifas</a>
+  </div>
+
+  <div class="conmutador">
+    <span>Compara con lo de hoy:</span>
+    <button id="off" type="button">Apagar</button>
+    <span id="estado" class="div">encendido</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  var da=document.getElementById('da'), rec=document.getElementById('rec');
+  var TASA=919.70, vivo=true, anim=null;
+  var fCLP=new Intl.NumberFormat('es-CL',{maximumFractionDigits:0});
+  var fUSD=new Intl.NumberFormat('es-CL',{minimumFractionDigits:2,maximumFractionDigits:2});
+  function leer(){ return Number(String(da.value).replace(/\./g,'').replace(/[^0-9]/g,''))||0; }
+  var actual=leer()/TASA;
+  function pintar(v){ rec.textContent=fUSD.format(v); }
+  function a(destino){
+    if(anim) cancelAnimationFrame(anim);
+    if(!vivo || matchMedia('(prefers-reduced-motion: reduce)').matches){ actual=destino; pintar(destino); return; }
+    var desde=actual, t0=performance.now(), D=240;          // bajo el techo de 280
+    (function paso(t){
+      var k=Math.min(1,(t-t0)/D), e=1-Math.pow(1-k,3);      /* salida suave */
+      actual=desde+(destino-desde)*e; pintar(actual);
+      if(k<1) anim=requestAnimationFrame(paso);
+    })(t0);
+  }
+  da.addEventListener('input',function(){
+    var n=leer(); da.value=n?fCLP.format(n):'';
+    /* Con el campo vacío NO se anima hacia cero: eso sería el conteo desde cero
+       que el §9 prohíbe, y además no es un dato, es la ausencia de dato. */
+    if(!n){ if(anim) cancelAnimationFrame(anim); actual=0; rec.textContent='—'; return; }
+    a(n/TASA);
+  });
+  document.getElementById('off').addEventListener('click',function(){
+    vivo=!vivo; document.body.classList.toggle('vivo',vivo);
+    this.textContent=vivo?'Apagar':'Encender';
+    document.getElementById('estado').textContent=vivo?'encendido':'apagado — así está hoy';
+  });
+})();
+</script>
+</body>
+</html>
