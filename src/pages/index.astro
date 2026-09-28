@@ -11,7 +11,8 @@ import GloboRotativo from '../components/hero/GloboRotativo.astro';
 import UseCases from '../components/UseCases.astro';
 import Steps from '../components/Steps.astro';
 import Process from '../components/Process.astro';
-import PuenteTarifas from '../components/PuenteTarifas.astro';
+import Puente from '../components/Puente.astro';
+import FiguraTarifas from '../components/FiguraTarifas.astro';
 import Trust from '../components/Trust.astro';
 import Business from '../components/Business.astro';
 import Faq from '../components/Faq.astro';
@@ -111,7 +112,15 @@ import IntroDeMarca from '../components/IntroDeMarca.astro';
       pregunta viva. Cowork probó siete posiciones y las midió; el razonamiento
       completo está en la cabecera del componente.
     */}
-    <PuenteTarifas />
+    <Puente
+      rotulo="el número que viste"
+      titulo="Ese número ya lo incluye todo"
+      cuerpo="Cómo se compone, qué lo mueve, y por qué no hay una comisión aparte que se sume al final."
+      href="/tarifas/"
+      cta="Ver las tarifas"
+    >
+      <FiguraTarifas />
+    </Puente>
     <Trust />
     <Business />
     <Faq items={faq} title="Antes de tu primera operación" />

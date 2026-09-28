@@ -1,0 +1,216 @@
+---
+/**
+ * La carcasa de un puente entre dos páginas.
+ *
+ * Un bloque partido por la diagonal de la marca: **papel donde está el texto
+ * —que es la página en la que estás— y tinta donde está la figura —que es la
+ * otra—.** El umbral no se dibuja con un marco: es el fondo.
+ *
+ * ── Por qué esto es un componente y antes no ────────────────────────────────
+ *
+ * El primer puente —la Home a `/tarifas`, 2026-09-28— se integró como **un
+ * archivo suelto a propósito**, citando el Principio 5: «no crear un componente
+ * ni una carpeta que ninguna página real necesite todavía». Existía uno, y la
+ * carcasa se extrae «cuando aparezca el segundo, con dos casos reales delante
+ * en vez de con uno y una previsión».
+ *
+ * **El segundo apareció el mismo día** —`/tarifas` a `/confianza`— y es idéntico
+ * de estructura: sólo cambian el texto y la figura. Así que la condición se
+ * cumplió y la carcasa sale ahora, con los dos casos delante y no con la
+ * previsión de cinco.
+ *
+ * ── Qué es de la carcasa y qué es de cada puente ────────────────────────────
+ *
+ * De la carcasa: el corte, los cuatro colores que cambian con el fondo, la
+ * rejilla, el rótulo con su rayita, el titular, el cuerpo, el botón y la
+ * colocación de la figura.
+ *
+ * De cada puente: **su figura entera, con su propio CSS.** El ámbito de estilos
+ * de Astro no alcanza al interior de una ranura, y eso acá es una ventaja: cada
+ * figura se dibuja como su página de destino la dibuja, sin que la carcasa pueda
+ * imponerle nada.
+ *
+ * ── La excepción que autoriza los dos fondos ────────────────────────────────
+ *
+ * **Design System §4.7.** Una sección tiene un fondo, y eso sigue siendo la
+ * regla; la excepción es para un bloque cuyo asunto es **cruzar**, con cinco
+ * límites escritos allá. No gasta elevación, así que el límite de uno por página
+ * del §4.5 queda intacto.
+ */
+interface Props {
+  /** El rótulo pequeño de arriba, en la tipografía de cifras. */
+  rotulo: string;
+  titulo: string;
+  cuerpo: string;
+  /** A dónde lleva el puente. Con barra final, como todas las rutas del sitio. */
+  href: string;
+  /** El texto del botón. */
+  cta: string;
+}
+const { rotulo, titulo, cuerpo, href, cta } = Astro.props;
+
+/*
+  El `id` del titular sale del propio titular, no escrito a mano: con dos puentes
+  en el sitio y tres por venir, un `id` fijo se repetiría el día que dos
+  convivan en la misma página, y `aria-labelledby` apuntaría al equivocado. Es el
+  mismo criterio que cerró el fallo silencioso del `id` de `Faq.astro`.
+*/
+const slug = titulo
+  .normalize('NFD')
+  .replace(/[̀-ͯ]/g, '')
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-|-$/g, '');
+const tituloId = `puente-${slug}`;
+---
+<section class="puente" aria-labelledby={tituloId}>
+  <div class="inner">
+    <div class="caja">
+      <div class="texto">
+        <p class="rot">{rotulo}</p>
+        <h2 id={tituloId}>{titulo}</h2>
+        <p>{cuerpo}</p>
+        <a class="btn" href={href}>
+          {cta}
+          <svg viewBox="0 0 22 10" fill="none" aria-hidden="true">
+            <path d="M0 5h12l4-4 4 4-4 4-4-4" stroke="currentColor" stroke-width="1.6" />
+          </svg>
+        </a>
+      </div>
+
+      {/*
+        `aria-hidden`: la figura no dice nada que el texto de al lado no diga, y
+        sus rótulos son marcas de un dibujo, no frases. Mismo trato que en las
+        páginas de destino.
+
+        El movimiento lo pone cada figura con `data-enter` en sus hermanos: M4
+        sobre el eje y M5 escalonado, con el tope de cuatro. `Motion.astro` ya
+        los observa en las páginas donde vive un puente, así que **la carcasa no
+        trae un solo byte de script**.
+      */}
+      <figure class="fig" aria-hidden="true">
+        <slot />
+      </figure>
+    </div>
+  </div>
+</section>
+
+<style>
+  /*
+    ── Un bloque con DOS fondos ──────────────────────────────────────────────
+
+    Excepción escrita: **Design System §4.7**. El asunto de la pieza es cruzar, y
+    con un solo fondo el bloque habla de la otra página en vez de enseñarla.
+    Cuesta un degradado con una parada dura: ni elemento extra, ni imagen, ni
+    JavaScript, ni un token nuevo.
+
+    Móvil: UNA sola superficie. La diagonal necesita ancho — a 390 px baja
+    263 px a lo largo de la columna y partía el titular por la mitad, con media
+    frase en oscuro sobre oscuro. Medido, no supuesto. Bajo 960 el bloque es
+    banda de tinta entera y los colores del texto viajan en cuatro variables
+    locales, que es lo que permite que el mismo marcado sirva para las dos
+    superficies.
+  */
+  .puente {
+    position: relative;
+    overflow: hidden;
+    background: var(--tinta);
+    --c-tit: var(--on-tinta);
+    --c-cuerpo: var(--on-tinta-mute);
+    --c-rot: var(--on-tinta-mute);
+    --c-acento: var(--verde);
+  }
+  .inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 var(--pad-section-m);
+    position: relative;
+    z-index: 1;
+  }
+  .caja { display: grid; gap: var(--s-7); padding: var(--s-8) 0; }
+
+  .rot {
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    letter-spacing: var(--ls-label);
+    color: var(--c-rot);
+    margin: 0 0 var(--s-3);
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+  }
+  /* Rayita de ancho FIJO, no `flex: 1`: con titulares de distinto largo cada
+     raya saldría de un ancho distinto (DS §4.3). */
+  .rot::before { content: ''; width: 18px; height: 2px; background: var(--c-acento); flex: none; }
+
+  h2 {
+    font-size: var(--t-h2-m);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin: 0 0 var(--s-3);
+    font-weight: 700;
+    max-width: 14ch;
+    color: var(--c-tit);
+  }
+  .texto > p { margin: 0 0 var(--s-6); color: var(--c-cuerpo); max-width: 34ch; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    background: var(--verde);
+    color: var(--on-verde);
+    font-weight: 600;
+    text-decoration: none;
+    padding: var(--s-4) var(--s-5) var(--s-4) var(--s-6);
+    border-radius: var(--r-2);
+  }
+  .btn:hover { background: var(--verde-hi); }
+  .btn:focus-visible { outline: 2px solid var(--c-acento); outline-offset: 3px; }
+  /* La flecha avanza al pasar el puntero: es M1 sobre un control. El hundido de
+     la pulsación lo pone ya la base de M1 en `tokens.css`, así que no se repite. */
+  .btn svg { width: 22px; height: 10px; flex: none; transition: transform var(--m-fast) var(--m-ease); }
+  .btn:hover svg { transform: translateX(3px); }
+
+  .fig { margin: 0; min-width: 0; }
+
+  /* Móvil: la figura SIEMPRE arriba. Es la regla ya escrita en
+     `pages/empresas.astro` — «la figura presenta el caso y el texto lo
+     explica». */
+  @media (max-width: 959px) {
+    .fig { order: -1; }
+  }
+
+  @media (min-width: 900px) {
+    .inner { padding-inline: var(--pad-section); }
+    h2 { font-size: var(--t-h2); }
+  }
+
+  @media (min-width: 960px) {
+    /*
+      El corte al 50 % y en `123.954deg`, que baja **hacia la izquierda** como
+      las cuñas del héroe. Medido sobre el render con el mismo instrumento:
+      −33,930° el corte y −34,216° las cuñas.
+
+      **El 50 % no es un número redondo elegido a ojo:** es donde la holgura del
+      texto y la de la figura se igualan y dejan de moverse con el ancho.
+      Probado a 44, 46, 48, 50 y 52.
+    */
+    .puente {
+      background: linear-gradient(123.954deg, var(--papel) 0 50%, var(--tinta) 50% 100%);
+      --c-tit: var(--ink);
+      --c-cuerpo: var(--ink-mute);
+      --c-rot: var(--ink-mute);
+      --c-acento: var(--verde-deep);
+    }
+    /* El texto arriba a la izquierda y la figura abajo a la derecha: la lectura
+       baja por el mismo eje por el que baja el corte. */
+    .caja {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-8);
+      padding: var(--s-9) 0;
+      align-items: start;
+    }
+    .fig { align-self: end; }
+  }
+</style>

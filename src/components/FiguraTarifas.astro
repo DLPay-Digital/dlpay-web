@@ -1,0 +1,96 @@
+---
+/**
+ * La figura del puente a `/tarifas`: la composición del precio.
+ *
+ * Es la figura de `pages/tarifas.astro`, **copiada y no factorizada**, a pedido
+ * explícito de la entrega: si mañana la de destino cambia, el puente se queda
+ * como está hasta que alguien lo mire. Un puente que se actualiza solo puede
+ * acabar prometiendo algo distinto de lo que hay al otro lado.
+ *
+ * ── Las tres reglas del dibujo, que no se pueden relajar ────────────────────
+ *
+ * Son las de la cabecera de `pages/tarifas.astro` y valen igual acá:
+ *
+ * 1. **La llave abarca la barra ENTERA** y mide lo que mide la barra. Si llegara
+ *    al borde nombraría también el vacío. La página dice «un solo número, con el
+ *    spread ya incorporado»: una llave partida afirmaría lo contrario.
+ * 2. **La barra no se parte.** Es una sola magnitud.
+ * 3. **A la derecha del punteado no hay nada**, y ése es el argumento, no un
+ *    margen. La frase más fuerte de `/tarifas` —«no hay una comisión aparte que
+ *    se sume al final»— no se ilustra: se demuestra con el vacío.
+ *
+ * ── El verde ────────────────────────────────────────────────────────────────
+ *
+ * `--verde` y no `--verde-deep`, y no es un descuido: el §6.2 dice que **el
+ * fondo elige el verde**, y esta figura vive en la mitad de tinta del puente.
+ * Sobre tinta el vivo da 8,45:1; el `--verde-deep` de `/tarifas` es para papel.
+ */
+---
+<div class="llave" data-enter></div>
+<div class="tramo" data-enter>
+  <div class="barra"></div>
+  <div class="limite"></div>
+  <p class="pie">el precio que ves</p>
+</div>
+<p class="fin" data-enter><b>acá termina</b><span>y no se suma nada</span></p>
+
+<style>
+  /*
+    `display: contents` en un envoltorio no serviría: los tres hermanos tienen
+    que ser hijos de la rejilla, y en una ranura de Astro lo que llega son estos
+    tres elementos directamente. Así que la rejilla se declara acá, sobre el
+    padre que pone la carcasa, con `:global` — es el único sitio desde el que se
+    puede, porque `.fig` es de la carcasa y su clase de ámbito es otra.
+  */
+  :global(.fig:has(> .llave)) {
+    display: grid;
+    grid-template-columns: var(--barra, 56%) 1fr;
+    gap: var(--s-3);
+    column-gap: var(--s-4);
+  }
+  @media (min-width: 960px) {
+    :global(.fig:has(> .llave)) { --barra: 64%; }
+  }
+
+  /* La llave son BORDES y no un SVG: así la punta no se deforma al escalar y el
+     rótulo de arriba es texto de verdad. */
+  .llave {
+    grid-area: 1 / 1;
+    height: 12px;
+    border: 1.5px solid var(--on-tinta-mute);
+    border-bottom: 0;
+    position: relative;
+  }
+  .llave::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    border: 7px solid transparent;
+    border-top-color: var(--on-tinta-mute);
+    border-bottom: 0;
+  }
+  .tramo { grid-area: 2 / 1; position: relative; }
+  .barra { height: 18px; border-radius: 2px; background: var(--verde); }
+  .limite {
+    position: absolute;
+    right: 0;
+    top: -15px;
+    bottom: -15px;
+    border-left: 1.5px dashed var(--on-tinta);
+  }
+  /* Este rótulo va en la tipografía de TEXTO y a plena intensidad, y el de la
+     derecha en la de cifras: en `/tarifas` no son la misma voz. */
+  .pie { margin: var(--s-2) 0 0; color: var(--on-tinta); }
+  .fin {
+    grid-area: 2 / 2;
+    align-self: start;
+    margin: -2px 0 0;
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    line-height: 1.5;
+  }
+  .fin b { display: block; color: var(--on-tinta); font-weight: 400; }
+  .fin span { color: var(--on-tinta-mute); }
+</style>
