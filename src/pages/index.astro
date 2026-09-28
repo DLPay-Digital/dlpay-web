@@ -11,6 +11,7 @@ import GloboRotativo from '../components/hero/GloboRotativo.astro';
 import UseCases from '../components/UseCases.astro';
 import Steps from '../components/Steps.astro';
 import Process from '../components/Process.astro';
+import PuenteTarifas from '../components/PuenteTarifas.astro';
 import Trust from '../components/Trust.astro';
 import Business from '../components/Business.astro';
 import Faq from '../components/Faq.astro';
@@ -104,6 +105,13 @@ import IntroDeMarca from '../components/IntroDeMarca.astro';
     <UseCases />
     <Steps />
     <Process />
+    {/*
+      El puente a `/tarifas` va ACÁ y no en otro sitio: entra cuando la operación
+      acaba de terminar, que es cuando «¿y no me suman nada al final?» es la
+      pregunta viva. Cowork probó siete posiciones y las midió; el razonamiento
+      completo está en la cabecera del componente.
+    */}
+    <PuenteTarifas />
     <Trust />
     <Business />
     <Faq items={faq} title="Antes de tu primera operación" />

@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>El puente · Home → Tarifas — Cowork</title>
+<link rel="stylesheet" href="/_astro/Footer.Hhc1FeXj.css">
+<script>document.documentElement.classList.add('js-motion')</script>
+<style>
+  /* ══════════════════════════════════════════════════════════════════════════
+     EL PUENTE · Home → Tarifas                              Cowork · v3
+     ──────────────────────────────────────────────────────────────────────────
+     EL BLOQUE ESTÁ PARTIDO POR LA DIAGONAL DE LA MARCA: papel donde está el
+     texto —que es esta página— y tinta donde está la figura —que es la otra—.
+     El umbral no se dibuja con un marco: es el fondo. No hay superficie nueva
+     ni color nuevo; papel y tinta son los dos fondos que el sistema ya tiene.
+
+     El corte va a 33,954° y en el MISMO sentido que las cuñas del héroe
+     —`polygon(0 100%, 46% 0, …)`, que bajan hacia la izquierda—. Medido sobre
+     el render: −33,930° el corte, −34,216° las cuñas con el mismo instrumento.
+
+     ── Dentro va la figura de /tarifas ENTERA, con sus tres reglas ──────────
+     Las escribe la cabecera de `pages/tarifas.astro` y no se relajan:
+       1. la barra no se parte,
+       2. la llave abarca la barra entera,
+       3. «el vacío después del punteado es el argumento, no un margen: no se
+          mete nada ahí ni se recorta para ganar altura».
+     El verde cambia porque lo elige el fondo (DS §6.2): en /tarifas la barra va
+     sobre papel en `--verde-deep`; acá va sobre tinta, donde el verde vivo
+     rinde 8,45:1.
+
+     ── Movimiento ───────────────────────────────────────────────────────────
+     Sólo M4 (entrada sobre el eje) escalonado con M5: tres hermanos de cuatro.
+     Usa `data-enter`, que ya maneja `Motion.astro` en la Home: CERO bytes de
+     JavaScript nuevos. No hay barrido, ni bucle, ni barra que crece — una barra
+     rellena que se estira no está en el catálogo y sería un séptimo movimiento.
+     ══════════════════════════════════════════════════════════════════════════ */
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--papel);color:var(--ink);
+    font-family:var(--f-text);font-size:var(--t-body);line-height:var(--lh-body)}
+  .inner{max-width:var(--container);margin:0 auto;padding:0 var(--pad-section-m)}
+  @media(min-width:900px){.inner{padding:0 var(--pad-section)}}
+  .relleno{height:46vh;display:grid;place-items:center;color:var(--ink-mute);font-size:var(--t-body-sm)}
+  .nota{background:var(--papel-2);padding:var(--s-5) 0;font-size:var(--t-body-sm);color:var(--ink-mute)}
+  .nota b{color:var(--ink)}
+
+  .puente{
+    position:relative;overflow:hidden;
+    /* Móvil: UNA sola superficie. La diagonal necesita ancho: a 390 px baja
+       263 px a lo largo de la columna y partía el titular por la mitad —medido,
+       no supuesto—. Así que abajo de 960 el bloque es banda de tinta entera. */
+    background:var(--tinta);
+    --c-tit:var(--on-tinta); --c-cuerpo:var(--on-tinta-mute);
+    --c-rot:var(--on-tinta-mute); --c-acento:var(--verde);
+    --barra:56%;
+  }
+  .puente .inner{position:relative;z-index:1}
+  .caja{display:grid;gap:var(--s-7);padding:var(--s-8) 0}
+  @media(min-width:960px){
+    .puente{
+      /* 50 %: el punto donde la holgura del texto y la de la figura se igualan
+         y dejan de moverse con el ancho. Medido de 960 a 2560: 69–145 px por el
+         lado del texto, 78–82 px por el de la figura. */
+      background:linear-gradient(123.954deg,var(--papel) 0 50%,var(--tinta) 50% 100%);
+      --c-tit:var(--ink); --c-cuerpo:var(--ink-mute);
+      --c-rot:var(--ink-mute); --c-acento:var(--verde-deep);
+      --barra:64%;
+    }
+    /* El texto arriba a la izquierda y la figura abajo a la derecha: la lectura
+       baja por el mismo eje por el que baja el corte. */
+    .caja{grid-template-columns:1fr 1fr;gap:var(--s-8);padding:var(--s-9) 0;align-items:start}
+    .fig{align-self:end}
+  }
+
+  .rot{font-family:var(--f-num);font-size:var(--t-label);letter-spacing:var(--ls-label);
+    color:var(--c-rot);margin:0 0 var(--s-3);display:flex;align-items:center;gap:var(--s-2)}
+  .rot::before{content:"";width:18px;height:2px;background:var(--c-acento);flex:none}
+  .texto h2{font-size:var(--t-h2-m);line-height:var(--lh-h2);letter-spacing:var(--ls-h2);
+    margin:0 0 var(--s-3);font-weight:700;max-width:14ch;color:var(--c-tit)}
+  @media(min-width:900px){.texto h2{font-size:var(--t-h2)}}
+  .texto > p{margin:0 0 var(--s-6);color:var(--c-cuerpo);max-width:34ch}
+
+  .btn{display:inline-flex;align-items:center;gap:var(--s-3);background:var(--verde);
+    color:var(--on-verde);font-weight:600;text-decoration:none;
+    padding:var(--s-4) var(--s-5) var(--s-4) var(--s-6);border-radius:var(--r-2);
+    transition:background-color var(--m-fast) var(--m-ease), transform var(--m-fast) var(--m-ease)}
+  .btn:hover{background:var(--verde-hi)}
+  .btn:active{transform:translate(-1px,1.5px)}   /* se hunde sobre el eje */
+  .btn:focus-visible{outline:2px solid var(--c-acento);outline-offset:3px}
+  .btn svg{width:22px;height:10px;flex:none;transition:transform var(--m-fast) var(--m-ease)}
+  .btn:hover svg{transform:translateX(3px)}
+
+  /* ── la figura, con la construcción de /tarifas ─────────────────────────── */
+  .fig{margin:0;display:grid;grid-template-columns:var(--barra) 1fr;
+    gap:var(--s-3);column-gap:var(--s-4)}
+  /* La llave: bordes, no SVG — es como está construida en /tarifas, y así la
+     punta no se deforma. Mide exactamente lo que mide la barra. */
+  .llave{grid-area:1/1;height:12px;border:1.5px solid var(--on-tinta-mute);
+    border-bottom:0;position:relative}
+  .llave::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);
+    border:7px solid transparent;border-top-color:var(--on-tinta-mute);border-bottom:0}
+  .tramo{grid-area:2/1;position:relative}
+  .barra{height:18px;border-radius:2px;background:var(--verde)}
+  .limite{position:absolute;right:0;top:-15px;bottom:-15px;
+    border-left:1.5px dashed var(--on-tinta)}
+  /* Este rótulo va en la tipografía de TEXTO y a plena intensidad, y el de la
+     derecha en la de cifras: en /tarifas no son la misma voz. */
+  .pie{margin:var(--s-2) 0 0;color:var(--on-tinta)}
+  .fin{grid-area:2/2;align-self:start;margin:-2px 0 0;
+    font-family:var(--f-num);font-size:var(--t-dato-sm);line-height:1.5}
+  .fin b{display:block;color:var(--on-tinta);font-weight:400}
+  .fin span{color:var(--on-tinta-mute)}
+
+  /* Móvil: la figura SIEMPRE arriba. Es la regla escrita de /empresas —
+     «la figura presenta el caso y el texto lo explica». */
+  @media(max-width:959px){ .fig{order:-1} }
+</style>
+</head>
+<body>
+<div class="nota"><div class="inner"><p><b>El puente, v3.</b> Desplázate. El bloque está partido por
+  la diagonal de la marca: papel donde está el texto, tinta donde está la figura. Dentro va la figura
+  de <b>/tarifas</b> entera —con la llave— y el vacío se queda vacío.</p></div></div>
+
+<div class="relleno">↓ el final del cotizador ↓</div>
+
+<section class="puente">
+  <div class="inner">
+    <div class="caja">
+      <div class="texto">
+        <p class="rot">el número que viste</p>
+        <h2>Ese número ya lo incluye todo</h2>
+        <p>Cómo se compone, qué lo mueve, y por qué no hay una comisión aparte que se sume al final.</p>
+        <a class="btn" href="#0">Ver las tarifas
+          <svg viewBox="0 0 22 10" fill="none" aria-hidden="true">
+            <path d="M0 5h12l4-4 4 4-4 4-4-4" stroke="currentColor" stroke-width="1.6"/></svg></a>
+      </div>
+      <figure class="fig" aria-hidden="true">
+        <div class="llave" data-enter></div>
+        <div class="tramo" data-enter>
+          <div class="barra"></div>
+          <div class="limite"></div>
+          <p class="pie">el precio que ves</p>
+        </div>
+        <p class="fin" data-enter><b>acá termina</b><span>y no se suma nada</span></p>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<div class="relleno">↑ y sigue la página ↑</div>
+
+<script>
+/* En el sitio esto NO se añade: `Motion.astro` ya está en la Home y maneja
+   `data-enter`. Está acá sólo para que la maqueta se comporte igual. */
+document.documentElement.setAttribute('data-motion-ok','');
+var items=document.querySelectorAll('[data-enter],[data-draw]');
+if(items.length){
+  var reveal=function(el){el.classList.add('is-in')};
+  if(!('IntersectionObserver' in window)){items.forEach(reveal)}
+  else{var ob=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){reveal(e.target);ob.unobserve(e.target)}})},
+    {rootMargin:'0px 0px -12% 0px',threshold:.01});
+    items.forEach(function(el){ob.observe(el)})}
+}
+</script>
+</body>
+</html>

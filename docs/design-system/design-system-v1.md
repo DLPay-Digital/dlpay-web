@@ -444,6 +444,43 @@ diagnostica están en `docs/development.md`.
 Hairline `1px solid var(--line)`. Los campos de formulario usan borde, no sombra. "No todo es una
 tarjeta": borde/fill/radio/sombra se gastan por rol, para levantar **una** cosa.
 
+### 4.7 Un bloque con dos superficies — excepción, añadida 2026-09-28
+
+**Una sección tiene un fondo.** Ésa es la regla, y sigue siéndolo: cada banda del sitio es papel,
+`--papel-2` o tinta, y el ritmo de la página se compone alternándolas.
+
+**Una excepción, y hoy hay una sola pieza:** `PuenteTarifas.astro`, el bloque de la Home que lleva a
+`/tarifas`. Está partido por la diagonal de la marca —papel donde está el texto, que es esta página,
+y tinta donde está la figura, que es la otra— con un `linear-gradient` de parada dura.
+
+**Por qué se concede, con la ventaja escrita, como manda la instrucción permanente 4:**
+
+1. **El asunto de la pieza es cruzar.** Con un fondo el bloque *habla* de la otra página; con dos, la
+   *enseña*. El umbral no se dibuja con un marco: es el fondo. Es la misma lógica que hace que el
+   movimiento del sitio sea información y no adorno.
+2. **Protege un ritmo medido.** La Home tiene sólo **dos** bandas oscuras —el héroe, 781 px, y
+   `Business`, 418— con **5.284 px de papel seguidos** entre ellas. Una tercera banda oscura entera
+   aplana ese recorrido; media, no.
+3. **No cuesta nada.** Un degradado. Ni elemento extra, ni imagen, ni JavaScript, ni un token nuevo.
+
+**Los límites, que son lo que impide que esto se extienda:**
+
+- **Las dos superficies tienen que ser las del sistema.** Papel y tinta, sin valores intermedios y
+  sin degradado visible: una **parada dura**, no una transición. Un degradado suave es el «wash» que
+  ADR-0001 prohíbe.
+- **El eje es el de la marca.** El corte baja sobre la diagonal del isotipo, ~34°, como las cuñas del
+  héroe. Medido: −33,930° el corte y −34,216° las cuñas, con el mismo instrumento.
+- **Cada texto vive sobre su superficie, y eso se comprueba en el render.** Bajo 960 px el bloque
+  vuelve a ser **una sola** superficie: a 390 el corte baja 263 px a lo largo de la columna y partía
+  el titular por la mitad, con media frase en oscuro sobre oscuro. La holgura entre la tinta del
+  contenido y el corte, medida de 960 a 2560 px, va de **112 a 196 px** por el lado del texto y de
+  **78 a 82** por el de la figura.
+- **No autoriza dos fondos en general.** Autoriza que **un bloque cuyo asunto es cruzar de una
+  página a otra** enseñe las dos. Una sección partida «para dar variedad» sigue fuera del sistema,
+  porque ahí el corte no significaría nada.
+- **No gasta elevación.** El límite de un `--elev-card` por página (§4.5) queda intacto: esta pieza
+  no usa ninguno.
+
 ---
 
 ## 5. Tratamiento de cifras (crítico)
