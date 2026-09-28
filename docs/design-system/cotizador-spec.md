@@ -59,7 +59,7 @@ explica en una nota permanente dentro del propio cotizador, sin ser el titular.
 │  Pago            2.000.000            CLP  ▾   │  ← campo editable
 │  Recibo aprox.   ~ 2.174,80          USDT  ▾   │  ← campo editable (bidireccional)
 │                                               │
-│  Precio referencial · hace un momento         │
+│  Precio referencial                           │
 │                       919,70 CLP/USDT         │  ← cifra grande, tabular
 │  ─────────────────────────────────────────    │
 │  Sin comisiones ocultas: el precio ya         │
@@ -72,7 +72,7 @@ explica en una nota permanente dentro del propio cotizador, sin ser el titular.
 
 **Jerarquía visual:**
 1. El **monto que recibes/pagas** — la cifra más grande junto con el precio.
-2. El **precio referencial** — cifra grande, tabular, con timestamp.
+2. El **precio referencial** — cifra grande y tabular. *Sin timestamp desde el 2026-09-28; ver la enmienda al final.*
 3. El **CTA** — un botón, verde, inequívoco.
 4. Todo lo demás (nota del spread, toggle, enlace secundario) — soporte, tamaño menor.
 
@@ -220,3 +220,28 @@ Sin analítica invasiva; privacy-first; se decide la herramienta por necesidad.
 - Si la web muestra la lógica de tramos de spread o sólo el referencial.
 - Monto mínimo/máximo reales.
 - Tipografía (afecta el tratamiento de las cifras — ver Design System §3).
+
+---
+
+## Enmienda — 2026-09-28 · el cotizador pierde texto
+
+Pedida por Sebastián: **«hay mucho texto en él»**. Se retiran dos piezas y se conserva una tercera
+a discusión. El razonamiento largo de cada una vive junto al código, en `Quoter.astro`.
+
+| qué se fue | qué decía este spec | dónde queda la información |
+|---|---|---|
+| **El timestamp** «hace un momento» | §62 lo dibujaba en el esquema y §75 lo pedía por su nombre: «cifra grande, tabular, **con timestamp**» | En ninguna parte. Lo que se pierde es la afirmación de **frescura**, no un dato vivo: era una frase estática que nunca se recalculó en el cliente |
+| **La glosa de «referencial»** —«un valor referencial de mercado, no un precio cerrado: lo confirma tu ejecutivo antes de operar» | §48: «No promete un precio final — **dice explícitamente que es referencial**» | **El §48 se sigue cumpliendo**: la etiqueta dice literalmente «Precio referencial». Lo que se va es la explicación de la palabra, que vive en el glosario de `/preguntas`, en la FAQ de la Home y en `/tarifas` y `/precio` enteras |
+
+**Lo que NO se retira y por qué**, para que quede escrito antes de que alguien lo intente: la nota
+del **dólar digital** —«Recibes dólar digital en tu billetera… No depositamos en cuentas bancarias
+en el extranjero»— la exige este mismo spec en §42, y no como estilo: *«El dólar digital es el riel
+y se explica en una nota permanente **dentro del propio cotizador**»*. Esa frase es la mitigación
+del claim marcado que la acompaña —`REQUIERE VALIDACIÓN DE COMPLIANCE` por mostrar «USD» cuando lo
+que se entrega es dólar digital— y también de la regla dura de `CLAUDE.md` §1, que prohíbe
+**sugerir** un depósito bancario en el extranjero. Sin la nota, el cotizador dice «USD» junto a una
+cifra y un botón, y nada explica que no es un dólar en un banco.
+
+**Qué queda del cotizador en texto:** las dos etiquetas de campo, la etiqueta del precio, «Sin
+comisiones ocultas: el precio ya incluye el spread», la nota del dólar digital y el botón. De seis
+bloques de prosa a tres.

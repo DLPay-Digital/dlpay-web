@@ -108,21 +108,41 @@ const intents = [
   <p class="alert" data-alert hidden aria-live="polite"></p>
 
   <div class="price-row">
-    <span class="price-label">
-      Precio referencial
-      <em>hace un momento</em>
-    </span>
+    {/*
+      **Sin el «hace un momento», retirado el 2026-09-28 por Sebastián** para
+      aligerar el cotizador. El `cotizador-spec` lo pedía en dos sitios —su
+      esquema §62 y la jerarquía §75, «cifra grande, tabular, con timestamp»— y
+      queda enmendado ahí.
+
+      Lo que decía y ya no dice: **cuán fresco** es el precio. La frescura sigue
+      implícita en que el precio se resuelve en cada build, pero dejó de
+      afirmarse. Era una frase estática, no un reloj: nunca se recalculó en el
+      cliente, así que lo que se pierde es la afirmación, no un dato vivo.
+    */}
+    <span class="price-label">Precio referencial</span>
     <span class="price-value num" data-rate-display>
       {formatRate(price.rate)}<small>CLP por dólar</small>
     </span>
   </div>
 
+  {/*
+    **Sin la glosa de «referencial», retirada el 2026-09-28 por Sebastián**:
+    «El precio del dólar que ves es un valor referencial de mercado, no un precio
+    cerrado: lo confirma tu ejecutivo antes de operar.»
+
+    **Lo que la sostiene, y por eso el cambio no rompe el spec:** su §48 exige
+    que el cotizador «diga explícitamente que es referencial», y **lo sigue
+    diciendo** — la etiqueta de arriba es literalmente «Precio referencial». Lo
+    que se va es la explicación de qué significa esa palabra.
+
+    Dónde vive ahora: en el glosario de `/preguntas` («Precio referencial»), en
+    la respuesta de la FAQ que la Home publica más abajo, y en `/tarifas` y
+    `/precio` enteras. Lo que ya no está es **a la vista de quien está a punto de
+    pulsar el botón de WhatsApp**, y eso queda dicho acá porque es lo que un
+    revisor querrá saber.
+  */}
   <p class="note" id="quoter-note">
     <strong>Sin comisiones ocultas:</strong> el precio ya incluye el spread.
-    <span class="source">
-      El precio del dólar que ves es un valor referencial de mercado, no un precio cerrado:
-      lo confirma tu ejecutivo antes de operar.
-    </span>
   </p>
   <p class="rail">
     Recibes <strong>dólar digital</strong> en tu billetera, equivalente 1:1 al dólar. Es lo
@@ -314,12 +334,6 @@ const intents = [
     color: var(--ink-mute);
     line-height: 1.35;
   }
-  .price-label em {
-    display: block;
-    font-style: normal;
-    font-weight: 400;
-    opacity: 0.8;
-  }
   .price-value {
     font-size: var(--t-dato-m);
     font-weight: 500;
@@ -362,7 +376,6 @@ const intents = [
   .note strong { color: var(--ink); font-weight: 600; }
   /* Antes mostraba una etiqueta de dato y por eso iba en la tipografía de
      cifras. Ahora es una frase: va en la tipografía de texto. */
-  .source { display: block; margin-top: var(--s-2); font-size: var(--t-dato-sm); }
 
   /* El riel se explica, pero en el peso que le corresponde: no es el titular */
   .rail strong { color: var(--ink); font-weight: 600; }
