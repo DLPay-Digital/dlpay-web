@@ -449,9 +449,12 @@ tarjeta": borde/fill/radio/sombra se gastan por rol, para levantar **una** cosa.
 **Una sección tiene un fondo.** Ésa es la regla, y sigue siéndolo: cada banda del sitio es papel,
 `--papel-2` o tinta, y el ritmo de la página se compone alternándolas.
 
-**Una excepción, y hoy hay una sola pieza:** `PuenteTarifas.astro`, el bloque de la Home que lleva a
-`/tarifas`. Está partido por la diagonal de la marca —papel donde está el texto, que es esta página,
-y tinta donde está la figura, que es la otra— con un `linear-gradient` de parada dura.
+**Una excepción, con una carcasa y dos piezas al 2026-09-28:** `Puente.astro`, y sus dos usos —la
+Home a `/tarifas` y `/tarifas` a `/confianza`—. Están partidos por la diagonal de la marca —papel
+donde está el texto, que es la página en la que estás, y tinta donde está la figura, que es la
+otra— con un `linear-gradient` de parada dura.
+
+*La carcasa se extrajo al aparecer el segundo caso, no antes: ver la cabecera del componente.*
 
 **Por qué se concede, con la ventaja escrita, como manda la instrucción permanente 4:**
 
@@ -473,13 +476,20 @@ y tinta donde está la figura, que es la otra— con un `linear-gradient` de par
 - **Cada texto vive sobre su superficie, y eso se comprueba en el render.** Bajo 960 px el bloque
   vuelve a ser **una sola** superficie: a 390 el corte baja 263 px a lo largo de la columna y partía
   el titular por la mitad, con media frase en oscuro sobre oscuro. La holgura entre la tinta del
-  contenido y el corte, medida de 960 a 2560 px, va de **112 a 196 px** por el lado del texto y de
-  **78 a 82** por el de la figura.
+  contenido y el corte, medida de 960 a 2560 px sobre las **dos** piezas, va de **93 a 196 px** por
+  el lado del texto y de **60 a 82** por el de la figura. *El rango de la figura se amplió el
+  2026-09-28 con el segundo puente: la línea de tenencia es más ancha que la barra del precio y baja
+  el mínimo de 78 a 60. **El piso sigue siendo 40**; por debajo de eso el corte se movió.*
 - **No autoriza dos fondos en general.** Autoriza que **un bloque cuyo asunto es cruzar de una
   página a otra** enseñe las dos. Una sección partida «para dar variedad» sigue fuera del sistema,
   porque ahí el corte no significaría nada.
 - **No gasta elevación.** El límite de un `--elev-card` por página (§4.5) queda intacto: esta pieza
   no usa ninguno.
+- **No va al final de una página interior.** La mitad de tinta desembocaría en el pie, que también
+  es tinta, y las dos se funden: el bloque pierde su canto inferior y la figura parece del pie.
+  **Le pasa a las cuatro páginas interiores**, porque todas terminan en el mismo pie oscuro. En
+  `/tarifas` el puente entra a media página y le quedan 489 px de papel por debajo. Queda escrito
+  acá para los tres puentes que faltan.
 
 ---
 

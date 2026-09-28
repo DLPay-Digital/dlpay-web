@@ -121,6 +121,8 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
 import PendingNotice from '../components/PendingNotice.astro';
+import Puente from '../components/Puente.astro';
+import FiguraTenencia from '../components/FiguraTenencia.astro';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { convert, formatAmount } from '../lib/pricing/quote.ts';
 import { formatCLP } from '../lib/pricing/format.ts';
@@ -308,7 +310,45 @@ const wa = contact.whatsappUrl();
             </p>
           </PendingNotice>
         </section>
+      </div>
+    </div>
 
+    {/*
+      ── El puente a `/confianza` ────────────────────────────────────────────
+
+      Entra **justo bajo la frase que lo justifica** —«…te lo informa tu
+      ejecutivo antes de que transfieras»— y su rótulo la repite literal.
+
+      **Al final de la página NO va, y conviene que quede escrito para los tres
+      puentes que faltan:** la mitad de tinta desembocaría en el pie, que también
+      es tinta, y las dos se funden en una mancha. El bloque pierde su canto
+      inferior y la figura parece del pie. **Le pasa a las cuatro páginas
+      interiores**, porque todas terminan en el mismo pie oscuro.
+
+      ── Por qué el cuerpo se parte en dos ───────────────────────────────────
+
+      El puente es una banda a todo el ancho y el cuerpo de esta página es un
+      contenedor con relleno, así que el puente tiene que ser **hermano** del
+      cuerpo, no su hijo. La alternativa era sangrarlo desde dentro con
+      `margin-inline: calc(50% - 50vw)`, que tiene precedente en `/precio`, y la
+      descarté **midiéndola**: con una barra de desplazamiento clásica de 15 px,
+      `50vw` incluye la barra y `50%` no, así que el bloque cruza el borde. El
+      `.lienzo` de `/precio` se sale **2 px** hoy en ese caso. Cowork no pudo
+      comprobarlo —dio por hecho que este navegador usa barras superpuestas y en
+      el mío son clásicas— y así quedó medido.
+    */}
+    <Puente
+      rotulo="antes de que transfieras"
+      titulo="Dónde está tu dinero en cada paso"
+      cuerpo="Y cuál de esos pasos es nuestro. Tres cosas que puedes verificar tú mismo en tu próxima operación."
+      href="/confianza/"
+      cta="Ver Confianza"
+    >
+      <FiguraTenencia />
+    </Puente>
+
+    <div class="cuerpo cierre">
+      <div class="inner">
         <section class="bloque" aria-labelledby="ajeno-t">
           {/* Filete `--ink-mute`: «existe, es real, no es nuestro» (DS §6.2). Sin
               superficie a propósito — lo que no es nuestro no se eleva. */}
@@ -341,6 +381,10 @@ const wa = contact.whatsappUrl();
   main { --montaje: 132px; }
   @media (min-width: 900px) { main { --montaje: 168px; } }
 
+  /* El segundo tramo del cuerpo, el que va DESPUÉS del puente. No absorbe
+     ningún montaje —eso era cosa del primero, por la tarjeta que sobresale de la
+     portada— así que su relleno superior es el normal de una sección. */
+  .cuerpo.cierre { padding-top: var(--s-9); }
   .cuerpo {
     background: var(--papel);
     /* El relleno superior absorbe el saliente: si no, la primera sección se
