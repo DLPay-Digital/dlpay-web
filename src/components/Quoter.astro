@@ -144,10 +144,31 @@ const intents = [
   <p class="note" id="quoter-note">
     <strong>Sin comisiones ocultas:</strong> el precio ya incluye el spread.
   </p>
+  {/*
+    ── La nota del riel: acortada el 2026-09-28, NO retirada ─────────────────
+
+    Sebastián pidió quitarla entera con las otras dos y aquí se defendió, porque
+    ésta no está en el mismo caso: **es la mitigación de un claim marcado, y el
+    spec la exige donde está.**
+
+    `cotizador-spec` §42, literal: «El dólar digital es el riel y se explica en
+    una nota permanente **dentro del propio cotizador**». Y la línea siguiente de
+    ese mismo párrafo es el motivo: `REQUIERE VALIDACIÓN DE COMPLIANCE — mostrar
+    "USD" cuando lo que se entrega es dólar digital`. Sin nota, el cotizador dice
+    «USD» junto a una cifra y un botón de WhatsApp, y nada explica que no es un
+    dólar en un banco — que es **sugerir** un depósito bancario en el extranjero,
+    lo que `CLAUDE.md` §1 prohíbe con esa palabra exacta.
+
+    Decía 215 caracteres en tres líneas. Ahora dice ~70 en una, y conserva las
+    dos únicas afirmaciones que cargan peso: **qué recibes** y **qué no es**.
+
+    Lo que se fue, y dónde sigue: la equivalencia 1:1 está en el glosario de
+    `/preguntas` («Dólar digital»), y «en minutos, a cualquier hora» es la bajada
+    del héroe de esta misma página y el paso 06 de `/como-funciona`. Ninguna de
+    las dos era la que mitigaba nada.
+  */}
   <p class="rail">
-    Recibes <strong>dólar digital</strong> en tu billetera, equivalente 1:1 al dólar. Es lo
-    que permite moverlo en minutos y a cualquier hora. No depositamos en cuentas bancarias
-    en el extranjero.
+    Recibes <strong>dólar digital</strong>, no un depósito en un banco del extranjero.
   </p>
 
   <a class="cta" href={wa} target="_blank" rel="noopener" data-cta>

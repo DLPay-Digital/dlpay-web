@@ -233,15 +233,23 @@ a discusión. El razonamiento largo de cada una vive junto al código, en `Quote
 | **El timestamp** «hace un momento» | §62 lo dibujaba en el esquema y §75 lo pedía por su nombre: «cifra grande, tabular, **con timestamp**» | En ninguna parte. Lo que se pierde es la afirmación de **frescura**, no un dato vivo: era una frase estática que nunca se recalculó en el cliente |
 | **La glosa de «referencial»** —«un valor referencial de mercado, no un precio cerrado: lo confirma tu ejecutivo antes de operar» | §48: «No promete un precio final — **dice explícitamente que es referencial**» | **El §48 se sigue cumpliendo**: la etiqueta dice literalmente «Precio referencial». Lo que se va es la explicación de la palabra, que vive en el glosario de `/preguntas`, en la FAQ de la Home y en `/tarifas` y `/precio` enteras |
 
-**Lo que NO se retira y por qué**, para que quede escrito antes de que alguien lo intente: la nota
-del **dólar digital** —«Recibes dólar digital en tu billetera… No depositamos en cuentas bancarias
-en el extranjero»— la exige este mismo spec en §42, y no como estilo: *«El dólar digital es el riel
-y se explica en una nota permanente **dentro del propio cotizador**»*. Esa frase es la mitigación
-del claim marcado que la acompaña —`REQUIERE VALIDACIÓN DE COMPLIANCE` por mostrar «USD» cuando lo
-que se entrega es dólar digital— y también de la regla dura de `CLAUDE.md` §1, que prohíbe
-**sugerir** un depósito bancario en el extranjero. Sin la nota, el cotizador dice «USD» junto a una
-cifra y un botón, y nada explica que no es un dólar en un banco.
+**La nota del riel se acorta, no se retira.** Sebastián pidió quitarla con las otras dos; al
+señalarle que no está en el mismo caso, eligió acortarla. Y no está en el mismo caso porque **este
+spec la exige donde está**: §42, *«El dólar digital es el riel y se explica en una nota permanente
+**dentro del propio cotizador**»*, con el motivo en la línea siguiente —`REQUIERE VALIDACIÓN DE
+COMPLIANCE` por mostrar «USD» cuando lo que se entrega es dólar digital—. Es también la mitigación
+de la regla dura de `CLAUDE.md` §1, que prohíbe **sugerir** un depósito bancario en el extranjero.
+
+| | |
+|---|---|
+| **decía** (215 car., 3 líneas) | «Recibes dólar digital en tu billetera, equivalente 1:1 al dólar. Es lo que permite moverlo en minutos y a cualquier hora. No depositamos en cuentas bancarias en el extranjero.» |
+| **dice** (~70 car., 1 línea) | «Recibes **dólar digital**, no un depósito en un banco del extranjero.» |
+
+Conserva las dos únicas afirmaciones que cargan peso: **qué recibes** y **qué no es**. Lo que se fue
+—la equivalencia 1:1 y «en minutos, a cualquier hora»— no mitigaba nada y sigue publicado: la
+primera en el glosario de `/preguntas`, la segunda en la bajada del héroe de la Home y en el paso 06
+de `/como-funciona`.
 
 **Qué queda del cotizador en texto:** las dos etiquetas de campo, la etiqueta del precio, «Sin
-comisiones ocultas: el precio ya incluye el spread», la nota del dólar digital y el botón. De seis
-bloques de prosa a tres.
+comisiones ocultas: el precio ya incluye el spread», la nota del riel en una línea y el botón. **De
+seis bloques de prosa a tres, y los tres que quedan caben en una línea cada uno.**
