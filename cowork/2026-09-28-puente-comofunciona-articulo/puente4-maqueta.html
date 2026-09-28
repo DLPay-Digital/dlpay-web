@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>El puente 4 · Cómo funciona → el artículo — Cowork</title>
+<link rel="stylesheet" href="/_astro/Footer.B8IzmGlL.css">
+<script>document.documentElement.classList.add('js-motion')</script>
+<style>
+  /* ══════════════════════════════════════════════════════════════════════════
+     PUENTE 2 · /tarifas → /confianza
+     La carcasa es LA MISMA de `PuenteTarifas.astro`, sin tocar una línea: el
+     corte al 50 % en 123.954deg, texto arriba-izquierda sobre papel, figura
+     abajo-derecha sobre tinta, una sola superficie bajo 960 px, figura primero
+     en móvil, y M4+M5 con `data-enter`.
+     Lo único que cambia es lo que se ve al otro lado: la línea de TENENCIA de
+     /confianza —tres tramos, uno verde— con su corchete.
+     ══════════════════════════════════════════════════════════════════════════ */
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--papel);color:var(--ink);
+    font-family:var(--f-text);font-size:var(--t-body);line-height:var(--lh-body)}
+  .inner{max-width:var(--container);margin:0 auto;padding:0 var(--pad-section-m)}
+  @media(min-width:900px){.inner{padding:0 var(--pad-section)}}
+  .relleno{height:46vh;display:grid;place-items:center;color:var(--ink-mute);font-size:var(--t-body-sm);text-align:center;max-width:52ch;margin:0 auto;padding:0 var(--s-5)}
+  .nota{background:var(--papel-2);padding:var(--s-5) 0;font-size:var(--t-body-sm);color:var(--ink-mute)}
+  .nota b{color:var(--ink)}
+
+  .puente{position:relative;overflow:hidden;background:var(--tinta);
+    --c-tit:var(--on-tinta); --c-cuerpo:var(--on-tinta-mute);
+    --c-rot:var(--on-tinta-mute); --c-acento:var(--verde)}
+  .puente .inner{position:relative;z-index:1}
+  .caja{display:grid;gap:var(--s-7);padding:var(--s-8) 0}
+  @media(min-width:960px){
+    .puente{background:linear-gradient(123.954deg,var(--papel) 0 50%,var(--tinta) 50% 100%);
+      --c-tit:var(--ink); --c-cuerpo:var(--ink-mute);
+      --c-rot:var(--ink-mute); --c-acento:var(--verde-deep)}
+    .caja{grid-template-columns:1fr 1fr;gap:var(--s-8);padding:var(--s-9) 0;align-items:start}
+    .fig{align-self:end}
+  }
+
+  .rot{font-family:var(--f-num);font-size:var(--t-label);letter-spacing:var(--ls-label);
+    color:var(--c-rot);margin:0 0 var(--s-3);display:flex;align-items:center;gap:var(--s-2)}
+  .rot::before{content:"";width:18px;height:2px;background:var(--c-acento);flex:none}
+  .texto h2{font-size:var(--t-h2-m);line-height:var(--lh-h2);letter-spacing:var(--ls-h2);
+    margin:0 0 var(--s-3);font-weight:700;max-width:15ch;color:var(--c-tit)}
+  @media(min-width:900px){.texto h2{font-size:var(--t-h2)}}
+  .texto > p{margin:0 0 var(--s-6);color:var(--c-cuerpo);max-width:34ch}
+
+  .btn{display:inline-flex;align-items:center;gap:var(--s-3);background:var(--verde);
+    color:var(--on-verde);font-weight:600;text-decoration:none;
+    padding:var(--s-4) var(--s-5) var(--s-4) var(--s-6);border-radius:var(--r-2);
+    transition:background-color var(--m-fast) var(--m-ease), transform var(--m-fast) var(--m-ease)}
+  .btn:hover{background:var(--verde-hi)}
+  .btn:active{transform:translate(-1px,1.5px)}
+  .btn:focus-visible{outline:2px solid var(--c-acento);outline-offset:3px}
+  .btn svg{width:22px;height:10px;flex:none;transition:transform var(--m-fast) var(--m-ease)}
+  .btn:hover svg{transform:translateX(3px)}
+
+  /* ── El riel del artículo, con su construcción ─────────────────────────
+     Los rótulos van FUERA del SVG a propósito: dentro escalarían con el ancho
+     y a 320 px caerían a 9,6 px. Es la nota del propio artículo.
+     Trazos 1,5 / 1,9 / 1,1 y la cuña del DS a escala 1,2, igual que allá.
+     En el artículo van en --verde-deep porque están sobre papel; acá el fondo
+     es tinta y el fondo elige el verde (DS §6.2). */
+  .fig{margin:0}
+  /* 360 y no los 420 del artículo, y NO es capricho: la columna de la figura
+     mide 460 px a 1280 y 384 a 960 —no 556, que es el error que cometí—. Con
+     420 el dibujo deja 40 px de holgura a 1280 y CERO a 960, y su esquina
+     superior se queda a 33 px del corte, por debajo del piso de 40 del §4.7.
+     Con 360 la holgura es 63 a 960 y 139 de 1280 en adelante.
+     El artículo usa 420 como TOPE y ya se dibuja más pequeño en pantallas
+     estrechas, así que esto es el mismo dibujo a otro tamaño, no otro dibujo. */
+  .riel{max-width:360px;margin-inline-start:auto}
+  .riel svg{display:block;width:100%;height:auto}
+  .riel .aro,.riel .signo,.riel .unidad,.riel .link{fill:none;stroke:var(--verde)}
+  .riel .aro{stroke-width:1.5}
+  .riel .signo{stroke-width:1.9}
+  .riel .unidad{stroke-width:1.1}
+  .riel .link{stroke-width:1.5;stroke-linejoin:miter}
+  .riel .tags{display:flex;justify-content:space-between;margin-top:var(--s-2);
+    font-family:var(--f-num);font-size:var(--t-dato-sm);color:var(--on-tinta-mute)}
+
+  @media(max-width:959px){ .fig{order:-1} }
+</style>
+</head>
+<body>
+<div class="nota"><div class="inner"><p><b>Puente 4 · Cómo funciona → el artículo.</b> Misma carcasa. Al otro lado va <b>el riel</b> del artículo de activos tokenizados: la moneda lisa, el tramo con su cuña, y la moneda dentada. Es el dibujo de la frase que se firmó el 22 de septiembre.</p></div></div>
+
+<div class="relleno">↓ así termina hoy <b>/cómo funciona</b>: «Ahí termina nuestra operación: <b>desde ese punto decides tú</b>.» ↓</div>
+
+<section class="puente">
+  <div class="inner">
+    <div class="caja">
+      <div class="texto">
+        <p class="rot">desde ese punto decides tú</p>
+        <h2>El peso no está tokenizado; el dólar digital sí</h2>
+        <p>Es el mismo dólar existiendo como unidades sobre una red.</p>
+        <a class="btn" href="#0">Leer el artículo
+          <svg viewBox="0 0 22 10" fill="none" aria-hidden="true">
+            <path d="M0 5h12l4-4 4 4-4 4-4-4" stroke="currentColor" stroke-width="1.6"/></svg></a>
+      </div>
+      <figure class="fig" aria-hidden="true">
+        <div class="riel" data-enter>
+          <svg viewBox="0 0 320 104">
+            <circle class="aro" cx="44" cy="52" r="30"/>
+            <circle class="aro" cx="44" cy="52" r="24"/>
+            <path class="signo" d="M44.00 36.40 V67.60"/>
+            <path class="signo" d="M50.60 46.00 C50.60 43.00 47.72 41.20 44.00 41.20 C40.28 41.20 37.40 43.00 37.40 46.00 C37.40 49.00 40.04 50.50 44.00 52.00 C47.96 53.50 50.60 55.00 50.60 58.00 C50.60 61.00 47.72 62.80 44.00 62.80 C40.28 62.80 37.40 61.00 37.40 58.00"/>
+            <path class="link" d="M80 52h69.2l7.2-6 7.2 12 7.2-6h69.2"/>
+            <circle class="aro" cx="276" cy="52" r="30"/>
+            <circle class="aro" cx="276" cy="52" r="24"/>
+            <path class="unidad" d="M300.00 52.00 L306.00 52.00 M299.18 58.21 L304.98 59.76 M296.78 64.00 L301.98 67.00 M292.97 68.97 L297.21 73.21 M288.00 72.78 L291.00 77.98 M282.21 75.18 L283.76 80.98 M276.00 76.00 L276.00 82.00 M269.79 75.18 L268.24 80.98 M264.00 72.78 L261.00 77.98 M259.03 68.97 L254.79 73.21 M255.22 64.00 L250.02 67.00 M252.82 58.21 L247.02 59.76 M252.00 52.00 L246.00 52.00 M252.82 45.79 L247.02 44.24 M255.22 40.00 L250.02 37.00 M259.03 35.03 L254.79 30.79 M264.00 31.22 L261.00 26.02 M269.79 28.82 L268.24 23.02 M276.00 28.00 L276.00 22.00 M282.21 28.82 L283.76 23.02 M288.00 31.22 L291.00 26.02 M292.97 35.03 L297.21 30.79 M296.78 40.00 L301.98 37.00 M299.18 45.79 L304.98 44.24"/>
+            <path class="signo" d="M276.00 36.40 V67.60"/>
+            <path class="signo" d="M282.60 46.00 C282.60 43.00 279.72 41.20 276.00 41.20 C272.28 41.20 269.40 43.00 269.40 46.00 C269.40 49.00 272.04 50.50 276.00 52.00 C279.96 53.50 282.60 55.00 282.60 58.00 C282.60 61.00 279.72 62.80 276.00 62.80 C272.28 62.80 269.40 61.00 269.40 58.00"/>
+          </svg>
+          <div class="tags"><span>pesos</span><span>dólar digital</span></div>
+        </div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<div class="relleno">↑ y sigue el pie ↑</div>
+
+<script>
+document.documentElement.setAttribute('data-motion-ok','');
+var items=document.querySelectorAll('[data-enter],[data-draw]');
+if(items.length){
+  var reveal=function(el){el.classList.add('is-in')};
+  if(!('IntersectionObserver' in window)){items.forEach(reveal)}
+  else{var ob=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){reveal(e.target);ob.unobserve(e.target)}})},
+    {rootMargin:'0px 0px -12% 0px',threshold:.01});
+    items.forEach(function(el){ob.observe(el)})}
+}
+</script>
+</body>
+</html>

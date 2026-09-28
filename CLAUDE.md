@@ -141,6 +141,12 @@ patrones) · `phase-2-visual-directions.md` + su Artifact de mockups.
 - **No abrir investigaciones nuevas.** Si aparece una cuestión secundaria: se registra en §13 y
   se sigue. Solo se investiga lo que bloquee una decisión de arquitectura o una funcionalidad
   esencial.
+- **No buscar archivos fuera de la carpeta del proyecto.** *Instrucción de Sebastián, 2026-09-28.*
+  Todo lo que este proyecto necesita vive bajo `Projects/dlpay-web/`, **incluida `Claude outputs/`**,
+  que es donde aterrizan las entregas de Cowork y está en el `.gitignore`. Si un archivo no aparece
+  ahí, **se pide**; no se rastrea el resto del equipo. Vale también para las carpetas personales
+  —Descargas, Escritorio, Documentos—: no son parte del proyecto y pueden contener material que
+  el Principio 7 mantiene deliberadamente fuera del repositorio.
 
 ---
 

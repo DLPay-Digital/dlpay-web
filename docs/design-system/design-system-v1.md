@@ -449,10 +449,15 @@ tarjeta": borde/fill/radio/sombra se gastan por rol, para levantar **una** cosa.
 **Una sección tiene un fondo.** Ésa es la regla, y sigue siéndolo: cada banda del sitio es papel,
 `--papel-2` o tinta, y el ritmo de la página se compone alternándolas.
 
-**Una excepción, con una carcasa y dos piezas al 2026-09-28:** `Puente.astro`, y sus dos usos —la
-Home a `/tarifas` y `/tarifas` a `/confianza`—. Están partidos por la diagonal de la marca —papel
-donde está el texto, que es la página en la que estás, y tinta donde está la figura, que es la
-otra— con un `linear-gradient` de parada dura.
+**Una excepción, con una carcasa y CUATRO piezas al 2026-09-28:** `Puente.astro` y sus cuatro usos
+—la Home a `/tarifas`, `/tarifas` a `/confianza`, `/precio` a `/tarifas` y `/como-funciona` al
+artículo de activos tokenizados—. Están partidos por la diagonal de la marca —papel donde está el
+texto, que es la página en la que estás, y tinta donde está la figura, que es la otra— con un
+`linear-gradient` de parada dura.
+
+**Dos de los cuatro apuntan a `/tarifas` y enseñan figuras distintas**, y eso no es casualidad: lo
+que se repite en la familia es **el corte**, no el dibujo. Dos puentes con la misma figura serían
+plantilla, no familia.
 
 *La carcasa se extrajo al aparecer el segundo caso, no antes: ver la cabecera del componente.*
 
@@ -475,11 +480,41 @@ otra— con un `linear-gradient` de parada dura.
   héroe. Medido: −33,930° el corte y −34,216° las cuñas, con el mismo instrumento.
 - **Cada texto vive sobre su superficie, y eso se comprueba en el render.** Bajo 960 px el bloque
   vuelve a ser **una sola** superficie: a 390 el corte baja 263 px a lo largo de la columna y partía
-  el titular por la mitad, con media frase en oscuro sobre oscuro. La holgura entre la tinta del
-  contenido y el corte, medida de 960 a 2560 px sobre las **dos** piezas, va de **93 a 196 px** por
-  el lado del texto y de **60 a 82** por el de la figura. *El rango de la figura se amplió el
-  2026-09-28 con el segundo puente: la línea de tenencia es más ancha que la barra del precio y baja
-  el mínimo de 78 a 60. **El piso sigue siendo 40**; por debajo de eso el corte se movió.*
+  el titular por la mitad, con media frase en oscuro sobre oscuro.
+
+  **La holgura se mide POR LA TINTA, y por cada trozo de tinta, no por la caja que la contiene.** Es
+  la lección del cuarto puente (2026-09-28) y costó dos mediciones falsas seguidas:
+
+  1. La caja de una figura que **no llena** su columna mide un borde donde no hay nada pintado. La
+     del riel del cuarto puente da **32 px** donde la tinta da **45**.
+  2. Y la envolvente de varios trozos de tinta tampoco vale: sus esquinas son puntos donde **no
+     pinta nada**. La envolvente del texto combina la *x* más a la derecha de un párrafo con la *y*
+     más abajo de otro, y esa esquina está vacía. Medida así, la holgura del texto del primer puente
+     daba 15 px a 960; por trozo da **93**.
+
+  El número honesto es **la distancia mínima entre cualquier rectángulo que de verdad pinta y la
+  recta del corte**. Con los cuatro puentes medidos así, de 960 a 2560 px:
+
+  | puente | figura | texto |
+  |---|---|---|
+  | 1 · Home → `/tarifas` | 65–68 | 93–162 |
+  | 2 · `/tarifas` → `/confianza` | 51 | 77–146 |
+  | 3 · `/precio` → `/tarifas` | 86 | 107–177 |
+  | 4 · `/como-funciona` → el artículo | 45–115 | 72–141 |
+
+  **El rango de la familia es 45–115 por la figura y 72–177 por el texto**, y **el piso sigue siendo
+  40**: el caso más justo es el cuarto puente a 960 px, con 45. *Las cifras anteriores de este
+  párrafo —«93 a 196» y «60 a 82»— salían de medir cajas y quedan derogadas; el orden de magnitud no
+  cambia, la disciplina de medición sí.*
+
+  **Qué esquina manda, que es lo que evita el error:** el corte **baja hacia la izquierda**, así que
+  la esquina que se acerca al corte es la **superior** de la figura y la **inferior** del texto. Una
+  figura más alta acerca su esquina de arriba al corte aunque no se haya movido de sitio.
+
+  **Y para empujar una figura que no llena su columna, `margin-inline-start: auto`, nunca
+  `justify-self: end`.** Con `justify-self` la celda se ajusta al contenido, y un `<svg>` con
+  `width: 100%` no tiene ancho intrínseco: colapsa a los 300 px por omisión de un reemplazado. El
+  dibujo se encoge en vez de moverse, y la holgura que se gana es falsa.
 - **No autoriza dos fondos en general.** Autoriza que **un bloque cuyo asunto es cruzar de una
   página a otra** enseñe las dos. Una sección partida «para dar variedad» sigue fuera del sistema,
   porque ahí el corte no significaría nada.
@@ -487,9 +522,10 @@ otra— con un `linear-gradient` de parada dura.
   no usa ninguno.
 - **No va al final de una página interior.** La mitad de tinta desembocaría en el pie, que también
   es tinta, y las dos se funden: el bloque pierde su canto inferior y la figura parece del pie.
-  **Le pasa a las cuatro páginas interiores**, porque todas terminan en el mismo pie oscuro. En
-  `/tarifas` el puente entra a media página y le quedan 489 px de papel por debajo. Queda escrito
-  acá para los tres puentes que faltan.
+  **Le pasa a las cuatro páginas interiores**, porque todas terminan en el mismo pie oscuro. Queda
+  escrito acá para el puente que falta. Papel por debajo, medido: **489 px** en `/tarifas` y
+  **345 px** en `/precio` y en `/como-funciona`, que es el caso más justo — una banda de cierre
+  entera, no un margen.
 
 ---
 

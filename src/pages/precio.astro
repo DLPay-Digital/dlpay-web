@@ -38,6 +38,8 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
 import Motion from '../components/Motion.astro';
+import Puente from '../components/Puente.astro';
+import FiguraMonto from '../components/FiguraMonto.astro';
 import { volumeTerms } from '../content/business.ts';
 
 /*
@@ -247,6 +249,32 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
         </div>
       </div>
     </section>
+
+    {/*
+      El puente a `/tarifas`, justo bajo la tarjeta «Volumen y frecuencia», que
+      es la frase que lo justifica. Las dos secciones vecinas son de primer
+      nivel, así que acá no hubo que partir nada: `.tres` es papel y `.close` es
+      papel-2, y la mitad de tinta no toca oscuro por ningún lado.
+
+      **Es el segundo puente que apunta a `/tarifas` y enseña otra figura.** El
+      de la Home enseña la barra del precio; éste, «El monto». Lo que se repite
+      entre los dos es el corte, no el dibujo — ver la cabecera de
+      `FiguraMonto.astro`.
+
+      El titular es la cláusula final del cuerpo de «El monto» en `/tarifas`,
+      subida a titular. Eso le cambia el peso a una frase publicada, y por eso
+      tiene firma: Sebastián la aprobó como Compliance el 2026-09-28, con el
+      aviso delante.
+    */}
+    <Puente
+      rotulo="volumen y frecuencia"
+      titulo="Las condiciones se acuerdan contigo"
+      cuerpo="Las operaciones de mayor volumen se conversan con el ejecutivo."
+      href="/tarifas/"
+      cta="Ver las tarifas"
+    >
+      <FiguraMonto />
+    </Puente>
 
     <section class="close" aria-labelledby="close-title">
       <div class="inner">

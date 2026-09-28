@@ -149,7 +149,20 @@ const tituloId = `puente-${slug}`;
     letter-spacing: var(--ls-h2);
     margin: 0 0 var(--s-3);
     font-weight: 700;
-    max-width: 14ch;
+    /*
+      15ch, y el número tiene historia: la maqueta del primer puente decía
+      `14ch` y la carcasa se extrajo con ese valor. Las tres siguientes traían
+      `15ch` sin declararlo — Cowork cambió un valor de la carcasa en una entrega
+      que decía «la carcasa tal cual», y no se notó hasta que un titular cayó
+      justo en el límite: «Las condiciones se acuerdan contigo» sale en 3 líneas
+      a 14ch y en 2 a 15ch, y su tabla de alturas estaba medida con 2.
+
+      Comprobado antes de cambiarlo: **15ch no mueve a ninguno de los otros
+      tres.** P1 sigue en 2 líneas, P2 en 3 y P4 en 3, con las mismas alturas.
+      A 16ch, en cambio, P2 se reflowaría de 3 a 2 — así que el valor no es
+      «cuanto más ancho mejor», es éste.
+    */
+    max-width: 15ch;
     color: var(--c-tit);
   }
   .texto > p { margin: 0 0 var(--s-6); color: var(--c-cuerpo); max-width: 34ch; }

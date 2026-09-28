@@ -14,6 +14,8 @@ import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
 import EjeDeAlcance from '../components/EjeDeAlcance.astro';
 import { hinge, options } from '../content/scope.ts';
+import Puente from '../components/Puente.astro';
+import FiguraRiel from '../components/FiguraRiel.astro';
 import WhatsAppMockup from '../components/WhatsAppMockup.astro';
 import { detailedSteps, checklist, chatLines } from '../content/process.ts';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
@@ -204,6 +206,38 @@ const hilo = [
         </EjeDeAlcance>
       </div>
     </section>
+
+    {/*
+      El puente al artículo de activos tokenizados. Cierra un circuito que
+      estaba abierto por un lado: esta página usa «dólar digital» CUATRO veces
+      en su `<main>` y no lo explica ninguna, su casa está escrita en
+      `content/glossary.ts` —que manda ese término a este artículo— y el enlace
+      de vuelta ya existía, porque el artículo termina mandando acá.
+
+      Y con esto la página deja de ser la única de contenido del sitio sin un
+      solo enlace interno: hasta hoy su `<main>` salía a tres sitios —la app de
+      registro, WhatsApp y el cotizador— y a ninguna otra página.
+
+      **El rótulo es `hinge.from`, no una copia.** Es la misma frase que la
+      bisagra del eje de arriba, y viene del mismo sitio: `content/scope.ts`. Es
+      la tercera vez que aparece en la página —el paso 06, la bisagra y acá— y
+      las tres son deliberadas, pero ninguna se puede desincronizar de las otras.
+      La figura, en cambio, SÍ es una copia del artículo: eso es cruzar de
+      página, y ahí la regla es la contraria. Ver la cabecera de `FiguraRiel`.
+
+      El titular ya tenía firma: Sebastián lo aprobó como Compliance el
+      2026-09-22 junto con la figura, y lleva su marcador en el `.md` del
+      artículo. Lo único nuevo es la etiqueta del botón.
+    */}
+    <Puente
+      rotulo={hinge.from}
+      titulo="El peso no está tokenizado; el dólar digital sí"
+      cuerpo="Es el mismo dólar existiendo como unidades sobre una red."
+      href="/blog/activos-tokenizados-que-son-y-quien-los-construye/"
+      cta="Leer el artículo"
+    >
+      <FiguraRiel />
+    </Puente>
 
     <section class="close" aria-labelledby="close-title">
       <div class="inner">

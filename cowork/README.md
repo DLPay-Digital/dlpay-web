@@ -59,6 +59,29 @@ Las cuatro que más gobiernan el trabajo diario: **ningún valor mágico** · **
 escala es un techo** · **la geometría siempre significa movimiento, flujo o paso** · **dos
 breakpoints, 760 y 900, y móvil es la base**.
 
+### 3.a Cómo se nombran los archivos de una entrega  ·  *desde el 2026-09-28*
+
+**Todo archivo que Cowork deja en `Claude outputs/` lleva por delante el nombre de su entrega.**
+`puente4-ficha.md`, no `ficha.md`. Y **los prompts citan el nombre completo del archivo**, nunca
+«la ficha» a secas.
+
+El motivo es medido, no estético. `Claude outputs/` es **una carpeta plana compartida por todas las
+entregas**: tres piezas del mismo día llamaron `ficha.md` a su ficha, el sistema renombró las
+colisiones a `-1`, `-2` y `-3`, y los prompts que decían «lee `ficha.md`» quedaron apuntando a la
+ficha de **otra** pieza. Cowork había empezado a organizar cada entrega en una carpeta de su lado y
+dejó que los nombres se volvieran genéricos porque allá la carpeta los distinguía; **esa carpeta no
+existe en la máquina de Sebastián.**
+
+Y el daño no se queda en el nombre: el primer prompt del cuarto puente citaba el md5
+`cd7a23f8…`, que **no corresponde a ningún archivo** de la carpeta. El archivo nunca cambió —su md5
+es `c898096e…` desde el principio—, así que la suma no protegía nada. *Una suma de control que
+apunta a un nombre ambiguo no es una verificación: es una decoración.*
+
+**Corolario para el agente de Claude Code:** una entrega cuyos archivos no están en el
+repositorio **no se integra de memoria**. Se piden. Y al integrarla se copian a
+`cowork/<entrega>/` con el nombre con el que llegaron, para que la próxima vez el md5 tenga a qué
+referirse.
+
 ---
 
 ## 3.b Instrucciones permanentes de Sebastián  ·  *escritas el 2026-09-22*
@@ -403,6 +426,29 @@ recomendó sobre otro, y el filete que iba a ser un separador salía crema a 17:
     valores intermedios. El §9 es una lista de permisos de seis palabras; el catálogo es la
     especificación. Si el catálogo ya nombra la pieza, lo que se propone no es aplicar: es
     **enmendar**, y entonces sí hace falta pedirlo.
+
+37. **Una entrega que dice «la carcasa tal cual» y cambia uno de sus valores es la deriva más
+    difícil de cazar: sólo aparece cuando algún contenido cae justo en el límite.** Del 2026-09-28.
+    La maqueta del primer puente topaba el titular en `14ch` y la carcasa se extrajo con ese valor.
+    Las tres maquetas siguientes traían `15ch`, sin una línea que lo dijera, y sus tres prompts
+    decían «usa `Puente.astro` tal cual». **Dos de los tres titulares miden igual a 14 y a 15ch**,
+    así que sus tablas de alturas reprodujeron y la diferencia no existió. El tercero —«Las
+    condiciones se acuerdan contigo»— sale en 3 líneas a 14ch y en 2 a 15ch: 35 px de diferencia
+    contra una tabla que decía 465. Se resolvió comprobando los cuatro a 14, 15 y 16ch antes de
+    tocar nada: **15 no mueve a ninguno de los otros tres y 16 reflowaría el segundo**, así que el
+    valor no es «cuanto más ancho mejor». La regla: **quien cambia un valor de una pieza compartida
+    lo declara en la entrega**, y quien la integra compara la maqueta con el componente en vez de
+    creerle al «tal cual».
+
+38. **Medir cajas en vez de tinta falla de dos maneras distintas, y la segunda es peor.** Del
+    2026-09-28, con el cuarto puente. La primera es la caja de un elemento que **no llena** su
+    sitio: la celda del riel mide 32 px de holgura donde la tinta mide 45. La segunda es la
+    **envolvente de varios trozos de tinta**, que es lo que parece la corrección de la primera y no
+    lo es: sus esquinas son puntos donde no pinta nada, porque combinan la *x* de un trozo con la
+    *y* de otro. Medida así, la holgura del texto del primer puente daba **15 px** — bajo el piso de
+    40 y falsa. El número honesto es **la distancia mínima entre cada rectángulo que de verdad pinta
+    y la recta**, uno por uno. Los dos errores los cometimos los dos agentes, en el mismo día y con
+    la misma pieza.
 
 ---
 
@@ -2387,3 +2433,152 @@ el lado de la figura «de 78–82 a 61–82». Medido acá da **60 px planos** a
 Y **`/tarifas` sigue en cero bytes ejecutables**: no carga `Motion.astro`, así que ahí el puente se
 ve completo y quieto, con cero elementos en `opacity: 0`. Ése es el estado base del §9 y no una
 degradación.
+
+---
+
+### Notas de la integración de `2026-09-28-puente-precio-tarifas` y `2026-09-28-puente-comofunciona-articulo`
+
+Los puentes 3 y 4, integrados juntos. Con ellos la familia queda en **cuatro de cinco** y la carcasa
+ha aguantado los cuatro **sin una línea nueva**, salvo un valor que resultó que era suyo desde el
+segundo (ver abajo).
+
+#### Primero: los archivos no estaban, y el md5 no protegía nada
+
+El prompt del puente 4 llegó solo, sin carpeta. No era que faltaran: estaban en `Claude outputs/`
+con nombres genéricos —`ficha.md`, `prompt-agente-2.md`— porque tres entregas del mismo día usaron
+el mismo nombre y el sistema resolvió las colisiones con sufijos. El prompt decía «lee `ficha.md`»,
+que en esa carpeta es la ficha de **otra** pieza.
+
+Y una cosa peor, que conviene no pasar por alto: **ese primer prompt citaba el md5 `cd7a23f8…`, que
+no corresponde a ningún archivo de la carpeta.** La maqueta nunca cambió —su suma es `c898096e…`
+desde el principio—, así que la verificación apuntaba al vacío. Queda como **convención 3.a**: el
+nombre de la entrega va por delante del nombre del archivo, y los prompts citan el nombre completo.
+
+Los dos md5 de la entrega definitiva se comprobaron: `3cfd2388…` y `c898096e…`, los dos exactos.
+
+#### Las dos objeciones al puente 4, concedidas por Cowork, y el tercer fallo que apareció detrás
+
+La primera versión del prompt afirmaba que `/tarifas` era la única página sin `Motion.astro` (son
+**cinco**: las cuatro legales y la 404) y que la columna de la figura medía 556 px (son **460 a 1280
+y 384 a 960**; 556 era `--container ÷ 2` sin el relleno ni el `gap`). Cowork concedió las dos, y al
+comprobar la segunda encontró el fallo que de verdad importaba: **`justify-self: end` no movía el
+dibujo, lo encogía.** La celda pasa a ajustarse al contenido y un `<svg>` con `width: 100%` no tiene
+ancho intrínseco, así que colapsaba a 300 px. Sus «136–212 px de holgura» eran 160 px de
+encogimiento disfrazados.
+
+La solución que entregó —`margin-inline-start: auto` y tope de **360 px**— es la correcta y su
+barrido reproduce: con 420 la esquina superior del riel queda a 33 px del corte, bajo el piso de 40,
+y a 960 el dibujo llena la columna y no hay holgura que ganar. 360 es el primer valor que pasa el
+piso en los dos extremos.
+
+**Es el mejor ciclo de corrección que ha tenido esta colaboración**: dos objeciones, las dos
+aceptadas, y una tercera cosa encontrada por el propio autor al ir a comprobarlas. Eso último no lo
+había hecho antes.
+
+#### El valor de la carcasa que llevaba tres entregas cambiado sin avisar
+
+La maqueta del puente 1 topa el titular en `14ch`; las de los puentes 2, 3 y 4 en `15ch`, y los tres
+prompts dicen «usa `Puente.astro` tal cual». Los titulares del 2 y del 4 miden igual a 14 y a 15ch,
+así que sus tablas reprodujeron y nadie lo notó. El del 3 no: «Las condiciones se acuerdan contigo»
+son **3 líneas a 14ch y 2 a 15ch**, 35 px contra una tabla que decía 465.
+
+Comprobado antes de tocar: **15ch no mueve a ninguno de los otros tres, y 16ch reflowaría el
+puente 2.** Así que la carcasa pasa a 15ch y la tabla del puente 3 reproduce exacta. Queda como
+**regla 37**.
+
+#### Lo que cada figura trae, y una nota de la segunda que no es menor
+
+**`FiguraMonto.astro`** es «El monto» de `/tarifas`: una línea recta, un corte punteado y dos
+palabras. Hereda la regla dura de la cabecera de `tarifas.astro` —**no lleva barras ascendentes**,
+porque escalones afirmarían tramos y los tramos son **D5**—. Y contesta literalmente a lo último que
+dice `/precio`: «no publicamos una tabla por tramos». La clase de la nota se llama `.dice` y no
+`.nota` porque `/precio` ya tiene una `.nota` con otro significado; el ámbito de Astro las separaría,
+pero dos cosas distintas con el mismo nombre en una página es de lo que avisa la regla 32.
+
+**`FiguraRiel.astro`** es el riel del artículo, y el SVG se copió **del artículo, no de la maqueta**
+— comprobado idéntico trazo por trazo. El comentario del artículo ya había previsto este día: «si
+una segunda pieza la necesita, deja de ser contenido y pasa a ser componente». Con un matiz que
+quedó escrito en la cabecera: **el artículo no puede consumir el componente**, porque es `.md` y no
+`.mdx`, y un componente ahí obligaría a instalar `@astrojs/mdx` — dependencia nueva, que §0.3 no
+admite sin el análisis del §8. Son dos copias del mismo dibujo, a propósito.
+
+Y una mejora sobre la maqueta: **el rótulo del puente 4 es `hinge.from`, no una copia del texto.**
+Es la misma frase que la bisagra del eje que queda justo encima, y las dos salen de
+`content/scope.ts`. Para una figura que cruza de página la regla es copiar; para una frase de la
+**misma** página, es no poder desincronizarse.
+
+#### Reproducido, con el instrumento arreglado
+
+| | 320 | 390 | 768 | 960 | 1280 | 2560 |
+|---|---|---|---|---|---|---|
+| **P3** alto | 485 | 485 | 485 | 465 | 465 | 465 |
+| **P4** alto | 569 | 591 | 600 | 500 | 500 | 500 |
+
+**La tabla del puente 3 es exacta.** La del 4 difiere en 5 px a 320 y a 390 —569 contra 574 y 591
+contra 596— e **es idéntica de 768 en adelante**; la diferencia viene de su banco de pruebas, no de
+la pieza.
+
+Holguras por la tinta, midiendo **rectángulo por rectángulo** y no por la envolvente: P3 **86** la
+figura y **107–177** el texto; P4 **45–115** la figura y **72–141** el texto. Con los cuatro
+puentes medidos así el rango de la familia es **45–115 / 72–177**, y el piso de 40 se respeta con el
+caso más justo en el puente 4 a 960 px. *Ni mis cifras anteriores ni las de Cowork valían: las dos
+medían cajas. Queda como **regla 38** y el §4.7 se reescribió con la tabla de los cuatro.*
+
+Lo demás: cero recortado y cero fuera de `.puente` —que lleva `overflow: hidden`—, cero scroll
+horizontal de 320 a 2560, texto mínimo 13 px, botones 187×57 y 194×57. Contrastes sobre tinta 8,18 /
+16,44 / 8,18 y sobre papel 5,50 / 16,00 / 5,50, más 8,58 del botón; las figuras 8,18 y 8,45 sobre
+tinta. Con `prefers-reduced-motion` y sin JavaScript, una pieza visible y quieta en los dos.
+
+#### Su §6: los dos botones verdes, medidos
+
+Cowork pidió que lo mirara antes de integrar. Son **345 px**, no 380, y pasa **igual en las dos
+páginas**: el botón del puente y el «Cotizar ahora» de la banda de cierre, los dos en `#16C784`, los
+dos visibles a la vez en una ventana de 900 px de alto. Roza el «una sola acción primaria por
+pantalla» de `CLAUDE.md` §6.
+
+**Queda integrado como llegó y anotado para Sebastián**, con la recomendación de dejarlo: los dos
+botones no compiten por la misma intención —uno lleva a leer, el otro a cotizar—, viven en
+superficies distintas y uno va a la izquierda y el otro centrado. La alternativa que Cowork ofrecía
+—bajar la banda de cierre a `ghost`— debilita la única banda de conversión del sitio y rompería que
+las cuatro bandas de cierre hablen al mismo volumen. **Es la única cosa discutible de las dos
+piezas.**
+
+#### Papel por debajo, y el sexto límite
+
+489 px en `/tarifas`, **345 en `/precio` y en `/como-funciona`**. Es el caso más justo de la familia y
+sigue cumpliendo el límite: lo que hay debajo es una banda de cierre entera, no un margen. `/precio`
+queda en 4.232 px de documento y `/como-funciona` en 4.675.
+
+#### Lo que el puente 4 cierra, y que no estaba en la entrega
+
+`/como-funciona` usa «dólar digital» **cuatro veces** en su `<main>` y no lo explicaba ninguna: eso
+sí estaba. Lo que no: **su `<main>` no tenía un solo enlace a otra página del sitio.** Salía a tres
+sitios —la app de registro, WhatsApp y el ancla del cotizador— y a ninguna página de contenido. Era
+la única página de contenido del sitio así. El puente lo cierra, y con el enlace de vuelta que el
+artículo ya tenía queda un circuito completo.
+
+*Una decisión editorial que queda anotada:* con este puente, «desde ese punto decides tú» aparece
+**tres veces** en la página —el paso 06, la bisagra del eje y el rótulo—, las dos últimas a 330 px
+una de otra. Las tres son deliberadas y el código ya explicaba por qué las dos primeras. La tercera
+es de Sebastián, que aprobó la entrega con el rótulo así.
+
+#### Firmas
+
+Sebastián aprobó las dos entregas por escrito. Las dos cadenas que lo necesitaban:
+
+- **«Las condiciones se acuerdan contigo»** era una **cláusula dentro de un párrafo** del cuerpo de
+  «El monto» en `/tarifas` y acá es titular. Subir una frase a titular le cambia el peso; no afirma
+  nada que la página no diga, pero no es el mismo acto de habla. El aviso queda en la cabecera del
+  bloque, como se hizo con la cadena 7 de `/tarifas`.
+- **«Leer el artículo»**, la etiqueta del botón del puente 4, es la única cadena nueva de las dos
+  entregas. El titular ya tenía firma del **2026-09-22**, con su marcador en el `.md` del artículo.
+
+#### Queda uno, y Cowork ya avisó que hay que replantearlo
+
+**`/empresas` → ?** Su ficha lo deja abierto con tres salidas y la decisión es de Sebastián: buscarle
+otra cara a `/confianza` —los mecanismos, no la línea de tenencia, que ya la enseña el puente 2—,
+mandar `/empresas` a `/tarifas` con «El monto» —que chocaría con el puente 3—, o no hacerla, porque
+`/empresas` es la única página con su propia banda de contacto al cierre. **La objeción que la
+frena es la buena:** dos puentes con el mismo dibujo es plantilla, que es justo lo que el puente 3
+evitó.
+

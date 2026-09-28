@@ -1,0 +1,77 @@
+---
+/**
+ * La figura del puente de `/precio` a `/tarifas`: «El monto».
+ *
+ * Es la segunda figura de «Qué mueve el precio» en `pages/tarifas.astro`
+ * (`.fig-monto`), **copiada y no factorizada**, por el mismo motivo que las
+ * otras dos figuras de puente: si mañana la de destino cambia, el puente se
+ * queda como está hasta que alguien lo mire.
+ *
+ * ── Por qué ESTA figura y no la barra del precio ────────────────────────────
+ *
+ * La barra ya es el puente de la Home, y repetirla acá sería plantilla y no
+ * familia: la misma figura en otro marco. **Lo que se repite entre los dos
+ * puentes a `/tarifas` es el corte, no el dibujo.**
+ *
+ * Y «El monto» es la respuesta literal a lo último que dice `/precio` —«las
+ * condiciones se conversan según volumen y frecuencia: no publicamos una tabla
+ * por tramos»—: una línea sin escalones, un límite que no marca dónde cae, y al
+ * otro lado dos palabras.
+ *
+ * ── La regla dura que se hereda con el dibujo ───────────────────────────────
+ *
+ * De la cabecera de `pages/tarifas.astro`: **«El monto» no lleva barras
+ * ascendentes.** Escalones afirmarían tramos, y los tramos son el dato que D5
+ * tiene bloqueado. La línea es recta a propósito y no se le añade relieve.
+ *
+ * ── El verde y los dos grises ───────────────────────────────────────────────
+ *
+ * En `/tarifas` la línea va en `--ink-mute`, el corte en `--ink` y las dos
+ * palabras en `--verde-deep`, porque están sobre papel. Acá el fondo es tinta,
+ * y el §6.2 dice que **el fondo elige el verde**: `--verde` da 8,45:1 sobre
+ * tinta.
+ *
+ * No va la onda de «El mercado», aunque en el destino las dos van en pareja:
+ * `/precio` ya tiene su propia banda con una línea de mercado unos 800 px más
+ * arriba. Y por eso el titular nombra el monto y no «qué mueve el precio»: si
+ * la figura enseña una de las dos cosas, el titular no puede prometer las dos.
+ */
+---
+<div class="monto" data-enter>
+  <span class="linea"></span>
+  <span class="corte"></span>
+  <span class="dice">acá se<br />conversa</span>
+</div>
+
+<style>
+  /* La construcción exacta de `/tarifas`: la línea toma el espacio sobrante, el
+     corte es un borde punteado de 36 px sin ancho, y la nota es TEXTO real y no
+     un `<text>` de SVG, para que no escale con el ancho. */
+  .monto {
+    position: relative;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+  }
+  .monto .linea { flex: 1; height: 3px; background: var(--on-tinta-mute); }
+  .monto .corte {
+    width: 0;
+    height: 36px;
+    border-left: 1.5px dashed var(--on-tinta);
+    flex: none;
+  }
+  /* `dice` y no `nota`, que es como se llama en `/tarifas`. El ámbito de Astro
+     las mantendría separadas —cada componente lleva su propia clase de ámbito—,
+     pero **`/precio`, que es la página donde vive este puente, ya tiene una
+     `.nota`** con otro significado. Dos cosas distintas con el mismo nombre en
+     una página es de lo que avisa la regla 32, y a Cowork le costó una versión
+     con esta misma figura: chocó dentro de su propia maqueta. */
+  .monto .dice {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    line-height: 1.3;
+    color: var(--verde);
+    flex: none;
+  }
+</style>

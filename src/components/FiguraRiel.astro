@@ -1,0 +1,95 @@
+---
+/**
+ * La figura del puente de `/como-funciona` al artículo de activos tokenizados:
+ * el riel del dólar digital.
+ *
+ * La moneda lisa, el tramo con la cuña del sistema, y **la moneda dentada**. El
+ * dentado es toda la marca: una está tokenizada y la otra no.
+ *
+ * ── De dónde sale, y por qué es un componente que el artículo NO usa ─────────
+ *
+ * El dibujo es el del propio artículo
+ * (`content/blog/activos-tokenizados-que-son-y-quien-los-construye.md`), copiado
+ * trazo por trazo. Y el comentario de allá ya había previsto este día: **«si una
+ * segunda pieza la necesita, deja de ser contenido y pasa a ser componente»**.
+ * Ésta es esa segunda pieza.
+ *
+ * Con un matiz que conviene entender antes de intentar unificarlos: **el
+ * artículo no puede consumir este componente.** Es un `.md`, no un `.mdx`, y
+ * usar un componente ahí obligaría a instalar `@astrojs/mdx` — una dependencia
+ * nueva, que CLAUDE.md §0.3 no admite sin el análisis del §8. Así que el
+ * artículo se queda con su HTML crudo y este componente sirve sólo al puente.
+ * Son dos copias del mismo dibujo, a propósito y por escrito.
+ *
+ * Se descartó la portada del artículo —la moneda con la T y dos flechas— porque
+ * ése es el logotipo de *Tether*, no el dibujo del dólar digital.
+ *
+ * ── Los rótulos van FUERA del SVG ───────────────────────────────────────────
+ *
+ * Es la nota del artículo, y vale igual acá: dentro del `viewBox` escalarían con
+ * el ancho y a 320 px caerían a 9,6 px reales. Fuera son texto de verdad con la
+ * escala del sistema.
+ *
+ * `aria-hidden` lo pone la carcasa sobre el `<figure>` entero, así que envuelve
+ * al dibujo y a sus dos rótulos: sin eso un lector de pantalla leería «pesos,
+ * dólar digital» sueltos. El texto del puente dice lo mismo con palabras.
+ *
+ * ── El tope de 360 px, que es una decisión medida ───────────────────────────
+ *
+ * El artículo topa el dibujo en 420 px. Acá son **360**, y no es capricho: la
+ * columna de la figura mide **460 px a 1280 y 384 a 960**, así que con 420 el
+ * dibujo la llena y su esquina superior se queda a 33 px del corte — por debajo
+ * del piso de 40 que fija el §4.7. Barrido de Cowork, reproducido: 420 → 33/65 ·
+ * 390 → 33/102 · **360 → 63/139** · 330 → 99/175. 360 es el primer valor que
+ * pasa el piso en los dos extremos. Es el mismo dibujo a otro tamaño, no otro
+ * dibujo: el artículo ya lo dibuja más pequeño en pantallas estrechas.
+ *
+ * **Y el empuje va con `margin-inline-start: auto`, no con `justify-self: end`.**
+ * Con `justify-self` la celda se ajusta al contenido, y un `<svg>` con
+ * `width: 100%` no tiene ancho intrínseco: colapsa a los 300 px por omisión de
+ * un reemplazado. Los «136–212 px de holgura» que traía la primera versión de la
+ * entrega eran 160 px de encogimiento disfrazados. Así la celda sigue llenando
+ * la columna y lo que se mueve es el dibujo.
+ */
+---
+<div class="riel" data-enter>
+  <svg viewBox="0 0 320 104">
+      <circle class="aro" cx="44" cy="52" r="30"/>
+      <circle class="aro" cx="44" cy="52" r="24"/>
+      <path class="signo" d="M44.00 36.40 V67.60"/>
+      <path class="signo" d="M50.60 46.00 C50.60 43.00 47.72 41.20 44.00 41.20 C40.28 41.20 37.40 43.00 37.40 46.00 C37.40 49.00 40.04 50.50 44.00 52.00 C47.96 53.50 50.60 55.00 50.60 58.00 C50.60 61.00 47.72 62.80 44.00 62.80 C40.28 62.80 37.40 61.00 37.40 58.00"/>
+      <path class="link" d="M80 52h69.2l7.2-6 7.2 12 7.2-6h69.2"/>
+      <circle class="aro" cx="276" cy="52" r="30"/>
+      <circle class="aro" cx="276" cy="52" r="24"/>
+      <path class="unidad" d="M300.00 52.00 L306.00 52.00 M299.18 58.21 L304.98 59.76 M296.78 64.00 L301.98 67.00 M292.97 68.97 L297.21 73.21 M288.00 72.78 L291.00 77.98 M282.21 75.18 L283.76 80.98 M276.00 76.00 L276.00 82.00 M269.79 75.18 L268.24 80.98 M264.00 72.78 L261.00 77.98 M259.03 68.97 L254.79 73.21 M255.22 64.00 L250.02 67.00 M252.82 58.21 L247.02 59.76 M252.00 52.00 L246.00 52.00 M252.82 45.79 L247.02 44.24 M255.22 40.00 L250.02 37.00 M259.03 35.03 L254.79 30.79 M264.00 31.22 L261.00 26.02 M269.79 28.82 L268.24 23.02 M276.00 28.00 L276.00 22.00 M282.21 28.82 L283.76 23.02 M288.00 31.22 L291.00 26.02 M292.97 35.03 L297.21 30.79 M296.78 40.00 L301.98 37.00 M299.18 45.79 L304.98 44.24"/>
+      <path class="signo" d="M276.00 36.40 V67.60"/>
+      <path class="signo" d="M282.60 46.00 C282.60 43.00 279.72 41.20 276.00 41.20 C272.28 41.20 269.40 43.00 269.40 46.00 C269.40 49.00 272.04 50.50 276.00 52.00 C279.96 53.50 282.60 55.00 282.60 58.00 C282.60 61.00 279.72 62.80 276.00 62.80 C272.28 62.80 269.40 61.00 269.40 58.00"/>
+  </svg>
+  <div class="tags"><span>pesos</span><span>dólar digital</span></div>
+</div>
+
+<style>
+  /* Ver la cabecera: 360 y no 420, y `margin-inline-start` y no `justify-self`. */
+  .riel { max-width: 360px; margin-inline-start: auto; }
+  .riel svg { display: block; width: 100%; height: auto; }
+  /* Los cuatro trazos del artículo, con sus tres grosores. La cuña va a `miter`
+     para que la punta salga en ángulo y no redondeada, como en `UseCaseFigure`.
+     Sobre tinta todo en `--verde` (8,45:1); en el artículo es `--verde-deep`
+     porque allá el fondo es papel — DS §6.2, el fondo elige el verde. */
+  .riel .aro,
+  .riel .signo,
+  .riel .unidad,
+  .riel .link { fill: none; stroke: var(--verde); }
+  .riel .aro { stroke-width: 1.5; }
+  .riel .signo { stroke-width: 1.9; }
+  .riel .unidad { stroke-width: 1.1; }
+  .riel .link { stroke-width: 1.5; stroke-linejoin: miter; }
+  .riel .tags {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--s-2);
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--on-tinta-mute);
+  }
+</style>
