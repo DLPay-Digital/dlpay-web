@@ -464,6 +464,39 @@ literales**: es una condición comercial, y dos copias que divergen serían dos 
 publicadas a la vez. Depende de D5 y de D6; cuando cualquiera de las dos se cierre, la frase cambia
 en un solo sitio.
 
+### Copy aprobado por Compliance — 2026-09-29  ·  **el plazo del precio aceptado**
+
+**Firmado por Sebastián Villanueva Pereira como Compliance el 2026-09-29.**
+
+| Qué se aprobó | Dónde vive |
+|---|---|
+| **El precio aceptado se mantiene 12 minutos**, y dentro de ese plazo la cotización está cerrada: no se renegocia | `content/general.ts` y la banda «El precio que aceptas» de `/precio` |
+
+**Es una condición comercial, y entró para cerrar un hueco que era exposición de
+consumidor.** Hasta ese día `/precio` publicaba «No cambia después de que lo aceptas» **sin plazo
+alguno**, y su figura lo remataba: el pie decía «las dos se salen del cuadro porque **ninguna de las
+dos termina ahí**». Tal como estaba, alguien podía aceptar un precio, transferir dos días después y
+exigir el precio aceptado con una frase nuestra a favor. El riesgo no era prometer poco: era
+**prometer más de lo que se entrega**.
+
+**Obligó a rehacer la figura, no sólo la frase.** La línea verde va ahora de 432 a 816 del `viewBox`
+y termina dentro del cuadro, con un **segundo trazo punteado** donde se cierra el plazo. Es la marca
+del Design System §6.2 para «un límite: cruzarlo cambia algo», idéntica a la que esa misma figura ya
+usaba para el instante de aceptar, porque los dos son instantes. La gris sigue saliéndose: el
+mercado no termina.
+
+**Las dos mitades de la regla se publican juntas**, y eso es deliberado: el precio no se mueve en
+contra del cliente, y tampoco a su favor. Una cotización que no puede empeorar pero sí renegociarse
+no es un precio fijo, es una opción. Decir las dos mitades es lo que hace creíble la primera.
+
+**Lo que queda sin publicar, a propósito:** qué pasa si el cliente ya transfirió y quiere cancelar,
+y qué pasa si transfirió y el dinero no llegó. Las dos necesitan un dato operativo que no se ha
+dado, y una respuesta no puede insinuar una devolución que nadie ha confirmado. Están enumeradas en
+la cabecera de `content/general.ts`.
+
+**Si el plazo cambia, cambian dos sitios:** `content/general.ts` y la banda de `/precio`, incluido
+el porcentaje del segundo punteado.
+
 ### Copy aprobado por Compliance — 2026-09-29  ·  **un claim regulatorio nuevo**
 
 **Firmado por Sebastián Villanueva Pereira como Compliance el 2026-09-29.**

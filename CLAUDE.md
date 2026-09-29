@@ -349,6 +349,15 @@ su marcador de Compliance.
 **La FAQ sigue viviendo en la Home y en `/empresas`**, no como página propia: `/preguntas` las
 reúne desde la misma fuente tipada, no las muda.
 
+**Y desde el 2026-09-29 `/preguntas` tiene además preguntas propias.** Sebastián señaló que las
+nueve importadas son todas del mismo registro —objeciones previas a decidir, que por eso viven donde
+se decide— y que reunirlas convertía la página en un índice de las otras dos. El registro que
+faltaba es el siguiente: **ya decidí, cómo es esto en la práctica y qué pasa si algo se sale del
+guion**, que es general y no tiene público. Viven en `content/general.ts` y se rinden en su propia
+sección, no repartidas entre los cinco grupos, porque esos grupos cruzan preocupación con público y
+estas preguntas no tienen lado. **Queda abierto** si las nueve importadas siguen ahí o vuelven a ser
+sólo de sus páginas.
+
 **`/blog` se añadió el 2026-09-11.** Colección tipada de Astro (`src/content.config.ts`) con
 esquema cerrado: `title`, `description`, `pubDate`, `category` —sólo `DLPay` o `Mercado`, un valor
 fuera de esa lista rompe el build—, `estado` y `portada`. Sin paquetes nuevos: `package.json` sigue

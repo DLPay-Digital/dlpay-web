@@ -49,6 +49,7 @@ import PageHero from '../components/PageHero.astro';
 import Motion from '../components/Motion.astro';
 import { faq as faqPersonas, type Concern, type FaqItem } from '../content/home.ts';
 import { faq as faqEmpresas } from '../content/business.ts';
+import { generalFaq } from '../content/general.ts';
 import { glossary } from '../content/glossary.ts';
 import { contact } from '../lib/config/site.ts';
 
@@ -116,10 +117,17 @@ if (colocadas !== todas.length) {
 /*
   ── La portada: un punto por pregunta ──────────────────────────────────────
 
-  Nueve puntos, no cinco: **el recuento de la figura es el recuento de la
-  página**. Arriba las que hace una persona, abajo las que hace una empresa, y
-  cuando las dos preguntan por lo mismo comparten la vertical. Las dos
-  asimetrías de los extremos son las dos preguntas que sólo hace un lado.
+  Nueve puntos, no cinco: **un punto por cada pregunta que tiene lado.** Arriba
+  las que hace una persona, abajo las que hace una empresa, y cuando las dos
+  preguntan por lo mismo comparten la vertical. Las dos asimetrías de los
+  extremos son las dos preguntas que sólo hace un lado.
+
+  **Decía «el recuento de la figura es el recuento de la página» y desde el
+  2026-09-29 eso ya no es cierto**, porque la página ganó una sexta sección con
+  preguntas generales que no tienen lado. El dibujo sigue siendo exacto sobre lo
+  que dibuja —el cruce de los dos públicos— y no intenta representar las que no
+  entran en ese cruce: un punto sin lado no tendría dónde ir, ni arriba ni
+  abajo, y ponerlo sobre el eje le daría al eje un tercer significado.
 
   Lo que la figura afirma, y ninguna otra página del sitio puede afirmarlo
   porque es la única que junta a los dos públicos: **una persona y una empresa
@@ -291,6 +299,40 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
                 </div>
               </section>
             ))}
+
+            {/*
+              La sexta sección, del 2026-09-29: las preguntas GENERALES.
+
+              Van aparte de los cinco grupos y no repartidas entre ellos, y el
+              motivo no es de composición: los cinco grupos existen para cruzar
+              **preocupación** con **público**, y estas preguntas no tienen
+              público. Meterlas dentro obligaría a inventarles un lado, que es
+              exactamente lo que la cabecera de esta página prohíbe: «de qué lado
+              es cada pregunta: de qué archivo viene. No hay campo que lo diga,
+              porque un campo así podría contradecir a su propio origen».
+
+              Por eso tampoco llevan la columna `.quien`: no hay nada que
+              rotular. `.qa.solo` ya sabe quedarse a una columna.
+
+              El porqué de estas tres, y de las dos que faltan, está en la
+              cabecera de `content/general.ts`.
+            */}
+            <section class="grupo" id="en-la-practica" aria-labelledby="en-la-practica-t">
+              <header class="g-cab" data-enter>
+                <h2 id="en-la-practica-t">Cómo es en la práctica</h2>
+                <span class="quienes">persona y empresa</span>
+              </header>
+              <div class="qs">
+                {generalFaq.map((p) => (
+                  <div class="qa solo">
+                    <div>
+                      <h3>{p.q}</h3>
+                      <p class="r">{p.a}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
         </div>
       </div>
     </div>
