@@ -21,9 +21,12 @@
  *
  * ── Lo que falta, y está así a propósito ────────────────────────────────────
  *
- * El grupo «qué pasa si algo se sale del guion» tenía cinco preguntas. Entran
- * tres. Las otras dos necesitan un dato operativo que Sebastián todavía no ha
- * dado y que no se puede suponer:
+ * Se revisaron cinco grupos de preguntas con Sebastián el 2026-09-29. Entran
+ * **cuatro preguntas**: tres del grupo «qué pasa si algo se sale del guion» y
+ * una del grupo «el dinero, antes y después». Lo que no entró, y por qué:
+ *
+ * **Dos preguntas necesitan un dato operativo** que no se ha dado y que no se
+ * puede suponer:
  *
  * · **«¿Qué pasa si transfiero y no me llega nada?»** — a quién escribe, en
  *   cuánto se le responde, y qué se hace si el dinero salió de su banco y no
@@ -33,6 +36,23 @@
  *   La respuesta publicada cubre sólo el caso de no haber transferido, y **eso
  *   es deliberado**: una respuesta no puede insinuar una devolución que nadie ha
  *   confirmado.
+ *
+ * **Tres se descartaron por decisión de Sebastián**, y conviene que la ausencia
+ * quede escrita para que nadie las proponga de vuelta creyendo que es un olvido:
+ *
+ * · **«¿Necesito una billetera? ¿Me ayudan a abrirla?»** — no ayudamos a
+ *   abrirlas, no es el servicio, y la página se dirige a gente que ya sabe qué
+ *   es una billetera. Decirlo sobraría.
+ * · **«¿Me entregan un comprobante?», «¿tengo que declarar al SII?» y «¿emiten
+ *   factura?»** — el registro del cambio queda en la plataforma, y **hoy no se
+ *   emiten facturas**; sin factura, hablar de boletas no tiene sentido. El
+ *   grupo entero se omite.
+ *
+ *   *Es «de momento», dicho por él: el proyecto evoluciona.* Así que esto NO es
+ *   una regla permanente sino el estado a esta fecha, y el día que se emitan
+ *   documentos las tres preguntas vuelven a tener sentido. Ojo entonces con la
+ *   de la factura: **pasa por D9**, porque una factura la emite un RUT concreto
+ *   y los T&C vigentes nombran una razón social distinta de la que usa el sitio.
  *
  * ── Los 12 minutos ─────────────────────────────────────────────────────────
  *
