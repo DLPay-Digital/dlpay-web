@@ -464,6 +464,47 @@ literales**: es una condición comercial, y dos copias que divergen serían dos 
 publicadas a la vez. Depende de D5 y de D6; cuando cualquiera de las dos se cierre, la frase cambia
 en un solo sitio.
 
+### Copy aprobado por Compliance — 2026-09-29  ·  **un claim regulatorio nuevo**
+
+**Firmado por Sebastián Villanueva Pereira como Compliance el 2026-09-29.**
+
+| Qué se aprobó | Dónde vive |
+|---|---|
+| **«No decimos que estamos inscritos en la CMF» → «Porque todavía no lo estamos: el proceso de inscripción está en curso. Cuando termine, lo diremos con el respaldo a la vista.»** | `content/trust.ts`, sección «Lo que no vas a leer acá» de `/confianza` |
+
+**Es el claim más sensible que el sitio publica**, y por eso se registra con detalle.
+
+**Qué decía antes y por qué dejó de ser exacto.** Decía «No decimos que estamos regulados por la
+CMF» → «Porque **no corresponde afirmarlo**». Sebastián informó ese día que el proceso de inscripción
+está en curso, y con eso la versión anterior pasó a ser inexacta en su razón: no es que no
+corresponda afirmarlo, es que el trámite **no ha terminado**.
+
+**Obligó a acotar una regla dura, y las dos cosas van en el mismo commit.** `CLAUDE.md` §6 decía
+«nunca afirmar que DLPay está regulado por la CMF **ni ningún claim regulatorio equivalente**», y una
+frase que describe un trámite ante la CMF cae en esa categoría. Acotado el mismo día: **la
+prohibición cubre afirmar el RESULTADO** —estar regulado, autorizado, certificado o avalado— **y no
+describir un trámite en curso**. Publicar la frase sin acotar la regla habría dejado el sitio
+contradiciendo su propio documento de gobierno; publicar la regla acotada sin cambiar `/confianza`
+habría dejado dos frases incompatibles en el aire.
+
+**El límite que la frase no cruza, y hay que vigilarlo.** Dice que el trámite está en curso, y nada
+más. **No dice ni puede insinuar que estar en proceso habilite a operar**, que es el riesgo real de
+publicar un «en trámite»: en Chile eso se lee como autorización, y no lo es. Tampoco nombra el
+registro ni la fecha de presentación, porque ese dato no se aportó.
+
+**Lo que conserva a propósito:** la promesa «lo diremos con el respaldo a la vista», que ya estaba
+publicada en la versión anterior. Es la que obliga a enseñar el respaldo el día que el trámite
+termine, y es también el motivo por el que ampliar esta frase antes de que eso pase sería
+incumplirla.
+
+**Dónde NO se publica.** El emblema y la frase institucional del pie siguen siendo **sólo** los de la
+UAF, cuyo alcance es la prevención del lavado de activos y **no** una autorización para operar
+(D26, `lib/config/alliances.ts`). El sitio menciona la CMF fuera del blog en **una sola página**,
+`/confianza`; comprobado sobre el build.
+
+**Cuando el trámite termine**, esta frase hay que rehacerla entera y con respaldo, y con ella la
+enmienda del §6, que existe sólo para describir un proceso en curso.
+
 ### Copy aprobado por Compliance — 2026-09-24
 
 **Firmado por Sebastián Villanueva Pereira como Compliance el 2026-09-24.**

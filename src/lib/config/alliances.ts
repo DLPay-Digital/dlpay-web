@@ -81,7 +81,14 @@ export const alliances: readonly Alliance[] = [
     // por la UAF" y nada más: no "autorizada", no "certificada", no "avalada".
     //
     // Ampliar esa redacción es un claim distinto y vuelve a necesitar
-    // aprobación. La prohibición de CLAUDE.md §6 sobre la CMF sigue intacta.
+    // aprobación.
+    //
+    // Sobre la CMF, actualizado el 2026-09-29: §6 sigue prohibiendo afirmar que
+    // DLPay está regulada o autorizada por la CMF. Lo que se acotó ese día es
+    // que sí se puede decir que el proceso de inscripción está en curso, y eso
+    // se publica en un solo sitio: la sección «Lo que no vas a leer acá» de
+    // `/confianza`, desde `content/trust.ts`. Acá no cambia nada: el emblema y
+    // la frase del pie siguen siendo sólo los de la UAF.
     relationship: 'Registrada y supervisada por la Unidad de Análisis Financiero',
     file: '/alianzas/uaf.png',
     // Más alto que FinteChile a propósito: el de la UAF es un lockup de tres

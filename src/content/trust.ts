@@ -97,8 +97,30 @@ export const phases: readonly Phase[] = [
  */
 export const honesty: { claim: string; reality: string }[] = [
   {
-    claim: 'No decimos que estamos regulados por la CMF',
-    reality: 'Porque no corresponde afirmarlo. Si alguna vez cambia, lo diremos con el respaldo a la vista.',
+    /*
+      CLAIM REGULATORIO — afirmado por DLPay (Sebastián, 2026-09-29).
+      Mismo trato que el de la UAF en `lib/config/alliances.ts`: quién lo afirma
+      y cuándo, y el alcance fijado en la propia frase.
+
+      Hasta hoy decía «No decimos que estamos regulados por la CMF» → «Porque no
+      corresponde afirmarlo». Sebastián informó que el proceso de inscripción
+      está en curso, así que la versión anterior había dejado de ser exacta: no
+      es que no corresponda afirmarlo, es que todavía no ha terminado.
+
+      **Lo que la frase dice y hasta dónde llega.** Dice que el trámite está en
+      curso, y nada más. No dice, ni puede insinuar, que estar en proceso
+      habilite a operar ni equivalga a estar inscrito: eso sigue prohibido por
+      `CLAUDE.md` §6, que se acotó el mismo día para permitir exactamente esto y
+      nada más. Ampliar la redacción es un claim distinto y vuelve a necesitar
+      aprobación.
+
+      Y conserva la promesa que la versión anterior ya publicaba —«lo diremos
+      con el respaldo a la vista»—, que es lo que obliga a enseñar el respaldo
+      cuando el trámite termine.
+    */
+    claim: 'No decimos que estamos inscritos en la CMF',
+    reality:
+      'Porque todavía no lo estamos: el proceso de inscripción está en curso. Cuando termine, lo diremos con el respaldo a la vista.',
   },
   {
     claim: 'No publicamos cifras de clientes ni de volumen',

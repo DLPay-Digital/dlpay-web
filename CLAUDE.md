@@ -397,7 +397,15 @@ WhatsApp prellenado → el ejecutivo confirma el precio final y coordina el dest
 como un camino duplicado. Lo que se pierde está razonado en `cotizador-spec.md`. Especificación completa en `docs/design-system/cotizador-spec.md`. No ejecuta
 operaciones, no bloquea precios, no promete cotizaciones cerradas.
 
-**Nunca afirmar** que DLPay está regulado por la CMF ni ningún claim regulatorio equivalente.
+**Nunca afirmar** que DLPay está regulado o autorizado por la CMF, ni ningún claim regulatorio
+equivalente.
+
+**Acotado el 2026-09-29 por Sebastián:** sí se puede decir que **el proceso de inscripción en la CMF
+está en curso**, que es lo que `/confianza` publica desde ese día en «Lo que no vas a leer acá». La
+prohibición cubre afirmar **el resultado** —estar regulado, autorizado, certificado o avalado— y no
+describir un trámite que no ha terminado. La frase publicada dice «el proceso de inscripción está en
+curso» y nada más: **insinuar que el trámite habilita a operar vuelve a caer en la prohibición**, y
+ampliar la redacción es un claim distinto que necesita aprobación otra vez.
 
 ---
 
