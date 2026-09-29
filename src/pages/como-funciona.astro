@@ -22,7 +22,11 @@ import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { formatCLP, formatRate } from '../lib/pricing/format.ts';
 import { contact, platform, quoteLimits } from '../lib/config/site.ts';
 
-const wa = contact.whatsappUrl();
+/* El botón es «Preguntar primero» y está junto a «Crear mi cuenta», en la
+   sección de registro y verificación. El mensaje nombra esa duda concreta. */
+const wa = contact.whatsappUrl(
+  'Hola, tengo dudas sobre el registro y la verificación antes de crear mi cuenta.'
+);
 
 /*
   El teléfono de la portada.

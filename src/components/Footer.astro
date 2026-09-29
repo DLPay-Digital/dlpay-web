@@ -12,7 +12,13 @@ import Icon from './Icon.astro';
 import Alliances from './Alliances.astro';
 import { site, contact } from '../lib/config/site.ts';
 
-const wa = contact.whatsappUrl();
+/*
+  El enlace del pie está en las ONCE páginas, así que es el único de los cinco
+  que no puede suponer por qué escribe quien lo pulsa. Su mensaje dice lo único
+  que se sabe con certeza y que igual sirve: **de dónde viene**. Un ejecutivo
+  que lee «escribo desde la web» ya sabe que no es un contacto por otro canal.
+*/
+const wa = contact.whatsappUrl('Hola, escribo desde la web de DLPay.');
 const legal = [
   { label: 'Términos y condiciones', href: '/terminos/' },
   { label: 'Privacidad', href: '/privacidad/' },

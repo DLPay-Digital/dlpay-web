@@ -147,7 +147,7 @@ Ninguna es técnica. Ninguna bloquea preparar el despliegue.
 | D9 | **Razón social** — bloquea publicar los textos legales | Compliance |
 | D19 | Correo oficial de contacto | Compliance |
 | D20 | Alcance descrito en los T&C frente al servicio real | Compliance |
-| D22 | Mensaje prellenado en tres enlaces a WhatsApp | Sebastián |
+| ~~D22~~ | ~~Mensaje prellenado en los enlaces planos a WhatsApp~~ · **cerrada el 2026-09-29** | — |
 
 ---
 

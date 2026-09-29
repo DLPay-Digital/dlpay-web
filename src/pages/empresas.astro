@@ -30,7 +30,18 @@ const wa = contact.whatsappUrl(
  * PENDIENTE DE DECISIÓN — texto del botón ("Habla con nosotros", provisional) y
  * mensaje prellenado de este enlace. Depende de D22 / Sebastián.
  */
-const waPlain = contact.whatsappUrl();
+/*
+  El SEGUNDO mensaje de esta página, y no duplica al de arriba a propósito: aquél
+  es del botón del cierre —de alguien que ya leyó la página y pregunta por
+  condiciones concretas— y éste es el del héroe, de alguien que acaba de llegar.
+  Por eso es más abierto.
+
+  El texto del botón, «Habla con nosotros», se queda: decisión de Sebastián del
+  2026-09-29. El registro lo llamaba provisional desde el 2026-09-10.
+*/
+const waPlain = contact.whatsappUrl(
+  'Hola, escribo por DLPay Empresas y quiero que me expliquen cómo funciona.'
+);
 ---
 <Base
   title="DLPay Empresas"

@@ -140,7 +140,15 @@ const minPay = quoteLimits.minPayClp;
 const samplePay = quoteLimits.samplePayClp;
 const sampleGet = convert('to_usd', samplePay, price.rate);
 
-const wa = contact.whatsappUrl();
+/*
+  Este enlace vive DENTRO del aviso «Tabla de tarifas: en publicación», así que
+  el mensaje pide justo lo que el aviso dice que todavía no está publicado. El
+  spread se nombra a propósito: los T&C comprometen informarlo, y pedirlo por
+  chat es lo que el propio aviso invita a hacer mientras D5 siga abierta.
+*/
+const wa = contact.whatsappUrl(
+  'Hola, quiero consultar el precio y el spread aplicables a mi operación.'
+);
 ---
 <Base
   title="Tarifas"

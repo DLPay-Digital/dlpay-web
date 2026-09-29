@@ -27,7 +27,9 @@ import { institutionalStatement, publishedAlliances } from '../lib/config/allian
    candado `verified` que gobierna los emblemas del pie. */
 const fintechile = publishedAlliances.find((a) => a.id === 'fintechile');
 
-const wa = contact.whatsappUrl();
+/* La tarjeta se llama «Hablar con alguien» y promete «una persona real». El
+   mensaje dice eso mismo desde el otro lado. */
+const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes de operar.');
 ---
 <Base
   title="Confianza"
