@@ -75,7 +75,13 @@ Y, para no confundir «estático» con «tosco», se resuelve por diseño la par
 La condición para reabrir esto es **evidencia**, no incomodidad: que la franja demuestre estorbar.
 En ese caso la respuesta correcta es la Opción C **completa** —script síncrono en el `<head>` para
 que no haya parpadeo— y con enmienda a este ADR y a
-`docs/arquitectura-produccion.md` §1. Registrado como **D28** en `CLAUDE.md` §13.
+`docs/arquitectura-produccion.md` §1.
+
+**D28 se cerró el 2026-09-29 como «no se hace»**, y la condición de arriba sigue siendo la que la
+reabriría. Lo que cambió es el argumento: estaba aparcada porque un botón costaría el fin de «cero
+almacenamiento», y la intro de marca ya gastó eso el 2026-09-25. **Quien la reabra no puede citar
+ese coste, porque ya está pagado.** El motivo de no hacerlo hoy es que nadie ha pedido cerrar la
+franja y que ésta ya se oculta sola en la página que enlaza.
 
 ## Consecuencias
 
@@ -165,9 +171,25 @@ Sin JavaScript no se puede ofrecer un botón de pausa de verdad. Lo que sí se h
   segundo sale del documento con `display: none`, para que su enlace no quede acechando invisible
   en el orden de tabulación.
 
-**Es una mitigación, no conformidad plena.** Se registra aquí como deuda consciente. La forma de
-cerrarla del todo es un botón de pausa, y eso cuesta JavaScript — la misma disyuntiva que este ADR
-resolvió para el botón de cerrar. Queda ligado a **D28** en `CLAUDE.md` §13.
+**Corregido el 2026-09-29: son TRES mecanismos, no uno.** Este párrafo nombraba sólo
+`prefers-reduced-motion` y concluía que «la forma de cerrarla del todo es un botón de pausa». El
+componente tiene además dos pausas implementadas y documentadas en su propio código:
+
+| mecanismo | a quién alcanza |
+|---|---|
+| `prefers-reduced-motion: reduce` | quien lo tenga puesto en el sistema: detiene la rotación y **saca el segundo mensaje del documento** |
+| `.rotator:hover` | puntero |
+| `.rotator:focus-within` | teclado, a través del enlace del mensaje |
+
+**Sigue sin ser conformidad plena, y el hueco real es más pequeño de lo que decía:** no es que
+falte un mecanismo de pausa —hay uno alcanzable con puntero y con teclado, que es el patrón
+aceptado para un carrusel— sino que **ninguno se anuncia**. Quien no tenga la preferencia del
+sistema puesta y no acerque el puntero ni tabule, no sabe que puede detenerla.
+
+Queda como **deuda declarada acá**, y a propósito no como decisión abierta: **D28 se cerró el
+2026-09-29 y esta mitad no se cerró con ella.** No lleva número propio porque no hay nada que
+decidir —el remedio es un control visible y se conoce—; lleva esta tabla para que quien lo mida no
+vuelva a contar un mecanismo donde hay tres.
 
 ### Notas de implementación
 

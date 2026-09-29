@@ -59,7 +59,7 @@ intro sin verse nunca.
 
 **El sitio deja de estar en «cero almacenamiento».** El marcador escribe una llave de sesión
 (`dlpay-visita`). No contradice lo que publica la Política de Privacidad —habla de cookies *de
-seguimiento* y analítica *de terceros*— pero sí vacía el argumento con el que **D28** sigue
+seguimiento* y analítica *de terceros*— pero sí vació el argumento con el que **D28** estuvo
 aparcada: a partir de hoy, dejar la franja de notificación sin botón de cerrar es una decisión de
 diseño y no de arquitectura.
 
