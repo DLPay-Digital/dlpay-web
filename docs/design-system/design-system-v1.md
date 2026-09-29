@@ -623,6 +623,53 @@ cerrado en el esquema: añadir un dibujo obliga a pasar por `PortadaFigura.astro
 escrito qué puede afirmar una figura en una página de DLPay. Un artículo no puede traer una imagen,
 ni encargarla, ni describirla en el frontmatter.
 
+#### El techo de la enmienda  ·  *escrito el 2026-09-29, con un caso trabajado*
+
+**El asunto de un artículo puede no ser dibujable bajo esta condición, y entonces la respuesta es no
+dibujarlo.** No es una carencia del sistema: es la condición funcionando.
+
+El caso: se pidió una portada de figura para el explainer de stablecoins. Se descartó, y conviene
+que quede el porqué porque el siguiente va a proponer los mismos tres dibujos.
+
+**1 · El glifo ya estaba tomado, y por nosotros.** La ficha de anillo doble con el canto dividido en
+24 unidades —la construcción de `activo-tokenizado`— se publicó el 2026-09-28 en `FiguraRiel.astro`,
+que vive en `/como-funciona`, y allí su rótulo dice **«dólar digital»**. Es la misma construcción a
+otro radio: 24/30 contra 38/46, las mismas 24 marcas. Así que hoy, en el vocabulario publicado,
+**esa ficha significa nuestro producto**. Una portada que la use para representar la categoría
+stablecoin dice «stablecoin = el dólar digital de DLPay», en un artículo cuya frase central es «no
+emitimos stablecoins ni las custodiamos por ti». Es el fallo de las dos monedas otra vez, por otra
+puerta: allí el problema era **qué dos cosas unía el bucle**; acá es **qué cosa es el nodo**.
+
+**2 · La propiedad que distingue al asunto no se puede afirmar.** Lo único que separa a una
+stablecoin de lo que el sitio ya dibuja es **la paridad**, y la paridad no se dibuja sin afirmar que
+se sostiene. El artículo dedica una sección a que puede no sostenerse —USDC en marzo de 2023, UST en
+mayo de 2022—, así que el dibujo contradiría al texto. **Es el mismo fallo de clase que el tipo
+`propagacion`** que abrió esta sección, y con el mismo agravante: la portada va antes del titular.
+Y acá se suma uno nuevo: sería una afirmación de estabilidad sobre **productos de terceros**
+publicada bajo nuestra firma, o sea §3 de `CLAUDE.md`.
+
+**3 · Las marcas con las que se intentó ya significan otra cosa** (§6.2, y por eso esa tabla
+existe):
+
+| lo que se quería decir | con qué se intentó | qué significa ya |
+|---|---|---|
+| «su nivel de referencia» | trazo punteado | **un límite: cruzarlo cambia algo.** Una horizontal punteada cruzando la ficha dibuja la línea de de-peg, lo contrario de lo buscado |
+| «se mantiene» | línea plana sobre un eje | **un valor que quedó fijo**, y sólo contra otra que se mueve: es la banda de `/precio`, «tu precio después de aceptarlo» |
+| «el mismo valor, otra envoltura» | dos barras apiladas | `convierte` de `UseCaseFigure`: **una conversión de divisa**, que es nuestro producto |
+| «una banda de tolerancia» | dos líneas acotando la ficha | **nada**: no existe en §6.2, y una tolerancia es una afirmación cuantitativa sin cifra, sin fecha y sin fuente, que es justo lo que esta sección reserva a `cifra` y `rango` |
+
+**4 · Y una trampa de dibujo que parece la salida y no lo es.** «Un anillo dividido en arcos
+iguales», para decir «hecho de unidades» sin la ficha entera, **se implementa con
+`stroke-dasharray` sobre un círculo**: es un anillo punteado, y el punteado es la marca de la fila
+1. El dibujo que evitaba una colisión cae en la otra.
+
+**La conclusión operativa.** Cuando las tres cosas pasan a la vez —el glifo del asunto ya está
+rotulado como nuestro, su propiedad distintiva no es afirmable, y las marcas disponibles están
+ocupadas—, **la portada correcta es ninguna**, y `blog/index.astro` ya lo contempla: la columna del
+índice queda vacía a propósito, porque rellenarla diría «acá hay una figura» donde no la hay. La
+alternativa honesta no es un pictograma más flojo: es `cifra` o `rango`, que traen el campo `fuente`
+que este contenido necesita.
+
 ### 6.2 El significado lo lleva la marca, no el color  ·  *añadido el 2026-09-17*
 
 Con cinco familias de figura vivas —los cuatro casos de `/empresas`, la línea de tenencia de
@@ -654,11 +701,29 @@ concluirá, razonablemente, que el verde se usa de dos maneras incompatibles, y 
 
 **Sobre la frontera punteada, añadida el 2026-09-22.** Estaba en producción desde que existe
 `UseCaseFigure` y no estaba escrita, y eso resultó ser lo que hacía ambiguo todo un par de figuras.
-Comprobado, y **recontado el 2026-09-24**: en todo `src/` hay **dos** trazos punteados visibles,
-`.edge` en `UseCaseFigure` y `.frontera` en la banda de `/precio`. La primera versión de esta frase
-decía «uno solo» y era cierta el día que se escribió; cuatro párrafos más abajo esta misma sección
-dice que `/precio` estrenó el segundo. **Una comprobación con fecha que no se recuenta es peor que
-ninguna**, porque el siguiente la cita. (El `stroke-dasharray` de `tokens.css` no cuenta: es el mecanismo del
+
+**Recontado el 2026-09-29 sobre el build servido: son SIETE**, no dos.
+
+| dónde | clase | qué límite marca |
+|---|---|---|
+| Home, «Tres usos» | `.edge` de `UseCaseFigure` | la frontera de Chile |
+| `/precio`, la banda | `.frontera` | el instante en que el cliente acepta |
+| `/tarifas` ×3 | `.limite`, `.sw sw-linea`, `.corte` | dónde acaba el precio · el spread · dónde se conversa |
+| Home y `/precio`, los puentes | `.limite` y `.corte` | los mismos dos, copiados a sus figuras |
+
+La cifra anterior decía «dos» y **era cierta el 2026-09-24**: lo que la invalidó fue el rediseño de
+`/tarifas` del día siguiente, que estrenó tres, y los puentes del 28, que copiaron dos a sus
+figuras. Es la segunda vez que esta frase envejece, así que conviene decir por qué y no sólo
+corregirla: **un recuento es una foto, y esta sección declara que mide «sobre el build y no
+recordado». Quien la cite tiene que rehacer la foto, no leer la anterior.**
+
+*Y una trampa del instrumento, por si alguien repite la medición:* el barrido descartó `.edge`
+porque filtraba por ancho mayor que cero, y `.edge` es una **línea vertical** — ancho cero. Un
+filtro geométrico razonable esconde justo las marcas de un eje. Se cuenta por `border-style`,
+`stroke-dasharray` y `repeating-linear-gradient`, nunca por el tamaño de la caja. *(El
+`stroke-dasharray` que fija el runtime de M3 no cuenta: es un solo valor, el largo del propio trazo,
+y pasa a `none` al entrar. `.edge` no lleva `data-draw` ni está dentro de uno, así que conserva su
+`3px, 4px` con y sin JavaScript. Comprobado en los dos casos.)* (El `stroke-dasharray` de `tokens.css` no cuenta: es el mecanismo del
 movimiento M3 —el guion vale el largo del propio trazo y pasa a `none` al entrar—, no una marca.
 Nunca se lee como punteado.)
 
