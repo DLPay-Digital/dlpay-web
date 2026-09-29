@@ -88,6 +88,17 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
                   : p.tipo === 'cifra'
                     ? formatFigure(p.valor)
                     : formatFigureRange(p.min, p.max);
+              /*
+                `larga` mide la cifra **y su unidad**. Corregido el 2026-09-29:
+                medía sólo el número, y con la primera portada de tipo `cifra`
+                —«292» más «mil millones de dólares»— el número tiene 3
+                caracteres y la unidad 23, así que no se activaba. Y como
+                `.cifra` lleva `white-space: nowrap`, la cadena se salía de la
+                columna en vez de repartirse. Lo que tiene que caber en 132px es
+                la cadena entera, no su primera mitad.
+              */
+              const esLarga =
+                p !== undefined && p.tipo !== 'figura' && (cifra + p.unidad).length > 7;
               return (
                 <li data-enter>
                   <a href={`/blog/${post.id}/`}>
@@ -106,7 +117,7 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
                         <PortadaFigura figura={p.figura} variant="marca" />
                       )}
                       {p !== undefined && p.tipo !== 'figura' && (
-                        <span class:list={['marca-dato', { larga: cifra.length > 7 }]}>
+                        <span class:list={['marca-dato', { larga: esLarga }]}>
                           <span class="cifra">
                             {cifra}<span class="u">{p.unidad}</span>
                           </span>
@@ -214,7 +225,12 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
   */
   .marca-dato.larga .cifra { font-size: var(--t-body); }
   .cifra .u { font-size: var(--t-dato-sm); color: var(--ink-mute); margin-left: 3px; }
-  .marca-dato.larga .cifra .u { display: block; margin-left: 0; }
+  /* `white-space: normal` es imprescindible y no cosmético: `.cifra` lleva
+     `nowrap` y eso lo hereda el bloque de la unidad, así que sin esto una unidad
+     larga se sale de la columna en vez de repartirse en líneas. Con `%` no
+     cambia nada; con «mil millones de dólares» es la diferencia entre caber y
+     no caber. */
+  .marca-dato.larga .cifra .u { display: block; margin-left: 0; white-space: normal; }
   .raya { width: 26px; border-top: 2px solid var(--verde-deep); }
   .et {
     font-size: var(--t-dato-sm);

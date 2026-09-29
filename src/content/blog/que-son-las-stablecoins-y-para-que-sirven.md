@@ -4,18 +4,33 @@ description: 'Qué son, cómo mantienen su paridad con el dólar, quiénes las e
 pubDate: 2026-09-29
 category: 'Mercado'
 estado: publicado
-# Sin portada. El artículo es un explainer general de la categoría stablecoin,
-# no se apoya en una cifra puntual ni en un intervalo, y hoy el único enum de
-# `figura` disponible es `activo-tokenizado`, que no aplica a este asunto. El
-# schema permite omitir `portada`; el artículo arranca por el titular.
+portada:
+  tipo: cifra
+  etiqueta: 'Stablecoins en circulación'
+  valor: 292
+  unidad: 'mil millones de dólares'
+  fecha: 2026-09-29
+  fuente: 'CoinGecko'
+# Portada de tipo `cifra`, aprobada por Sebastián el 2026-09-29. **Es la primera
+# del sitio**: hasta hoy ningún artículo usaba esta rama del esquema.
 #
-# Si más adelante se quiere una portada, dos caminos honestos:
-#   1. `tipo: cifra` con el market cap total del sector stablecoin en una fecha
-#      concreta y CoinGecko o DefiLlama como fuente. Requiere que la misma
-#      cifra viva también en el cuerpo del artículo (regla de PortadaDato).
-#   2. Añadir un enum nuevo en `figura` (por ejemplo `stablecoin`) con su
-#      pictograma dibujado en `PortadaFigura.astro`, respetando la regla de un
-#      solo nodo, sin contraparte y sin cuña.
+# NO es un pictograma, y la decisión está razonada en el Design System §6.1
+# («El techo de la enmienda»). En corto: para este asunto no hay figura posible.
+# La ficha de anillo con el canto dividido en unidades, que sería el dibujo
+# obvio, se publicó el 2026-09-28 en `FiguraRiel.astro`, dentro de
+# `/como-funciona`, y allí su rótulo dice «dólar digital»: usarla acá diría
+# «stablecoin = el dólar digital de DLPay», en el artículo cuya frase central es
+# «no emitimos stablecoins ni las custodiamos». Y lo único que distingue al
+# asunto es la paridad, que no se dibuja sin afirmar que se sostiene, justo en un
+# artículo con una sección dedicada a que puede no sostenerse.
+#
+# La cifra es la del SECTOR y no la de un emisor, y eso también es decisión:
+# elevar a portada el market cap de Tether en un artículo que nombra a ocho
+# emisores repetiría el sobre-alcance que el registro de verificación de abajo
+# ya corrigió en su punto 2.
+#
+# Vive también en el cuerpo, en «Qué es una stablecoin», como exige
+# `PortadaDato.astro`: una portada no puede ser el único sitio donde vive un dato.
 ---
 
 <!--
@@ -47,7 +62,12 @@ REGISTRO DE VERIFICACIÓN DE DATOS, hecha el 2026-09-29 contra las fuentes:
      y la página vigente es `ripple.com/products/stablecoin/`.
   6. De-peg de USDC en marzo de 2023 por exposición a SVB, y colapso de
      UST/Terra en mayo de 2022 con cerca de 40 mil millones. Sin cambios.
-  7. Los siete enlaces del pie resuelven. Dos estaban rotos y se corrigieron
+  7. Agregado del sector: CoinGecko declara en su propia ficha de categoría
+     «The Stablecoins market cap today is $292 Billion», con el detalle
+     $292.246.601.414. Es la cifra de la portada y vive también en el cuerpo.
+     Envejece igual que la de Tether: quien la actualice, actualice la fecha en
+     los dos sitios.
+  8. Los siete enlaces del pie resuelven. Dos estaban rotos y se corrigieron
      (Ripple, arriba; y la categoría de CoinGecko, que en singular da 404).
      `firstdigitallabs.com` y `coingecko.com` devuelven 403 a `curl` por
      detección de bots y **se comprobaron en un navegador real**: los dos
@@ -76,7 +96,9 @@ ambos lados. No pronostica y no recomienda operar.
 Una stablecoin es una moneda digital diseñada para mantener paridad con una
 moneda tradicional. Casi siempre esa moneda es el dólar estadounidense: hay
 stablecoins ancladas al euro, al oro y a canastas de monedas, pero el dólar
-concentra la abrumadora mayoría del volumen del sector.
+concentra la abrumadora mayoría del volumen del sector. El sector entero suma
+292 mil millones de dólares en circulación al 29 de septiembre de 2026, según
+CoinGecko.
 
 La regla es directa. Un token USDT vale un dólar. Un token USDC vale un dólar.
 Un token RLUSD vale un dólar. No es que "aproximadamente" valen un dólar. El

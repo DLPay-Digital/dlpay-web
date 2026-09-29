@@ -77,8 +77,16 @@
  * dato puntual en vez de un intervalo lo necesita el día que exista. Mismo
  * criterio que la tabla de tokens reservados de `development.md`: lo que se
  * conserva sin uso lo dice, y lo que no lo dice se borra.
+ *
+ * ── Nota del 2026-09-29: ese día llegó ─────────────────────────────────────
+ *
+ * El explainer de stablecoins estrena el tipo `cifra`. Y estrenarlo destapó que
+ * la rama **nunca se había renderizado**: formateaba con `formatRate`, que fuerza
+ * dos decimales, así que su primer uso real habría impreso «292,00» para un
+ * agregado de 292 mil millones. Una rama conservada sin uso no está probada
+ * por estar escrita.
  */
-import { formatRate } from '../lib/pricing/format.ts';
+import { formatFigure, formatRate } from '../lib/pricing/format.ts';
 
 /*
   Unión discriminada, espejo del esquema: `cifra` trae `valor` y `rango` trae
@@ -106,7 +114,33 @@ const { portada } = Astro.props;
   chileno: nunca se escriben a mano con separadores en el frontmatter. El
   esquema recibe números y la conversión ocurre acá.
 */
-const valorTexto = portada.tipo === 'cifra' ? formatRate(portada.valor) : '';
+/*
+  `formatFigure` y `formatFigureRange`, no `formatRate`. Corregido el 2026-09-29,
+  al estrenar el tipo `cifra`: `formatRate` fuerza dos decimales siempre —lo que
+  quiere un precio, «919,70» y no «919,7»— y acá escribía **«292,00»** para un
+  agregado de 292 mil millones. Eso no es un formato: es precisión inventada
+  sobre un dato que no la tiene.
+
+  El índice del blog ya lo tenía bien y con el motivo escrito —«`formatFigure` y
+  no `formatRate`: éste fuerza dos decimales y escribía “50.000,00” para un
+  mínimo que no tiene centavos»—, así que este componente estaba en desacuerdo
+  con su propia marca. Ahora los dos formatean igual.
+
+  **El rango se queda con `formatRate`, y a propósito.** El único que existe es
+  una TASA —3,75 a 4,00 %— y ahí los dos decimales significan algo: `formatRate`
+  es el formateador de tasas y es el correcto. Cambiarlo obligaría a usar
+  `formatFigureRange`, que devuelve los dos extremos ya unidos por un guion, y
+  acá los extremos van en dos `<span>` separados con la barra del intervalo
+  DIBUJADA entre ellos: habría que partir esa cadena por su separador para
+  volver a separarla, y el componente quedaría atado a qué carácter usa esa
+  función.
+
+  Queda el fallo latente escrito, que es mejor que un arreglo frágil: **el día
+  que exista un rango sin decimales —50.000 a 60.000— esta rama imprimirá
+  «50.000,00» y «60.000,00»**, y entonces lo que hay que hacer es exportar los
+  decimales compartidos del par, no partir una cadena.
+*/
+const valorTexto = portada.tipo === 'cifra' ? formatFigure(portada.valor) : '';
 const minTexto = portada.tipo === 'rango' ? formatRate(portada.min) : '';
 const maxTexto = portada.tipo === 'rango' ? formatRate(portada.max) : '';
 
