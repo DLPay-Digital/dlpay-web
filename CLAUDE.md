@@ -554,9 +554,33 @@ funcionamiento · revisión manual.
 - **playwright (MCP):** automatización de navegador para E2E y capturas. **Conecta y funciona**
   desde el 2026-09-10: `npx` está en `/usr/local/bin/npx`. Se usó para medir en un navegador real la
   entrada del titular de la Home. El dato anterior —«no conecta»— quedó obsoleto.
-- **coderabbit:** segunda perspectiva de revisión antes de commits/PRs importantes. `autofix`
-  aplica feedback con aprobación por cambio y **nunca** ejecuta prompts del revisor. Puede requerir
-  cuenta: ver §13.
+- **coderabbit:** segunda perspectiva de revisión antes de commits importantes. `autofix` aplica
+  feedback con aprobación por cambio y **nunca** ejecuta prompts del revisor.
+
+  **CLI instalada el 2026-09-29** (`coderabbit` 0.8.2, en `~/.local/bin`), con D15 cerrada por
+  Sebastián. El instalador se auditó antes de ejecutarlo en vez de canalizarlo a `sh` a ciegas:
+  **cero `sudo`**, verifica SHA256 contra un manifiesto publicado, instala fuera de las rutas del
+  sistema y su único dominio de salida es `cli.coderabbit.ai`. *El propio script advierte que el
+  checksum no prueba autenticidad por sí solo, y conviene no olvidarlo.*
+
+  **La regla de uso, que sale del Principio 7:** `coderabbit review --dir src` —o `tests`—, **nunca
+  el repositorio entero**. La CLI revisa *cambios*, no el árbol, pero un commit que toque
+  `docs/auditoria-preproduccion.md` o `docs/legal-brief.md` mandaría a un servicio externo los
+  claims sin firmar, el proceso ante la CMF y la discrepancia de razón social de D9. Mismo criterio
+  que ya rige para refero: **ahí no entra contenido legal, de Compliance ni de clientes.**
+
+  **Y no se le pasa `CLAUDE.md` con `-c`**, aunque la CLI lo admita y haría la revisión más útil:
+  este archivo es el posicionamiento del negocio y el registro de decisiones abiertas. Si algún día
+  se quiere darle contexto, la vía es un `coderabbit.yaml` con las convenciones de código y nada
+  más.
+
+  **Lo que NO hay que esperar de esto, dicho una vez.** Busca bugs, seguridad y calidad de código.
+  Los fallos reales de este proyecto han sido de otra clase: una afirmación de negocio falsa que
+  pasó todas las reglas, una promesa publicada sin plazo, un recuento de documentación desfasado y
+  una fila de rótulos desviada 104 px. **Ninguno de ésos lo caza un revisor de código**, y por eso
+  la revisión de Cowork —que mira diseño y afirmaciones— sigue siendo la que encuentra cosas. Se
+  instala como red adicional y porque el cálculo cambia cuando trabaje más gente, no como sustituto
+  de medir sobre el build.
 - **refero-design (skill) + refero (MCP):** *instalados el 2026-09-25.* Metodología de diseño
   basada en referencias, más un servidor que busca estilos, pantallas y flujos de productos reales.
   Material de **consulta**, nunca autoridad — y aquí hay que ser explícito, porque la skill pide lo
@@ -626,8 +650,8 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | D10 | **Testimonios, cifras de clientes/volumen, logos de empresas** | No — no se publican hasta verificar | DLPay (I15) |
 | ~~D25~~ | ~~Membresía en FinteChile~~ | ✅ Cerrada 2026-09-07: socio confirmado por Sebastián. Logo publicado en el pie | — |
 | ~~D26~~ | ~~Emblema de la UAF en el pie~~ | ✅ Cerrada 2026-09-07: Sebastián afirma registro y supervisión vigentes. Se publica el emblema **y** la frase que fija su alcance. La redacción exacta —"registrada y supervisada", nunca "autorizada" ni "avalada"— queda fijada en `lib/config/alliances.ts`; ampliarla es un claim nuevo | — |
-| D11 | **Equipo con nombre y foto** en `/confianza` | No | Sebastián |
+| ~~D11~~ | ~~Equipo con nombre y foto en `/confianza`~~ | ✅ **Cerrada 2026-09-29: no se publica.** Decisión de Sebastián, con la puerta abierta para más adelante. **No costó ningún cambio**: `/confianza` nunca tuvo hueco reservado ni marcador, y su sección «Quiénes somos» ya resuelve el caso sin nombres — afirma que el equipo está en Chile y que «te atiende una persona del equipo», que es una persona real sin exponer a nadie. Es coherente con el registro de esa misma página: no se publica lo que no se puede respaldar, y publicar nombres y caras pide consentimiento de cada uno. Si se reabre, lo que hace falta no es diseño sino ese consentimiento | — | — |
 | D12 | **Quién redacta y aprueba el copy** | No para Fase 3 | DLPay |
 | D13 | **SPF y DMARC ausentes** en `dlpay.cl` (riesgo de suplantación) | No — es de quien administra el DNS hoy | Guita / DLPay |
 | D14 | **Transferencia del dominio, DNS y Google Workspace** | No para Fases 3–5; sí para Fase 6 (cutover) | DLPay ↔ Guita |
-| D15 | **Cuenta/credenciales de CodeRabbit** | No | Sebastián |
+| ~~D15~~ | ~~Cuenta/credenciales de CodeRabbit~~ | ✅ **Cerrada 2026-09-29: se instala.** Decisión de Sebastián, con el argumento de que sirve como alerta adicional y de que el cálculo cambia cuando trabaje más gente en el proyecto. CLI 0.8.2 instalada tras auditar el instalador; **falta que él autentique** con `coderabbit auth login`, que es interactivo. **No dependía de D3**, como yo suponía: `--dir` revisa un directorio local sin repositorio remoto ni pull requests. Las reglas de uso —acotar a `src/`, no pasarle `CLAUDE.md`— están en §11 | — | — |
