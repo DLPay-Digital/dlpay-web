@@ -549,8 +549,8 @@ en `/confianza`.
 
 | familia | páginas y alto | rango |
 |---|---|---|
-| **con objeto** | Home 781 · `/como-funciona` 660 · `/empresas` 569 · `/tarifas` 529 · `/confianza` 460 | **460–781 px** |
-| **sin objeto** | `/canal-de-denuncias` 288 · `/precio` 262 · `/preguntas` 262 · `/terminos` 262 · `/blog` 236 · `/privacidad` 236 | **236–288 px** |
+| **con objeto** | Home 781 · `/como-funciona` 660 · `/empresas` 569 · `/tarifas` 529 · `/preguntas` 477 · `/confianza` 460 | **460–781 px** |
+| **sin objeto** | `/canal-de-denuncias` 288 · `/precio` 262 · `/terminos` 262 · `/blog` 236 · `/privacidad` 236 | **236–288 px** |
 
 **Entre 288 y 460 px no hay ninguna.** Ese hueco de 172 px es la regla y no una casualidad: **una
 portada de altura intermedia es una que no ha decidido a qué familia pertenece.**
@@ -560,8 +560,21 @@ pieza a un lado del titular sino una banda a sangre con un emblema centrado o un
 corta en las dos variantes — 256 px el de activos tokenizados, con su pictograma de 160×160, y
 246 px el de stablecoins, con su portada de cifra. Ver §6.1 para qué puede llevar.
 
-**Tres portadas quedan por hacer**, las tres de páginas no legales que hoy abren sin objeto:
-`/preguntas`, `/precio` y el índice del blog. Sobre `/precio` hay una conclusión ya medida y conviene
+**`/preguntas` cambió de familia el 2026-09-29**, con la portada de las nueve preguntas: pasó de 262
+a **477 px**. Y su montaje dejó dos cosas aprendidas que valen para las dos que faltan:
+
+- **El layout decide la familia tanto como la figura.** En `layout="split"` esa misma portada cerraba
+  en **402 px, dentro del hueco**, y estirar el dibujo para llegar a 460 sólo lo dejaba espigado. Una
+  figura ancha —2,63:1— va apretada en media columna, y por eso las cuatro páginas interiores con
+  figura ancha usan `stacked`. **Antes de tocar un dibujo para que su portada entre en la familia,
+  hay que mirar la rejilla.**
+- **El rango se mide a 1280 y sólo ahí.** En móvil las portadas con objeto **crecen** al apilarse
+  —Home 1137, `/como-funciona` 684, `/confianza` 669 a 390 px— con una excepción: la de `/preguntas`
+  baja a 448, porque su figura es una banda y una banda no gana alto al estrecharse. No rompe nada,
+  pero es la más liviana de su familia en móvil y conviene saberlo antes de comparar.
+
+**Dos portadas quedan por hacer**, las dos de páginas no legales que siguen abriendo sin objeto:
+`/precio` y el índice del blog. Sobre `/precio` hay una conclusión ya medida y conviene
 no repetir el intento: **su figura no se puede subir a la portada**, porque no es un objeto suelto
 sino una `section` con su propio `<h2>` —«Lo que ves y lo que pagas miden lo mismo»— y su bajada.
 Subirla dejaría ese titular huérfano o lo duplicaría. `/precio` necesita otro objeto, o quedarse en
@@ -722,6 +735,7 @@ vocabulario geométrico ya no cabe en la regla dura de §6. Ésta es la semánti
 | Marca | Significa |
 |---|---|
 | Punto lleno verde | un extremo de la operación: una contraparte o una unidad de valor |
+| Punto lleno **neutro** | **una pregunta del visitante** · añadido el 2026-09-29, ver abajo |
 | Tramo o línea verde **que ocupa un trecho de un recorrido** | el tramo que es nuestro · dice **de quién es**, no cómo se comporta |
 | Cuña | valor moviéndose · el trabajo cambia de manos |
 | Barra llena verde | una magnitud |
@@ -730,6 +744,21 @@ vocabulario geométrico ya no cabe en la regla dura de §6. Ésta es la semánti
 | Trazo **punteado** | un **límite**: cruzarlo cambia algo · es la única marca punteada del sistema |
 | Línea verde **plana a lo largo de un eje, junto a otra que sigue moviéndose** | **un valor que quedó fijo** · dice **que no cambia**, y sólo significa algo contra el movimiento de al lado |
 | `--line` | separador sin significado |
+
+**Sobre el punto lleno neutro, añadido el 2026-09-29.** Estrena familia y por eso se escribió antes
+de dibujarlo, como se hizo con la frontera punteada. Va en `--on-tinta` sobre tinta y significa **una
+pregunta del visitante**; la usa la portada de `/preguntas`, con un punto por cada una de las nueve
+que la página publica.
+
+**No compite con el punto verde, y la distinción es la que esta sección defiende:** lo que cambia no
+es sólo el color, es la marca. El punto verde es «un extremo de la operación», o sea dinero; éste no
+es dinero, y por eso no puede ser verde — el verde diría que lo es. En la misma figura el eje **sí**
+es verde, con su significado publicado: «el tramo que es nuestro», que acá son las respuestas.
+
+**Requirió enmendar una regla dura de `CLAUDE.md` §5**, no sólo esta tabla: las tres cosas que esa
+regla admitía —movimiento, flujo de valor, un paso de un proceso— son todas dinero o su recorrido, y
+una pregunta no es ninguna. Autorizada por Sebastián ese día, con su alcance acotado allá: **no
+autoriza un trazo por «un tema» ni por «una sección»**, que sería un índice dibujado.
 
 **El color no es el portador del significado.** El verde dice «esta marca carga significado»; cuál
 de los dos verdes se usa lo decide **el fondo**: `--verde` sobre tinta y `--verde-deep` sobre

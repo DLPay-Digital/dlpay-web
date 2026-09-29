@@ -113,6 +113,105 @@ if (colocadas !== todas.length) {
   );
 }
 
+/*
+  ── La portada: un punto por pregunta ──────────────────────────────────────
+
+  Nueve puntos, no cinco: **el recuento de la figura es el recuento de la
+  página**. Arriba las que hace una persona, abajo las que hace una empresa, y
+  cuando las dos preguntan por lo mismo comparten la vertical. Las dos
+  asimetrías de los extremos son las dos preguntas que sólo hace un lado.
+
+  Lo que la figura afirma, y ninguna otra página del sitio puede afirmarlo
+  porque es la única que junta a los dos públicos: **una persona y una empresa
+  preguntan casi lo mismo.** De las cinco preocupaciones, tres las preguntan las
+  dos partes y cada una tiene exactamente una suya.
+
+  **Lo que NO hace es enumerar los cinco grupos.** Sebastián retiró de esta
+  página el índice pegajoso y la numeración 01–05 el 2026-09-24 por estética, y
+  una portada que los listara sería el mismo índice con otra ropa. La figura dice
+  la forma sin nombrar ni un grupo.
+
+  ── Se construye de los datos, y eso es la mitad del asunto ────────────────
+
+  Las posiciones **se cuentan**, no se escriben: si mañana entra una pregunta a
+  `home.ts` o a `business.ts`, aparece su punto y el lienzo se ensancha. Escrita
+  a mano, la figura empezaría a mentir el día siguiente y nadie lo vería.
+
+  No hace falta una guarda propia: la de arriba ya falla el build si alguna
+  pregunta se queda sin grupo, y es la misma condición que esto necesita.
+
+  ── Las marcas, contra el §6.2 ─────────────────────────────────────────────
+
+  · **El eje verde** es «el tramo que es nuestro», su significado publicado: lo
+    que se responde es nuestro, y es lo único nuestro en la figura.
+  · **El punto lleno neutro** significa **una pregunta**. Es marca nueva del
+    2026-09-29, escrita en el §6.2 antes de dibujarla, y requirió enmendar la
+    regla dura de `CLAUDE.md` §5 porque una pregunta no es dinero ni su
+    recorrido. No puede ser verde: el verde diría que lo es.
+  · **Los tallos** van en `--on-tinta` al 40 %: unen cada pregunta con su
+    respuesta y no afirman nada.
+
+  ── La geometría, y por qué estos tres números ─────────────────────────────
+
+  Dentro de una preocupación los puntos van juntos (`INTRA`) y entre
+  preocupaciones separados (`INTER`): así se ve el agrupamiento **sin rotularlo**.
+  Una preocupación ocupa tantas columnas como preguntas tenga el lado que más
+  haga, que hoy es `recibo` con dos de persona y ninguna de empresa.
+*/
+const INTRA = 42;
+const INTER = 106;
+const MARGEN = 40;
+
+const racimos = grupos.map((g) => ({
+  persona: faqPersonas.filter((f) => f.concern === g.concern).length,
+  empresa: faqEmpresas.filter((f) => f.concern === g.concern).length,
+}));
+
+type Columna = { x: number; arriba: boolean; abajo: boolean };
+const columnas: Columna[] = [];
+let cursor = 0;
+racimos.forEach((r, i) => {
+  if (i > 0) cursor += INTER;
+  const ranuras = Math.max(r.persona, r.empresa);
+  for (let j = 0; j < ranuras; j += 1) {
+    if (j > 0) cursor += INTRA;
+    columnas.push({ x: MARGEN + cursor, arriba: j < r.persona, abajo: j < r.empresa });
+  }
+});
+/*
+  El lienzo crece con los datos en vez de apretarlos: hoy da 546 de ancho.
+
+  Y la vertical **también se deriva**, de tres medidas y no de cuatro números
+  escritos: `AIRE` es el borde, `BRAZO` la distancia del eje al punto y `RADIO`
+  el punto. El tallo llega hasta el punto menos su radio menos 3 px de holgura,
+  que es lo que separa el trazo del círculo sin que se toquen.
+
+  Las tres son las de la maqueta aprobada, y **estuvieron a punto de no serlo.**
+  Montada en `layout="split"`, la portada cerraba en **402 px a 1280**, dentro
+  del hueco de 288 a 460 que el propio §4.8 declara prohibido, así que lo primero
+  que probé fue estirar el dibujo: `BRAZO` a 96 subía el héroe a 447, todavía
+  corto, y de paso dejaba una figura espigada y llena de vacío.
+
+  **El problema no era el tamaño del dibujo: era el layout.** Una figura de
+  2,63:1 va apretada en media columna, y ésa es exactamente la razón por la que
+  las otras tres páginas interiores con figura ancha —`/confianza`,
+  `/como-funciona` y `/tarifas`— usan `stacked`. Con `stacked` el dibujo recupera
+  sus proporciones originales y la portada cierra en **523 px**, dentro de su
+  familia a todos los anchos.
+
+  Queda dicho porque la tentación de tocar el dibujo llega antes que la de mirar
+  la rejilla, y esta vez el dibujo estaba bien.
+*/
+const LIENZO_W = cursor + MARGEN * 2;
+const AIRE = 34;
+const BRAZO = 70;
+const RADIO = 5.5;
+const EJE_Y = AIRE + BRAZO;
+const LIENZO_H = EJE_Y + BRAZO + AIRE;
+const Y_ABAJO = EJE_Y + BRAZO;
+/* El tallo se detiene antes del punto: radio más 3 px de holgura. */
+const TALLO = RADIO + 3;
+
 const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.');
 ---
 <Base
@@ -127,7 +226,48 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
       title="Preguntas"
       lead="Lo que nos preguntan antes de operar, y las palabras que usamos para responder."
       sequence
-    />
+      layout="stacked"
+    >
+      {/*
+        Los rótulos van FUERA del SVG, y es la regla que ya aplican el riel del
+        artículo y la línea de tenencia de `/confianza`: dentro del `viewBox`
+        escalan con el ancho y a 390 px caen a menos de 10 px reales. Acá son
+        texto con la escala del sistema.
+
+        `aria-hidden` sobre el `<figure>` entero, rótulos incluidos: sin eso un
+        lector de pantalla leería «persona, empresa» sueltos entre el titular y
+        el cuerpo. Lo que la figura dice, lo dice la página con sus nueve
+        preguntas agrupadas justo debajo.
+
+        No lleva `data-enter`: el movimiento que tiene es el de la secuencia de
+        carga del héroe (M6), que la prop `sequence` ya aplica a esta ranura
+        igual que en `/confianza` y en `/empresas`. No se le añade una entrada
+        propia.
+      */}
+      <figure class="nueve" slot="aside" aria-hidden="true">
+        <svg viewBox={`0 0 ${LIENZO_W} ${LIENZO_H}`} preserveAspectRatio="xMidYMid meet">
+          <line class="eje" x1="0" y1={EJE_Y} x2={LIENZO_W} y2={EJE_Y} />
+          {columnas.map((c) => (
+            <>
+              {c.arriba && (
+                <>
+                  <line class="tallo" x1={c.x} y1={EJE_Y - 2} x2={c.x} y2={AIRE + TALLO} />
+                  <circle class="pregunta" cx={c.x} cy={AIRE} r={RADIO} />
+                </>
+              )}
+              {c.abajo && (
+                <>
+                  <line class="tallo" x1={c.x} y1={EJE_Y + 2} x2={c.x} y2={Y_ABAJO - TALLO} />
+                  <circle class="pregunta" cx={c.x} cy={Y_ABAJO} r={RADIO} />
+                </>
+              )}
+            </>
+          ))}
+        </svg>
+        <span class="rot arriba">persona</span>
+        <span class="rot abajo">empresa</span>
+      </figure>
+    </PageHero>
 
     <div class="cuerpo">
       <div class="inner">
@@ -204,6 +344,65 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
 </Base>
 
 <style>
+  /*
+    ── La portada: los estilos de la figura de las nueve preguntas ───────────
+
+    Viven acá y no en `PageHero` porque la figura la renderiza esta página: el
+    ámbito de Astro alcanza a lo que la página pone en una ranura, no al interior
+    del componente. Es lo mismo que hacen `.track` en `/confianza` y `.tarjeta`
+    en `/tarifas`.
+
+    Y va en la página y no en un componente propio por el Principio 5: hay un
+    solo caso. Cuando aparezca el segundo se extrae, como pasó con `Puente`.
+  */
+  /*
+    `max-width` y no ancho libre: bajo 900 px la figura deja de ser columna y
+    toma el contenedor entero, y a 768 eso le daba **713 px de ancho, más que
+    los 468 que tiene en escritorio**. El dibujo salía más grande en la tableta
+    que en el monitor y aplastaba al titular. Con el tope se queda en el tamaño
+    que tiene arriba, centrado.
+  */
+  .nueve {
+    margin: var(--s-7) 0 0;
+    position: relative;
+    padding-block: var(--s-6);
+    width: 100%;
+    max-width: 480px;
+    margin-inline: auto;
+  }
+  .nueve svg { display: block; width: 100%; height: auto; }
+  /* El eje: «el tramo que es nuestro» (§6.2). `--verde` porque el fondo es
+     tinta y el fondo elige el verde; da 8,45:1, muy por encima del 3:1. */
+  .nueve .eje { stroke: var(--verde); stroke-width: 3; }
+  /*
+    Los tallos no afirman nada: unen cada pregunta con su respuesta. Y eso es lo
+    que permite dejarlos como están en móvil: a 320 px el dibujo va a escala
+    0,485, así que el tallo cae a **0,61 px** y se dibuja como una línea muy
+    clara. **Los dos trazos que SÍ cargan significado aguantan**: el punto mide
+    5,34 px de diámetro y el eje 1,46 px, los dos por encima de 1 px.
+
+    Comprobado antes de decidir no tocarlo, porque la alternativa tenía coste:
+    subir el grosor del tallo bajo 900 px lo dejaba en 2,2 px a 768 contra los
+    2,64 del eje, y entonces el trazo sin significado pesaría casi lo mismo que
+    el que lo tiene.
+  */
+  .nueve .tallo { stroke: var(--on-tinta); stroke-width: 1.25; opacity: 0.4; }
+  /* El punto: una pregunta. Neutro a propósito — ver la cabecera y el §6.2. */
+  .nueve .pregunta { fill: var(--on-tinta); }
+  .nueve .rot {
+    position: absolute;
+    left: 0;
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--on-tinta-mute);
+    line-height: 1;
+  }
+  .nueve .rot.arriba { top: 0; }
+  .nueve .rot.abajo { bottom: 0; }
+  @media (min-width: 900px) {
+    .nueve { margin: 0; }
+  }
+
   .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
   .cuerpo { background: var(--papel); padding: var(--s-9) 0; }
 

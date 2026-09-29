@@ -275,6 +275,20 @@ angulares, corte diagonal ~30–35°, cuña direccional).
 paso de un proceso**. Nunca decoración, nunca papel tapiz, nunca "red de nodos", nunca compitiendo
 con el cotizador.
 
+**Una enmienda, del 2026-09-29, autorizada por Sebastián:** un trazo puede representar además **una
+pregunta del visitante**, y sólo eso. Entró con la portada de `/preguntas`, que dibuja un punto por
+cada una de las nueve preguntas publicadas, arriba las de una persona y abajo las de una empresa.
+
+*Por qué hacía falta enmendar y no bastaba con el §6.2.* Las tres cosas que la regla admitía son
+todas **dinero o su recorrido**, así que el sitio no tenía marca para una página cuyo objeto no es
+dinero, y `/preguntas` es la primera: su objeto son las nueve preguntas. La alternativa era dejar esa
+página sin portada para siempre o dibujarle algo que no fuera su objeto, y las dos son peores.
+
+*Y lo que la enmienda NO abre.* No autoriza un trazo por «un tema», «una idea» o «una sección»: eso
+es un índice, y un índice dibujado es exactamente lo que se retiró de esa página el 2026-09-24. La
+marca concreta —**punto lleno neutro = una pregunta**— está escrita en el Design System §6.2 con su
+alcance, y el catálogo sigue siendo cerrado: añadir otra cosa vuelve a pedir esta conversación.
+
 **Tokens de marca (verificados por muestreo de píxeles de `logos/`, colores planos sin antialias):**
 
 | Token | Valor | Nota |

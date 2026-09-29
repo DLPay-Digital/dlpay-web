@@ -2681,3 +2681,54 @@ Queda también su pregunta de negocio, que es buena: la figura afirma que los do
 casi lo mismo, y eso es cierto **con nueve preguntas**. Si `business.ts` va a crecer mucho, la figura
 envejece.
 
+#### §4 · La portada de `/preguntas`  ·  **Integrada** el 2026-09-29, tras conceder la enmienda
+
+Sebastián concedió la enmienda de la regla dura del §5 de `CLAUDE.md`: un trazo puede representar
+además **una pregunta del visitante**, y sólo eso. Queda escrita allá con su alcance —no autoriza un
+trazo por «un tema» ni por «una sección», que sería un índice dibujado— y la marca concreta, **punto
+lleno neutro = una pregunta**, en el §6.2.
+
+**El dato reproduce exacto** y la figura se construye de él, como pedían: nueve puntos derivados de
+contar `faq` por `concern` en `home.ts` y `business.ts`. El lienzo sale en **546×208**, que es el de
+su maqueta, sin habérselo copiado: sale de tres constantes —40 de margen, 42 dentro de una
+preocupación, 106 entre preocupaciones— y de los datos. Si mañana entra una pregunta, aparece su
+punto y el lienzo se ensancha. No hizo falta una guarda propia: la que ya tenía la página, que falla
+el build si una pregunta se queda sin grupo, es la misma condición que esto necesita.
+
+**Dos defectos del montaje que su maqueta no podía ver**, porque los dos salen de la rejilla real:
+
+1. **A 768 px la figura salía de 713 px de ancho, más que los 468 que tiene en escritorio.** El
+   dibujo era más grande en la tableta que en el monitor y aplastaba al titular. Bajo 900 px la
+   figura deja de ser columna y toma el contenedor entero. Resuelto con un tope de 480 px.
+2. **En `layout="split"` la portada cerraba en 402 px, dentro del hueco de 288 a 460** que el §4.8
+   declara prohibido, y que yo mismo acababa de escribir esta mañana. Mi primer intento fue estirar
+   el dibujo: `BRAZO` de 70 a 96 subía a 447, seguía corto, y dejaba una figura espigada y llena de
+   vacío. **El problema no era el dibujo: era el layout.** Una figura de 2,63:1 va apretada en media
+   columna, y ésa es la razón por la que las otras tres interiores con figura ancha usan `stacked`.
+   Con `stacked` el dibujo recupera sus proporciones originales y la portada cierra en **477 px**.
+
+   *Queda escrito en el §4.8 como regla:* **antes de tocar un dibujo para que su portada entre en la
+   familia, hay que mirar la rejilla.**
+
+**Y una afirmación suya que era falsa, al revés de lo que parecía.** Su ficha decía que a 320 px
+«ninguna portada del sitio llega a 460». Medido: en móvil las portadas con objeto **crecen** al
+apilarse —Home 1137, `/como-funciona` 684, `/confianza` 669 a 390 px—. La de `/preguntas` es la
+**única que se encoge**, a 448, porque una banda no gana alto al estrecharse. No rompe la regla,
+que se mide a 1280, pero es la más liviana de su familia en móvil y ahora está escrito.
+
+**Reproducido:** portada **477 px de 900 a 2560** y 504 a 768, dentro de su familia; 447 y 448 a 320
+y 390. Nueve puntos, cero recortado, cero scroll horizontal, rótulos a 13 px y fuera del SVG, sin
+solape con el dibujo. Contrastes sobre tinta: **eje 8,45 · punto 16,44 · rótulo 8,18**.
+
+*Una cosa que decidí no arreglar, con su medición:* a 320 px el tallo cae a **0,61 px**, bajo el
+umbral de 1 px. Se queda, y el argumento es del propio §6.2: **los dos trazos que cargan significado
+aguantan** —el punto mide 5,34 px de diámetro y el eje 1,46—, y el que se afina es el único que no
+afirma nada. La alternativa tenía coste: subir el grosor del tallo bajo 900 px lo dejaba en 2,2 px a
+768 contra los 2,64 del eje, y entonces el trazo sin significado pesaría casi lo mismo que el que lo
+tiene.
+
+**Su pregunta de negocio sigue abierta y es para Sebastián:** la figura afirma que los dos públicos
+preguntan casi lo mismo, y eso es cierto con nueve preguntas. Se construye de los datos, así que no
+mentirá al añadir una; pero si `business.ts` va a multiplicarse, la portada dejará de decir lo que
+dice hoy.
+
