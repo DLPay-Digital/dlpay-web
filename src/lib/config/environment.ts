@@ -205,8 +205,19 @@ function positiveInt(raw: string | undefined): number | undefined {
  *   · **el precio** — la tasa con la que se cotiza, que NO vive acá sino en
  *                     `ConfigPriceSource` (`PUBLIC_QUOTE_SAMPLE_RATE`, hoy
  *                     919,70). Ése es el que sigue abierto, y es **D7**, no D6.
- * PENDIENTE DE DECISIÓN — monto máximo (CLAUDE.md §13, D21). Sin variable, el
- * estado `above_max` no se activa: es una regla de negocio y no se inventa acá.
+ * **D21 cerrada el 2026-09-29: no hay tope.** Sebastián decidió no publicar un
+ * monto máximo, así que `PUBLIC_QUOTE_MAX_CLP` se queda sin definir y el estado
+ * `above_max` nunca se produce. **No es un pendiente: es la decisión.**
+ *
+ * `maxPayClp` sigue siendo opcional y la comprobación sigue en `resolveState`,
+ * porque poner un tope el día que haga falta es definir la variable y nada más.
+ * Lo que eso conserva sin uso está declarado en `lib/pricing/types.ts`.
+ *
+ * *Por qué sin tope, dicho una vez para no repetir la conversación:* publicar un
+ * techo le dice a una empresa grande que no la quieres, y `/tarifas` ya publica
+ * lo contrario — «las operaciones de mayor volumen se conversan con el
+ * ejecutivo». Un monto absurdo lo filtra el ejecutivo en el chat, que es donde
+ * siempre iba a terminar.
  */
 export function resolveQuoteLimits(env: SiteEnv): QuoteLimits {
   return {

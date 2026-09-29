@@ -141,7 +141,7 @@ Ninguna es técnica. Ninguna bloquea preparar el despliegue.
 | D1b | Proveedor de hosting (Cloudflare o Vercel) | Sebastián |
 | D5 | Transparencia del spread → tabla de `/tarifas` | DLPay |
 | D6 | Monto mínimo real | DLPay |
-| D21 | Monto máximo (el estado está cableado y probado, inactivo sin el valor) | DLPay |
+| ~~D21~~ | ~~Monto máximo~~ · **cerrada el 2026-09-29 sin tope.** El estado `above_max` queda declarado como conservado sin uso en `lib/pricing/types.ts` | — |
 | D7 | Fuente oficial de precio | DLPay |
 | D18 | Fuente real de actividad confirmada y anonimizada | DLPay |
 | D9 | **Razón social** — bloquea publicar los textos legales | Compliance |

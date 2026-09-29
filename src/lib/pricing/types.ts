@@ -25,6 +25,35 @@ export type Intent = 'to_usd' | 'to_clp';
 /** La moneda que ve el usuario. El dólar se entrega como dólar digital. */
 export type Currency = 'CLP' | 'USD';
 
+/**
+ * Los estados de una cotización.
+ *
+ * ── TRES de los cinco están dormidos, y cada uno por su motivo ─────────────
+ *
+ * Declarado el 2026-09-29 al cerrar D21, porque la regla del proyecto es que
+ * **lo que se conserva sin uso lo dice, y lo que no lo dice se borra**. Lo que
+ * sigue se comprobó contando ocurrencias en `src/` y en `tests/`, no de memoria.
+ *
+ * · **`above_max`** — la maquinaria está completa y **probada de punta a punta**
+ *   (`tests/pricing.test.ts`: construye una cotización con tope, comprueba el
+ *   estado y comprueba que el mensaje de WhatsApp pregunta «¿Pueden operar ese
+ *   monto?»). Duerme porque **D21 se cerró sin tope** el 2026-09-29: DLPay no
+ *   publica un máximo, así que `PUBLIC_QUOTE_MAX_CLP` no se define y
+ *   `resolveState` nunca lo produce. Se despierta poniendo la variable, sin
+ *   tocar código.
+ *
+ * · **`market_moving`** y **`unavailable`** — éstos no es que duerman: **nada
+ *   los produce**. Sólo se consumen en `quote.ts` al redactar el mensaje de
+ *   WhatsApp, y `market_moving` se fuerza en un test. Son de **D7**, no de D21:
+ *   `ConfigPriceSource` devuelve siempre el mismo valor configurado, así que no
+ *   puede informar que el mercado se está moviendo ni que no tiene precio. Una
+ *   fuente de mercado real sí podría, y ese día los produciría sin más cambios.
+ *
+ * Los tres se conservan a propósito. Si alguna de las dos decisiones se cierra
+ * en contra —un máximo que nunca llega, una fuente que nunca informa estado—,
+ * lo que corresponde es **borrar la rama**, como se hizo con `ActivityFeed` al
+ * cerrar D18.
+ */
 export type QuoteState =
   | 'ok'
   | 'below_min'
