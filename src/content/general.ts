@@ -60,6 +60,27 @@ export const generalFaq: readonly GeneralItem[] = [
     a: 'Sí, y no hace falta avisar: basta con no transferir. Al aceptar se abre la ventana de 12 minutos, y si no transfieres dentro de ella la cotización caduca sola. No se cobra nada por eso.',
   },
   {
+    /*
+      Los tres datos de esta respuesta los dio Sebastián el 2026-09-29: el
+      recorrido (se deposita dólar digital en la plataforma y se convierte ahí),
+      la cuenta de destino (cualquiera registrada, del titular) y que **el mínimo
+      en pesos es fijo en 500.000 y su equivalente en dólares se mueve con el
+      precio del día**.
+
+      Lo del mínimo no hubo que cambiarlo en ninguna parte: `quote.ts` ya mide
+      «el monto en pesos de la operación, sea el que se entrega o el que se
+      recibe», así que el tope inferior se aplicaba a las dos direcciones desde
+      siempre. Lo que faltaba era **decirlo**, y desde hoy `/tarifas` lo dice.
+
+      **Esta respuesta es la primera página del sitio que describe el
+      autoservicio**, y eso no es lo ideal: una FAQ cuenta algo que las páginas
+      de producto no cuentan. Está anotado en `CLAUDE.md` §1 como trabajo
+      pendiente de `/como-funciona`, que es donde corresponde.
+    */
+    q: '¿Puedo volver a pesos cuando quiera?',
+    a: 'Sí. Depositas dólar digital en la plataforma y haces la conversión ahí, directo a pesos. Los pesos llegan a una cuenta bancaria registrada a tu nombre, la que elijas. El mínimo es el mismo en las dos direcciones: la operación tiene que valer al menos CLP 500.000, así que en dólares el mínimo se mueve con el precio del día.',
+  },
+  {
     q: '¿Qué pasa si mi banco retiene o rechaza la transferencia?',
     a: 'Se cotiza de nuevo. El plazo corre desde que aceptas, y lo que tarde tu banco no lo controlamos ni nosotros ni tú. Si la transferencia no llega dentro de la ventana, el precio aceptado caduca y tu ejecutivo te pasa el del momento. Por eso conviene aceptar cuando ya puedas transferir.',
   },

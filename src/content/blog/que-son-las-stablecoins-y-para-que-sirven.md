@@ -20,7 +20,7 @@ portada:
 # obvio, se publicó el 2026-09-28 en `FiguraRiel.astro`, dentro de
 # `/como-funciona`, y allí su rótulo dice «dólar digital»: usarla acá diría
 # «stablecoin = el dólar digital de DLPay», en el artículo cuya frase central es
-# «no emitimos stablecoins ni las custodiamos». Y lo único que distingue al
+# «no emitimos stablecoins». Y lo único que distingue al
 # asunto es la paridad, que no se dibuja sin afirmar que se sostiene, justo en un
 # artículo con una sección dedicada a que puede no sostenerse.
 #
@@ -72,6 +72,13 @@ REGISTRO DE VERIFICACIÓN DE DATOS, hecha el 2026-09-29 contra las fuentes:
      `firstdigitallabs.com` y `coingecko.com` devuelven 403 a `curl` por
      detección de bots y **se comprobaron en un navegador real**: los dos
      cargan.
+
+CORRECCIÓN del mismo día, por la tarde: el párrafo de «Qué hacemos en la mesa»
+  perdió su negación absoluta de custodia, que era inexacta para el modo de
+  autoservicio. El detalle está en `docs/auditoria-preproduccion.md` y la regla
+  que lo gobierna en `CLAUDE.md` §1. **No se transcribe acá a propósito: los
+  comentarios de un `.md` viajan al HTML publicado, y una frase retirada no
+  vuelve a la página ni dentro de un comentario.**
 
 Lo único que queda sin fuente citable en el pie: «la de mayor uso en LATAM y en
 Asia», sobre USDT. Es un claim de mercado sobre producto de un tercero y va
@@ -257,9 +264,9 @@ cada operación, porque el mercado se mueve.
 
 > El precio de referencia no es una promesa de ejecución. Lo confirma una persona antes de cerrar la operación.
 
-No emitimos stablecoins ni las custodiamos por ti. Somos la mesa que cambia
-una divisa por otra. Lo que hagas con el dólar digital después es tu
-decisión.
+No emitimos stablecoins. Cuando nos pides que te lo enviemos, el dólar digital
+va a la billetera que nos indiques, y desde ahí lo que hagas con él es tu
+decisión. Somos la mesa que cambia una divisa por otra.
 
 Para entender el recorrido completo de una operación, desde tu transferencia
 hasta el dólar digital en tu billetera, está la página de

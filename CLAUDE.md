@@ -189,6 +189,38 @@ destinatario recibe dinero en su cuenta en minutos".
 El límite se declara **de frente** en `/como-funciona` y en `/confianza`, antes de que el usuario
 opere. Es una señal de confianza, no letra chica.
 
+### Dos modos de operar, y el sitio describe uno  ·  *añadido el 2026-09-29*
+
+**Hay dos.** El **asistido**, que es el que el sitio cuenta: el cliente escribe por WhatsApp, un
+ejecutivo confirma el precio, el cliente transfiere y nosotros le enviamos el dólar digital a su
+billetera. Y el **autoservicio**, en la plataforma —hoy la de Guita, y el sitio lleva a ella **ocho
+veces** con «Crear cuenta» e «Iniciar sesión»—: el cliente paga, convierte y retira por su cuenta.
+
+**La consecuencia que obliga a escribir esto:** en autoservicio, entre la conversión y el retiro,
+**el dólar digital está en el sistema de DLPay, contra un fondo propio.** El cliente tiene un
+**saldo**, no el activo, y al retirar se descuenta de su saldo y del fondo. *Informado por Sebastián
+el 2026-09-29.*
+
+**Por eso el sitio NO puede publicar una negación absoluta de custodia.** La frase «no emitimos
+stablecoins **ni las custodiamos por ti**» estuvo publicada unas horas en el artículo de stablecoins
+y se retiró ese mismo día: es cierta del modo asistido y falsa del autoservicio. Lo que sí se puede
+decir, y es lo que queda, es **«cuando nos pides que te lo enviemos, va a tu billetera»**.
+
+**Qué queda acotado al modo asistido, y por qué cada uno:**
+
+| dónde | cómo quedó |
+|---|---|
+| el artículo de stablecoins | perdió «ni las custodiamos por ti» |
+| bajada de `/confianza` | «Dónde está tu dinero **cuando operas con un ejecutivo**», porque su figura de tenencia dibuja ese recorrido y en autoservicio hay un estado más que no muestra |
+| los seis pasos de `/como-funciona` | se quedan como están: su paso 02 es «Escribes por WhatsApp», así que ya son el modo asistido por construcción y no afirman ser el único |
+
+**PENDIENTE DE DECISIÓN — contar el autoservicio en `/como-funciona`.** Esa página existe justo
+para explicar cómo funciona una operación y hoy enseña la mitad del producto. Hacerlo bien implica
+un segundo recorrido, un cuarto estado en la línea de tenencia de `/confianza`, y mirar cómo se lee
+junto al proceso de inscripción en la CMF, porque **mantener saldos de clientes es la actividad que
+ese registro contempla**. Mientras no se haga, **la única página que menciona el autoservicio es
+`/preguntas`**, en la respuesta de volver a pesos, y eso está al revés de como debería ser.
+
 Este posicionamiento **coincide con los servicios que los T&C publicados ya declaran**
 (tesorería transfronteriza, pagos B2B, liquidaciones internacionales), y con ello cierra el
 pendiente I10/D8 que venía abierto desde Fase 0: la web comunicaba menos de lo que el propio

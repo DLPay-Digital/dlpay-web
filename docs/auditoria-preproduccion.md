@@ -464,6 +464,37 @@ literales**: es una condición comercial, y dos copias que divergen serían dos 
 publicadas a la vez. Depende de D5 y de D6; cuando cualquiera de las dos se cierre, la frase cambia
 en un solo sitio.
 
+### Copy RETIRADO el 2026-09-29  ·  la negación absoluta de custodia
+
+**Estuvo publicado unas horas y se retiró el mismo día.** Es el único copy que este proyecto ha
+retirado después de publicarlo, así que conviene el detalle.
+
+| Qué se retiró | De dónde |
+|---|---|
+| «No emitimos stablecoins **ni las custodiamos por ti**» → queda «No emitimos stablecoins. **Cuando nos pides que te lo enviemos**, el dólar digital va a la billetera que nos indiques…» | el artículo de stablecoins, sección «Qué hacemos en la mesa» |
+| «Dónde está tu dinero **en cada paso**» → «Dónde está tu dinero **cuando operas con un ejecutivo**» | bajada de `/confianza`, que acompaña la figura de tenencia |
+
+**El dato que lo obligó.** Sebastián precisó esa tarde que en la plataforma el cliente puede pagar,
+convertir y retirar por su cuenta, y que **mientras no retira, el dólar digital está en el sistema
+de DLPay contra un fondo propio**: el cliente tiene un saldo, no el activo, y al retirar se descuenta
+de su saldo y del fondo.
+
+Con eso la negación **absoluta** de custodia era cierta del modo asistido y falsa del autoservicio,
+que es el modo al que el sitio lleva ocho veces con «Crear cuenta» e «Iniciar sesión». Y la bajada
+de `/confianza` afirmaba cubrir «cada paso» con una figura que dibuja tres y en autoservicio serían
+cuatro.
+
+**Cómo se pudo publicar, que es lo que importa para que no se repita.** La frase se verificó contra
+las reglas del sitio y las pasó todas: `CLAUDE.md` §1 decía —y era lo único que había escrito— que
+el servicio entrega dólar digital en la billetera del cliente y que ahí termina. **El documento de
+gobierno describía un solo modo de operar.** No fue un descuido de redacción: fue una regla
+incompleta, y por eso la corrección principal no está en el copy sino en `CLAUDE.md` §1, que ahora
+declara los dos modos y prohíbe expresamente la negación absoluta.
+
+**Lo que queda pendiente y está anotado allá:** contar el autoservicio en `/como-funciona`, que hoy
+enseña la mitad del producto. Mientras no se haga, la única página que lo menciona es `/preguntas`,
+en la respuesta de volver a pesos, y eso está al revés de como debería ser.
+
 ### Copy aprobado por Compliance — 2026-09-29  ·  **el plazo del precio aceptado**
 
 **Firmado por Sebastián Villanueva Pereira como Compliance el 2026-09-29.**
