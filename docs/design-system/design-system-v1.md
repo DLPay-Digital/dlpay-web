@@ -529,6 +529,48 @@ plantilla, no familia.
 
 ---
 
+### 4.8 La portada de una página: dos familias y un hueco  ·  *añadido el 2026-09-29*
+
+**Las páginas legales abren sólo con su titular, a propósito.** `/terminos`, `/privacidad` y
+`/canal-de-denuncias` no llevan objeto en la portada, y **no es una carencia: la sobriedad es parte
+de lo que esas páginas dicen.** *Regla confirmada por Sebastián el 2026-09-29, corrigiendo la
+deducción de que «una lista o un documento no lleva portada», que era falsa.*
+
+**`/tarifas` es la excepción dentro de las legales**: está en el pie bajo Legal y sí abre con su
+objeto, porque describe el servicio y no obligaciones contractuales, que es la misma distinción por
+la que su contenido es real y el de `/terminos` es una página de estado.
+
+**Las demás abren con el objeto de la página:** el cotizador en la Home, el teléfono en
+`/como-funciona`, el MacBook en `/empresas`, la barra del precio en `/tarifas`, la línea de tenencia
+en `/confianza`.
+
+**Y las dos familias están separadas por un hueco vacío.** Medido sobre el build de `67abaa9`, a
+1280 px, las trece portadas publicadas:
+
+| familia | páginas y alto | rango |
+|---|---|---|
+| **con objeto** | Home 781 · `/como-funciona` 660 · `/empresas` 569 · `/tarifas` 529 · `/confianza` 460 | **460–781 px** |
+| **sin objeto** | `/canal-de-denuncias` 288 · `/precio` 262 · `/preguntas` 262 · `/terminos` 262 · `/blog` 236 · `/privacidad` 236 | **236–288 px** |
+
+**Entre 288 y 460 px no hay ninguna.** Ese hueco de 172 px es la regla y no una casualidad: **una
+portada de altura intermedia es una que no ha decidido a qué familia pertenece.**
+
+**Los artículos del blog son su propio caso**, y por eso no entran en la tabla: su portada no es una
+pieza a un lado del titular sino una banda a sangre con un emblema centrado o un dato, y se queda
+corta en las dos variantes — 256 px el de activos tokenizados, con su pictograma de 160×160, y
+246 px el de stablecoins, con su portada de cifra. Ver §6.1 para qué puede llevar.
+
+**Tres portadas quedan por hacer**, las tres de páginas no legales que hoy abren sin objeto:
+`/preguntas`, `/precio` y el índice del blog. Sobre `/precio` hay una conclusión ya medida y conviene
+no repetir el intento: **su figura no se puede subir a la portada**, porque no es un objeto suelto
+sino una `section` con su propio `<h2>` —«Lo que ves y lo que pagas miden lo mismo»— y su bajada.
+Subirla dejaría ese titular huérfano o lo duplicaría. `/precio` necesita otro objeto, o quedarse en
+la familia corta con el motivo escrito.
+
+*Las cifras y la separación de las dos familias las midió Cowork; reproducidas acá las trece, exactas.*
+
+---
+
 ## 5. Tratamiento de cifras (crítico)
 
 - **Tabulares siempre** en montos, precios, tasas.

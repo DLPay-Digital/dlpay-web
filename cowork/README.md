@@ -2582,3 +2582,102 @@ mandar `/empresas` a `/tarifas` con «El monto» —que chocaría con el puente 
 frena es la buena:** dos puentes con el mismo dibujo es plantilla, que es justo lo que el puente 3
 evitó.
 
+---
+
+### Notas de la revisión de la tanda del `2026-09-29`  ·  *tres de cuatro integradas*
+
+Una tanda con cuatro asuntos y un prompt maestro. **Lo mejor que trae no es lo que hay que tocar:
+es una corrección de su propio instrumento y un trabajo que resulta que no hay que hacer.**
+
+#### §0 · Su detector no veía las figuras construidas en HTML, y lo dijo
+
+Contaba `svg`, `figure` y `[class*=mockup]`, así que se le escapaban el eje de alcance, «El monto»
+de `/tarifas` y la tabla de `/empresas`. Corregido, el mapa cambia de verdad: `/empresas` pasa de
+«5 figuras, 54 % liso» a **7 figuras y 20 %**.
+
+**Lo que pedían comprobar —si alguna cifra vieja quedó escrita en el repositorio— tiene respuesta
+corta: no.** De los diez números del antes/después, el único que aparece en `cowork/` es `4.479`, y
+es precisamente uno de los que **no** cambia. Nada que corregir.
+
+*La regla que sacan es buena y la firmo:* **un recuento que no enumera lo que busca no cuenta;
+enumera lo que sabe buscar.** Va con la regla 38 en la misma familia, y es la cuarta trampa de
+instrumento de la semana. Mi propio barrido de punteados del mismo día cayó en la variante
+geométrica: filtraba por ancho mayor que cero y `.edge` es una línea vertical.
+
+#### §1 · `/empresas` no se toca, y ése es el resultado  ·  **Integrada como decisión**
+
+Estaba en su lista de páginas planas por el recuento viejo. Con el detector corregido tiene **7
+figuras y su tramo liso mayor es de 1.051 px sobre 5.179**, o sea **20 %: la mejor proporción de
+todas las páginas interiores**, por delante de `/tarifas` (36 %) y `/precio` (30 %). Reproducido
+exacto, figura por figura: el MacBook, los cuatro emblemas, la tabla y el eje de alcance.
+
+Queda escrito acá para que nadie la vuelva a poner en la lista.
+
+#### §2 · La regla de portada  ·  **Integrada** en el Design System **§4.8**
+
+Su deducción original —«una lista o un documento no lleva portada»— era falsa y Sebastián la
+corrigió: **las páginas legales no llevan portada a propósito, para darles seriedad**, y `/tarifas`
+es la excepción dentro de las legales.
+
+Lo que añade valor es la medición: **las trece portadas caen en dos familias con un hueco vacío de
+172 px entre ellas.** Reproducidas **trece de trece exactas** a 1280 px: 781 / 660 / 569 / 529 / 460
+con objeto, y 288 / 262 / 262 / 262 / 236 / 236 sin él. Entre 288 y 460 no hay ninguna, y eso es la
+regla: una portada de altura intermedia es una que no ha decidido a qué familia pertenece.
+
+*Dos cosas que añadí al escribirla:* el ancho al que se mide, porque la portada que proponen para
+`/preguntas` mide 434 px a 320 y eso cae dentro del hueco —la regla vale a 1280—; y que **los
+artículos del blog son su propio caso** y por eso no entran en la tabla: 256 px el de tokenizados
+con su emblema y 246 el de stablecoins con su portada de cifra, los dos en la familia corta.
+
+#### §3 · El filete de «Lo que no vas a leer acá»  ·  **Integrada**
+
+**El mejor hallazgo de la tanda.** Las cinco afirmaciones que DLPay decide **no** hacer llevaban
+`border-left: 2px solid var(--verde)`, y el §6.2 publica que una línea verde a lo largo de un tramo
+significa **«el tramo que es nuestro»**. Dicen lo contrario de lo que la sección dice. Y la colisión
+estaba dentro de la misma página: `.phase.is-ours` usa el mismo filete verde para marcar dónde el
+dinero pasa a estar en nuestra cuenta.
+
+Va en `--on-tinta-mute`, que es el token al que el §6.2 le da el significado exacto que hace falta:
+«existe, es real, no es nuestro». Comprobado: **ahora el único filete verde de la página es
+`.phase`**, y el nuevo compone a 8,18:1 sobre tinta.
+
+*Dos precisiones a su ficha.* Contaron «cinco filetes verdes de 2 px»; de 2 px hay **cuatro**, y el
+quinto que citan —`.ours` de `EjeDeAlcance`— mide 1 px y va en `--verde-deep` porque está sobre
+papel. Da igual para su conclusión, y de hecho la refuerza: los dos precedentes del filete apagado
+miden 1 px y 3 px, así que **el portador del significado es el color y no el grosor**. Y la distancia
+entre los dos filetes contradictorios es de **1.920 px**, no 1.700.
+
+**Lo accesorio queda sin hacer, a propósito:** pasar la sección de dos a tres columnas baja la
+sección de 743 a 679 px, pero es un cambio de composición en una página que Sebastián afinó a mano
+el 2026-09-25 —dos cabeceras centradas, el zigzag, y «lo demás déjalo tal cual»—. Eso lo decide él,
+no entra con un arreglo de semántica.
+
+*Y su «lo que NO hay que hacer» de esa misma página es correcto y conviene no perderlo:* el zigzag de
+«Qué pasa con tu plata» parece desperdiciar media sección y no. A tres columnas la sección **sube**
+de 906 a 1.158 px, y a dos columnas a 1.337. La mitad vacía es el precio de la medida de lectura de
+47ch.
+
+#### §4 · La portada de `/preguntas`  ·  **Pendiente de Sebastián, con un reparo que no es el suyo**
+
+El dato de la figura reproduce **exacto**: persona 5 preguntas —`recibo` ×2, `alcance`, `precio`,
+`requisitos`— y empresa 4 —`atencion`, `requisitos`, `alcance`, `precio`—, con `concern` tipado y ya
+usado por la página para agrupar. Construirla desde los datos, como piden, es posible y es lo
+correcto.
+
+Ellos avisan de lo que hay que pedir: **el punto lleno neutro como «una pregunta» es una marca nueva
+y hay que escribirla en el §6.2 antes de dibujar.** Correcto.
+
+**Pero hay un reparo más de fondo, y es mío:** sería **la primera figura del sitio cuyo asunto no es
+el dinero ni su movimiento**. La regla dura del §5 de `CLAUDE.md` dice que cada trazo representa
+«movimiento, flujo de valor o un paso de un proceso», y un punto que significa «una pregunta» no es
+ninguna de las tres. Así que la enmienda no es sólo a la tabla del §6.2: **toca una regla dura de
+`CLAUDE.md`**, y eso es decisión de Sebastián, no del Design System.
+
+A favor de concederla: el objeto de `/preguntas` **son** las nueve preguntas, así que la figura
+cumple el §4.8 mejor que cualquier alternativa, y el sitio no tiene marca para un asunto que no es
+dinero porque hasta hoy no ha tenido una página cuyo objeto no lo sea.
+
+Queda también su pregunta de negocio, que es buena: la figura afirma que los dos públicos preguntan
+casi lo mismo, y eso es cierto **con nueve preguntas**. Si `business.ts` va a crecer mucho, la figura
+envejece.
+

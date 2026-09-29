@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>La portada de /preguntas · v2 — Cowork</title>
+<link rel="stylesheet" href="/_astro/Footer.B8IzmGlL.css">
+<style>
+  /* ══════════════════════════════════════════════════════════════════════════
+     LA PORTADA DE /preguntas · «Las nueve preguntas»
+
+     QUÉ DIBUJA, Y POR QUÉ ES LO QUE DIBUJA
+     La página publica nueve preguntas y las agrupa en cinco preocupaciones. De
+     dónde viene cada una NO es un adorno: su propia cabecera lo dice — «de qué
+     lado es cada pregunta: de qué archivo viene», `home.ts` para las personas y
+     `business.ts` para las empresas. Los datos:
+
+        persona (5):  recibo ×2 · precio · alcance · requisitos
+        empresa (4):  precio · alcance · requisitos · atencion
+
+     Es decir: de las cinco preocupaciones, TRES las preguntan las dos partes, y
+     cada una tiene exactamente una suya. Eso es lo que dibuja la portada, y es
+     una afirmación que ninguna otra página del sitio puede hacer: **una persona
+     y una empresa preguntan casi lo mismo.**
+
+     UN PUNTO POR PREGUNTA. Nueve marcas, no cinco: el recuento de la figura es
+     el recuento de la página. Cuando las dos partes preguntan por lo mismo,
+     comparten la vertical — arriba la persona, abajo la empresa. Las dos
+     asimetrías de los extremos son las dos preguntas que sólo hace un lado.
+
+     LO QUE **NO** ES: no enumera los cinco grupos. Sebastián retiró el índice
+     pegajoso y la numeración 01–05 de esta página el 2026-09-24 por estética, y
+     una portada que los listara sería el mismo índice con otra ropa. La figura
+     dice la forma —dos lectores, casi las mismas preguntas— sin nombrar ni uno.
+
+     LAS MARCAS
+     · El eje verde es el tramo con su significado publicado del §6.2: **el
+       tramo que es nuestro**. Lo que se responde es nuestro.
+     · El punto lleno NO es el «punto verde = un extremo de la operación» del
+       §6.2: es neutro, en `--on-tinta`, y estrena significado — **una
+       pregunta**. Hay que escribirlo (ver la ficha §5).
+     · Los rótulos van FUERA del SVG. Dentro escalan con el `viewBox` y a 390 px
+       caen a 9,7 px. Es la misma regla que ya aplican el riel del artículo y la
+       línea de tenencia de /confianza, y la comprobé rompiéndola primero.
+     ══════════════════════════════════════════════════════════════════════════ */
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--papel);color:var(--ink);
+    font-family:var(--f-text);font-size:var(--t-body);line-height:var(--lh-body)}
+  .inner{max-width:var(--container);margin:0 auto;padding:0 var(--pad-section-m)}
+  @media(min-width:900px){.inner{padding:0 var(--pad-section)}}
+  .nota{background:var(--papel-2);padding:var(--s-5) 0;font-size:var(--t-body-sm);color:var(--ink-mute)}
+  .nota b{color:var(--ink)}
+  .relleno{padding:var(--s-9) 0;color:var(--ink-mute);font-size:var(--t-body-sm)}
+
+  .portada{background:var(--tinta);color:var(--on-tinta);position:relative;overflow:hidden;
+    padding-block:var(--s-8)}
+  .portada .inner{position:relative;z-index:1}
+  /* las cuñas del héroe, como en PageHero */
+  .cunas{position:absolute;inset:0;background:#16c784;opacity:.07;pointer-events:none;
+    clip-path:polygon(0 100%, 46% 0, 60% 0, 15% 100%, 20% 100%, 66% 0, 71% 0, 26% 100%)}
+  .copy h1{font-size:var(--t-h2-m);line-height:var(--lh-h2);letter-spacing:var(--ls-h2);
+    margin:0 0 var(--s-3);font-weight:700}
+  @media(min-width:900px){.copy h1{font-size:var(--t-display);line-height:var(--lh-display);
+    letter-spacing:var(--ls-display)}}
+  .copy p{margin:0;color:var(--on-tinta-mute);max-width:44ch}
+
+  @media(min-width:900px){
+    .portada{padding-block:var(--s-10)}
+    .portada .inner{display:grid;grid-template-columns:.86fr 1.14fr;gap:var(--s-8);align-items:center}
+  }
+
+  .nueve{margin:var(--s-7) 0 0;position:relative;padding-block:var(--s-6)}
+  @media(min-width:900px){.nueve{margin:0}}
+  .nueve svg{display:block;width:100%;height:auto}
+  .nueve .eje{stroke:var(--verde);stroke-width:3}
+  .nueve .t{stroke:var(--on-tinta);stroke-width:1.25;opacity:.4}
+  .nueve .p{fill:var(--on-tinta)}
+  .nueve .rot{position:absolute;left:0;font-family:var(--f-num);
+    font-size:var(--t-dato-sm);color:var(--on-tinta-mute);line-height:1}
+  .nueve .rot.arriba{top:0}
+  .nueve .rot.abajo{bottom:0}
+</style>
+</head>
+<body>
+<div class="nota"><div class="inner"><p><b>La portada de /preguntas, v2.</b> Nueve puntos, uno por
+  pregunta. Arriba las de una persona, abajo las de una empresa, y cuando las dos preguntan por lo
+  mismo comparten la vertical. Las dos asimetrías de los extremos son las dos preguntas que sólo
+  hace un lado.</p></div></div>
+
+<section class="portada">
+  <div class="cunas" aria-hidden="true"></div>
+  <div class="inner">
+    <div class="copy">
+      <h1>Preguntas</h1>
+      <p>Lo que nos preguntan antes de operar, y las palabras que usamos para responder.</p>
+    </div>
+    <figure class="nueve" aria-hidden="true">
+      <svg viewBox="0 0 546 208" role="img">
+        <line class="eje" x1="0" y1="104" x2="546" y2="104"/>
+        <line class="t" x1="46"  y1="102" x2="46"  y2="42.5"/><circle class="p" cx="46"  cy="34" r="5.5"/>
+        <line class="t" x1="88"  y1="102" x2="88"  y2="42.5"/><circle class="p" cx="88"  cy="34" r="5.5"/>
+        <line class="t" x1="200" y1="102" x2="200" y2="42.5"/><circle class="p" cx="200" cy="34" r="5.5"/>
+        <line class="t" x1="200" y1="106" x2="200" y2="165.5"/><circle class="p" cx="200" cy="174" r="5.5"/>
+        <line class="t" x1="306" y1="102" x2="306" y2="42.5"/><circle class="p" cx="306" cy="34" r="5.5"/>
+        <line class="t" x1="306" y1="106" x2="306" y2="165.5"/><circle class="p" cx="306" cy="174" r="5.5"/>
+        <line class="t" x1="412" y1="102" x2="412" y2="42.5"/><circle class="p" cx="412" cy="34" r="5.5"/>
+        <line class="t" x1="412" y1="106" x2="412" y2="165.5"/><circle class="p" cx="412" cy="174" r="5.5"/>
+        <line class="t" x1="500" y1="106" x2="500" y2="165.5"/><circle class="p" cx="500" cy="174" r="5.5"/>
+      </svg>
+      <span class="rot arriba">persona</span>
+      <span class="rot abajo">empresa</span>
+    </figure>
+  </div>
+</section>
+
+<div class="relleno"><div class="inner"><p>↓ y sigue la página, con sus cinco grupos y el
+  glosario ↓</p></div></div>
+</body>
+</html>

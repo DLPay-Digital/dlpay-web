@@ -432,9 +432,30 @@ const wa = contact.whatsappUrl();
   .honesty h2 { color: var(--on-tinta); }
   .honesty .head p { color: var(--on-tinta-mute); }
   .honesty-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-5); }
+  /*
+    ── El filete decía lo contrario de lo que la sección dice ────────────────
+
+    Era `--verde`, y el §6.2 publica que **una línea verde a lo largo de un
+    tramo significa «el tramo que es nuestro»**. Estas cinco son justo lo
+    contrario: las cosas que decidimos NO decir. Y la colisión estaba dentro de
+    la misma página, a unos 1.700 px: `.phase.is-ours` usa el mismo filete verde
+    para marcar dónde el dinero pasa a estar en nuestra cuenta.
+
+    Va en `--on-tinta-mute`, que es el token apagado de esta superficie, porque
+    el §6.2 le da a ese filete el significado exacto que hace falta: **«existe,
+    es real, no es nuestro»**. Ya se usa así dos veces, `.theirs` en
+    `EjeDeAlcance` y `.ajeno` en `/tarifas`, y en las dos el portador del
+    significado es el color y no el grosor: allá miden 1 px y 3 px.
+
+    No `--line-on-tinta`: ése es «separador sin significado», y acá el filete
+    significa algo. Compuesto sobre tinta da 8,18:1, muy por encima del 3:1 que
+    pide un gráfico.
+
+    Hallado por Cowork el 2026-09-29.
+  */
   .honesty-list li {
     padding-left: var(--s-4);
-    border-left: 2px solid var(--verde);
+    border-left: 2px solid var(--on-tinta-mute);
   }
   .honesty-list h3 {
     font-size: var(--t-h3-m);
