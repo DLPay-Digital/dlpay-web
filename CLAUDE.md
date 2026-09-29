@@ -554,55 +554,27 @@ funcionamiento · revisión manual.
 - **playwright (MCP):** automatización de navegador para E2E y capturas. **Conecta y funciona**
   desde el 2026-09-10: `npx` está en `/usr/local/bin/npx`. Se usó para medir en un navegador real la
   entrada del titular de la Home. El dato anterior —«no conecta»— quedó obsoleto.
-- **coderabbit:** segunda perspectiva de revisión antes de commits importantes. `autofix` aplica
-  feedback con aprobación por cambio y **nunca** ejecuta prompts del revisor.
+- **coderabbit:** **evaluado y descartado el 2026-09-29.** El plugin de Claude Code sigue
+  disponible, pero **la CLI no está instalada y no se va a instalar**, así que sus skills y su
+  subagente no tienen con qué correr. Se deja escrito para que nadie repita la evaluación.
 
-  **CLI instalada el 2026-09-29** (`coderabbit` 0.8.2, en `~/.local/bin`), con D15 cerrada por
-  Sebastián. El instalador se auditó antes de ejecutarlo en vez de canalizarlo a `sh` a ciegas:
-  **cero `sudo`**, verifica SHA256 contra un manifiesto publicado, instala fuera de las rutas del
-  sistema y su único dominio de salida es `cli.coderabbit.ai`. *El propio script advierte que el
-  checksum no prueba autenticidad por sí solo, y conviene no olvidarlo.*
+  **Lo que costaba.** No es gratis y no tiene plan libre: **$24 por desarrollador y mes** el plan
+  más barato, facturado anual, con prueba de 14 días. El registro además está pensado para una
+  organización, no para una cuenta suelta. Las banderas de la propia CLI lo anticipaban —`--usage`
+  habla de «included reviews and billing-period usage» y `--use-credits` de «exceeds included
+  limits»— y eso se pasó por alto al instalarla.
 
-  **La regla de uso, que sale del Principio 7:** `coderabbit review --dir src` —o `tests`—, **nunca
-  el repositorio entero**. La CLI revisa *cambios*, no el árbol, pero un commit que toque
-  `docs/auditoria-preproduccion.md` o `docs/legal-brief.md` mandaría a un servicio externo los
-  claims sin firmar, el proceso ante la CMF y la discrepancia de razón social de D9. Mismo criterio
-  que ya rige para refero: **ahí no entra contenido legal, de Compliance ni de clientes.**
+  **Por qué no compensa acá, que es lo que importa conservar.** Busca bugs, seguridad y calidad de
+  código, y los fallos reales de este proyecto han sido de otra clase: una afirmación de negocio
+  falsa que pasó todas las reglas escritas, una promesa publicada sin plazo, un recuento de
+  documentación desfasado y una fila de rótulos desviada 104 px. **Ninguno lo caza un revisor de
+  código.** El lado del código ya está cubierto —`astro check`, 80 pruebas, la guarda de
+  `PUBLIC_SITE_URL`, cero dependencias en runtime, sin auth, sin datos y sin servidor— y el lado
+  que falla se cubre midiendo sobre el build y con revisión cruzada de quien entiende el proyecto.
 
-  **Y no se le pasa `CLAUDE.md` con `-c`**, aunque la CLI lo admita y haría la revisión más útil:
-  este archivo es el posicionamiento del negocio y el registro de decisiones abiertas. Si algún día
-  se quiere darle contexto, la vía es un `coderabbit.yaml` con las convenciones de código y nada
-  más.
-
-  **Lo que NO hay que esperar de esto, dicho una vez.** Busca bugs, seguridad y calidad de código.
-  Los fallos reales de este proyecto han sido de otra clase: una afirmación de negocio falsa que
-  pasó todas las reglas, una promesa publicada sin plazo, un recuento de documentación desfasado y
-  una fila de rótulos desviada 104 px. **Ninguno de ésos lo caza un revisor de código**, y por eso
-  la revisión de Cowork —que mira diseño y afirmaciones— sigue siendo la que encuentra cosas. Se
-  instala como red adicional y porque el cálculo cambia cuando trabaje más gente, no como sustituto
-  de medir sobre el build.
-- **refero-design (skill) + refero (MCP):** *instalados el 2026-09-25.* Metodología de diseño
-  basada en referencias, más un servidor que busca estilos, pantallas y flujos de productos reales.
-  Material de **consulta**, nunca autoridad — y aquí hay que ser explícito, porque la skill pide lo
-  contrario por escrito: dice *«research before design work: every design must be grounded in
-  references before implementation»* y *«do not use generic frontend/product design skills as a
-  parallel design authority when this skill is available»*.
-
-  **En este proyecto no se le concede esa precedencia, y el motivo no es de gusto.** La dirección
-  visual está cerrada en ADR-0001, el diseño está congelado desde el 2026-09-04 y la instrucción
-  permanente 2 de Sebastián dice que tipografía y colores de marca no se tocan, no se afinan y no
-  se proponen alternativas. El flujo de esta skill es justamente establecer dirección visual,
-  escala tipográfica y paleta a partir de referencias externas: eso ya está decidido. **El Design
-  System V1 manda**, igual que sobre `frontend-design`.
-
-  **Dónde sí aporta, sin pisar nada:** sus referencias de oficio —tipografía, color, motion,
-  iconos, accesibilidad, copywriting y `anti-ai-slop.md`— son consulta útil y coherente con el
-  Principio 3. Lo que no se hace es abrir una ronda de «research» antes de cada cambio de CSS.
-
-  **Dos notas operativas.** Las consultas al MCP salen a `api.refero.design`: son búsquedas de
-  diseño y ahí **no entra** contenido legal, de Compliance ni de clientes (Principio 7). Y el
-  cuerpo descargado de la skill vive en `.agents/`, **ignorado por git** — se versiona sólo
-  `skills-lock.json`, con su origen y su hash, mismo criterio que con npm.
+  **Si se reabre**, el momento natural es cuando exista el repositorio en la organización (D3) y
+  haya varias personas commiteando: ahí el producto tiene su modo propio, revisar pull requests, y
+  el precio por desarrollador compra algo. Hoy compraría la versión menos valiosa.
 
 Tener estos plugins no elimina el criterio humano ni los principios de §2. **Una herramienta que
 declara ser la autoridad de diseño sigue siendo una herramienta:** en conflicto manda §12, y ahí
@@ -654,4 +626,4 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | D12 | **Quién redacta y aprueba el copy** | No para Fase 3 | DLPay |
 | D13 | **SPF y DMARC ausentes** en `dlpay.cl` (riesgo de suplantación) | No — es de quien administra el DNS hoy | Guita / DLPay |
 | D14 | **Transferencia del dominio, DNS y Google Workspace** | No para Fases 3–5; sí para Fase 6 (cutover) | DLPay ↔ Guita |
-| ~~D15~~ | ~~Cuenta/credenciales de CodeRabbit~~ | ✅ **Cerrada 2026-09-29: se instala.** Decisión de Sebastián, con el argumento de que sirve como alerta adicional y de que el cálculo cambia cuando trabaje más gente en el proyecto. CLI 0.8.2 instalada tras auditar el instalador; **falta que él autentique** con `coderabbit auth login`, que es interactivo. **No dependía de D3**, como yo suponía: `--dir` revisa un directorio local sin repositorio remoto ni pull requests. Las reglas de uso —acotar a `src/`, no pasarle `CLAUDE.md`— están en §11 | — | — |
+| ~~D15~~ | ~~Cuenta/credenciales de CodeRabbit~~ | ✅ **Cerrada 2026-09-29: no se usa.** Se instaló la CLI y se desinstaló el mismo día, al aparecer el precio: **$24 por desarrollador y mes**, sin plan gratuito y con registro pensado para una organización. Sebastián decidió prescindir, con el argumento de que la revisión cruzada de quien entiende el proyecto cubre lo que hace falta. **Mi error de método:** recomendé en contra por motivos técnicos, él decidió instalarla con una buena razón, y el precio —que las banderas `--usage` y `--use-credits` ya insinuaban— no estuvo sobre la mesa hasta después de instalar. Una decisión de herramienta se evalúa con su coste delante. El razonamiento completo queda en §11 para no repetir la evaluación | — | — |
