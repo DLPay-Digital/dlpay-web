@@ -2880,3 +2880,107 @@ importar las nueve de la Home y `/empresas`. Hoy son 9 importadas + 4 propias, y
 todas. Si las nueve salen, la banda pasa de seis celdas a una y **deja de tener sentido**: lo que
 hoy justifica la banda es que hay trece respuestas en seis grupos. **Las dos decisiones están
 atadas**, y conviene saberlo antes de mover una.
+
+---
+
+### Notas de la integración de `2026-09-30 · precio: la página entera`
+
+**Integrada entera**, con las cuatro decisiones de Sebastián tomadas el mismo día: escala `dato`,
+`.figura` fuera, sombra local al componente, «Volumen y frecuencia» se queda. Y una corrección mía
+sobre la entrega: **el filete del panel pasa de punteado a `--line`** (§6.2).
+
+**Es la mejor entrega que ha hecho hasta ahora, y conviene decir por qué:** no trae ni un defecto de
+copia. La ruta del `<Base>` es la correcta, no hay CSS huérfano —**corrigió por su cuenta el error
+que había cometido el día anterior**, que era retirar la sección `.figura` dejando su CSS— y el
+comentario de `.seg-rot` está reescrito para decir que la figura ya no está.
+
+#### Su hallazgo, que es el que justifica la entrega
+
+Encontró que **la bajada contradecía al propio sitio**: decía «Lo que ves **al cotizar** es lo que
+pagas» y la Home publica «¿El precio de la web es el precio final? **No.**». Y encontró que **su
+propia entrega del día anterior lo empeoraba**, poniendo la misma cifra bajo «al cotizar» y bajo «al
+pagar»: así la contradicción dejaba de ser una frase y pasaba a ser un número. Se descartó esa
+versión y se rehízo el panel sobre «aceptas» / «recibes», que son los dos momentos entre los que el
+sitio sí promete que no pasa nada.
+
+**Eso es lo que debería hacer una revisión cruzada**, y es el segundo caso: la primera vez fue la
+negación absoluta de custodia. **Las dos veces el fallo era una afirmación de negocio, no de
+código.**
+
+#### Reproducido contra el build
+
+Las **siete anchuras al píxel**: portada 816 · 752 · 616 · 616 · 589 · 589 · 589. Primera acción
+**3.190 → 622** a 1280 y **3.801 → 824** a 390 — sus dos números exactos, y el «antes» también.
+Página 4.254 → 4.909 (dijo 4.912). Desborde cero en las siete. Las dos cifras coinciden siempre.
+
+**El candado, probado:** cambiándole el texto a una pregunta de `home.ts`, el build se cae con
+«/precio: la pregunta «…» ya no está publicada.» Es el mensaje que anunció, literal.
+
+Contrastes, medidos: `.tres` en papel-2 **4,98** —su número— · rótulos del pozo 4,98 · cifra 14,5 ·
+«Cotizar otro monto» sobre tinta 8,45 · salida 5,44. Todos AA. La cifra sale a **32 px y peso 500**,
+la escala conforme. **WCAG 1.4.12 aplicado a la página entera: cero desborde y cero solapes.** Un
+solo `--elev-card`, cero JavaScript nuevo, `astro check` limpio y 80/80 pruebas.
+
+#### El punteado: corregido antes de integrar
+
+El panel separaba «aceptas» de «recibes» con un **filete punteado**, citando el §6.2 —«un límite:
+cruzarlo cambia algo»—. **Es la marca diciendo lo contrario que su figura:** las dos mitades
+enseñan el mismo número y el pie explica por qué. Cruzar ese filete no cambia nada, y eso es toda
+la pieza.
+
+Su justificación —«el mismo signo que la banda usa para el mismo instante»— tampoco valía: en la
+banda el punteado marca **un instante**, y en el panel el filete está **entre** dos momentos, que es
+un tramo. Queda escrito en el §6.2 como precedente de cuándo **no** usarlo: *un límite es un punto
+del recorrido, no el trecho entre dos.*
+
+#### Y un error mío, que salió al ir a contar
+
+Iba a escribir que esta entrega subía el recuento de marcas punteadas de siete a ocho. **Fui a
+rehacer la foto y ya eran ocho.** El §6.2 decía siete desde el 2026-09-29, y ese mismo día —en el
+mismo commit— yo añadí `.caduca` a la banda de `/precio` para los 12 minutos. Lo documenté en la
+auditoría («un **segundo trazo punteado**») y no volví a contar en el §6.2, que acababa de corregir.
+
+El recuento está rehecho barriendo **las quince rutas** del build, con el método escrito para que el
+próximo no lo invente. Y con la lección, que es más incómoda que la anterior: *un recuento hay que
+rehacerlo incluso —sobre todo— cuando uno acaba de tomarlo; añadir una marca y corregir el recuento
+en la misma sesión no garantiza que el orden haya sido ése.*
+
+#### Dos cosas suyas que no salen
+
+1. **«Los rótulos de la banda quedan con 0 px de holgura contra su leyenda» a 1280.** Medido:
+   **38, 17, 17, 38**. No hay nada pegado. Es la tercera vez que una alarma suya sale de medir una
+   caja en vez de la tinta.
+2. **«Cotizar otro monto» mide 189 × 44.** Medido: **178 × 44**. El alto, que es el que importa
+   —el objetivo táctil—, es el suyo.
+
+#### Una redundancia que introduce, y se queda
+
+La leyenda del panel dice «un solo cobro, y va dentro» y **400 px más abajo** la bajada de `.costos`
+dice «Un solo cobro en toda la operación, y va dentro del precio». La misma frase dos veces
+seguidas. Se deja: la leyenda es del objeto y la bajada es de la sección, y quitar cualquiera de las
+dos deja a su bloque sin decir lo que dice. **Queda anotado por si alguien lo lee como descuido.**
+
+#### El pronóstico del §4.8 se cumplió, y eso merece quedar escrito
+
+El Design System decía desde el 2026-09-29 que **la figura de barras de `/precio` no se podía subir
+a la portada** —no era un objeto suelto sino una `section` con su propio `<h2>`— y que la página
+«necesita otro objeto». Eso es exactamente lo que pasó. **La regla general, con dos casos ya:**
+cuando una portada no llega a su familia, la pregunta no es cómo agrandar la figura que hay, sino
+cuál es el objeto de la página. En `/preguntas` fue una tableta; acá, la cifra. En los dos casos la
+figura anterior **no se estiró: se fue**.
+
+#### Lo que queda para Sebastián
+
+**D7 subió de exposición y eso es nuevo.** El panel publica **2.174,62 USD** en la portada de una
+página titulada «Un solo número», así que `PUBLIC_QUOTE_SAMPLE_RATE` dejó de dar cifras dentro del
+cotizador y pasó a dar *la* cifra de una página. Cowork reporta que el mercado estaba entre 969,88 y
+981 y que el ejemplo es un 5,5–6,7 % más generoso; **ese dato no lo verifiqué** y verificarlo pide
+una cotización de mercado. No corre prisa —el sitio no está publicado— pero el orden correcto es
+fijar la tasa **antes** de publicar esta página.
+
+**Y la decisión de contenedor ahora toca dos páginas:** tres de las preguntas que `/precio` importa
+también están en `/preguntas`.
+
+**Sus dos recortes propuestos** —la leyenda de la banda y el bloque «Volumen y frecuencia»— no van
+en esta integración. El bloque se queda por decisión suya; la leyenda tiene firma de Compliance y
+Cowork hizo bien en no tocarla.

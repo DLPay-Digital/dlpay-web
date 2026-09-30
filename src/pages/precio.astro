@@ -40,24 +40,69 @@ import PageHero from '../components/PageHero.astro';
 import Motion from '../components/Motion.astro';
 import Puente from '../components/Puente.astro';
 import FiguraMonto from '../components/FiguraMonto.astro';
+import FiguraPrecio from '../components/FiguraPrecio.astro';
 import { volumeTerms } from '../content/business.ts';
+import { faq as homeFaq } from '../content/home.ts';
+import { generalFaq } from '../content/general.ts';
+import { contact } from '../lib/config/site.ts';
 
 /*
-  La tabla es dato, no prosa: cinco filas iguales y una distinta. Escrita como
-  lista y no como seis párrafos, el ojo ve el patrón y ve la excepción sin leer.
+  La tabla es dato, no prosa: seis filas iguales y una distinta. Escrita como
+  lista y no como párrafos, el ojo ve el patrón y ve la excepción sin leer.
 
   La fila del costo de red entró por decisión de Sebastián del 2026-09-23 y
   faltaba: una tabla de costos que se salta un costo deja de ser una tabla de
   costos. Que DLPay lo asuma es además un diferenciador real.
+
+  La de cancelar entra por el mismo motivo, y su dato ya está publicado:
+  `general.ts` responde «basta con no transferir […] No se cobra nada por
+  eso». **Dice «antes de transferir» y no «cancelar» a secas**, a propósito: el
+  caso «ya transferí y quiero cancelar» no tiene respuesta publicada —la
+  cabecera de `general.ts` explica por qué— y la fila no puede insinuarla.
 */
 const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
   { what: 'Registrarte y verificar tu identidad', cost: 'Sin costo' },
   { what: 'Cotizar, las veces que quieras', cost: 'Sin costo · sin cuenta' },
   { what: 'Hablar con tu ejecutivo', cost: 'Sin costo' },
+  { what: 'Cancelar antes de transferir', cost: 'Sin costo · basta con no transferir' },
   { what: 'Recibir el dólar digital en tu billetera', cost: 'Sin costo' },
   { what: 'El costo de red del traspaso', cost: 'Sin costo · lo asumimos nosotros' },
   { what: 'Convertir', cost: 'El spread, ya incluido en el precio que ves', isCharge: true },
 ];
+
+/*
+  ── Las preguntas del precio: IMPORTADAS, no tecleadas ─────────────────────
+
+  Las tres respuestas ya están publicadas —una en la Home, dos en `/preguntas`—
+  y se buscan por el texto de la pregunta, como hace `TabletMockup`. Si alguna
+  se reescribe o se retira, **el build falla** en vez de publicar una copia
+  vieja: una respuesta sobre el precio con dos versiones en el sitio es peor que
+  ninguna.
+
+  Son éstas tres porque son las que responden «¿qué le pasa a MI precio?», que
+  es lo que esta página no contestaba:
+  · si el de la web es el final — y la respuesta es que no, que es justo lo que
+    la bajada de la portada decía al revés hasta esta versión;
+  · si cancelar cuesta algo;
+  · qué pasa si el banco tarda más que el plazo.
+  La de «¿qué pasa si el precio se mueve…?» NO está: la banda de los 12 minutos
+  ya la responde entera, dos secciones más arriba.
+*/
+const PREGUNTAS_PRECIO = [
+  '¿El precio de la web es el precio final?',
+  '¿Puedo cancelar una operación después de aceptar el precio?',
+  '¿Qué pasa si mi banco retiene o rechaza la transferencia?',
+] as const;
+const todas = [...homeFaq, ...generalFaq];
+const dudas = PREGUNTAS_PRECIO.map((q) => {
+  const p = todas.find((item) => item.q === q);
+  if (!p) throw new Error(`/precio: la pregunta «${q}» ya no está publicada.`);
+  return p;
+});
+
+/* El mismo texto y el mismo mensaje prellenado que la salida de `/preguntas`:
+   no es una cadena nueva ni engrosa D22. */
+const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.');
 ---
 <Base
   title="Precio"
@@ -67,42 +112,32 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
   <Motion />
   <Header />
   <main id="main">
+    {/*
+      La bajada decía «Lo que ves al cotizar es lo que pagas», y la Home y
+      `/preguntas` publican lo contrario: el precio de la web es referencial y el
+      que se aplica es el que confirma el ejecutivo. Lo que sí es verdad —y es
+      lo que la banda de los 12 minutos demuestra— es que **el que aceptas es el
+      que pagas**. Cadena nueva: necesita firma.
+    */}
     <PageHero
       title="Un solo número"
-      lead="Lo que ves al cotizar es lo que pagas. Acá está dónde está el cobro y dónde no lo hay."
+      lead="El precio que aceptas es el que pagas. Acá ves dónde está el cobro y dónde no lo hay."
       sequence
-    />
-
-    <section class="figura" aria-labelledby="fig-title">
-      <div class="inner">
-        <h2 id="fig-title" data-enter>Lo que ves y lo que pagas miden lo mismo</h2>
-        <p class="bajada">
-          Entre la cotización y el cierre no se suma nada. El precio que te confirma tu ejecutivo no
-          cambia después de que lo aceptas.
-        </p>
-
+      layout="stacked"
+    >
+      <div class="fp-caja" slot="aside">
+        <FiguraPrecio />
         {/*
-          Es la topología de `convierte` de `UseCaseFigure` a escala de página:
-          dos barras del MISMO largo. No estrena ninguna marca, así que no hay
-          nada que escribir en el Design System §6.2.
-
-          SIN CUÑA, y es lo que hace la figura. En `convierte` la cuña está
-          porque sí ocurre una conversión; acá es el mismo importe en dos
-          momentos, y una cuña afirmaría una transformación que no existe. Entre
-          las dos barras no hay nada, y eso es exactamente lo que dice la página.
-
-          El spread NO se dibuja como un trozo de la barra: cualquier anchura
-          afirmaría una proporción, y los tramos son D5. La barra dice que el
-          precio es uno solo; cuánto de él es nuestro lo dicen las palabras.
+          La puerta del ejemplo a la cifra propia. El panel es el precio de
+          ejemplo para el caso típico, que es lo que NN/g pide cuando el exacto
+          no se puede publicar; esto es el camino al exacto. Sin ella, la
+          primera acción de la página estaba a 3.190 px en escritorio y a 3.801
+          en un teléfono; con ella, a 622 y 824. Fuera del panel, porque el
+          objeto no lleva controles; sobre la tinta, en `--verde` (8,45:1).
         */}
-        <p class="rot">El precio que ves al cotizar</p>
-        <svg class="barras" viewBox="0 0 720 76" aria-hidden="true">
-          <path class="bar" d="M0 14 H720" />
-          <path class="bar" d="M0 62 H720" />
-        </svg>
-        <p class="rot abajo">El precio que pagas</p>
+        <p class="fp-otro"><a href="/#cotizador">Cotizar otro monto <span aria-hidden="true">→</span></a></p>
       </div>
-    </section>
+    </PageHero>
 
     <section class="costos" aria-labelledby="costos-title">
       <div class="inner">
@@ -240,6 +275,40 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
       </div>
     </section>
 
+    {/*
+      ── Las preguntas del precio ─────────────────────────────────────────────
+
+      Justo después de la banda, porque son sus consecuencias: la banda dice que
+      el precio aceptado se mantiene 12 minutos, y estas tres dicen qué pasa
+      antes (el de la web no es el final), si te arrepientes (no cuesta) y si el
+      banco tarda (caduca).
+
+      Pregunta a la izquierda y respuesta a la derecha, con un filete entre
+      cada una: es la misma rejilla que `.costos` —lo que es, a la izquierda; lo
+      que pasa, a la derecha—, así que la página tiene UNA forma de tabla y no
+      dos. El ojo baja por las tres preguntas sin atravesar las respuestas.
+
+      La salida es la de `/preguntas`, palabra por palabra y con su mismo
+      mensaje. La página decía cuatro veces «tu ejecutivo» y no daba ninguna
+      forma de hablar con él.
+    */}
+    <section class="dudas" aria-labelledby="dudas-title">
+      <div class="inner">
+        <h2 id="dudas-title" data-enter>Preguntas sobre el precio</h2>
+        <div class="dudas-lista">
+          {dudas.map((p) => (
+            <div class="duda">
+              <h3>{p.q}</h3>
+              <p>{p.a}</p>
+            </div>
+          ))}
+        </div>
+        <p class="salida">
+          ¿No está la tuya? <a href={wa} target="_blank" rel="noopener">Te responde una persona por WhatsApp</a>
+        </p>
+      </div>
+    </section>
+
     <section class="tres" aria-labelledby="tres-title">
       <div class="inner">
         <h2 id="tres-title" class="sr-only">Cómo trabajamos el precio</h2>
@@ -307,10 +376,26 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
 </Base>
 
 <style>
+  /*
+    La caja de la portada: el ancho del objeto y el aire bajo él. `PageHero` en
+    `stacked` no tiene relleno inferior. Antes eran 44 px bajo el panel; ahora lo
+    último de la caja es la puerta «Cotizar otro monto», cuyo objetivo táctil ya
+    trae 11 px de aire bajo el texto, así que la caja lleva 32 y el texto queda a
+    43 de la sección clara — la misma holgura que tenía el panel.
+  */
+  .fp-caja { width: 100%; max-width: 560px; margin: var(--s-7) auto 0; padding-bottom: var(--s-6); }
+  @media (min-width: 900px) { .fp-caja { margin-top: 0; } }
+
   .inner { max-width: 760px; margin: 0 auto; padding: 0 var(--pad-section-m); }
-  .figura { background: var(--papel); padding: var(--s-9) 0; }
+  /*
+    La alternancia de superficies, con la sección nueva: tinta → papel-2 → tinta
+    → **papel** (las preguntas) → **papel-2** (`.tres`, que era papel) → el
+    puente, cuya mitad clara es papel → papel-2. Ninguna superficie toca a otra
+    igual.
+  */
   .costos { background: var(--papel-2); padding: var(--s-9) 0; }
-  .tres { background: var(--papel); padding: var(--s-9) 0; }
+  .dudas { background: var(--papel); padding: var(--s-9) 0; }
+  .tres { background: var(--papel-2); padding: var(--s-9) 0; }
 
   h2 {
     font-size: var(--t-h2-m);
@@ -321,24 +406,6 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
   }
   /* Intro de sección: medida única de 46ch (Design System §3). */
   .bajada { color: var(--ink-mute); max-width: 46ch; margin-bottom: var(--s-7); }
-
-  .rot {
-    font-family: var(--f-num);
-    font-size: var(--t-dato-sm);
-    color: var(--ink-mute);
-  }
-  .rot.abajo { margin-top: var(--s-2); }
-  .barras { display: block; width: 100%; height: auto; margin: var(--s-2) 0; }
-  /*
-    `non-scaling-stroke`: sin él el trazo escala con el dibujo y a 390px se
-    dibujaría a 1,2px reales, la mitad del grosor del resto de las figuras.
-  */
-  .barras path {
-    fill: none;
-    stroke: var(--verde-deep);
-    stroke-width: 2.5;
-    vector-effect: non-scaling-stroke;
-  }
 
   .costos .bajada { margin-bottom: var(--s-6); }
   dl { margin: 0; border-top: 1px solid var(--line); }
@@ -368,6 +435,44 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
   .bloques { display: grid; gap: var(--s-6); }
   .bloque h3 { font-size: var(--t-h3-m); font-weight: 600; margin-bottom: var(--s-2); }
   .bloque p { color: var(--ink-mute); max-width: 47ch; }
+
+  /* ── Las preguntas del precio ──────────────────────────────────────────── */
+  .dudas h2 { margin-bottom: var(--s-6); }
+  .dudas-lista { border-top: 1px solid var(--line); }
+  .duda {
+    padding: var(--s-5) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .duda h3 {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    margin-bottom: var(--s-2);
+  }
+  .duda p { color: var(--ink-mute); max-width: 47ch; margin: 0; }
+  /* La salida de `/preguntas`, con su mismo dibujo: es navegación, así que va
+     en la tipografía del sistema y sin más peso que el del enlace. */
+  .salida { margin-top: var(--s-6); color: var(--ink-mute); }
+  .salida a { color: var(--verde-deep); font-weight: 600; }
+
+  /*
+    La puerta bajo el panel. Sobre la tinta, en `--verde` (8,45:1). El alto de
+    44 px es el objetivo táctil del §2.5.5, no aire: el relleno inferior de la
+    caja se descuenta lo mismo para que la holgura contra la sección clara siga
+    siendo la de antes.
+  */
+  .fp-otro { margin: var(--s-4) 0 0; text-align: center; }
+  .fp-otro a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 44px;
+    padding: 0 var(--s-3);
+    color: var(--verde);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .fp-otro a:hover { text-decoration: underline; text-underline-offset: 4px; }
 
   /* ── La banda «No cambia después de que lo aceptas» ──────────────────── */
   .seguro-banda {
@@ -482,10 +587,10 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
   /* En móvil los tres rótulos se apilan: colocados bajo su tramo no caben. */
   .rotulos { display: grid; gap: var(--s-4); margin-top: var(--s-5); }
   /*
-    `seg-rot` y no `rot`: esta página YA usa `.rot` para los dos rótulos de la
-    figura de las barras, sobre papel. Reutilizar el nombre les puso
-    `position: absolute` y `--on-tinta-mute` —un gris pensado para tinta— encima
-    del papel. Se vio midiendo el render, no leyendo el CSS.
+    `seg-rot` y no `rot`: cuando esta página tenía la figura de las barras, ésta
+    usaba `.rot` para sus dos rótulos sobre papel, y reutilizar el nombre les
+    puso `position: absolute` y `--on-tinta-mute` encima del papel. La figura ya
+    no está, pero el nombre se queda: renombrarlo no gana nada.
   */
   .seg-rot {
     font-family: var(--f-num);
@@ -629,6 +734,9 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
     .seg-rot.r-precio { left: 52%; }
     .seg-rot.r-caduca { left: 78%; }
     .bloque h3 { font-size: var(--t-h3); }
+    /* Pregunta a la izquierda, respuesta a la derecha: la rejilla de `.costos`. */
+    .duda { display: grid; grid-template-columns: minmax(0, 17em) 1fr; gap: var(--s-6); align-items: baseline; }
+    .duda h3 { font-size: var(--t-h3); margin-bottom: 0; }
     /* Tres bloques en fila: son tres afirmaciones del mismo rango, no una
        secuencia. Dentro del tope de cuatro hermanos con escalonado. */
     .bloques { grid-template-columns: repeat(3, 1fr); gap: var(--s-7); }

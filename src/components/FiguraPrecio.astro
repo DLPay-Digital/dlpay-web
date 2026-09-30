@@ -1,0 +1,272 @@
+---
+/**
+ * La portada de `/precio`: **el mismo número, al aceptar y al recibir.**
+ *
+ * La página se titula «Un solo número» y hasta esta pieza no enseñaba ninguno:
+ * la única cifra en toda ella eran los 12 minutos de la banda.
+ *
+ * ── Por qué «aceptas» y «recibes», y NO «al cotizar» y «al pagar» ──────────
+ *
+ * La primera versión de este panel decía «al cotizar» y «al pagar», con la
+ * misma cifra en las dos mitades. **Eso contradecía al propio sitio.** La Home
+ * publica «¿El precio de la web es el precio final? No. Es un precio referencial
+ * de mercado», y `content/general.ts` publica «el que se aplica es el que tu
+ * ejecutivo te confirma, no el que la web mostraba cuando cotizaste». Entre
+ * cotizar y pagar el precio SÍ puede cambiar; lo que no cambia es el que
+ * aceptas.
+ *
+ * Así que las dos mitades son los dos momentos entre los que el sitio sí promete
+ * que no pasa nada: **lo que aceptas y lo que llega a tu billetera.** Y el pie
+ * dice por qué coinciden: «sin costo de red» — el traspaso lo asume DLPay, es
+ * una fila de `.costos`, así que no se descuenta nada por el camino. Dicho con
+ * las palabras de esa fila y en corto: «el costo de red lo asumimos nosotros»
+ * no cabía junto al monto en el panel de 560 y bajaba solo a otra línea.
+ *
+ * ── «ejemplo», junto al monto ──────────────────────────────────────────────
+ *
+ * El tipo `Quote` lleva `isReferential: true` y esto enseña un ejemplo, no una
+ * oferta. La primera versión no lo decía en ninguna parte, y en una página que
+ * enseña UNA cifra, sin decir que es de ejemplo, la cifra se lee como oferta.
+ * Si alguna vez se le añade un folio, una fecha o un «válido hasta», deja de ser
+ * un ejemplo y pasa a ser un documento.
+ *
+ * ── La escala: `dato`, y no había que estrenar una excepción ───────────────
+ *
+ * La cifra va a **32 px y peso 500**, el «dato grande» del §3.1. La entrega
+ * traía además una rama `display` —52 px y peso 600, excepción al techo del
+ * §3.0— para que Sebastián eligiera. **Eligió `dato` el 2026-09-30 y la otra
+ * rama se borró**, que es lo que su propio comentario pedía: una excepción que
+ * sigue en el archivo «por si acaso» es una excepción a medio conceder.
+ *
+ * Con eso el componente **no tiene props**: lo que enseña no se configura.
+ *
+ * ── LA REGLA DURA: las cifras no se teclean ────────────────────────────────
+ *
+ * Las dos cifras son **la misma variable renderizada dos veces**, no dos
+ * cálculos: es imposible que difieran. Salen de `lib/pricing` con la cadena del
+ * cotizador, la Home y `/tarifas` (D24).
+ *
+ * ── Por qué es un componente y no vive en la página ────────────────────────
+ *
+ * **Es por aislarlo.** Las reglas de elemento de `precio.astro` —`dt`, `h2`—
+ * alcanzan a cualquier `dt` de la página: el ámbito de Astro separa
+ * componentes, no elementos de un mismo archivo. Mismo motivo que `FiguraMonto`,
+ * `FiguraTarifas`, `FiguraTenencia` y `FiguraRiel`.
+ *
+ * ── Lo que NO hace, a propósito ────────────────────────────────────────────
+ *
+ * · **No dibuja el spread** como un trozo de nada. Los tramos son D5.
+ * · **No enseña el tipo de cambio.** El de la muestra sale de
+ *   `ConfigPriceSource`, que no es una fuente de mercado (D7): mientras D7 siga
+ *   abierta, ponerlo a la vista lo haría leer como una oferta.
+ */
+import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
+import { convert } from '../lib/pricing/quote.ts';
+import { formatCLP, formatUSD } from '../lib/pricing/format.ts';
+import { quoteLimits } from '../lib/config/site.ts';
+
+const precio = await new ConfigPriceSource().getPrice();
+const montoCLP = quoteLimits.samplePayClp;
+const cifra = formatUSD(convert('to_usd', montoCLP, precio.rate));
+---
+{/*
+  Una figura con su leyenda, y dentro una lista de descripción: «aceptas» →
+  cifra, «recibes» → cifra. La cifra se anuncia dos veces, y es a propósito:
+  la repetición ES lo que la figura afirma.
+
+  La etiqueta «ejemplo» va pegada al monto de ejemplo, en el pie: «ejemplo · por
+  CLP 2.000.000». Primero estuvo arriba, junto a la leyenda, como la etiqueta de
+  plazo de la tarjeta de Wise, y a 390 no cabía en la misma línea: bajaba sola a
+  una segunda, colgada a la derecha. En el pie cabe en todos los anchos y se lee
+  como lo que es — la condición del monto.
+*/}
+<figure class="fp">
+  <figcaption class="fp-cab">un solo cobro, y va dentro</figcaption>
+  <dl class="fp-pozo">
+    <div class="fp-lado">
+      <dt class="fp-rot">aceptas</dt>
+      <dd class="fp-num"><span class="fp-cifra">{cifra}</span> <span class="fp-div">USD</span></dd>
+    </div>
+    <div class="fp-lado">
+      <dt class="fp-rot">recibes</dt>
+      <dd class="fp-num"><span class="fp-cifra">{cifra}</span> <span class="fp-div">USD</span></dd>
+    </div>
+  </dl>
+  <p class="fp-pie">
+    <span class="fp-monto"><span class="fp-tag">ejemplo</span> por CLP {formatCLP(montoCLP)}</span>
+    <span class="fp-nota">sin costo de red</span>
+  </p>
+</figure>
+
+<style>
+  /*
+    ── El objeto tiene PARTES, no efectos ────────────────────────────────────
+
+    Cabeza, cara y canto: la leyenda, el pozo y el pie, más un canto inferior
+    más oscuro que da el grosor — la misma solución que los chasis del portátil
+    y de la tableta.
+
+    El panel lleva 16 de relleno y cada banda 24 propios, así que TODO el texto
+    queda a 40 del canto y todos los filetes se alinean con el borde del pozo.
+  */
+  .fp {
+    container: fp / inline-size;
+    margin: 0;
+    padding: var(--s-4);
+    background: var(--papel);
+    /* Explícito: la ranura de `PageHero` fija `--on-tinta`. */
+    color: var(--ink);
+    border-radius: var(--r-block);
+    border: 1px solid rgba(11, 19, 32, .07);
+    border-bottom: 2px solid rgba(11, 19, 32, .13);
+    /* Dos sombras y UN token (§4.5 cuenta tokens). La corta es la de contacto;
+       si convence, su sitio es el propio `--elev-card`. */
+    box-shadow:
+      0 2px 5px rgba(11, 19, 32, .14),
+      var(--elev-card);
+    text-align: left;
+    /* SIN `overflow: hidden`: si algo no cabe, tiene que verse (WCAG 1.4.12). */
+  }
+
+  .fp-cab {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin: 0 0 var(--s-4);
+    padding: var(--s-2) var(--s-5) var(--s-4);
+    border-bottom: 1px solid var(--line);
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    letter-spacing: var(--ls-label);
+    color: var(--ink-mute);
+  }
+  .fp-cab::before {
+    content: '';
+    width: 18px;
+    height: 2px;
+    background: var(--verde-deep);
+    flex: none;
+  }
+  /*
+    La etiqueta. Un filete y no un relleno de color: un relleno la haría leer
+    como estado («activo», «nuevo»), y esto es una condición del número. Mismo
+    tono y cuerpo que la leyenda, 5,50:1 sobre papel.
+  */
+  .fp-monto { display: inline-flex; align-items: center; gap: var(--s-2); }
+  .fp-tag {
+    padding: 0 var(--s-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-1);
+    line-height: 1.5;
+  }
+
+  /*
+    El pozo: la superficie de las cifras va HUNDIDA, en `--papel-2`.
+
+    **Contraste con poco margen:** los rótulos de 13 px dan 4,98:1 sobre
+    `--papel-2` contra el 4,5 de AA. Si este pozo se oscurece, dejan de pasar.
+  */
+  .fp-pozo {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--papel-2);
+    border-radius: var(--r-3);
+    box-shadow:
+      inset 0 1px 3px rgba(11, 19, 32, .09),
+      inset 0 0 0 1px rgba(11, 19, 32, .04);
+  }
+  .fp-lado {
+    position: relative;
+    min-width: 0;
+    padding: var(--s-5);
+  }
+  /*
+    ── El filete va en `--line`, y NO punteado ───────────────────────────────
+
+    La primera versión lo puso punteado, citando el §6.2: «un límite, cruzarlo
+    cambia algo». **Es justo lo contrario de lo que esta figura afirma.** Las dos
+    mitades enseñan el mismo número y el pie dice por qué —«sin costo de red»—:
+    cruzar este filete **no cambia nada**, y ésa es toda la pieza.
+
+    La justificación que traía —«el mismo signo que la banda usa para el mismo
+    instante»— tampoco se sostenía: en la banda el punteado marca **el instante
+    de aceptar**, la frontera entre un precio que se mueve y uno que ya no. Acá
+    el filete está **entre** aceptar y recibir, que es un tramo y no ese
+    instante.
+
+    `--line` es la marca que el §6.2 ya tiene para esto: «separador sin
+    significado». Separa dos celdas y no afirma nada, que es exactamente lo que
+    hace falta. *Decisión de Sebastián, 2026-09-30.*
+  */
+  .fp-lado + .fp-lado::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--s-5);
+    right: var(--s-5);
+    border-top: 1px solid var(--line);
+  }
+  .fp-rot {
+    margin: 0 0 var(--s-2);
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    font-weight: 400;
+    letter-spacing: var(--ls-label);
+    color: var(--ink-mute);
+  }
+  /* El espacio entre cifra y divisa es un carácter del `dd`: en mono a 13 px
+     mide 8 px; heredando Familjen a 16 medía 3. */
+  .fp-num {
+    margin: 0;
+    line-height: var(--lh-dato);
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+  }
+  /* La cifra no se parte nunca; el «USD» sí puede bajar. `tabular-nums` por la
+     regla 3 del §3.0. */
+  .fp-cifra {
+    font-family: var(--f-num);
+    font-size: var(--t-dato);
+    font-weight: 500;
+    letter-spacing: var(--ls-dato);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: var(--ink);
+  }
+  .fp-div {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    font-weight: 500;
+    color: var(--ink-mute);
+  }
+
+  .fp-pie {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-4);
+    margin: var(--s-4) 0 0;
+    padding: var(--s-4) var(--s-5) var(--s-2);
+    border-top: 1px solid var(--line);
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+  }
+  .fp-nota { color: var(--verde-deep); }
+
+  @container fp (min-width: 440px) {
+    .fp-pozo { grid-template-columns: 1fr 1fr; }
+    /* Las dos cifras se apoyan en el límite y el par pivota sobre él. */
+    .fp-lado:first-child { text-align: right; }
+    .fp-lado + .fp-lado::before {
+      left: 0;
+      right: auto;
+      top: var(--s-5);
+      bottom: var(--s-5);
+      border-top: 0;
+      border-left: 1px solid var(--line);
+    }
+    .fp-nota { margin-left: auto; }
+  }
+
+</style>

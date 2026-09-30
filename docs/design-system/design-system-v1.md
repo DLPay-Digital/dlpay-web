@@ -550,8 +550,8 @@ a 1280 px** —el rango se mide ahí y sólo ahí, ver más abajo— sobre el bu
 
 | familia | páginas y alto | rango |
 |---|---|---|
-| **con objeto** | Home 781 · `/como-funciona` 660 · `/preguntas` 634 · `/empresas` 569 · `/tarifas` 529 · `/confianza` 460 | **460–781 px** |
-| **sin objeto** | `/canal-de-denuncias` 288 · `/precio` 262 · `/terminos` 262 · `/blog` 236 · `/privacidad` 236 | **236–288 px** |
+| **con objeto** | Home 781 · `/como-funciona` 660 · `/preguntas` 634 · `/precio` 589 · `/empresas` 569 · `/tarifas` 529 · `/confianza` 460 | **460–781 px** |
+| **sin objeto** | `/canal-de-denuncias` 288 · `/terminos` 262 · `/blog` 236 · `/privacidad` 236 | **236–288 px** |
 
 **Entre 288 y 460 px no hay ninguna.** Ese hueco de 172 px es la regla y no una casualidad: **una
 portada de altura intermedia es una que no ha decidido a qué familia pertenece.**
@@ -590,12 +590,19 @@ valen para las dos portadas que faltan:
   La pieza además **sobresale 132 px** sobre la sección clara (`--montaje`), así que **la portada no
   contiene a su objeto** y medir el objeto no mide la portada.
 
-**Dos portadas quedan por hacer**, las dos de páginas no legales que siguen abriendo sin objeto:
-`/precio` y el índice del blog. Sobre `/precio` hay una conclusión ya medida y conviene
-no repetir el intento: **su figura no se puede subir a la portada**, porque no es un objeto suelto
-sino una `section` con su propio `<h2>` —«Lo que ves y lo que pagas miden lo mismo»— y su bajada.
-Subirla dejaría ese titular huérfano o lo duplicaría. `/precio` necesita otro objeto, o quedarse en
-la familia corta con el motivo escrito.
+**Queda una portada por hacer:** el índice del blog, la única página no legal que sigue abriendo
+sin objeto.
+
+**`/precio` se resolvió el 2026-09-30, y este documento había predicho cómo.** Decía que su figura
+de barras **no se podía subir a la portada** —no era un objeto suelto sino una `section` con su
+propio `<h2>` y su bajada, y subirla dejaría ese titular huérfano— y que la página «necesita otro
+objeto». Eso es exactamente lo que pasó: entró **un panel con la cifra de ejemplo**, la figura de
+barras se retiró entera y la portada subió de **262 a 589 px**, cambiando de familia.
+
+*La lección, que es más general que esta página:* **cuando una portada no llega a su familia, la
+pregunta no es cómo agrandar la figura que hay, sino cuál es el objeto de la página.** En
+`/preguntas` la respuesta fue una tableta; acá, la cifra. En los dos casos la figura anterior no se
+estiró: se fue.
 
 *Las cifras y la separación de las dos familias las midió Cowork; reproducidas acá las trece, exactas.*
 
@@ -801,20 +808,34 @@ concluirá, razonablemente, que el verde se usa de dos maneras incompatibles, y 
 **Sobre la frontera punteada, añadida el 2026-09-22.** Estaba en producción desde que existe
 `UseCaseFigure` y no estaba escrita, y eso resultó ser lo que hacía ambiguo todo un par de figuras.
 
-**Recontado el 2026-09-29 sobre el build servido: son SIETE**, no dos.
+**Recontado el 2026-09-30 barriendo las quince rutas del build: son OCHO.**
 
 | dónde | clase | qué límite marca |
 |---|---|---|
 | Home, «Tres usos» | `.edge` de `UseCaseFigure` | la frontera de Chile |
 | `/precio`, la banda | `.frontera` | el instante en que el cliente acepta |
+| `/precio`, la banda | `.caduca` | el instante en que se cumplen los 12 minutos |
 | `/tarifas` ×3 | `.limite`, `.sw sw-linea`, `.corte` | dónde acaba el precio · el spread · dónde se conversa |
 | Home y `/precio`, los puentes | `.limite` y `.corte` | los mismos dos, copiados a sus figuras |
 
-La cifra anterior decía «dos» y **era cierta el 2026-09-24**: lo que la invalidó fue el rediseño de
-`/tarifas` del día siguiente, que estrenó tres, y los puentes del 28, que copiaron dos a sus
-figuras. Es la segunda vez que esta frase envejece, así que conviene decir por qué y no sólo
-corregirla: **un recuento es una foto, y esta sección declara que mide «sobre el build y no
-recordado». Quien la cite tiene que rehacer la foto, no leer la anterior.**
+**Las otras once rutas no tienen ninguna**, y eso también se midió: `/como-funciona`, `/confianza`,
+`/empresas`, `/preguntas`, `/blog` y sus tres artículos, las tres legales sin `/tarifas` y la 404.
+
+**Esta frase ha envejecido tres veces, y la tercera es la que más enseña.** Dijo «dos» y era cierta
+el 2026-09-24; la invalidaron el rediseño de `/tarifas` del día siguiente, que estrenó tres, y los
+puentes del 28, que copiaron dos. Dijo «siete» y **nació ya desfasada el mismo día en que se
+escribió**: el 2026-09-29 se rehízo la banda de `/precio` para los 12 minutos y ahí entró `.caduca`,
+una octava marca, en el mismo commit y por la misma mano que corregía el recuento. Nadie volvió a
+contar después de añadirla.
+
+> **Un recuento es una foto, y quien la cite tiene que rehacerla.** Incluso —sobre todo— quien la
+> acaba de tomar: añadir una marca y corregir el recuento en la misma sesión no garantiza que el
+> orden haya sido ése.
+
+*Cómo se rehace, para que el próximo no invente el método:* se sirve el build, se recorre **cada
+ruta** en un `iframe` y se cuenta por `border-style: dashed`, por `repeating-linear-gradient` y por
+`stroke-dasharray` que no venga de un `[data-draw]`. Nunca por el tamaño de la caja, nunca sobre una
+sola página.
 
 *Y una trampa del instrumento, por si alguien repite la medición:* el barrido descartó `.edge`
 porque filtraba por ancho mayor que cero, y `.edge` es una **línea vertical** — ancho cero. Un
@@ -838,6 +859,21 @@ y por el mismo motivo. `border: dashed` no sirve: el guion y el hueco los elige 
 
 **La regla que queda: un punteado dentro de un SVG estirado se mide en pantalla, nunca se lee del
 atributo.**
+
+**Y un caso de NO usarlo, del 2026-09-30, que vale como precedente.** El panel de `/precio` separa
+«aceptas» de «recibes», y la primera versión puso ahí un filete punteado citando esta marca. **Era
+la marca diciendo lo contrario que su figura:** las dos mitades enseñan el mismo número y el pie
+explica por qué —«sin costo de red»—, así que cruzar ese filete **no cambia nada**. Va en `--line`,
+«separador sin significado», por decisión de Sebastián.
+
+La justificación que traía —«el mismo signo que la banda usa para el mismo instante»— tampoco valía,
+y la distinción es fina pero es la del vocabulario entero: en la banda el punteado marca **un
+instante**, la frontera entre un precio que se mueve y uno que ya no. En el panel el filete está
+**entre** dos momentos, que es un tramo. *Un límite es un punto del recorrido, no el trecho entre
+dos.*
+
+> **Antes de poner la única marca punteada del sistema, hay que preguntarse si lo que separa cambia
+> algo.** Si la figura existe para decir que no cambia nada, el punteado la contradice.
 
 **Generalizada el 2026-09-24, de «frontera» a «límite».** Nació describiendo el único punteado que
 existía —la frontera de `cruza`, que separa Chile del extranjero—. La banda de `/precio` estrenó un
@@ -1030,6 +1066,7 @@ cada una, no qué significa.
 | **Carril de dos columnas** | `/como-funciona`: qué hace cada parte y dónde cambia de manos | La colocación en rejilla va **explícita**: el flujo automático deshace el carril |
 | **Eje de alcance** | Hasta dónde llega el servicio | `EjeDeAlcance`, en **tres** páginas: `/como-funciona`, `/empresas` y el artículo del blog. *Salió de la Home el 2026-09-25.* Es la regla dura de `CLAUDE.md` §1 dibujada, y por eso es un componente y no CSS repetido |
 | **Portada de dato** | La cifra de la que habla un artículo | Dos tipos: `cifra` y `rango`. **La cuña no entra** (§6.1). `fuente` es obligatoria |
+| **Panel del precio** | `/precio`: el mismo número al aceptar y al recibir | `FiguraPrecio`. **Sin props**: lo que enseña no se configura. Las dos cifras son **una variable renderizada dos veces** (D24), así que no pueden diferir. Lleva la etiqueta «ejemplo» porque el `Quote` es `isReferential`. El filete que separa las dos mitades va en `--line` y **no punteado**: ver §6.2 |
 | **Índice del blog** | `/blog` | Filas con filete y fecha tabular en columna propia. Se ve igual con un artículo que con cincuenta |
 | **Globo rotativo** | El alcance del dólar digital, en la Home | Tres excepciones autorizadas: ADR-0007, 0008 y 0009. **No va nunca solo**, porque sin nada que lo acote el dibujo afirma de más. Hasta el 2026-09-25 lo acotaba el eje de alcance; desde que Sebastián lo retiró, lo acota el titular de su banda —«Nuestro tramo termina en tu billetera»— y la bajada. **Si algún día se cambia ese titular por uno que no nombre el límite, el globo se queda desnudo** |
 | **Franja de notificación** | Aviso a todo el ancho | ADR-0006. Se oculta sola en la página que enlaza |

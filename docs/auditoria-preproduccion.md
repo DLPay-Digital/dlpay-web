@@ -495,6 +495,46 @@ declara los dos modos y prohíbe expresamente la negación absoluta.
 enseña la mitad del producto. Mientras no se haga, la única página que lo menciona es `/preguntas`,
 en la respuesta de volver a pesos, y eso está al revés de como debería ser.
 
+### Copy aprobado por Compliance — 2026-09-30  ·  **la portada de `/precio`**
+
+**Firmado por Sebastián Villanueva Pereira como Compliance el 2026-09-30.**
+
+| Qué se aprobó | Dónde vive |
+|---|---|
+| «El precio que aceptas es el que pagas. Acá ves dónde está el cobro y dónde no lo hay.» | bajada de `/precio` |
+| «aceptas» / «recibes», los dos rótulos del panel | `FiguraPrecio.astro` |
+| «ejemplo», junto a «por CLP 2.000.000» | `FiguraPrecio.astro` |
+| «sin costo de red» | `FiguraPrecio.astro` |
+| «Cotizar otro monto» | `/precio`, bajo el panel |
+| «Cancelar antes de transferir» · «Sin costo · basta con no transferir» | fila de `costs` en `/precio` |
+| «Preguntas sobre el precio» | título de la sección nueva |
+
+**Entró para RETIRAR una contradicción, no para añadir una promesa.** La bajada decía «Lo que ves
+**al cotizar** es lo que pagas», y el sitio publica lo contrario en dos sitios: la Home —«¿El precio
+de la web es el precio final? **No.** Es un precio referencial de mercado»— y `content/general.ts`
+—«el que se aplica es el que tu ejecutivo te confirma, **no el que la web mostraba cuando
+cotizaste**»—. Una versión anterior de esta misma entrega empeoraba el problema: ponía **la misma
+cifra** bajo «al cotizar» y bajo «al pagar», con lo que la contradicción dejaba de ser una frase y
+pasaba a ser un número. Se descartó.
+
+**El límite de la frase aprobada, dicho acá porque es donde hay que leerlo.** «El precio que
+aceptas es el que pagas» es cierta **dentro de los 12 minutos**; pasada la ventana, `general.ts`
+dice que se cotiza de nuevo con el precio del momento. La frase y su condición viven en la misma
+página, con la banda dos secciones más abajo. **Ampliar la frase, o quitar la banda, la vuelve
+falsa.** Es el mismo modo de fallo que cerró la sección anterior: prometer más de lo que se entrega.
+
+**«sin costo de red» no es una promesa nueva:** repite en corto lo que la tabla de costos ya publica
+—«El costo de red del traspaso · Sin costo · lo asumimos nosotros»— y es lo que explica que las dos
+mitades del panel enseñen la misma cifra.
+
+**«Cancelar antes de transferir» dice «antes de transferir» a propósito.** El caso «ya transferí y
+quiero cancelar» **no tiene respuesta publicada** y la fila no puede insinuar una devolución que
+nadie ha confirmado. Sigue en la lista de la cabecera de `content/general.ts`.
+
+**«ejemplo» es la etiqueta que faltaba, y no resuelve D7.** El `Quote` es `isReferential`, así que
+la cifra del panel es un ejemplo y ahora lo dice. Lo que la etiqueta **no** hace es volver creíble
+el número: sale de `PUBLIC_QUOTE_SAMPLE_RATE` = 919,70, y esa tasa es D7. Ver `CLAUDE.md` §13.
+
 ### Copy aprobado por Compliance — 2026-09-29  ·  **el plazo del precio aceptado**
 
 **Firmado por Sebastián Villanueva Pereira como Compliance el 2026-09-29.**

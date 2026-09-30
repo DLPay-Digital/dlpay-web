@@ -396,6 +396,28 @@ que se cierre. `/precio` vive en el menú «Información» y se lee antes de ope
 texto de la otra: la frase de condiciones por volumen se importa de `business.ts`, donde vive con
 su marcador de Compliance.
 
+**El 2026-09-30 `/precio` se rehizo entera, y lo primero que arregló fue una contradicción con el
+propio sitio.** Su bajada decía «Lo que ves **al cotizar** es lo que pagas», y la Home publica
+«¿El precio de la web es el precio final? **No.** Es un precio referencial» y `general.ts` publica
+«el que se aplica es el que tu ejecutivo te confirma, no el que la web mostraba cuando cotizaste».
+La bajada ahora dice **«El precio que aceptas es el que pagas»**, que es lo que la banda de los 12
+minutos sí demuestra.
+
+**Queda dicho el matiz, porque es donde vive el riesgo:** esa frase es cierta **dentro de la
+ventana**. Si se pasan los 12 minutos, `general.ts` dice que se cotiza de nuevo. No es el error
+anterior —aquella frase la contradecía el sitio de frente, ésta lleva una condición que la página
+explica dos secciones más abajo— pero **ampliarla o quitarle la banda vuelve a hacerla falsa.**
+
+Lo demás que entró: un **panel con la cifra de ejemplo** en la portada —la página se llamaba «Un
+solo número» y no enseñaba ninguno—, el enlace «Cotizar otro monto» que baja la primera acción de
+**3.190 a 622 px**, una fila de «Cancelar antes de transferir» en la tabla de costos, y una sección
+«Preguntas sobre el precio» con tres respuestas **importadas** de `home.ts` y `general.ts` por el
+texto de su pregunta: si alguna se reescribe, el build para. La figura de las dos barras se retiró.
+
+**Y con eso el ejemplo del panel hace que D7 pese más.** Hasta hoy `PUBLIC_QUOTE_SAMPLE_RATE` daba
+cifras dentro del cotizador; ahora da **la** cifra de la portada de una página titulada «Un solo
+número». Ver §13.
+
 **La FAQ sigue viviendo en la Home y en `/empresas`**, no como página propia: `/preguntas` las
 reúne desde la misma fuente tipada, no las muda.
 
@@ -644,7 +666,7 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | ~~D22~~ | ~~Mensaje prellenado en cinco enlaces planos a WhatsApp~~ | ✅ **Cerrada 2026-09-29.** Los cinco que abrían el chat en blanco —el pie, `/tarifas`, `/confianza`, `/como-funciona` y el botón del héroe de `/empresas`— llevan mensaje. Comprobado sobre el build: **cero enlaces sin texto en las once páginas**, once mensajes distintos, cada uno escrito para el sitio desde donde se pulsa. El del pie es a propósito el más vago —está en todas las páginas y no puede suponer por qué escribes—, y `/empresas` lleva dos distintos: el del héroe es de quien acaba de llegar y el del cierre de quien ya leyó. **El texto del botón «Habla con nosotros» se queda**, decisión de Sebastián del mismo día | — | — |
 | D23 | **Canal de respaldo si WhatsApp no abre.** Todo el funnel termina en un único canal; si el enlace no abre, la persona queda sin salida visible en ese momento | No | Sebastián |
 | ~~D24~~ | ~~Consolidar el monto mínimo en `lib/config`~~ | ✅ **Cerrada 2026-09-09.** Los límites del cotizador (`PUBLIC_QUOTE_MIN_CLP`, `PUBLIC_QUOTE_MAX_CLP`) y el monto de muestra se resuelven UNA vez en `lib/config/environment.ts` (`resolveQuoteLimits`, puro y testeado) y se exponen como `quoteLimits` en `lib/config/site.ts`. Los cinco consumidores —cotizador, `/tarifas`, mockup y las dos ilustraciones de la Home— dejaron de leer el entorno: `/tarifas` publica por construcción el mismo mínimo que el cotizador aplica. Commit `c5f0ad5` | — | — |
-| D7 | **Fuente oficial de market price**, y con ella la tasa que el sitio publica hoy: `PUBLIC_QUOTE_SAMPLE_RATE`, **919,70 CLP por dólar**, que es el número del que cuelgan todas las cifras de muestra de la web. *Anotado el 2026-09-25, al cerrar D6:* el registro llamaba «precio de muestra» a dos cosas distintas y la tasa es ésta, no el monto | No — `ConfigPriceSource` cubre v1 | DLPay |
+| D7 | **Fuente oficial de market price**, y con ella la tasa que el sitio publica hoy: `PUBLIC_QUOTE_SAMPLE_RATE`, **919,70 CLP por dólar**, que es el número del que cuelgan todas las cifras de muestra de la web. *Anotado el 2026-09-25, al cerrar D6:* el registro llamaba «precio de muestra» a dos cosas distintas y la tasa es ésta, no el monto. **Subió de exposición el 2026-09-30:** el panel de `/precio` publica **2.174,62 USD por CLP 2.000.000** en la portada de una página titulada «Un solo número», así que la tasa dejó de vivir dentro del cotizador y pasó a ser *la* cifra de una página. Cowork reporta que el 30 de septiembre el USDT se cotizaba entre 969,88 y 981 pesos, lo que haría el ejemplo **entre un 5,5 % y un 6,7 % más generoso que el mercado**; **ese dato no está verificado acá** y verificarlo pide una cotización de mercado. No corre prisa —el sitio no está publicado— pero **el orden correcto es fijar la tasa antes de publicar esta página, no después**: la etiqueta «ejemplo» protege de que la cifra se lea como oferta, no de que sea inverosímil | No — `ConfigPriceSource` cubre v1 | DLPay |
 | ~~D8~~ | ~~Alcance de servicios a comunicar~~ | ✅ Cerrado 2026-09-04: el amplio, alineado con los T&C publicados | Equipo DLPay |
 | ~~D16~~ | ~~Cómo llega el dinero al destinatario final~~ | ✅ Cerrado 2026-09-04: DLPay entrega **dólar digital en la billetera**; no deposita en cuentas bancarias en el extranjero. Ver §1 | Equipo DLPay |
 | ~~D17~~ | ~~"Sin esperar días"~~ | ✅ Reformulado 2026-09-04: la rapidez se predica de la conversión y del movimiento del dólar digital, nunca de una recepción bancaria en destino | Equipo DLPay |
