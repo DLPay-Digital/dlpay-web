@@ -2984,3 +2984,123 @@ también están en `/preguntas`.
 **Sus dos recortes propuestos** —la leyenda de la banda y el bloque «Volumen y frecuencia»— no van
 en esta integración. El bloque se queda por decisión suya; la leyenda tiene firma de Compliance y
 Cowork hizo bien en no tocarla.
+
+---
+
+### Notas de la integración de `2026-09-30 · confianza: la portada pasa a ser un objeto`
+
+**Integrada la maqueta A**, el teléfono. Con las tres decisiones de Sebastián del mismo día: **A**
+sobre B, **«a la cuenta de DLPay»** en vez de la razón social por D9, y **cambiar la figura del
+puente** en vez de dejarla. Esa tercera no estaba en su lista, y es el hallazgo de esta revisión.
+
+#### Su argumento se sostiene, y trae un defecto vivo que nadie había visto
+
+La portada de hoy medía **460 px a 1280 —el piso exacto de su familia— y 437 a 768**, o sea
+**dentro del hueco de 288 a 460 que el §4.8 declara prohibido**. Llevaba así desde que ese hueco se
+escribió, el 2026-09-29, y se me pasó a mí: la tabla se midió a 1280 y la regla se comprobó a 1280.
+**Una regla que sólo se verifica al ancho en que se escribió no está verificada.** Queda en el §4.8.
+
+Su crítica de fondo también: la figura eran tres barras de 20 px que miden lo mismo y van
+`aria-hidden`, con todo el significado en rótulos de 13 px. El titular de esa página dice «confianza
+que **se comprueba**», y un diagrama no se comprueba. Tres avisos de tres remitentes, **dos de ellos
+ajenos**, sí.
+
+#### Reproducido contra el build
+
+Portada de hoy: **694 · 669 · 649 · 437 · 460 · 460**, sus seis números exactos. Entrega A: **750 ·
+686 · 722 · 722 · 698 · 698 · 698** —a 320 mido 750 y él 731, la diferencia es la barra de scroll, y
+lo mismo explica que su columna de aviso dé 174 y la mía 159—.
+
+**La costura sale 0,00** en el borde del chasis, medida en el viewport real a 1280, 390 y 320. Cero
+desborde, texto mínimo 13 px, ningún `.entero` partido, «DLPay · tu ejecutivo» en una línea.
+
+**WCAG 1.4.12 pasa**, medido con la tinta y no con cajas: nada se sale de la pantalla del teléfono,
+nada se solapa, la costura sigue en 0 y el aparato crece de 750 a 1.116 sin recortar.
+
+#### Un error mío de instrumento, dicho antes de que parezca hallazgo
+
+Mi primer barrido dio **−9 px de costura en las siete anchuras** y estuve a punto de reportarlo. Lo
+daba el instrumento: medí en un `iframe` **sin esperar `document.fonts.ready`**, así que medía con
+las métricas de la fuente de respaldo. Con la espera puesta bajó a −2/−3, que es redondeo
+sub-píxel del propio `iframe`; en el viewport real es **0,00**.
+
+> **Un `iframe` sirve para barrer muchas anchuras y no sirve para una afirmación sub-píxel.** Para
+> «0 px» hay que redimensionar el viewport de verdad, y siempre esperar las fuentes.
+
+#### Lo que la entrega afirma dos veces y es falso
+
+**«Si Sebastián retira la línea, `Phase` y `phases` quedan sin uso y se borran con ella»** —lo dice
+el prompt en §2.4 y la ficha en §8.3—. **Tenían un segundo consumidor:** `FiguraTenencia.astro`, la
+figura del puente de `/tarifas` a `/confianza`.
+
+Y el problema era mayor que un import: **ese puente enseñaba la línea como anticipo del destino.**
+Retirada la línea, el puente anticipaba una figura que el destino ya no tiene. Lo más notable es que
+**el propio componente lo había previsto**, con estas palabras en su cabecera: *«copiada y no
+factorizada… si la de destino cambia, el puente se queda como está hasta que alguien lo mire.»* Por
+una vez alguien lo miró el mismo día. **Ese comentario se ganó su sitio.**
+
+#### El puente rehecho, y cuatro intentos hasta que cupo
+
+La figura del puente son ahora los mismos avisos con `forma="puente"`. **Comparte el componente en
+vez de copiarlo**, al revés que los otros cuatro puentes, y la razón es el contenido: los avisos
+llevan firma de Compliance y dos copias de una cadena firmada es cómo el sitio acaba diciendo dos
+cosas. Se comparte el texto y se separa la presentación — que es exactamente lo que hacía
+`FiguraTenencia`, que copiaba el dibujo e importaba el dato.
+
+**Y no cupo de entrada.** La esquina superior izquierda del primer aviso caía **37 px del lado claro
+del corte**, con lo que ese aviso —papel sobre papel— se quedaba sin borde. El §4.7 pide 40 de
+holgura de tinta. Lo que probé:
+
+| intento | a 1280 | a 960 |
+|---|---|---|
+| tal cual, 460 de ancho | −37 | — |
+| estrechar a 366 | 30 | — |
+| estrechar a 336 | 55 | **−14** |
+| bajar la escala del aviso | — | −2 |
+| **quitar el cuerpo del aviso** | **111** | **42** |
+
+**El tercer intento es el que enseña:** estrechar arregló 1280 y no arregló 960, porque el corte pasa
+por el centro de la banda y cuanto más estrecha es, más adentro de la columna queda. **Una holgura
+que depende del ancho no se arregla con un ancho fijo.** Está en el §4.7.
+
+Y lo que lo resolvió no fue una medida: **el puente enseña el remitente y el titular, no el cuerpo**.
+199 px de alto en vez de 299. Entra por geometría —la figura va pegada abajo, así que cada píxel de
+alto es un píxel que su esquina se aleja del corte— pero **se queda por argumento**: un puente
+promete y el destino paga. Que te llegan tres avisos de tres remitentes y sólo uno es nuestro se lee
+entero sin las cifras; las cifras están a un clic. *Es la regla del §4.8 dicha para un puente.*
+
+**Un detalle de CSS que costó una vuelta:** la regla del ancho la escribí a mitad del archivo y **no
+aplicaba**. `.tel` y `.puente` tienen la misma especificidad, así que entre reglas que coinciden gana
+la última del archivo y no la del `@media` más estrecho; el bloque de 900 la pisaba desde abajo y la
+figura seguía midiendo 460. Se vio midiendo, no leyendo. Queda anotado en el componente.
+
+#### Lo que NO integré de su §5, y por qué
+
+**La rama `suelto` no se borró.** La regla de la entrega era borrar la maqueta perdedora, y Sebastián
+eligió el teléfono. **No se borra porque entre medio le apareció un consumidor de verdad:** es la
+forma del puente, renombrada a `puente`. *Una rama alternativa y una variante con consumidor se
+parecen en el código y no son lo mismo; el criterio para borrar es si algo la usa.*
+
+#### Un hallazgo que no es de esta entrega
+
+Con el espaciado de 1.4.12 a 320 px la página gana **20 px de desplazamiento horizontal**, y
+**ninguno de los 26 elementos que se salen está dentro del teléfono**: son todos de la **cabecera**.
+Comprobado en `/terminos` del build anterior, sin esta portada: mismo desborde. **Afecta a las
+quince páginas.** Queda como B6 en la auditoría, sin tocar: la cabecera se comparte y un cambio ahí
+se verifica en las quince.
+
+*El reflejo que hay que vigilar:* lo primero que pensé fue anotarlo contra esta portada. **Una
+medición sobre una página no dice de qué parte de la página es el problema hasta que se pregunta por
+el culpable.**
+
+#### Lo que queda para Sebastián
+
+1. **D9.** Mientras siga abierta, el aviso dice «a la cuenta de DLPay» y **la portada de «Confianza
+   que se comprueba» no da el dato que de verdad se comprueba.** El día que cierre es una línea.
+2. **La sección «cómo saber que eres tú con nosotros»** (§6a de su ficha), que él no construyó y que
+   necesita tres datos tuyos: si todas las operaciones salen de un único número, si la cuenta
+   receptora es siempre la misma, y qué es lo que nunca pediremos. Con la CMF advirtiendo sobre
+   fraudes por WhatsApp y DLPay operando por WhatsApp, **es el hueco más grande que señala.**
+3. **La primera acción de la página sigue a 3.024 px** en escritorio. Él no la subió porque el
+   teléfono llega a ras de la costura y no deja sitio; queda dicho.
+4. **D7, por tercera vez:** la tasa de muestra aparece ya en **dos portadas**.

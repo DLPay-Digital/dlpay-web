@@ -448,6 +448,27 @@ sólo de sus páginas.
 página crece de 6.294 a 6.989 px a 1280, y **la banda no acorta el scroll: da un salto.** Llegar al
 sexto grupo desde el primero sigue siendo 2.284 px bajando; lo que se gana es no tener que bajarlos.
 
+**`/confianza` cambió de portada el 2026-09-30.** Era la **línea de tenencia** —tres barras con
+rótulos, «En tu cuenta bancaria · En la cuenta de DLPay · En tu billetera»— y pasa a ser **los tres
+avisos que le llegan al teléfono al cliente en una operación**: el de su banco, el nuestro y el de
+su billetera. Dicen los mismos tres momentos y en el mismo orden, pero **contados por quien tiene el
+dinero en cada uno**, y **dos de los tres no los escribe DLPay**. Eso es lo que el titular de esa
+página promete —«Confianza que **se comprueba**»— y una figura de barras no podía dar.
+
+**La bajada no cambia:** «cuando operas con un ejecutivo» acota el recorrido al modo asistido, que
+es el que estos avisos describen. Ver «Dos modos de operar» en §1.
+
+**Arrastró dos cosas que la entrega no había visto:**
+
+- **El puente de `/tarifas` enseñaba esa línea** como anticipo del destino, copiada en
+  `FiguraTenencia.astro`. Al retirarse la línea, el puente anticipaba una figura que el destino ya
+  no tiene. Usa ahora el mismo componente de los avisos, con `forma="puente"`, y ese componente
+  **se comparte en vez de copiarse** —al revés que los otros cuatro puentes— porque lo que hay
+  dentro son cadenas con firma de Compliance: dos copias de una cadena firmada es cómo el sitio
+  acaba diciendo dos cosas.
+- **`Phase` y `phases` se retiraron de `trust.ts`.** La entrega decía que quedaban sin uso; tenían
+  un segundo consumidor, que era ese puente.
+
 **`/blog` se añadió el 2026-09-11.** Colección tipada de Astro (`src/content.config.ts`) con
 esquema cerrado: `title`, `description`, `pubDate`, `category` —sólo `DLPay` o `Mercado`, un valor
 fuera de esa lista rompe el build—, `estado` y `portada`. Sin paquetes nuevos: `package.json` sigue
@@ -673,7 +694,7 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | ~~D18~~ | ~~Fuente real de actividad reciente~~ | ✅ **Cerrada 2026-09-09: se descarta la funcionalidad.** El feed de «operaciones recientes» nunca salió de la investigación —cero menciones en `phase-2.5` y en `cotizador-spec`—; nació al construir `/cotizar` y se quedó sin página al eliminarla. Además chocaba con **D10**: un feed de actividad **es** una cifra de volumen, y publicarlo en continuo es una decisión de Compliance, no de ingeniería. `ActivityFeed.astro`, `lib/activity` y sus 15 tests se eliminaron (514 líneas). Si algún día se quiere prueba social, la puerta es **D10** y el punto de partida está en el historial, antes de `7577ffe` | — | — |
 | ~~D28~~ | ~~¿Necesita la franja de notificación un botón de cerrar?~~ | ✅ **Cerrada 2026-09-29: no se hace.** Y el argumento con el que estuvo aparcada **caducó** el 2026-09-25: decía que un botón costaría «el fin de cero almacenamiento y de las cuatro legales en cero JS», y la intro de marca ya gastó lo primero —escribe en `sessionStorage`— mientras lo segundo nunca estuvo en juego, porque la franja no vive en las legales y `tests/zero-js.test.ts` lo comprueba. El motivo real de no hacerlo es otro: **nadie ha pedido cerrarla**, y la franja ya se oculta sola en la página que enlaza. La mitad de accesibilidad de esta decisión NO se cierra con ella: sigue como deuda declarada en ADR-0006, con tres mecanismos de pausa ya implementados | — | — |
 | D27 | **Cabeceras del host**: `X-Robots-Tag: noindex` en Staging —la defensa robusta, porque `Disallow` impide leer el `noindex` del HTML— y evaluar un CSP por hash de los tres scripts en línea, que permitiría quitar `unsafe-inline`. Conjunto completo en `docs/arquitectura-produccion.md` §5.1 | No | Al cerrar D1b (proveedor) |
-| D9 | **Razón social**: se usa **DLPZ INCZ SpA**. Los T&C publicados dicen "DLPZ PRO SpA" (RUT 78.378.714-8) | **Sí — bloquea publicar los textos legales.** No se puede publicar bajo una entidad que contradiga el contrato vigente | `REQUIERE VALIDACIÓN DE COMPLIANCE` — Joaquín. **No reinvestigar.** |
+| D9 | **Razón social**: se usa **DLPZ INCZ SpA**. Los T&C publicados dicen "DLPZ PRO SpA" (RUT 78.378.714-8). **Desde el 2026-09-30 tiene un consumidor nuevo y visible:** el aviso del banco en la portada de `/confianza` dice a quién fue la transferencia, y **ése es el dato que el cliente comprueba en su banco** —que el destinatario es una sociedad y no una persona—. Publicar ahí un nombre que no coincida con el de su cartola haría que la portada de «Confianza que se comprueba» **falle su propia prueba**. Por eso el aviso dice **«a la cuenta de DLPay»**, frase ya publicada, y no la razón social; *decisión de Sebastián del 2026-09-30*. Es más débil como comprobación y **se cambia el día que D9 cierre**: una línea en `TelefonoAvisos.astro` | **Sí — bloquea publicar los textos legales.** No se puede publicar bajo una entidad que contradiga el contrato vigente | `REQUIERE VALIDACIÓN DE COMPLIANCE` — Joaquín. **No reinvestigar.** |
 | D19 | **Correo oficial de contacto**: los T&C dicen `contacto@dlpay.cl`, la Política dice `contacto@dlpzpro.cl` | Sí, para el canal de denuncias. La web no publica ninguno hasta confirmarlo | Compliance |
 | D20 | **El alcance de los T&C ya no coincide con el servicio**: hablan de custodia y liquidaciones internacionales; el servicio real es cambio de divisas con entrega de dólar digital | Sí, antes de publicar los textos | Compliance |
 | D10 | **Testimonios, cifras de clientes/volumen, logos de empresas** | No — no se publican hasta verificar | DLPay (I15) |

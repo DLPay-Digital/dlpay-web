@@ -498,14 +498,39 @@ plantilla, no familia.
   | puente | figura | texto |
   |---|---|---|
   | 1 · Home → `/tarifas` | 65–68 | 93–162 |
-  | 2 · `/tarifas` → `/confianza` | 51 | 77–146 |
+  | 2 · `/tarifas` → `/confianza` | **42–111** *(rehecho el 2026-09-30)* | 77–146 |
   | 3 · `/precio` → `/tarifas` | 86 | 107–177 |
   | 4 · `/como-funciona` → el artículo | 45–115 | 72–141 |
 
-  **El rango de la familia es 45–115 por la figura y 72–177 por el texto**, y **el piso sigue siendo
-  40**: el caso más justo es el cuarto puente a 960 px, con 45. *Las cifras anteriores de este
+  **El rango de la familia es 42–115 por la figura y 72–177 por el texto**, y **el piso sigue siendo
+  40**: el caso más justo es el segundo puente a 960 px, con 42. *Las cifras anteriores de este
   párrafo —«93 a 196» y «60 a 82»— salían de medir cajas y quedan derogadas; el orden de magnitud no
   cambia, la disciplina de medición sí.*
+
+  **Una holgura que depende del ancho no se arregla con un ancho fijo.** *Aprendido rehaciendo el
+  segundo puente el 2026-09-30, y costó cuatro intentos.* Su figura pasó a ser los tres avisos de
+  `/confianza`, un bloque **alto** donde la anterior era ancha y baja —299 px contra 133—, y la
+  esquina superior izquierda del primer aviso caía **37 px del lado claro del corte**. Lo que se
+  probó, en orden:
+
+  | intento | a 1280 | a 960 |
+  |---|---|---|
+  | tal cual, 460 px de ancho | −37 | — |
+  | estrechar a 366 | 30 | — |
+  | estrechar a 336 | 55 | **−14** |
+  | bajar la escala del aviso | — | −2 |
+  | **quitar el cuerpo del aviso** | **111** | **42** |
+
+  **El tercero es el que enseña.** Estrechar arregló 1280 y no arregló 960, y el motivo es
+  geométrico: el corte pasa por el **centro de la banda**, así que cuanto más estrecha la banda, más
+  adentro de la columna derecha queda el corte. Un `max-width` en píxeles no puede seguir a una recta
+  que se mueve con el ancho.
+
+  **Lo que resolvió no fue una medida, fue el contenido.** La figura dejó de enseñar el cuerpo de
+  cada aviso y se quedó con el remitente y el titular: 199 px de alto en vez de 299. Y como la figura
+  va pegada abajo (`align-self: end`), **cada píxel de alto que pierde es un píxel que su esquina de
+  arriba se aleja del corte**. Es la regla del §4.8 dicha para un puente: *cuando una figura no entra,
+  la pregunta no es cómo encogerla, sino qué tiene que decir ahí.*
 
   **Qué esquina manda, que es lo que evita el error:** el corte **baja hacia la izquierda**, así que
   la esquina que se acerca al corte es la **superior** de la figura y la **inferior** del texto. Una
@@ -541,8 +566,9 @@ objeto, porque describe el servicio y no obligaciones contractuales, que es la m
 la que su contenido es real y el de `/terminos` es una página de estado.
 
 **Las demás abren con el objeto de la página:** el cotizador en la Home, el teléfono en
-`/como-funciona`, el MacBook en `/empresas`, la barra del precio en `/tarifas`, la línea de tenencia
-en `/confianza` y, desde el 2026-09-30, **la tableta con una conversación dentro en `/preguntas`**.
+`/como-funciona`, el MacBook en `/empresas`, la barra del precio en `/tarifas` y, desde el
+2026-09-30, **la tableta con una conversación dentro en `/preguntas`**, **el panel de la cifra en
+`/precio`** y **el teléfono con los tres avisos en `/confianza`**.
 
 **Y las dos familias están separadas por un hueco vacío.** Las trece portadas publicadas, **medidas
 a 1280 px** —el rango se mide ahí y sólo ahí, ver más abajo— sobre el build de `67abaa9`, con
@@ -550,7 +576,7 @@ a 1280 px** —el rango se mide ahí y sólo ahí, ver más abajo— sobre el bu
 
 | familia | páginas y alto | rango |
 |---|---|---|
-| **con objeto** | Home 781 · `/como-funciona` 660 · `/preguntas` 634 · `/precio` 589 · `/empresas` 569 · `/tarifas` 529 · `/confianza` 460 | **460–781 px** |
+| **con objeto** | Home 781 · `/confianza` 698 · `/como-funciona` 660 · `/preguntas` 634 · `/precio` 589 · `/empresas` 569 · `/tarifas` 529 | **529–781 px** |
 | **sin objeto** | `/canal-de-denuncias` 288 · `/terminos` 262 · `/blog` 236 · `/privacidad` 236 | **236–288 px** |
 
 **Entre 288 y 460 px no hay ninguna.** Ese hueco de 172 px es la regla y no una casualidad: **una
@@ -591,7 +617,15 @@ valen para las dos portadas que faltan:
   contiene a su objeto** y medir el objeto no mide la portada.
 
 **Queda una portada por hacer:** el índice del blog, la única página no legal que sigue abriendo
-sin objeto.
+sin objeto. **El piso de la familia subió a 529** al dejar `/confianza` los 460: hoy ninguna portada
+con objeto baja de ahí.
+
+**Y `/confianza` deja el hallazgo más incómodo de los tres.** Su portada era la línea de tenencia y
+medía **460 px a 1280 —el piso exacto— pero 437 a 768**, o sea **dentro del hueco de 288 a 460 que
+esta misma sección declara prohibido**. Llevaba así desde que el hueco se escribió, el 2026-09-29, y
+no lo vio nadie: la tabla se midió a 1280 y la regla se comprobó a 1280. *Una regla que sólo se
+verifica al ancho en que se escribió no está verificada.* Con el teléfono de avisos la portada va de
+**816 a 698** y no toca el hueco en ninguno de los siete anchos.
 
 **`/precio` se resolvió el 2026-09-30, y este documento había predicho cómo.** Decía que su figura
 de barras **no se podía subir a la portada** —no era un objeto suelto sino una `section` con su
@@ -1060,7 +1094,7 @@ cada una, no qué significa.
 |---|---|---|
 | **Héroe con cotizador** | El primer viewport de la Home | El cotizador **no entra** animado: es el instrumento y tiene que estar encendido al llegar. Lo que entra es el texto (M6) |
 | **Encabezado de página** | Las ocho rutas que no son la Home | `PageHero`. Dos composiciones: a dos columnas y **apilada y centrada**, ésta con la pieza del `aside` montada sobre la costura con la sección siguiente |
-| **Dispositivos en CSS: teléfono, portátil y tableta** | Enseñar el producto sin imágenes. El teléfono (`/como-funciona`, Home) una **operación negociándose**; el portátil (`/empresas`) la plataforma; la tableta (`/preguntas`, desde el 2026-09-30) **una duda resolviéndose** | Cero archivos. **El texto nunca se teclea**: el teléfono deriva las cifras de `lib/pricing`; la tableta busca la pregunta en `general.ts` **por su texto** y el build para si no está. Los tres van `aria-hidden` y **el chasis va claro**, que es lo único que recorta un objeto contra la tinta. Si el hilo de la tableta empieza a hablar de montos, deja de ser tableta y pasa a ser teléfono |
+| **Dispositivos en CSS: teléfono, portátil, tableta y teléfono de avisos** | Enseñar el producto sin imágenes. El teléfono de chat (`/como-funciona`, Home) una **operación negociándose**; el portátil (`/empresas`) la plataforma; la tableta (`/preguntas`) **una duda resolviéndose**; el teléfono bloqueado con avisos (`/confianza`, desde el 2026-09-30) **una operación comprobándose desde fuera** | Cero archivos. **El texto nunca se teclea**: las cifras salen de `lib/pricing` y la pregunta de la tableta se busca en `general.ts` por su texto. Los cuatro van `aria-hidden` y **el chasis va claro**, que es lo único que recorta un objeto contra la tinta. **Dos teléfonos y no uno, a propósito:** aquél tiene la app abierta y una conversación; éste está bloqueado y enseña tres avisos de tres remitentes, de los que **sólo uno es nuestro**. Si el hilo de la tableta empieza a hablar de montos, deja de ser tableta y pasa a ser teléfono |
 | **Emblema de caso** | Las cuatro operaciones de `/empresas` | El canto del isotipo como frontera; el dinero es un canal hueco dentro del plano y macizo fuera |
 | **Línea de tenencia** | `/confianza`: de quién es la cuenta donde está el dinero | HTML, no SVG. Un solo tramo es nuestro |
 | **Carril de dos columnas** | `/como-funciona`: qué hace cada parte y dónde cambia de manos | La colocación en rejilla va **explícita**: el flujo automático deshace el carril |

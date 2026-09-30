@@ -1,0 +1,436 @@
+---
+/**
+ * La portada de `/confianza`: **los tres avisos que te llegan al teléfono en una
+ * operación, y sólo uno es nuestro.**
+ *
+ * ── Qué sustituye, y por qué ───────────────────────────────────────────────
+ *
+ * La portada era la «línea de tenencia»: tres barras de 20 px —gris, verde,
+ * gris— con sus rótulos. Afirmaba bien dónde está el dinero, pero **era un
+ * diagrama**: las barras no llevan información (miden lo mismo, van
+ * `aria-hidden`) y todo lo que dice lo dicen los rótulos de 13 px. Y no
+ * enseñaba lo que el titular promete: **que se comprueba**.
+ *
+ * Lo que sí se comprueba, y lo comprueba el propio cliente, son **tres avisos
+ * que le llegan de tres remitentes distintos**: su banco le dice que la
+ * transferencia salió y a quién; nosotros le decimos que llegó; su billetera le
+ * dice que recibió los dólares. **Dos de los tres no los escribimos nosotros.**
+ * Es la línea de tenencia contada por quien tiene el dinero en cada momento, y
+ * por eso las tres fases del dato siguen ahí, en el mismo orden.
+ *
+ * ── Qué afirma, y de dónde sale cada cosa ──────────────────────────────────
+ *
+ * · **El orden** es el de lectura, no el del sistema operativo: un teléfono
+ *   pone el aviso más nuevo arriba, y aquí el primero es el del banco. Una
+ *   portada se lee de arriba abajo.
+ * · **«Llegó tu transferencia. Ya está acreditada»** es `mechanisms[0]` —«
+ *   confirmamos que está acreditada antes de mover nada»— dicho por el
+ *   ejecutivo, que es quien lo dice en el modo asistido (`CLAUDE.md`, «Dos
+ *   modos de operar»). **Este recorrido es sólo el asistido**, igual que el de
+ *   la línea de tenencia: la bajada lo acota con «cuando operas con un
+ *   ejecutivo» y no se puede quitar.
+ * · **La cifra de la billetera es la misma que envía el ejecutivo**, porque el
+ *   costo de red lo asume DLPay (`/precio`, «sin costo de red»). Las dos salen
+ *   de `lib/pricing`, una sola variable (D24).
+ * · **«USDT» en la billetera y «USD» en nuestro aviso**, a propósito: la
+ *   billetera enseña el activo que recibe (la Home publica que es USDT) y
+ *   nosotros hablamos como habla el sitio.
+ * · **Sin horas.** Un aviso real lleva hora, y tres horas afirmarían cuánto
+ *   tarda una operación. No hay un dato aprobado para eso.
+ *
+ * ── D9 — el titular de la cuenta, y por qué acá NO va la razón social ──────
+ *
+ * El aviso del banco dice a quién fue la transferencia, y **ése es el dato que
+ * el cliente de verdad puede comprobar en su banco**: que el destinatario es
+ * una sociedad y no una persona. Es la comprobación que más protege contra una
+ * suplantación.
+ *
+ * La entrega lo sacaba de `site.legalName` —«DLPZ INCZ SpA»—, y eso **no se
+ * puede publicar todavía**: D9 está abierta porque los T&C vigentes nombran
+ * otra razón social. Si el nombre que el cliente ve en su banco no es el de
+ * este aviso, la portada de «Confianza que se comprueba» **falla su propia
+ * prueba**, y ése es el peor sitio del sitio para que eso pase.
+ *
+ * Así que dice **«a la cuenta de DLPay»**, que es una frase ya publicada y no
+ * afirma ninguna razón social. *Decisión de Sebastián, 2026-09-30.* Es más
+ * débil como comprobación —el cliente no puede cotejar un nombre— y **se
+ * cambia el día que D9 cierre**: una línea acá, y vuelve a `site.legalName`.
+ *
+ * ── Las dos formas, y por qué son dos consumidores y no dos maquetas ──────
+ *
+ * · `telefono` — la portada de `/confianza`: la parte de arriba de un teléfono
+ *   bloqueado, que **entra por la costura**. El chasis termina plano, a ras del
+ *   borde de la banda, y lo que queda debajo es pantalla vacía que no hace
+ *   falta dibujar. El teléfono **no está recortado**: está dibujado hasta ahí.
+ *   Por eso no lleva `overflow: hidden`, y si el texto crece (WCAG 1.4.12) el
+ *   aparato crece con él.
+ * · `puente` — los mismos tres avisos **sin aparato**, para el puente de
+ *   `/tarifas` a `/confianza`.
+ *
+ * **La segunda nació como maqueta alternativa y sobrevivió por otro motivo.**
+ * Se entregó como «suelto», una opción de portada frente al teléfono; Sebastián
+ * eligió el teléfono, y la regla de la entrega era borrar la rama perdedora.
+ * **No se borró porque entre medio apareció un consumidor de verdad:** el
+ * puente de `/tarifas` enseñaba la línea de tenencia como anticipo de esta
+ * página, y al retirarse la línea el puente quedaba anticipando una figura que
+ * el destino ya no tiene.
+ *
+ * ── Por qué el puente COMPARTE este componente, y no lo copia ──────────────
+ *
+ * Los otros cuatro puentes del sitio copian la figura de su destino
+ * —`FiguraTarifas`, `FiguraMonto`, `FiguraRiel` y la `FiguraTenencia` que esto
+ * sustituye—, con un motivo escrito: *si la de destino cambia, el puente se
+ * queda como está hasta que alguien lo mire.* **Acá se comparte, y la razón es
+ * el contenido.** Los tres avisos son cadenas con firma de Compliance del
+ * 2026-09-30; dos copias de una cadena firmada es cómo el sitio acaba diciendo
+ * dos cosas. Se comparte el texto y se separa la presentación, que es
+ * exactamente lo que hacía `FiguraTenencia`: copiaba el dibujo e **importaba el
+ * dato** de `trust.ts`.
+ *
+ * **Lo que eso deja abierto, dicho de frente:** un cambio de composición en los
+ * avisos llega al puente sin que nadie lo mire. Las dos formas están medidas
+ * hoy en los siete anchos; quien toque `.aviso` tiene que mirar las dos.
+ *
+ * El cromo es el de la tableta —aluminio claro, bisel negro— en tonos locales,
+ * sin copiar ningún teléfono ni ninguna app: el banco y la billetera son
+ * «tu banco» y «tu billetera», con iconos del sitio. Cero imágenes, cero
+ * JavaScript.
+ */
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
+import { convert } from '../lib/pricing/quote.ts';
+import { formatCLP, formatUSD } from '../lib/pricing/format.ts';
+import { quoteLimits } from '../lib/config/site.ts';
+
+interface Props {
+  /** `telefono` es la portada de `/confianza`; `puente`, la figura del puente
+      de `/tarifas`. Ver la cabecera: son dos consumidores, no dos maquetas. */
+  forma?: 'telefono' | 'puente';
+}
+const { forma = 'telefono' } = Astro.props;
+
+const precio = await new ConfigPriceSource().getPrice();
+const montoCLP = quoteLimits.samplePayClp;
+const cifra = formatUSD(convert('to_usd', montoCLP, precio.rate));
+/* **No es `site.legalName`, y es a propósito: D9.** Ver la cabecera. */
+const titular = 'la cuenta de DLPay';
+
+const avisos = [
+  {
+    de: 'tu banco',
+    icono: 'bank' as const,
+    titulo: 'Transferencia realizada',
+    texto: `CLP ${formatCLP(montoCLP)} a `,
+    /* Lo que va en `entero` no se parte. Acá es el destinatario, y **el día que
+       D9 cierre volverá a ser la razón social**, que es cuando esto de verdad
+       importa: «DLPZ / INCZ SpA» partido en dos líneas es lo que un cliente
+       atento leería como otro nombre. Se deja puesto desde ahora para que el
+       cambio de D9 sea una línea y no dos. */
+    entero: titular,
+  },
+  {
+    de: 'DLPay · tu ejecutivo',
+    nuestro: true,
+    titulo: 'Llegó tu transferencia',
+    texto: 'Ya está acreditada. Ahora te enviamos ',
+    entero: `${cifra} USD`,
+    despues: '.',
+  },
+  {
+    de: 'tu billetera',
+    icono: 'wallet' as const,
+    titulo: 'Depósito recibido',
+    texto: '',
+    entero: `${cifra} USDT`,
+  },
+];
+---
+<figure class:list={['tel', forma]}>
+  {/* El pie no se ve: la figura no necesita que le expliquen lo que enseña.
+      Lo lee el lector de pantalla, que no ve los iconos. */}
+  <figcaption class="sr-only">
+    Los tres avisos de una operación: el de tu banco, el nuestro y el de tu billetera.
+  </figcaption>
+  <div class="tel-chasis">
+    {/* Los botones del canto: partes del aparato, no efectos. */}
+    <span class="tel-boton vol" aria-hidden="true"></span>
+    <span class="tel-boton enc" aria-hidden="true"></span>
+    <div class="tel-bisel">
+      <div class="tel-pantalla">
+        <span class="tel-isla" aria-hidden="true"></span>
+        <span class="tel-candado" aria-hidden="true"><Icon name="candado" size={18} /></span>
+        <ol class="avisos" role="list">
+          {avisos.map((a) => (
+            <li class:list={['aviso', { nuestro: a.nuestro }]}>
+              <span class="aviso-icono" aria-hidden="true">
+                {a.nuestro ? <Logo class="aviso-logo" /> : <Icon name={a.icono!} size={20} />}
+              </span>
+              <p class="aviso-de">{a.de}</p>
+              <p class="aviso-titulo">{a.titulo}</p>
+              <p class="aviso-texto">{a.texto}<span class="entero">{a.entero}</span>{a.despues}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </div>
+</figure>
+
+<style>
+  /**
+   * Tonos del CROMO, locales. Los mismos de la tableta: describen un objeto de
+   * otra marca y no son tokens del Design System.
+   */
+  .tel {
+    --tel-chasis: #D2D7D6;   /* aluminio: 12,79:1 contra el héroe */
+    --tel-canto: #A9AFB1;
+    --tel-bisel: #000000;
+    /* El fondo de pantalla: un escalón más claro que la tinta, para que la
+       pantalla se lea como pantalla y no como un hueco en la banda. */
+    --tel-fondo: #1A2536;
+    /* El canto inferior de cada aviso: el papel, un escalón más oscuro. */
+    --tel-aviso-canto: #C9CCCB;
+
+    margin: 0 auto;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  /*
+    ── El aparato, dibujado hasta la costura ─────────────────────────────────
+
+    Radio grande arriba y NADA abajo: el chasis, el bisel y la pantalla terminan
+    rectos, a ras del borde inferior de la banda. `PageHero` en `stacked` no
+    tiene relleno inferior, así que el borde de la caja ES la costura.
+  */
+  .tel-chasis {
+    position: relative;
+    background: var(--tel-chasis);
+    border: 1px solid var(--line-on-tinta);
+    border-bottom: 0;
+    border-radius: 48px 48px 0 0;
+    padding: 5px 5px 0;
+    /* El filo del aluminio, arriba: una luz de 1 px, no un degradado. */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55);
+  }
+  /* Los botones: 3 px fuera del canto, en el tono del filo. Dos a la izquierda
+     en una pieza (volumen) y uno a la derecha (encendido). */
+  .tel-boton {
+    position: absolute;
+    width: 3px;
+    background: var(--tel-canto);
+  }
+  .tel-boton.vol { left: -4px; top: 120px; height: 64px; border-radius: 2px 0 0 2px; }
+  .tel-boton.enc { right: -4px; top: 150px; height: 88px; border-radius: 0 2px 2px 0; }
+  .tel-bisel {
+    background: var(--tel-bisel);
+    border-radius: 43px 43px 0 0;
+    padding: 11px 11px 0;
+  }
+  .tel-pantalla {
+    position: relative;
+    background: var(--tel-fondo);
+    border-radius: 32px 32px 0 0;
+    padding: 52px var(--s-3) var(--s-6);
+    color: var(--ink);
+  }
+  /* La isla de la cámara: una pastilla negra, centrada, del tamaño que tiene. */
+  .tel-isla {
+    position: absolute;
+    top: 11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 84px;
+    height: 24px;
+    border-radius: 12px;
+    background: var(--tel-bisel);
+  }
+  /* El candado dice «pantalla bloqueada» sin necesitar un reloj, que sería una
+     hora inventada. */
+  .tel-candado {
+    display: flex;
+    justify-content: center;
+    color: var(--on-tinta-mute);
+    margin-bottom: var(--s-4);
+  }
+
+  /* ── Los avisos ─────────────────────────────────────────────────────────── */
+  .avisos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-2);
+  }
+  /*
+    Cada aviso es una pieza: icono de app, remitente, titular y texto, sobre
+    papel, con un canto inferior que le da el grosor. Sin sombra: sobre la
+    pantalla oscura una sombra no se ve, y lo que separa el aviso del fondo es
+    el papel contra el azul de la pantalla (14,14:1).
+  */
+  .aviso {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    column-gap: var(--s-3);
+    align-items: start;
+    padding: var(--s-3) var(--s-4) var(--s-3) var(--s-3);
+    background: var(--papel);
+    border-radius: var(--r-card);
+    border-bottom: 2px solid var(--tel-aviso-canto);
+  }
+  .aviso-icono {
+    grid-row: 1 / span 3;
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    background: var(--papel-2);
+    color: var(--ink-mute);
+    box-shadow: inset 0 0 0 1px rgba(11, 19, 32, .06);
+  }
+  /* El nuestro, el único con color: el icono de la app es el isotipo sobre
+     `--verde-deep`, que es como DLPay aparece en la tableta y en el teléfono. */
+  .aviso.nuestro .aviso-icono { background: var(--verde-deep); color: var(--papel); box-shadow: none; }
+  .aviso-logo { width: 18px; height: auto; display: block; }
+  .aviso-de {
+    margin: 0 0 2px;
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    letter-spacing: var(--ls-label);
+    color: var(--ink-mute);
+  }
+  .aviso.nuestro .aviso-de { color: var(--verde-deep); }
+  .aviso-titulo {
+    margin: 0;
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+  .aviso-texto {
+    margin: 2px 0 0;
+    font-size: var(--t-body-sm);
+    line-height: 1.4;
+    color: var(--ink-mute);
+    /* La cifra y la divisa no se separan, y la razón social tampoco se parte. */
+    font-variant-numeric: tabular-nums;
+  }
+  .entero { white-space: nowrap; }
+
+  /*
+    ── `puente`: los mismos avisos, sin aparato ──────────────────────────────
+
+    El aparato se desmonta apagando sus tres capas y sus tres adornos, no
+    reescribiendo el aviso: así el aviso es **literalmente el mismo** en la
+    portada y en el puente, que es lo que esta forma viene a garantizar.
+
+    Sin relleno inferior, al revés que la portada: ahí el `padding` es el aire
+    de la pantalla bajo el último aviso, y acá el aire lo pone el puente.
+
+    ── La holgura contra el corte del puente (§4.7) ──────────────────────────
+
+    **Medido, y la primera versión no pasaba.** La esquina superior izquierda
+    del primer aviso caía **37 px del lado claro del corte**, así que ese aviso
+    —papel sobre papel— se quedaba sin borde. El §4.7 pide **40 px de holgura de
+    tinta como piso**, medida por rectángulo pintado y no por la caja de la
+    figura, y dice cuál es la esquina que manda: el corte baja hacia la
+    izquierda, así que la que se acerca es **la de arriba**.
+
+    La figura anterior —la línea de tenencia— pasaba por ser ancha y baja: 133
+    px de alto. Ésta mide 280, y el doble de alto mete esa esquina dentro del
+    corte.
+
+    Se corrige **estrechando y empujando a la derecha**, con `margin-inline` y
+    nunca con `justify-self: end`: la columna se ajustaría al contenido y un
+    elemento sin ancho intrínseco colapsa, que es la trampa que ya costó 160 px
+    en el riel del artículo.
+  */
+  .puente { max-width: 100%; }
+  .puente .tel-chasis,
+  .puente .tel-bisel,
+  .puente .tel-pantalla { background: none; border: 0; padding: 0; border-radius: 0; box-shadow: none; }
+  .puente .tel-isla,
+  .puente .tel-candado,
+  .puente .tel-boton { display: none; }
+  .puente .avisos { gap: var(--s-2); }
+  /*
+    ── El puente enseña los avisos MÁS PEQUEÑOS, y no es cosmética ───────────
+
+    Un puente es un anticipo, y los otros cuatro del sitio también reducen la
+    figura de su destino. Acá además **es lo que hace que quepa**: el aviso a
+    tamaño de portada da un bloque de 299 px de alto, y un bloque alto mete su
+    esquina superior izquierda dentro del corte diagonal, que baja hacia la
+    izquierda (§4.7).
+
+    **Estrechar no bastaba:** con 336 px de ancho la holgura salía bien a 1280
+    (55) y mal a 960 (**−14**), porque el corte pasa por el centro de la banda y
+    a menos ancho queda más adentro de la columna. Un ancho fijo no puede
+    resolver una holgura que depende del ancho. **Bajar el alto sí**: la figura
+    va pegada abajo, así que cada píxel que pierde de alto es un píxel que su
+    esquina de arriba se aleja del corte.
+  */
+  .puente .aviso {
+    grid-template-columns: 28px 1fr;
+    column-gap: 10px;
+    padding: 10px var(--s-3) 10px 10px;
+    border-radius: var(--r-2);
+  }
+  .puente .aviso-icono { width: 28px; height: 28px; border-radius: 7px; }
+  .puente .aviso-logo { width: 15px; }
+  .puente .aviso-titulo { font-size: var(--t-label); }
+  /*
+    ── El puente enseña el REMITENTE y el titular, no el cuerpo ──────────────
+
+    **Es lo último que probé y es lo que hace que quepa, pero no entra por eso.**
+    Entra porque un puente promete y el destino paga: lo que este puente tiene
+    que decir es que en una operación te llegan **tres avisos de tres
+    remitentes** —tu banco, nosotros, tu billetera— y que sólo uno es nuestro.
+    Eso se lee entero sin las cifras. Las cifras son el pago, y están a un clic.
+
+    *Lo que costó llegar acá, para que nadie lo repita:* con el cuerpo puesto el
+    bloque medía 299 px de alto y su esquina superior izquierda caía dentro del
+    corte. Estrecharlo de 460 a 336 arregló 1280 (holgura 55) y **no arregló 960
+    (−14)**, porque el corte pasa por el centro de la banda y a menos ancho
+    queda más adentro de la columna: **una holgura que depende del ancho no se
+    arregla con un ancho fijo.** Bajar la escala lo dejó en −2. Lo que sobraba
+    no era tamaño, era contenido.
+
+    Es la regla del §4.8 aplicada a un puente: *cuando una figura no entra, la
+    pregunta no es cómo encogerla, sino qué tiene que decir ahí.*
+  */
+  .puente .aviso-texto { display: none; }
+
+  /*
+    En un teléfono de 320 el aparato dibujado se come el sitio de su propio
+    texto: medido, la columna del aviso quedaba en 148 px y «DLPay · tu
+    ejecutivo» se partía en dos. Bajo 420 el cromo adelgaza —chasis 4, bisel 8,
+    pantalla 8— y el aviso recupera 28 px de columna.
+  */
+  @media (max-width: 419px) {
+    .tel-chasis { padding: 4px 4px 0; border-radius: 40px 40px 0 0; }
+    .tel-bisel { padding: 8px 8px 0; border-radius: 36px 36px 0 0; }
+    .tel-pantalla { padding: 44px var(--s-2) var(--s-5); border-radius: 28px 28px 0 0; }
+    .tel-isla { top: 9px; width: 72px; height: 22px; }
+    .tel-candado { margin-bottom: var(--s-3); }
+    .aviso { grid-template-columns: 32px 1fr; column-gap: 10px; padding: 10px var(--s-3) 10px 10px; }
+    .aviso-icono { width: 32px; height: 32px; border-radius: 8px; }
+    .tel-boton { display: none; }
+  }
+  @media (min-width: 900px) {
+    .tel { max-width: 380px; }
+    .puente { max-width: 100%; }
+  }
+  /*
+    **Este bloque va al final a propósito.** `.tel` y `.puente` tienen la misma
+    especificidad —una clase cada uno—, así que entre reglas que coinciden gana
+    la última del archivo, no la del `@media` más estrecho. La primera versión
+    de esto se escribió más arriba y **no aplicaba**: la regla de 900 la pisaba
+    desde abajo, y la figura seguía midiendo 460 px. Se vio midiendo, no
+    leyendo.
+  */
+  @media (min-width: 960px) {
+    .puente { max-width: 336px; margin-inline: auto 0; }
+  }
+</style>

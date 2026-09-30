@@ -13,7 +13,8 @@ import PageHero from '../components/PageHero.astro';
 import Motion from '../components/Motion.astro';
 import IconBadge from '../components/ui/IconBadge.astro';
 import Icon from '../components/Icon.astro';
-import { mechanisms, honesty, phases, requirements } from '../content/trust.ts';
+import TelefonoAvisos from '../components/TelefonoAvisos.astro';
+import { mechanisms, honesty, requirements } from '../content/trust.ts';
 import { site, contact } from '../lib/config/site.ts';
 /*
   La mención institucional se IMPORTA, nunca se teclea. `alliances.ts` declara
@@ -40,21 +41,21 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
   <Header />
   <main id="main">
     {/*
-      ── La línea de tenencia, subida a la portada el 2026-09-25 ─────────────
+      ── La portada, dos veces ────────────────────────────────────────────────
 
-      La bajada promete «un mecanismo que puedes revisar paso a paso» y el
-      mecanismo estaba **337 px más abajo**, con 96 px de tinta vacía en medio:
-      la promesa y la prueba separadas por un scroll. Ahora la prueba está en la
-      misma pantalla que la promesa.
+      **2026-09-25:** la línea de tenencia subió desde «Qué pasa con tu plata»,
+      porque la bajada prometía un mecanismo que estaba 337 px más abajo.
 
-      `stacked` **sin `--montaje`**: la figura no monta sobre la costura, se
-      queda dentro de la banda. Sin ese valor el saliente es cero y la variante
-      degrada a «una columna centrada», que es exactamente lo que hace falta.
+      **2026-09-30:** la línea se retira y entra un objeto, el teléfono con los
+      tres avisos (`TelefonoAvisos.astro`, con el porqué en su cabecera). Lo que
+      decía la línea —dónde está el dinero y qué tramo es nuestro— lo dicen ahora
+      los tres remitentes, y el dato `phases` de `trust.ts` deja de usarse.
 
-      **El marcado y el dato no cambiaron de forma**, sólo de sitio: la misma
-      `figure.track`, la misma `ol.phases` y el mismo `phases` de `trust.ts`.
-      Lo que cambia por vivir sobre tinta es la paleta, y eso está razonado
-      abajo, en `.phase-bar`.
+      **Una nota que venía de la línea y no debe perderse:** su pie, retirado el
+      2026-09-25, era el único sitio que decía que el dinero no pasa por ningún
+      intermediario **fuera de Chile**. Si vuelve, su sitio natural es el cuerpo
+      de `mechanisms[0]`, y es copy nuevo sobre un texto con marcador: pasa por
+      firma.
     */}
     {/*
         **Acortada el 2026-09-25.** Decía: «No tenemos un sello que mostrarte.
@@ -63,8 +64,10 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
         norma de 79–89 en el resto del sitio — la segunda más larga de la web.
 
         Y ya no hacía el mismo trabajo: desde que la figura subió a la portada,
-        la bajada no tiene que resumir la página, tiene que **entregar al dibujo
-        que viene justo debajo**. Esta lo nombra.
+        la bajada no tiene que resumir la página, tiene que **entregar al objeto
+        que viene justo debajo**. Esta lo nombra, y le sirve igual al teléfono
+        que a la línea: «cuál de esos pasos es nuestro» lo contesta el único
+        aviso que firma DLPay.
 
         **Lo que soltó, y dónde sigue estando:** «no tenemos un sello que
         mostrarte» era la línea más distintiva y no se repone en otro sitio — la
@@ -80,59 +83,18 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
       layout="stacked"
     >
       {/*
-        La línea de tiempo de TENENCIA. No es un SVG y es una decisión medida:
-        el texto de un SVG escala con el `viewBox`, así que a 390 px estos
-        rótulos caían a unos 5 px. En HTML usan la escala tipográfica del
-        sistema, en móvil las tres fases apilan —que además es la lectura
-        correcta de una secuencia— y el corchete del tramo nuestro se convierte
-        en el canto izquierdo del bloque.
+        ── La portada: los tres avisos, en el teléfono ──────────────────────
 
-        Efecto lateral que importa: la figura no necesita `aria-hidden` ni un
-        `aria-label` que reescriba lo que dice. El texto es texto. Lo único
-        decorativo son las tres barras, y ésas sí van ocultas.
+        Sustituye a la línea de tenencia (tres barras con rótulos), que decía
+        bien dónde está el dinero pero no enseñaba lo que el titular promete:
+        que se comprueba. El porqué, entero, en la cabecera de
+        `TelefonoAvisos.astro`.
 
-        La regla general: si una figura es texto más rectángulos, es HTML. El
-        SVG es para trazos que una caja no puede hacer —planos recortados,
-        cuñas, `clip-path`—, como las cuatro figuras de /empresas.
+        La bajada NO cambia, y no puede: «cuando operas con un ejecutivo» es el
+        acotamiento al modo asistido que exige `CLAUDE.md`, y este recorrido es
+        el asistido.
       */}
-      <figure class="track" slot="aside">
-        <ol class="phases" role="list">
-          {phases.map((phase) => (
-            <li class:list={['phase', { 'is-ours': phase.ours }]}>
-              <p class="phase-place">{phase.place}</p>
-              <span class:list={['phase-bar', { 'is-ours-bar': phase.ours }]} aria-hidden="true"></span>
-              <p class:list={['phase-who', { 'is-ours-who': phase.ours }]}>{phase.who}</p>
-              {phase.note && <p class="phase-note">{phase.note}</p>}
-            </li>
-          ))}
-        </ol>
-        {/*
-          ── Aquí vivía el pie, RETIRADO el 2026-09-25 ──────────────────────
-
-          Decía: «Tu dinero no pasa por ningún intermediario fuera de Chile ni
-          por cuentas de terceros: de tu banco a una cuenta de DLPay, y de ahí a
-          tu billetera. El tramo verde es el único que es nuestro.»
-
-          Lo quitó Sebastián porque la figura ya lo explica, y en su mayor parte
-          es exacto: el recorrido de tres tramos lo dibujan los tres bloques, y
-          «el tramo verde es el único que es nuestro» es la leyenda de un dibujo
-          que ya rotula «Lo tienes tú / Lo tenemos nosotros». Una figura que
-          necesita que le expliquen lo que enseña está mal dibujada.
-
-          **Lo que sí dejó de decir el sitio, y conviene que se sepa:** que el
-          dinero no pasa por ningún intermediario **fuera de Chile**. Esa era la
-          única vez que aparecía, comprobado por `grep` en todo `src/`. Lo más
-          cercano que queda es «no por un intermediario opaco» en el título de
-          `mechanisms` —que habla de opacidad, no de geografía— y «sin lidiar con
-          bancos intermediarios» en la Home, que habla de tiempos.
-
-          La otra mitad no se perdió: «ni por cuentas de terceros» sigue publicada
-          dos bloques más abajo, en el cuerpo del primer mecanismo.
-
-          Si algún día quiere volver, el sitio natural es ese mismo cuerpo, y es
-          copy nuevo sobre un texto con marcador de Compliance: pasa por firma.
-        */}
-      </figure>
+      <div class="tel-caja" slot="aside"><TelefonoAvisos /></div>
     </PageHero>
 
     <section class="mech" aria-labelledby="mech-title">
@@ -281,63 +243,13 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
 
   /* El bloque tiene medida propia: sin ella la composición flota perdida en un
      contenedor de 1112px y el icono queda huérfano a la izquierda. */
-  /* ── La línea de tiempo de tenencia ──────────────────────────────────────
-     Texto y tres rectángulos: por eso es HTML y no un SVG. Ver la nota del
-     marcado. */
   /*
-    ── La figura, ahora sobre tinta ──────────────────────────────────────────
-
-    **Repintada el 2026-09-25 al subir a la portada, y ése es medio motivo del
-    cambio entero.** Sobre papel los dos tramos que NO son nuestros iban en
-    `--ink` a **16,00:1** y el que SÍ lo es en `--verde-deep` a **5,44:1**: lo
-    ajeno se dibujaba tres veces más fuerte que lo propio, justo encima de una
-    leyenda que dice «el tramo verde es el único que es nuestro». El dibujo
-    contradecía a su pie.
-
-    El Design System §6.2 tiene la marca exacta para lo ajeno —«existe, es real,
-    no es nuestro»— y esta figura no la usaba. Sobre tinta el equivalente es
-    `--line-on-tinta`: presente, legible, y claramente por detrás del verde.
-
-    Y el verde cambia de token por la misma regla del §6.2 —**el fondo elige el
-    verde**—: sobre papel manda `--verde-deep` porque el de marca da 2,02:1;
-    sobre tinta manda `--verde`, que da 8,45:1.
+    La caja de la portada. En móvil el teléfono se separa de la bajada; desde
+    900 lo hace el `gap` del propio `PageHero`. Abajo, NADA: el aparato está
+    dibujado hasta la costura.
   */
-  /*
-    El margen inferior NO es decorativo: lo daba el pie, y al retirarlo el
-    2026-09-25 la banda cerraba a ras de la figura — cortaba «mover nada», la
-    nota del tramo del medio, por la mitad. `PageHero` en `stacked` pone
-    `padding-bottom: 0` porque da por hecho que la pieza monta sobre la costura,
-    y aquí no monta. Lo repone la figura.
-  */
-  .track { margin: 0 0 var(--s-8); width: 100%; text-align: left; }
-  .phases { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
-  .phase-place {
-    font-family: var(--f-num);
-    font-size: var(--t-dato-sm);
-    font-weight: 600;
-    color: var(--on-tinta);
-  }
-  /* La barra es lo único decorativo de la figura, y va `aria-hidden`. */
-  .phase-bar {
-    display: block;
-    height: 20px;
-    border-radius: var(--r-1);
-    background: var(--line-on-tinta);
-    margin: var(--s-3) 0;
-  }
-  .phase-bar.is-ours-bar { background: var(--verde); }
-  .phase-who { font-family: var(--f-num); font-size: var(--t-dato-sm); color: var(--on-tinta-mute); }
-  .phase-who.is-ours-who { color: var(--verde); font-weight: 600; }
-  /* El corchete marca el punto exacto donde el dinero pasa a estar en nuestra
-     cuenta. En móvil se convierte en el canto del bloque: misma función, dos
-     formatos. */
-  .phase.is-ours { border-left: 2px solid var(--verde); padding-left: var(--s-4); }
-  .phase-note {
-    font-family: var(--f-num);
-    font-size: var(--t-dato-sm);
-    color: var(--on-tinta-mute);
-    margin-top: var(--s-2);
-  }
+  .tel-caja { width: 100%; margin-top: var(--s-7); }
+  @media (min-width: 900px) { .tel-caja { margin-top: 0; } }
 
   /* La mención institucional cierra la sección de requisitos. Discreta a
      propósito: informa por qué se piden documentos, no hace de sello. */
@@ -440,8 +352,9 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
     Era `--verde`, y el §6.2 publica que **una línea verde a lo largo de un
     tramo significa «el tramo que es nuestro»**. Estas cinco son justo lo
     contrario: las cosas que decidimos NO decir. Y la colisión estaba dentro de
-    la misma página, a unos 1.700 px: `.phase.is-ours` usa el mismo filete verde
-    para marcar dónde el dinero pasa a estar en nuestra cuenta.
+    la misma página, a unos 1.700 px: la línea de tenencia de la portada
+    —retirada el 2026-09-30— usaba el mismo filete verde para marcar dónde el
+    dinero pasa a estar en nuestra cuenta.
 
     Va en `--on-tinta-mute`, que es el token apagado de esta superficie, porque
     el §6.2 le da a ese filete el significado exacto que hace falta: **«existe,
@@ -504,9 +417,6 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
 
   @media (min-width: 760px) {
     .req-list { grid-template-columns: repeat(3, 1fr); gap: var(--s-6); }
-    /* Las tres fases en fila: el recorrido se lee de izquierda a derecha, que
-       es como se lee una línea de tiempo. En móvil apilan. */
-    .phases { grid-template-columns: repeat(3, 1fr); gap: var(--s-5); align-items: start; }
     .honesty-list { grid-template-columns: repeat(2, 1fr); gap: var(--s-6) var(--s-7); }
     .who-grid { grid-template-columns: 1.4fr 1fr; gap: var(--s-8); align-items: start; }
   }

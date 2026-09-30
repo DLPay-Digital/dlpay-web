@@ -233,6 +233,37 @@ La concesión se conserva —la dio el equipo y no se revoca por falta de uso—
 la afirmación. Es el mismo modo de fallo que el §4.5, un paso más arriba: **el documento se midió
 bien y dejó de ser verdad sin que nadie tocara el documento.**
 
+### 4.8 Un comentario que predice su propio caso se gana su sitio  ·  *2026-09-30*
+
+Las cuatro figuras de puente del sitio son **copias** de la figura de su destino, y cada una lleva
+escrito el porqué: *«copiada y no factorizada… si la de destino cambia, el puente se queda como está
+hasta que alguien lo mire.»*
+
+El 2026-09-30 `/confianza` cambió de portada y ese día llegó. La entrega que lo proponía afirmaba
+**dos veces** que el dato de la figura retirada «queda sin uso»; tenía un segundo consumidor, que era
+justo ese puente. **Lo que lo cazó no fue una prueba ni una regla: fue el comentario.**
+
+> **Un comentario que dice «esto se va a romper el día que pase X» vale más que el código que
+> describe**, porque el día que pasa X nadie está buscando ese archivo.
+
+*Y el corolario, que es más útil:* cuando una entrega afirma que algo «queda sin uso», eso es una
+afirmación comprobable en un `grep` y hay que comprobarla. Las dos veces que ha aparecido esa frase
+en una entrega —`phases` acá, y el CSS huérfano de `/precio` el día anterior— **estaba mal**.
+
+### 4.9 Medir en un `iframe` no sirve para una afirmación sub-píxel  ·  *2026-09-30*
+
+Para barrer siete anchuras de golpe, un `iframe` de ancho fijo es cómodo. Pero midiendo así la
+costura de la portada de `/confianza` salió **−9 px en las siete**, y no había ningún −9: el
+`iframe` se midió **antes de que cargaran las fuentes**, así que el alto del objeto era el de la
+fuente de respaldo. Con `document.fonts.ready` bajó a −2/−3, que ya es sólo redondeo sub-píxel del
+propio `iframe`. En el viewport real la costura es **0,00**.
+
+> **Un `iframe` sirve para comparar, no para afirmar.** Para un «0 px» hay que redimensionar el
+> viewport de verdad. Y en cualquier caso, **esperar las fuentes**: sin eso se mide otra página.
+
+Es la quinta trampa de medición de esta fase y la primera en la que el instrumento inventó un
+defecto en vez de esconderlo. Estuvo a punto de costarle a Cowork un hallazgo falso en su contra.
+
 ---
 
 ## 5. Errores propios, registrados

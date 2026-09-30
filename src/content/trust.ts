@@ -33,63 +33,37 @@ export const mechanisms: Mechanism[] = [
   },
 ];
 
-/**
- * Dónde está el dinero en cada momento, y quién lo tiene.
- *
- * Es una línea de tiempo de TENENCIA, no de pasos: el eje no es «qué ocurre»
- * sino «de quién es la cuenta donde está la plata». Sólo un tramo es nuestro, y
- * eso es exactamente lo que la página necesita mostrar en vez de afirmar.
- *
- * Va acá y no escrito en la página porque son DATOS, igual que `mechanisms`:
- * el día que cambie el banco o el recorrido, se cambia en un sitio.
- *
- * Nada de esto es un claim nuevo, y desde el 2026-09-25 afirma **menos** que
- * antes: el nombre del banco salió de `phases` al subir la figura a la portada
- * y se queda sólo en `mechanisms`, con su marcador. «Lo tenemos nosotros» es la
- * misma afirmación dicha en primera persona.
- */
-export interface Phase {
-  /** Dónde está el dinero. */
-  place: string;
-  /** Quién lo tiene. */
-  who: string;
-  /** `true` sólo en el tramo que está en una cuenta de DLPay. */
-  ours?: boolean;
-  /** Hito colgado del tramo, cuando hay algo que marcar. */
-  note?: string;
-}
+/*
+  ── `Phase` y `phases` se retiraron el 2026-09-30 ──────────────────────────
 
-export const phases: readonly Phase[] = [
-  { place: 'En tu cuenta bancaria', who: 'Lo tienes tú' },
-  {
-    /*
-      **Sin el nombre del banco, por decisión de Sebastián del 2026-09-25**, al
-      subir esta figura a la portada de `/confianza`.
+  Eran la **línea de tenencia**: tres tramos —«En tu cuenta bancaria», «En la
+  cuenta de DLPay», «En tu billetera»— con quién tenía el dinero en cada uno.
+  Alimentaban la portada de `/confianza` y, copiada, la figura del puente de
+  `/tarifas`.
 
-      Decía «En la cuenta de DLPay en BCI» y llevaba el marcador de Compliance
-      que acompaña a toda mención del banco por nombre. En mitad de la página
-      era una frase más; sobre el pliegue, en verde y rotulando el único tramo
-      nuestro, pasaba a ser lo primero que alguien lee en la página cuyo
-      argumento es «confianza que se comprueba». Es el error del `PendingNotice`
-      con otra ropa: un claim pendiente de validación que gana peso al cambiar
-      de sitio.
+  **La portada pasó a ser un objeto**: los tres avisos que le llegan al teléfono
+  al cliente, en `components/TelefonoAvisos.astro`. Dicen los mismos tres
+  momentos y en el mismo orden, pero **contados por quien tiene el dinero en
+  cada uno** —su banco, nosotros, su billetera—, y dos de los tres no los
+  escribe DLPay. Eso es lo que el titular de esa página promete y la línea no
+  hacía: que se comprueba.
 
-      **Quitar el nombre ESTRECHA la afirmación, no la amplía**, así que no
-      necesita firma nueva: decir «la cuenta de DLPay» afirma menos que decir en
-      qué banco está. Y por eso este campo ya no lleva marcador — el claim que
-      lo pedía dejó de estar aquí.
+  **El puente de `/tarifas` se movió con ella**, porque enseñaba la línea como
+  anticipo del destino. Usa el mismo componente con `forma="puente"`, y el
+  porqué de compartirlo —en vez de copiarlo, que es lo que hacen los otros
+  cuatro puentes— está en su cabecera: los avisos llevan firma de Compliance y
+  dos copias de una cadena firmada es cómo el sitio acaba diciendo dos cosas.
 
-      El banco **sigue publicado en la página**, una vez, en `mechanisms`, con
-      su marcador y a la altura donde siempre estuvo. De tres menciones se pasó
-      a una.
-    */
-    place: 'En la cuenta de DLPay',
-    who: 'Lo tenemos nosotros',
-    ours: true,
-    note: 'Acá confirmamos que llegó, antes de mover nada',
-  },
-  { place: 'En tu billetera', who: 'Lo tienes tú' },
-];
+  **Lo que se pierde con el dato, y dónde quedó a salvo.** La decisión de
+  Sebastián del 2026-09-25 —sacar el nombre del banco de este archivo al subir
+  la figura a la portada, porque un claim pendiente de validación gana peso al
+  cambiar de sitio— vivía en un comentario de `phases`. Está registrada en
+  `cowork/README.md`, en la integración de `2026-09-25-confianza-v2`, y **el
+  banco sigue publicado una sola vez**, en `mechanisms`, con su marcador.
+
+  Y la frase «la cuenta de DLPay» **no se perdió**: es la que dice hoy el aviso
+  del banco, mientras D9 siga abierta.
+*/
 
 /**
  * Lo que NO afirmamos. Una web que dice lo que no puede probar es menos creíble,

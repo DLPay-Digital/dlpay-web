@@ -122,7 +122,7 @@ import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
 import PendingNotice from '../components/PendingNotice.astro';
 import Puente from '../components/Puente.astro';
-import FiguraTenencia from '../components/FiguraTenencia.astro';
+import TelefonoAvisos from '../components/TelefonoAvisos.astro';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { convert, formatAmount } from '../lib/pricing/quote.ts';
 import { formatCLP } from '../lib/pricing/format.ts';
@@ -355,7 +355,27 @@ const wa = contact.whatsappUrl(
       href="/confianza/"
       cta="Ver Confianza"
     >
-      <FiguraTenencia />
+      {/*
+        **Cambió el 2026-09-30, y no por estética.** Este puente enseñaba la
+        línea de tenencia de `/confianza`, copiada. Ese día `/confianza` dejó de
+        abrir con la línea y pasó a abrir con los tres avisos, así que el puente
+        anticipaba una figura que el destino ya no tiene.
+
+        Es el caso que la cabecera de `FiguraTenencia` había previsto —«si la de
+        destino cambia, el puente se queda como está hasta que alguien lo
+        mire»—, y por una vez alguien lo miró a tiempo. Esa figura se borró.
+
+        **Comparte el componente en vez de copiarlo**, al revés que los otros
+        cuatro puentes, porque lo que hay dentro son cadenas con firma de
+        Compliance: dos copias de una cadena firmada es cómo el sitio acaba
+        diciendo dos cosas. El razonamiento entero está en su cabecera.
+
+        El cuerpo del puente no cambia, y conviene notar por qué: decía «Tres
+        cosas que puedes verificar tú mismo en tu próxima operación» **cuando la
+        figura era un diagrama que no se verificaba**. Con los avisos, esa frase
+        pasa a ser literal.
+      */}
+      <TelefonoAvisos forma="puente" />
     </Puente>
 
     <div class="cuerpo cierre">

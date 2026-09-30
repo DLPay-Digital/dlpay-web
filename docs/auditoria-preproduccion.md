@@ -367,6 +367,25 @@ decían «tres», y §0.3 es un límite duro de fase.
 reescribió: ya se depende, y la razón real por la que `loadEnv` sigue siendo correcto ahí es otra —
 el config se evalúa antes de que Vite inyecte `import.meta.env`.
 
+### B6 · La cabecera desborda 20 px a 320 con el espaciado de WCAG 1.4.12  ·  *hallado el 2026-09-30*
+
+**Afecta a las quince páginas y es anterior a todo lo de esta semana.** Aplicando el espaciado que
+exige el criterio **1.4.12 Text Spacing** —`line-height: 1.5`, `letter-spacing: 0.12em`,
+`word-spacing: 0.16em`, `margin-bottom: 2em` en párrafos— a un viewport de **320 px**, la página
+gana **20 px de desplazamiento horizontal**. Los elementos que se salen son todos de la
+**cabecera**: `.actions`, `.menu`, `.burger` y el cajón con su lista.
+
+**Cómo salió, que es la parte útil:** apareció revisando la portada de `/confianza`, y el primer
+reflejo fue anotarlo contra esa portada. **Ninguno de los 26 elementos que se salen está dentro del
+teléfono**; comprobado después en `/terminos` del build anterior, sin esa portada, con el mismo
+resultado. *Una medición sobre una página no dice de qué parte de la página es el problema hasta que
+se pregunta por el culpable.*
+
+**No bloquea:** el contenido no se pierde, se desplaza. Pero 1.4.12 se lee junto a **1.4.10
+Reflow**, que pide que no haya desplazamiento horizontal a 320, así que conviene arreglarlo antes de
+Fase 5. **No se tocó acá** porque la cabecera la comparten las quince páginas y un cambio ahí se
+verifica en las quince, no en una.
+
 ---
 
 ## ✅ SIN PROBLEMAS — reverificado 2026-09-08
@@ -494,6 +513,44 @@ declara los dos modos y prohíbe expresamente la negación absoluta.
 **Lo que queda pendiente y está anotado allá:** contar el autoservicio en `/como-funciona`, que hoy
 enseña la mitad del producto. Mientras no se haga, la única página que lo menciona es `/preguntas`,
 en la respuesta de volver a pesos, y eso está al revés de como debería ser.
+
+### Copy aprobado por Compliance — 2026-09-30  ·  **la portada de `/confianza`**
+
+**Firmado por Sebastián Villanueva Pereira como Compliance el 2026-09-30.**
+
+| Qué se aprobó | Dónde vive |
+|---|---|
+| «tu banco» · «Transferencia realizada» · «CLP 2.000.000 a la cuenta de DLPay» | `TelefonoAvisos.astro` |
+| «DLPay · tu ejecutivo» · «Llegó tu transferencia» · «Ya está acreditada. Ahora te enviamos 2.174,62 USD.» | ídem |
+| «tu billetera» · «Depósito recibido» · «2.174,62 USDT» | ídem |
+| «Los tres avisos de una operación: el de tu banco, el nuestro y el de tu billetera.» *(sólo lector de pantalla)* | ídem |
+
+**La cadena que NO se aprobó, y es la importante.** La entrega proponía que el aviso del banco
+dijera **«CLP 2.000.000 a DLPZ INCZ SpA»**, con el nombre sacado de `site.legalName`. **Ése es
+justamente el dato que el cliente puede comprobar en su cartola** —que el destinatario es una
+sociedad y no una persona—, y es la comprobación que más protege contra una suplantación. Pero
+**D9 está abierta**: los T&C vigentes nombran otra razón social. Publicar un nombre que no coincida
+con el que el cliente ve en su banco haría que la portada de «Confianza que se comprueba» **falle su
+propia prueba**, y no hay peor sitio en el sitio para que eso pase.
+
+Dice **«a la cuenta de DLPay»**, que es una frase ya publicada —venía de `phases`, el dato que esta
+portada sustituye— y no afirma ninguna razón social. **Se cambia el día que D9 cierre.**
+
+**Tres decisiones de redacción que conviene no deshacer:**
+
+- **Sin horas.** Un aviso real lleva hora, y tres horas afirmarían cuánto tarda una operación. No
+  hay dato aprobado para eso.
+- **«USDT» en la billetera y «USD» en nuestro aviso.** La billetera enseña el activo que recibe —la
+  Home publica que es USDT— y nosotros hablamos como habla el sitio.
+- **Las dos cifras coinciden**, y eso no es un descuido: es lo que `/precio` publica como «sin costo
+  de red». Salen de la misma variable.
+
+**Sólo el modo asistido**, igual que la línea que sustituye: la bajada lo acota con «cuando operas
+con un ejecutivo» y **esa frase no se toca** (`CLAUDE.md` §1, «Dos modos de operar»).
+
+**Salen del sitio con la línea de tenencia:** «En tu cuenta bancaria», «Lo tienes tú», «En la cuenta
+de DLPay», «Lo tenemos nosotros», «Acá confirmamos que llegó, antes de mover nada» y «En tu
+billetera».
 
 ### Copy aprobado por Compliance — 2026-09-30  ·  **la portada de `/precio`**
 
