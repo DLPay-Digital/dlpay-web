@@ -542,14 +542,15 @@ la que su contenido es real y el de `/terminos` es una página de estado.
 
 **Las demás abren con el objeto de la página:** el cotizador en la Home, el teléfono en
 `/como-funciona`, el MacBook en `/empresas`, la barra del precio en `/tarifas`, la línea de tenencia
-en `/confianza`.
+en `/confianza` y, desde el 2026-09-30, **la tableta con una conversación dentro en `/preguntas`**.
 
-**Y las dos familias están separadas por un hueco vacío.** Medido sobre el build de `67abaa9`, a
-1280 px, las trece portadas publicadas:
+**Y las dos familias están separadas por un hueco vacío.** Las trece portadas publicadas, **medidas
+a 1280 px** —el rango se mide ahí y sólo ahí, ver más abajo— sobre el build de `67abaa9`, con
+`/preguntas` actualizada al de `2026-09-30`:
 
 | familia | páginas y alto | rango |
 |---|---|---|
-| **con objeto** | Home 781 · `/como-funciona` 660 · `/empresas` 569 · `/tarifas` 529 · `/preguntas` 477 · `/confianza` 460 | **460–781 px** |
+| **con objeto** | Home 781 · `/como-funciona` 660 · `/preguntas` 634 · `/empresas` 569 · `/tarifas` 529 · `/confianza` 460 | **460–781 px** |
 | **sin objeto** | `/canal-de-denuncias` 288 · `/precio` 262 · `/terminos` 262 · `/blog` 236 · `/privacidad` 236 | **236–288 px** |
 
 **Entre 288 y 460 px no hay ninguna.** Ese hueco de 172 px es la regla y no una casualidad: **una
@@ -560,18 +561,34 @@ pieza a un lado del titular sino una banda a sangre con un emblema centrado o un
 corta en las dos variantes — 256 px el de activos tokenizados, con su pictograma de 160×160, y
 246 px el de stablecoins, con su portada de cifra. Ver §6.1 para qué puede llevar.
 
-**`/preguntas` cambió de familia el 2026-09-29**, con la portada de las nueve preguntas: pasó de 262
-a **477 px**. Y su montaje dejó dos cosas aprendidas que valen para las dos que faltan:
+**`/preguntas` cambió de familia el 2026-09-29** —de 262 a 477 px, con una figura de nueve puntos—
+**y volvió a cambiar de altura el 2026-09-30**, al sustituirla por una tableta con una conversación
+dentro: **634 px**, la tercera más alta del sitio. Los dos montajes dejaron tres cosas aprendidas que
+valen para las dos portadas que faltan:
 
-- **El layout decide la familia tanto como la figura.** En `layout="split"` esa misma portada cerraba
-  en **402 px, dentro del hueco**, y estirar el dibujo para llegar a 460 sólo lo dejaba espigado. Una
-  figura ancha —2,63:1— va apretada en media columna, y por eso las cuatro páginas interiores con
-  figura ancha usan `stacked`. **Antes de tocar un dibujo para que su portada entre en la familia,
-  hay que mirar la rejilla.**
-- **El rango se mide a 1280 y sólo ahí.** En móvil las portadas con objeto **crecen** al apilarse
-  —Home 1137, `/como-funciona` 684, `/confianza` 669 a 390 px— con una excepción: la de `/preguntas`
-  baja a 448, porque su figura es una banda y una banda no gana alto al estrecharse. No rompe nada,
-  pero es la más liviana de su familia en móvil y conviene saberlo antes de comparar.
+- **El layout decide la familia tanto como la figura.** En `layout="split"` la figura de nueve puntos
+  cerraba en **402 px, dentro del hueco**, y estirar el dibujo para llegar a 460 sólo lo dejaba
+  espigado. Una figura ancha —2,63:1— va apretada en media columna, y por eso las cuatro páginas
+  interiores con figura ancha usan `stacked`. **Antes de tocar un dibujo para que su portada entre en
+  la familia, hay que mirar la rejilla.**
+- **El rango se mide a 1280 y sólo ahí, y no porque en móvil se quede corto.** Al contrario: en móvil
+  las portadas con objeto **crecen** al apilarse —Home 1137, `/como-funciona` 684, `/confianza` 669 a
+  390 px—, y la de `/preguntas` **baja**: de 634 a 552. Ahí está el matiz. Una portada gana alto al
+  estrecharse si su pieza se apila; lo pierde si su pieza se encoge a lo ancho, porque una pieza de
+  proporción fija que adelgaza también acorta. La figura de nueve puntos era una banda y bajaba a
+  448; la tableta es vertical, va a 3:4 y baja lo que la estrecha el margen. **Ninguna de las dos
+  rompe el rango; se compara a 1280 porque es el único ancho donde las trece son comparables.**
+  *Nota del 2026-09-30: una revisión sostuvo que «en móvil ninguna portada del sitio llega a 460» y
+  eso es falso — tres de las seis pasan de 660. La regla no necesitaba ese apoyo.*
+- **La barra de scroll entra en la medición, y a 390 px cuesta 20 px de portada.** Medida en un
+  navegador con barra clásica, el ancho útil a 390 es **375** y la tableta sale 335 de ancho, no 350;
+  a 3:4 eso son **20 px menos de alto** (552 contra 572). Arriba de 900 no se nota, porque la pieza
+  toca su propio tope de 410. **Dos mediciones del mismo build pueden diferir sólo por eso**, así que
+  una cifra móvil sin decir si había barra no es comparable con otra.
+- **Una portada puede medir más alto que su objeto, y conviene saber de dónde sale la diferencia.**
+  La tableta mide 536 px y la portada 634: los 98 que sobran son el titular, la bajada y el aire.
+  La pieza además **sobresale 132 px** sobre la sección clara (`--montaje`), así que **la portada no
+  contiene a su objeto** y medir el objeto no mide la portada.
 
 **Dos portadas quedan por hacer**, las dos de páginas no legales que siguen abriendo sin objeto:
 `/precio` y el índice del blog. Sobre `/precio` hay una conclusión ya medida y conviene
@@ -730,12 +747,13 @@ que este contenido necesita.
 Con cinco familias de figura vivas —los cuatro casos de `/empresas`, la línea de tenencia de
 `/confianza`, el carril de `/como-funciona`, el eje de alcance y las portadas de dato del blog— el
 vocabulario geométrico ya no cabe en la regla dura de §6. Ésta es la semántica que las figuras
-**usan hoy**, medida sobre el build y no recordada.
+**usan hoy**, medida sobre el build y no recordada. **Una marca que se queda sin consumidor sale de
+la tabla y baja a la nota de abajo**, para que la tabla siga respondiendo a «qué significa lo que
+estoy viendo» y no a «qué se ha significado alguna vez».
 
 | Marca | Significa |
 |---|---|
 | Punto lleno verde | un extremo de la operación: una contraparte o una unidad de valor |
-| Punto lleno **neutro** | **una pregunta del visitante** · añadido el 2026-09-29, ver abajo |
 | Tramo o línea verde **que ocupa un trecho de un recorrido** | el tramo que es nuestro · dice **de quién es**, no cómo se comporta |
 | Cuña | valor moviéndose · el trabajo cambia de manos |
 | Barra llena verde | una magnitud |
@@ -745,20 +763,30 @@ vocabulario geométrico ya no cabe en la regla dura de §6. Ésta es la semánti
 | Línea verde **plana a lo largo de un eje, junto a otra que sigue moviéndose** | **un valor que quedó fijo** · dice **que no cambia**, y sólo significa algo contra el movimiento de al lado |
 | `--line` | separador sin significado |
 
-**Sobre el punto lleno neutro, añadido el 2026-09-29.** Estrena familia y por eso se escribió antes
-de dibujarlo, como se hizo con la frontera punteada. Va en `--on-tinta` sobre tinta y significa **una
-pregunta del visitante**; la usa la portada de `/preguntas`, con un punto por cada una de las nueve
-que la página publica.
+**Sobre el punto lleno neutro: concedido el 2026-09-29, sin consumidor desde el 2026-09-30.**
+Significaba **una pregunta del visitante**, en `--on-tinta` sobre tinta, y lo usaba la portada de
+`/preguntas` con un punto por cada una de las nueve que la página publicaba entonces. **Esa portada
+duró un día**: la sustituyó una tableta con una conversación dentro, y con ella la marca dejó de
+estar en el build. Por eso sale de la tabla de arriba y se queda escrita acá.
 
-**No compite con el punto verde, y la distinción es la que esta sección defiende:** lo que cambia no
-es sólo el color, es la marca. El punto verde es «un extremo de la operación», o sea dinero; éste no
-es dinero, y por eso no puede ser verde — el verde diría que lo es. En la misma figura el eje **sí**
-es verde, con su significado publicado: «el tramo que es nuestro», que acá son las respuestas.
+**Se conserva la concesión, no el dibujo.** La enmienda la dio Sebastián y no se revoca por falta de
+uso: quien vuelva a necesitar un trazo para una pregunta lo tiene concedido y con su alcance ya
+delimitado. Lo que se retira es la afirmación de que el sitio lo usa.
 
-**Requirió enmendar una regla dura de `CLAUDE.md` §5**, no sólo esta tabla: las tres cosas que esa
-regla admitía —movimiento, flujo de valor, un paso de un proceso— son todas dinero o su recorrido, y
-una pregunta no es ninguna. Autorizada por Sebastián ese día, con su alcance acotado allá: **no
-autoriza un trazo por «un tema» ni por «una sección»**, que sería un índice dibujado.
+**Por qué se escribió, que es lo que sigue valiendo.** Estrenaba familia, así que se definió **antes**
+de dibujarla, como se hizo con la frontera punteada, y **requirió enmendar una regla dura de
+`CLAUDE.md` §5**: las tres cosas que esa regla admitía —movimiento, flujo de valor, un paso de un
+proceso— son todas dinero o su recorrido, y una pregunta no es ninguna. Su alcance quedó acotado
+allá: **no autoriza un trazo por «un tema» ni por «una sección»**, que sería un índice dibujado.
+
+**Y no competía con el punto verde**, que es la distinción que esta sección defiende: lo que cambiaba
+no era sólo el color, era la marca. El punto verde es «un extremo de la operación», o sea dinero;
+aquél no era dinero, y por eso no podía ser verde — el verde diría que lo es.
+
+*La lección de método, y es la que cuesta:* **una marca se puede escribir antes de dibujarla y aun
+así quedarse sin nada que describir**, porque el dibujo que la pedía puede caer por motivos que no
+tienen nada que ver con ella. Escribirla antes fue correcto; lo que faltó fue volver a mirar la tabla
+al retirar la figura.
 
 **El color no es el portador del significado.** El verde dice «esta marca carga significado»; cuál
 de los dos verdes se usa lo decide **el fondo**: `--verde` sobre tinta y `--verde-deep` sobre
@@ -996,7 +1024,7 @@ cada una, no qué significa.
 |---|---|---|
 | **Héroe con cotizador** | El primer viewport de la Home | El cotizador **no entra** animado: es el instrumento y tiene que estar encendido al llegar. Lo que entra es el texto (M6) |
 | **Encabezado de página** | Las ocho rutas que no son la Home | `PageHero`. Dos composiciones: a dos columnas y **apilada y centrada**, ésta con la pieza del `aside` montada sobre la costura con la sección siguiente |
-| **Teléfono y portátil en CSS** | Mostrar la conversación y la operación, sin imágenes | Cero archivos. Las cifras **se derivan** de `lib/pricing`, nunca se teclean |
+| **Dispositivos en CSS: teléfono, portátil y tableta** | Enseñar el producto sin imágenes. El teléfono (`/como-funciona`, Home) una **operación negociándose**; el portátil (`/empresas`) la plataforma; la tableta (`/preguntas`, desde el 2026-09-30) **una duda resolviéndose** | Cero archivos. **El texto nunca se teclea**: el teléfono deriva las cifras de `lib/pricing`; la tableta busca la pregunta en `general.ts` **por su texto** y el build para si no está. Los tres van `aria-hidden` y **el chasis va claro**, que es lo único que recorta un objeto contra la tinta. Si el hilo de la tableta empieza a hablar de montos, deja de ser tableta y pasa a ser teléfono |
 | **Emblema de caso** | Las cuatro operaciones de `/empresas` | El canto del isotipo como frontera; el dinero es un canal hueco dentro del plano y macizo fuera |
 | **Línea de tenencia** | `/confianza`: de quién es la cuenta donde está el dinero | HTML, no SVG. Un solo tramo es nuestro |
 | **Carril de dos columnas** | `/como-funciona`: qué hace cada parte y dónde cambia de manos | La colocación en rejilla va **explícita**: el flujo automático deshace el carril |

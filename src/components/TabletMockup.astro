@@ -1,0 +1,329 @@
+---
+/**
+ * Una tableta dibujada en CSS con **una conversación dentro**. Cero imágenes.
+ *
+ * Tercera pieza de la familia de dispositivos: el portátil de `/empresas`
+ * (`MacbookMockup.astro`) y el teléfono de `/como-funciona`
+ * (`WhatsAppMockup.astro`) son las otras dos. De las dos hereda sus reglas:
+ *
+ * · **El dispositivo es cromo**: va `aria-hidden`, no tiene ningún control y el
+ *   contexto lo dan las palabras de al lado.
+ * · **Plano y sin trucos**: nada de 3D, reflejos ni desenfoques.
+ * · **Lo que hace tangible al objeto es el CHASIS CLARO.** El aluminio en plata
+ *   da 12,79:1 contra la banda de tinta; un objeto oscuro sobre fondo oscuro no
+ *   se recorta por mucho que se ajusten los grises intermedios. Es la lección
+ *   que el portátil ya se comió dos veces y aquí no se repite.
+ * · **No imita a WhatsApp**: verdes de DLPay, isotipo de DLPay y nuestra
+ *   tipografía. Es una abstracción de un chat, no la réplica de una app ajena
+ *   — la misma frase que encabeza el teléfono.
+ *
+ * ── Qué se ve, y por qué no se pisa con el teléfono de `/como-funciona` ─────
+ *
+ * Aquel enseña **una operación negociándose**: el monto, el precio confirmado,
+ * el cierre. Éste enseña **una duda resolviéndose**: una pregunta de las que la
+ * página publica, y su respuesta, tal cual están escritas.
+ *
+ * Son dos afirmaciones distintas —una transacción y una atención— en dos
+ * aparatos distintos, y por eso conviven. Si algún día el hilo de aquí empieza a
+ * hablar de montos o de precios, deja de ser esto y pasa a ser aquello.
+ *
+ * ── LA REGLA DURA DE ESTA PIEZA ─────────────────────────────────────────────
+ *
+ * **El texto de las burbujas NO se escribe.** Sale de `general.ts`, palabra por
+ * palabra: la pregunta es la pregunta publicada y la respuesta es la respuesta
+ * publicada. Quien quiera cambiar lo que se ve cambia `claves`, no el texto.
+ *
+ * Es más estricto que el `thread` del teléfono, que sí admite un hilo narrativo
+ * escrito por quien llama, y lo es a propósito: acá el hilo es **el contenido de
+ * la propia página**, así que una burbuja que no coincidiera con la respuesta de
+ * más abajo sería la web contradiciéndose a sí misma. Si una de esas preguntas
+ * se retira de `general.ts`, el build para.
+ *
+ * ── Por qué una tableta, y por qué en vertical ─────────────────────────────
+ *
+ * El portátil es horizontal y el teléfono es angosto: una tableta **en vertical**
+ * no se confunde con ninguno de los dos. Es ancha para que la respuesta se lea
+ * sin partirse en diez líneas y alta para que quepa una conversación entera.
+ *
+ * ── Anatomía del chasis ────────────────────────────────────────────────────
+ *
+ *   .pad        el aluminio: el marco visible, en plata, con el radio grande
+ *               que tiene una tableta de verdad.
+ *   .pad-bisel  el bisel negro, del MISMO grosor en los cuatro lados — que es
+ *               lo que separa a una tableta de un teléfono, que lo tiene
+ *               desigual, y de un portátil, que tiene bisagra.
+ *   .pad-cam    la cámara, centrada en el canto superior.
+ *   .ui         la pantalla: la cabecera del hilo y el hilo.
+ *
+ * Los tres tonos del cromo son los mismos del portátil y por el mismo motivo:
+ * describen **un objeto de otra marca**, no el sistema visual de esta web. Van
+ * en hexadecimal y no en `color-mix()` a propósito — si el navegador no
+ * entendiera la función, la declaración se descartaría y el objeto volvería a
+ * camuflarse contra la tinta.
+ */
+import Logo from './Logo.astro';
+import { generalFaq } from '../content/general.ts';
+
+interface Props {
+  /** Las preguntas del hilo, en orden, por su texto. Cada una da dos burbujas. */
+  claves: readonly string[];
+}
+const { claves } = Astro.props;
+
+/*
+  Se busca POR EL TEXTO y no por la posición: reordenar `general.ts` no cambia
+  la conversación, y si una de estas preguntas se retira el build para en vez de
+  publicar otra por accidente.
+*/
+const hilo = claves.map((c) => {
+  const f = generalFaq.find((g) => g.q === c);
+  if (!f) {
+    throw new Error(
+      `TabletMockup: la conversación enseña «${c}» y esa pregunta no está en ` +
+        `general.ts. Revisa la prop \`claves\`.`
+    );
+  }
+  return f;
+});
+---
+<figure class="pad" aria-hidden="true">
+  <div class="pad-bisel">
+    <span class="pad-cam"></span>
+    <div class="ui">
+      {/* La cabecera del hilo. Sin «en línea» ni ningún estado: eso sería una
+          promesa de disponibilidad que nadie ha hecho. */}
+      <div class="bar">
+        <span class="avatar"><Logo class="avatar-mark" /></span>
+        <span class="who">DLPay</span>
+      </div>
+
+      {/*
+        Un intercambio por clave: la pregunta sale por la derecha y la respuesta
+        entra por la izquierda. El hilo va CENTRADO en la pantalla, y el porqué
+        está con el CSS de `.chat`, que es donde se decide.
+      */}
+      <div class="chat">
+        {hilo.map((f) => (
+          <>
+            <p class="bubble out">{f.q}</p>
+            <p class="bubble in">{f.a}</p>
+          </>
+        ))}
+      </div>
+    </div>
+  </div>
+</figure>
+
+<style>
+  /**
+   * Tonos del CROMO, locales a esta maqueta. No son tokens del Design System y
+   * no deben salir de aquí: describen un objeto de otra marca, igual que los
+   * grises del portátil.
+   */
+  .pad {
+    --pad-chasis: #D2D7D6;  /* el aluminio: 12,79:1 contra el héroe */
+    --pad-canto: #A9AFB1;   /* el filo, 1,53:1 sobre el chasis      */
+    --pad-bisel-c: #000000; /* el bisel: el punto más oscuro        */
+
+    margin: 0 auto;
+    width: 100%;
+    max-width: 410px;
+    background: var(--pad-chasis);
+    /* El radio grande es lo que dice «tableta». Un rectángulo de esquinas
+       suaves es un panel; éste es un objeto. */
+    border-radius: 26px;
+    padding: 4px;
+    /* El canto exterior dibuja la silueta contra la tinta, y el filo inferior
+       en plata oscura da el grosor del aluminio sin recurrir a un degradado. */
+    border: 1px solid var(--line-on-tinta);
+    border-bottom: 3px solid var(--pad-canto);
+    /*
+      La elevación es `--elev-card`, el token del sistema, y NO la sombra dura
+      del portátil. El motivo es el montaje: esta pieza sobresale sobre la
+      sección clara, así que su sombra cae mitad en tinta y mitad en papel. Una
+      sombra de 40 px a .5 de negro, pensada para fondo oscuro, sobre el papel
+      se lee como una mancha gris. `--elev-card` lleva radio negativo, queda más
+      ceñida y funciona en las dos superficies.
+    */
+    box-shadow: var(--elev-card);
+  }
+
+  /* El bisel: MISMO grosor en los cuatro lados. */
+  .pad-bisel {
+    position: relative;
+    background: var(--pad-bisel-c);
+    border-radius: 22px;
+    padding: 14px;
+  }
+  /* La cámara, centrada en el canto superior y del tamaño que tiene. */
+  .pad-cam {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--line-on-tinta);
+  }
+
+  /*
+    ── La pantalla ──────────────────────────────────────────────────────────
+
+    **La proporción es FIJA, y es la única diferencia de fondo con el portátil.**
+    Allí el alto se RESERVA como mínimo y el marco crece antes que recortar,
+    porque aquel contenido tiene que verse entero. Acá el hilo está recortado a
+    propósito: una conversación tiene historia por encima, y una pantalla de 3:4
+    que se estira para que quepa todo deja de ser una tableta y pasa a ser una
+    columna con marco.
+
+    Lo probé al revés primero: con el alto reservado, el contenido empujaba la
+    pantalla a 1,7:1 y el objeto perdía su forma.
+  */
+  .ui {
+    aspect-ratio: 3 / 4;
+    display: flex;
+    flex-direction: column;
+    background: var(--papel-2);
+    color: var(--ink);
+    border-radius: var(--r-2);
+    overflow: hidden;
+  }
+
+  /* ── La cabecera ─────────────────────────────────────────────────────────
+     La misma del teléfono: isotipo sobre papel dentro de un círculo, y el
+     nombre en `--on-tinta` sobre `--verde-deep`.
+
+     **5,25:1, medido en el navegador sobre el build del 2026-09-30** — AA de
+     sobra. El teléfono declara 4,72 para este mismo par en su propio
+     comentario; uno de los dos números está desfasado y el medido es éste.
+     Queda anotado y no se toca el del teléfono: es un comentario, no un valor,
+     y arreglarlo pide medir su página. */
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: var(--s-3) var(--s-4);
+    background: var(--verde-deep);
+    flex: none;
+  }
+  .avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--papel);
+    color: var(--verde-deep);
+    display: grid;
+    place-items: center;
+    flex: none;
+  }
+  .avatar-mark { width: 14px; height: auto; display: block; }
+  .who { color: var(--on-tinta); font-weight: 600; font-size: var(--t-body-sm); }
+
+  /*
+    ── El hilo ──────────────────────────────────────────────────────────────
+
+    **Centrado, y no apoyado abajo.** Una app de mensajería apoya abajo porque
+    el historial crece hacia arriba, y así lo hace la variante `bare` del
+    teléfono, que enseña cuatro pantallas de una conversación larga. Acá hay UN
+    intercambio: apoyado abajo dejaba 250 px de pantalla vacía encima que se
+    leían como una conversación que no ha empezado.
+
+    ── Por qué UN intercambio, y por qué no es una cuestión de gusto ────────
+
+    Con dos y apoyado abajo, la respuesta de los doce minutos —once líneas—
+    empujaba su propia pregunta fuera de la pantalla y el hilo abría con DLPay
+    hablando solo.
+
+    **Y el segundo par no cabe ni con las respuestas cortas.** Medido en el
+    navegador el 2026-09-30, añadiendo el par de «volver a pesos» al de
+    cancelar: a 1280 el hilo pasa de 177 a 414 px sobre 444 útiles y entra
+    raspando, pero **a 390 pide 433 sobre 357 y se sale por 76 px**. Con el
+    hilo centrado eso no recorta por abajo como haría un chat: recorta **por los
+    dos extremos a la vez**, 38 px arriba y 38 abajo, y una burbuja cortada por
+    arriba es un fallo de maquetación y no una conversación con historia.
+
+    O sea que **un intercambio es lo único que sobrevive a 320 px**, y su precio
+    está medido: el hilo ocupa el **40 % de la pantalla a 1280** y el 50 % a
+    390, con 133 px de vacío arriba y otros 133 abajo. Exactamente centrado.
+
+    Sin máscara, porque no hay nada cortado: lo que se ve es el hilo entero.
+  */
+  .chat {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--s-2);
+    padding: var(--s-4);
+    overflow: hidden;
+  }
+
+  /*
+    Las burbujas son las del teléfono, con sus mismas medidas y sus mismos
+    tonos. Se repiten aquí y no se extraen a un componente común por el
+    Principio 5: son dos casos y el segundo acaba de nacer. Cuando aparezca el
+    tercero se extrae.
+  */
+  .bubble {
+    position: relative;
+    max-width: 86%;
+    /* Ritmo de UI móvil, no de párrafo web. 14px queda fuera de la escala
+       tipográfica a propósito — esto simula el cromo de otra aplicación, no es
+       texto del sitio. */
+    padding: var(--s-2) var(--s-3);
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--ink);
+    box-shadow: 0 1px 2px rgba(11, 19, 32, .10);
+  }
+  /* La colita, en la esquina superior del lado por el que sale el mensaje. */
+  .bubble::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 7px;
+    height: 11px;
+    background: var(--burbuja);
+  }
+
+  /* Saliente —lo que pregunta el cliente—: `--verde` diluido, nunca el verde de
+     WhatsApp. `--ink` encima da 12,41:1, AAA de sobra. */
+  .out {
+    --burbuja: rgba(22, 199, 132, .22);
+    margin-left: auto;
+    background: var(--burbuja);
+    border-radius: var(--r-3) 0 var(--r-3) var(--r-3);
+  }
+  .out::after { right: -6px; clip-path: polygon(0 0, 100% 0, 0 100%); }
+
+  /* Entrante —lo que responde DLPay—: papel sobre la pantalla en papel-2. Los
+     dos tonos claros sólo se separan 1,11:1, así que lo que define la burbuja es
+     la sombra, igual que en una app real, y no un borde. `--ink` sobre `--papel`
+     da 16,00:1. */
+  .in {
+    --burbuja: var(--papel);
+    margin-right: auto;
+    background: var(--burbuja);
+    border-radius: 0 var(--r-3) var(--r-3) var(--r-3);
+  }
+  .in::after { left: -6px; clip-path: polygon(100% 0, 0 0, 100% 100%); }
+
+  /* Un intercambio respira más que dos mensajes seguidos del mismo lado. */
+  .in + .out { margin-top: var(--s-3); }
+
+  /*
+    Bajo 420 px el bisel adelgaza y el hilo estrecha su relleno: a esos anchos el
+    marco se come el texto antes que ninguna otra cosa. El objeto se sigue
+    leyendo porque lo que lo dibuja es el chasis claro, no el grosor del bisel.
+  */
+  @media (max-width: 420px) {
+    .pad { border-radius: 22px; padding: 3px; }
+    .pad-bisel { border-radius: 19px; padding: 10px; }
+    .pad-cam { top: 3px; }
+    .chat { padding: var(--s-3); }
+    .bubble { max-width: 92%; }
+  }
+</style>

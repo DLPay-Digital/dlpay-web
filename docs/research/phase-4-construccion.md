@@ -196,6 +196,43 @@ venía de una maqueta, de una lámina o de una copia caducada de los tokens.
 
 De ahí salen las **dieciocho reglas de evidencia** de `cowork/README.md`, que son el subproducto más reutilizable de esta fase.
 
+### 4.6 Una entrega que copia el archivo entero se rompe donde nadie mira  ·  *2026-09-30*
+
+La entrega de la portada de `/preguntas` llegó como una **copia completa** de la página, 650 líneas,
+con los cambios dentro. Funcionaba en su maqueta y traía **seis defectos**, todos en lo que la copia
+arrastró y no en lo que la copia proponía: una regla de CSS borrada sin reponer —`.inner`, el
+contenedor del cuerpo entero—, la ruta de pruebas en el `<Base>`, un comentario que contradecía a su
+propio CSS, tres bloques de comentario describiendo la figura retirada y un párrafo que describía la
+versión anterior de la propia entrega.
+
+**Ninguno se ve en el resultado renderizado de quien la escribió**, y dos de ellos —la ruta y la
+regla borrada— sólo se notan al publicar. Lo que los encuentra es una sola cosa: **leer el diff
+contra el archivo vivo, no el archivo entregado.** El `.inner` no aparece como «error»; aparece como
+tres líneas eliminadas en un hunk cuyo asunto era otro.
+
+> **Una entrega en forma de archivo completo se integra por su diff, nunca por su contenido.** Y el
+> diff hay que leerlo entero, incluidas las líneas que el cambio no pretendía tocar.
+
+*El corolario, que es el que se olvida:* esos defectos **contaminan sus propias medidas**. Sin
+`.inner` el texto corre de canto a canto, envuelve menos y la página sale más corta — así que la
+cifra de scroll con la que la entrega se defiende se midió sobre una página rota.
+
+### 4.7 Una marca del vocabulario puede quedarse sin nada que describir  ·  *2026-09-30*
+
+El punto lleno neutro —«una pregunta del visitante»— se escribió en el Design System §6.2 **antes**
+de dibujarlo, y para eso hizo falta enmendar una regla dura de `CLAUDE.md` §5. Fue el procedimiento
+correcto. **Un día después la figura que lo pedía se retiró**, por motivos que no tenían nada que ver
+con la marca, y el §6.2 siguió afirmando en su tabla de «lo que las figuras usan hoy» algo que el
+build ya no hacía.
+
+> **Escribir una marca antes de dibujarla no cierra el asunto: hay que volver a la tabla el día que
+> el dibujo se retira.** Una tabla que dice «lo que se usa hoy» caduca por sustracción, no sólo por
+> adición, y nada falla cuando caduca.
+
+La concesión se conserva —la dio el equipo y no se revoca por falta de uso— y lo que se corrige es
+la afirmación. Es el mismo modo de fallo que el §4.5, un paso más arriba: **el documento se midió
+bien y dejó de ser verdad sin que nadie tocara el documento.**
+
 ---
 
 ## 5. Errores propios, registrados

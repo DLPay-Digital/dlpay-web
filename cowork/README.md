@@ -2732,3 +2732,151 @@ preguntan casi lo mismo, y eso es cierto con nueve preguntas. Se construye de lo
 mentirá al añadir una; pero si `business.ts` va a multiplicarse, la portada dejará de decir lo que
 dice hoy.
 
+
+---
+
+### Notas de la integración de `2026-09-30 · preguntas: la portada y la arquitectura`
+
+**Integrada.** El componente `TabletMockup.astro` es nuevo; `/preguntas` cambia de portada, gana la
+banda de entrada, una salida al acabar las preguntas y un «volver arriba». Las respuestas, los seis
+grupos, el glosario y el cierre **no se tocan**.
+
+**Su §0 se agradece y hay que decirlo.** En `Claude outputs/` había **cinco entregas de la misma
+página** y cuatro estaban muertas; el prompt las enumera con nombre y dice de cada una por qué cae.
+Sin eso, la probabilidad de integrar `pq-portada4-*` —la tableta con una página web dentro, que es
+casi idéntica de nombre— era alta. **Que una entrega declare qué parte de sí misma está muerta es lo
+más útil que ha traído una hasta ahora.**
+
+#### Lo que reprodujo exacto
+
+Portada **634 px** a 960, 1280 y 2560 · **649** a 768 · aparato 410×536 y pantalla 372×496 con la
+proporción clavada en **1,33 en los seis anchos** · saliente 96/132 · **cero desborde horizontal** ·
+página **6.989 px contra 6.294** a 1280 · HTML **35.780 → 37.415** (ellos predijeron 37.090) ·
+scroll del primer grupo al sexto **2.284 px**, su número al píxel · los **seis enlaces de la banda
+resuelven, ninguno roto**, y el título aterriza en **y = 64** en los seis.
+
+Contrastes, medidos en el navegador: chasis/tinta **12,79** · chasis/papel **1,33** · bisel/chasis
+**14,43** · `--ink` sobre la burbuja saliente **12,44** · sobre la entrante **16,00** · recuento de
+la banda **5,44**. Todos los suyos, al segundo decimal.
+
+**Una cifra suya que no reproduce:** el nombre sobre `--verde-deep` da **5,25 y no 4,72**. El número
+4,72 viene del comentario del teléfono, que lo declara para el mismo par, así que **uno de los dos
+está desfasado y el medido es 5,25**. Queda anotado en la cabecera del componente nuevo; el del
+teléfono no se toca, porque arreglar un comentario pide medir su página.
+
+#### Lo que difiere, y no es culpa de nadie: la barra de scroll
+
+A 320 y 390 sus números vienen 15 px anchos. El ancho útil con barra clásica es 305 y 375, no 320 y
+390, así que el aparato sale 265 y 335 en vez de 280 y 350, y **a 3:4 eso son 20 px menos de alto**:
+portada 484 y 552 contra sus 479 y 572. Arriba de 768 no aparece, porque la pieza toca su tope de
+410. **Está escrito en el §4.8:** una cifra móvil que no dice si había barra no es comparable.
+
+#### Seis defectos en los archivos entregados
+
+Todos de integración, ninguno de diseño. La página entregada es una **copia completa** de
+`preguntas.astro`, y ahí está el riesgo: lo que se rompe al copiar 650 líneas no se ve en el
+resultado renderizado.
+
+1. **`.inner` desaparecida.** El diff borra
+   `.inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m) }` y **no
+   la repone**: sólo queda la del `@media (min-width: 900px)`, que ajusta el relleno y no el tope.
+   Publicado así, el cuerpo entero de la página pierde su contenedor a todos los anchos y el texto
+   corre de canto a canto. **Y contamina sus propias medidas**, porque sin tope el texto envuelve
+   menos y la página sale más corta de lo que saldría.
+2. **`path="/pq-v4/"`** en el `<Base>` — su ruta de pruebas. Habría publicado el canonical, el
+   Open Graph y la entrada del sitemap de `/preguntas` apuntando a una URL que no existe.
+3. **Un comentario que contradice a su propio CSS.** El JSX sobre `.chat` dice «el hilo se apoya
+   ABAJO… misma decisión que la variante `bare` del teléfono»; el CSS treinta líneas más abajo dice
+   «**centrado, y no apoyado abajo**» y pone `justify-content: center`. Es un resto de la v4, y de
+   los dos el que manda es el que se ejecuta.
+4. **Tres bloques de comentario huérfanos.** Se retira la figura de nueve puntos y se quedan: el
+   comentario de cabecera que la explicaba (**50 líneas**, con su geometría y sus marcas), el de
+   `<style>` que decía «los estilos de la figura de las nueve preguntas», y el del `max-width` que
+   la contenía. Más el JSX de la ranura del héroe, que seguía hablando de rótulos fuera del SVG.
+5. **Un comentario de la versión anterior.** El bloque nuevo abre con «la portada: una tableta con
+   **esta misma página dentro**», que describe la v4 —la tableta con la web en pantalla— y no la v5,
+   que es una conversación.
+6. **Tres arreglos menores que no cuestan nada.** `!important` en el tramo de una columna, evitable
+   escribiendo los filetes **mobile-first** en vez de poniéndolos y quitándolos; `aria-label="Los
+   seis grupos de preguntas"` con el número escrito, cuando la lista se deriva; y el `id` y el
+   título de la sexta sección **escritos dos veces**, en la banda y en el marcado, que es exactamente
+   cómo un ancla deja de apuntar a nada sin que nada falle. Ahora salen de un `PRACTICA` único.
+
+*Y una cosa de forma:* los comentarios nuevos venían **sin tildes** («la pagina», «esta dicho»),
+contra el resto del repositorio. Reescritos.
+
+#### Su §10, punto por punto
+
+**Corrección 1 — aceptada, y el número es el suyo.** La cabecera decía que la portada cierra en
+523 px; medido sobre el build de ayer da **477**, que es lo que el §4.8 ya publicaba. Los 523 salían
+de su maqueta y los 477 del build: **dos números para la misma cosa, y el que estaba en el código
+era el que nadie había medido en su sitio.** La cabecera se reescribe con esta entrega, así que se
+resuelve sola.
+
+**Corrección 2 — rechazada, y por el mismo motivo que la vez pasada.** Dice que el §4.8 «está
+redactado como si valiera para todos los anchos» y que «en móvil ninguna portada del sitio llega a
+460». Las dos mitades fallan: el §4.8 **ya dice** «el rango se mide a 1280 y sólo ahí», y en móvil
+**tres de las seis pasan de 660** —Home 1137, `/como-funciona` 684, `/confianza` 669—. Es **la misma
+afirmación falsa que ya trajo el 2026-09-29** y que ya está desmentida quince párrafos más arriba en
+este archivo. Sí se afinó el §4.8, pero con lo que sí es verdad: una portada gana alto al apilarse y
+lo pierde si su pieza se encoge a lo ancho, y por eso la tableta baja de 634 a 552.
+
+#### Lo que la entrega no vio, y era lo más caro
+
+**Retirar la figura de nueve puntos deja sin consumidor una marca del vocabulario y una enmienda de
+una regla dura.** El punto lleno neutro —«una pregunta del visitante»— y la enmienda del
+`CLAUDE.md` §5 que hizo falta para dibujarlo nacieron **el día anterior** para esa figura. Con ella
+fuera, el Design System §6.2 seguía afirmando en su tabla de «lo que las figuras usan hoy» algo que
+el build ya no hace, y esa tabla se escribe **midiendo**.
+
+Resuelto así: la marca sale de la tabla y baja a una nota que cuenta que existió un día; la
+concesión **se conserva**, porque la dio Sebastián y no se revoca por falta de uso. La lección va en
+los dos documentos: *una marca se puede escribir antes de dibujarla, con razón, y aun así quedarse
+sin nada que describir, porque el dibujo que la pedía puede caer por motivos que no tienen que ver
+con ella.*
+
+#### Sus tres «no las arregles», verificadas
+
+Pide no tocar tres decisiones. Las tres se quedan, **y una de ellas tiene ahora un argumento mejor
+que el suyo**:
+
+- **Un solo intercambio.** Su razón era que la respuesta de los doce minutos —once líneas— empujaba
+  su pregunta fuera de la pantalla. Cierto, pero eso sólo descarta **ese** par. Probé el segundo par
+  con las dos respuestas cortas: a 1280 el hilo pasa de 177 a **414 px sobre 444 útiles** y entra
+  raspando; **a 390 pide 433 sobre 357 y se sale por 76 px**, y con el hilo centrado eso recorta
+  **por los dos extremos a la vez**, 38 arriba y 38 abajo. Una burbuja cortada por arriba es un
+  fallo de maquetación, no una conversación con historia. **Un intercambio es lo único que sobrevive
+  a 320 px**, y eso es más fuerte que «con dos quedaba raro». Está escrito en el componente.
+- **El hilo centrado.** Centra exacto: **133 px de vacío arriba y 133 abajo**, medidos.
+- **La proporción fija en 3:4.** Se mantiene en 1,33 en los seis anchos.
+
+#### Una cosa para Sebastián, con su número
+
+**El hilo ocupa el 40 % de la pantalla a 1280** y el 50 % a 390. Es la consecuencia aritmética de
+sus tres decisiones juntas —un intercambio, centrado, 3:4— y ninguna de las tres se puede soltar sin
+romper otra cosa: dos intercambios se cortan a 390, apoyarlo abajo deja el vacío arriba, y estirar la
+pantalla convierte la tableta en una columna con marco. **Queda así y con el número delante**, que
+es lo honesto: la portada enseña una conversación corta en una pantalla grande.
+
+#### Aparte de la entrega: el type-check estaba roto
+
+Esta tanda es la primera que trae archivos `.astro` a `Claude outputs/`, y `tsconfig.json` los
+incluía: **`npm run check` devolvía 93 errores**, todos de código que no es del repositorio. Estar
+en el `.gitignore` no saca a una carpeta del type-check. Añadida al `exclude`, y anotado en
+`CLAUDE.md` §0.3: con la puerta roja por un motivo ajeno, un error de verdad pasa inadvertido.
+
+#### Verificado sobre el build de hoy
+
+`npm run check` en verde · **80/80 pruebas** · build de las 15 páginas · **cero `.js` referenciado**
+en `/preguntas` · los **tres enlaces a WhatsApp de la página llevan mensaje prellenado**, así que
+D22 sigue cerrada · celdas de la banda de **52 px** de alto, sobre el mínimo de 44 · el recuento
+lleva su unidad para lector de pantalla («1 pregunta» / «4 preguntas») · **ningún ancestro recorta**
+el saliente de la tableta · «volver arriba» apunta a `#main`, que existe.
+
+#### Sigue abierto
+
+**La decisión de contenedor**, que es de Sebastián y no de esta entrega: si `/preguntas` deja de
+importar las nueve de la Home y `/empresas`. Hoy son 9 importadas + 4 propias, y la banda las cuenta
+todas. Si las nueve salen, la banda pasa de seis celdas a una y **deja de tener sentido**: lo que
+hoy justifica la banda es que hay trece respuestas en seis grupos. **Las dos decisiones están
+atadas**, y conviene saberlo antes de mover una.

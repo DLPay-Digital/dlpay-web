@@ -144,7 +144,11 @@ patrones) · `phase-2-visual-directions.md` + su Artifact de mockups.
   esencial.
 - **No buscar archivos fuera de la carpeta del proyecto.** *Instrucción de Sebastián, 2026-09-28.*
   Todo lo que este proyecto necesita vive bajo `Projects/dlpay-web/`, **incluida `Claude outputs/`**,
-  que es donde aterrizan las entregas de Cowork y está en el `.gitignore`. Si un archivo no aparece
+  que es donde aterrizan las entregas de Cowork y está en el `.gitignore` **y, desde el 2026-09-30,
+  también en el `exclude` de `tsconfig.json`**. Lo segundo hizo falta en cuanto una entrega trajo
+  archivos `.astro`: `npm run check` los compilaba y devolvía **93 errores**, todos de código que no
+  es del repositorio, y con la puerta roja por ese motivo un error de verdad pasa inadvertido.
+  Estar fuera de git no basta para estar fuera del type-check. Si un archivo no aparece
   ahí, **se pide**; no se rastrea el resto del equipo. Vale también para las carpetas personales
   —Descargas, Escritorio, Documentos—: no son parte del proyecto y pueden contener material que
   el Principio 7 mantiene deliberadamente fuera del repositorio.
@@ -309,18 +313,31 @@ paso de un proceso**. Nunca decoración, nunca papel tapiz, nunca "red de nodos"
 con el cotizador.
 
 **Una enmienda, del 2026-09-29, autorizada por Sebastián:** un trazo puede representar además **una
-pregunta del visitante**, y sólo eso. Entró con la portada de `/preguntas`, que dibuja un punto por
+pregunta del visitante**, y sólo eso. Entró con la portada de `/preguntas`, que dibujaba un punto por
 cada una de las nueve preguntas publicadas, arriba las de una persona y abajo las de una empresa.
 
 *Por qué hacía falta enmendar y no bastaba con el §6.2.* Las tres cosas que la regla admitía son
 todas **dinero o su recorrido**, así que el sitio no tenía marca para una página cuyo objeto no es
-dinero, y `/preguntas` es la primera: su objeto son las nueve preguntas. La alternativa era dejar esa
-página sin portada para siempre o dibujarle algo que no fuera su objeto, y las dos son peores.
+dinero, y `/preguntas` fue la primera. La alternativa era dejar esa página sin portada para siempre o
+dibujarle algo que no fuera su objeto, y las dos son peores.
 
 *Y lo que la enmienda NO abre.* No autoriza un trazo por «un tema», «una idea» o «una sección»: eso
 es un índice, y un índice dibujado es exactamente lo que se retiró de esa página el 2026-09-24. La
 marca concreta —**punto lleno neutro = una pregunta**— está escrita en el Design System §6.2 con su
 alcance, y el catálogo sigue siendo cerrado: añadir otra cosa vuelve a pedir esta conversación.
+
+**La enmienda sigue concedida y hoy no tiene consumidor.** *Anotado el 2026-09-30.* La figura que la
+pidió duró un día: `/preguntas` abre ahora con **una tableta dibujada en CSS y una conversación
+dentro** —la tercera pieza de la familia del teléfono y el portátil—, y la respuesta que se lee en
+la pantalla sale de `general.ts` palabra por palabra. Ningún trazo del sitio representa hoy una
+pregunta.
+
+**La concesión no se revoca por falta de uso**, que es decisión de Sebastián y no de quien mide:
+quien vuelva a necesitar ese trazo lo tiene autorizado y acotado. Lo que se corrigió es la
+**afirmación**: el Design System §6.2 saca la marca de su tabla de «lo que las figuras usan hoy» y
+la baja a una nota, porque esa tabla se escribe midiendo el build. La lección está allá y es de
+método: *una marca se puede escribir antes de dibujarla, con razón, y aun así quedarse sin nada que
+describir — porque el dibujo que la pedía puede caer por motivos que no tienen que ver con ella.*
 
 **Tokens de marca (verificados por muestreo de píxeles de `logos/`, colores planos sin antialias):**
 
@@ -390,6 +407,24 @@ guion**, que es general y no tiene público. Viven en `content/general.ts` y se 
 sección, no repartidas entre los cinco grupos, porque esos grupos cruzan preocupación con público y
 estas preguntas no tienen lado. **Queda abierto** si las nueve importadas siguen ahí o vuelven a ser
 sólo de sus páginas.
+
+**El 2026-09-30 la página se reordenó alrededor de esas trece**, sin tocar ni una respuesta:
+
+- **Portada nueva**: una tableta dibujada en CSS con **una conversación dentro** —la pregunta de
+  cancelar y su respuesta, sacadas de `general.ts` palabra por palabra—. Sustituye la figura de nueve
+  puntos, que contaba 9 cuando la página tiene 13. Se retira con ella la única marca del vocabulario
+  que representaba una pregunta; ver §5.
+- **Banda de entrada**: los seis grupos con su recuento, enlazados. **Roza la decisión de Sebastián
+  del 2026-09-24** —él retiró un índice pegajoso numerado 01–05— y **él la aprobó sabiéndolo**: ésta
+  no se pega y el número es cuántas preguntas hay, no el orden. Anclas nativas, cero JavaScript.
+- **Una salida al acabar las preguntas**, porque entre la última respuesta y «escríbenos» había
+  1.563 px de glosario. La primera salida pasa del **85 % al 63 %** del scroll. El cierre no se toca:
+  es redundancia deliberada, y si sobra una de las dos sale la nueva.
+- **«Volver arriba»** al final del glosario.
+
+**Lo que no cambió, a propósito:** los seis grupos, sus respuestas, el glosario y el cierre. La
+página crece de 6.294 a 6.989 px a 1280, y **la banda no acorta el scroll: da un salto.** Llegar al
+sexto grupo desde el primero sigue siendo 2.284 px bajando; lo que se gana es no tener que bajarlos.
 
 **`/blog` se añadió el 2026-09-11.** Colección tipada de Astro (`src/content.config.ts`) con
 esquema cerrado: `title`, `description`, `pubDate`, `category` —sólo `DLPay` o `Mercado`, un valor

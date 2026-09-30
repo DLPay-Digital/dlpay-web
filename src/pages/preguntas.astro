@@ -1,6 +1,6 @@
 ---
 /**
- * /preguntas — las nueve preguntas del sitio, agrupadas, y el glosario.
+ * /preguntas — las trece preguntas del sitio, agrupadas, y el glosario.
  *
  * ── Por qué no usa `Faq.astro`, si publica las mismas preguntas ────────────
  *
@@ -16,8 +16,9 @@
  *
  * ── De dónde sale cada cosa ────────────────────────────────────────────────
  *
- * · Las nueve preguntas y respuestas: `home.ts` y `business.ts`. Ni una palabra
- *   escrita acá.
+ * · Las nueve preguntas con público y sus respuestas: `home.ts` y
+ *   `business.ts`. Ni una palabra escrita acá.
+ * · Las cuatro generales, las que no tienen lado: `general.ts`. Tampoco.
  * · **Qué pregunta va en qué grupo: del campo `concern` de cada pregunta**, no
  *   de una lista en esta página. Con cinco listas de textos, reescribir una
  *   pregunta en `home.ts` la sacaría de su grupo sin que nada fallara — el
@@ -26,21 +27,37 @@
  *   diga, porque un campo así podría contradecir a su propio origen.
  * · Los ocho términos: `glossary.ts`.
  *
- * Lo único escrito acá son los cinco títulos de preocupación y el cierre. Son
- * de esta página y de ninguna otra. *(El párrafo que explicaba la agrupación se
- * retiró el 2026-09-24, por decisión de Sebastián: los cinco títulos la dicen
- * sin necesidad de introducirla.)*
+ * Lo único escrito acá son los **seis** títulos de sección, el cierre, la línea
+ * de salida y el «volver arriba». Son de esta página y de ninguna otra. *(El
+ * párrafo que explicaba la agrupación se retiró el 2026-09-24, por decisión de
+ * Sebastián: los títulos la dicen sin necesidad de introducirla.)*
  *
- * ── Sin índice y sin numerar, por decisión de Sebastián del 2026-09-24 ─────
+ * ── Sin numerar, y la banda de entrada del 2026-09-30 ──────────────────────
  *
  * La primera versión de esta forma traía un índice pegajoso de seis anclas y
- * numeraba los grupos 01 a 05. Las dos cosas se retiraron por estética.
+ * numeraba los grupos 01 a 05. Las dos cosas se retiraron por estética el
+ * 2026-09-24, por decisión de Sebastián.
  *
- * **Los `id` de las secciones se quedan**, aunque ya nada de esta página
- * enlace a ellos: `aria-labelledby` los necesita para dar nombre a cada
- * `<section>`, y un enlace externo a `/preguntas/#cuanto-cuesta` sigue
- * funcionando. `scroll-margin-top` también se queda, que es lo que hace que ese
- * enlace no deje el título pegado al borde.
+ * **El 2026-09-30 volvió una lista de los grupos arriba, y hay que decir de
+ * frente que roza esa decisión.** Lo que se retiró era *pegajoso* —chrome que
+ * acompaña todo el scroll— y numeraba el ORDEN. Esta banda se va con el scroll
+ * como cualquier bloque, y su número es **cuántas preguntas hay** en el grupo.
+ * Sebastián la aprobó sabiendo las dos cosas. La numeración 01–05 no vuelve.
+ *
+ * Lo que la justifica está medido: hasta ese día, llegar a la sexta sección
+ * —las preguntas generales, el registro que él mismo señaló como el que
+ * faltaba— eran **2.284 px** de scroll por delante de nueve respuestas que
+ * podían no ser la tuya.
+ *
+ * **Y con eso los `id` de las secciones recuperan consumidor.** Se quedaron
+ * cuando se quitó el índice porque `aria-labelledby` los necesita para dar
+ * nombre a cada `<section>` y porque un enlace externo a
+ * `/preguntas/#cuanto-cuesta` tiene que seguir funcionando; desde el 2026-09-30
+ * los usa además la banda. `scroll-margin-top` es lo que hace que el salto no
+ * deje el título pegado al borde, y por eso el ancla aterriza en y = 64.
+ *
+ * La banda **no construye ningún mecanismo**: son anclas nativas. Cero
+ * JavaScript, que es lo que esta página tenía y sigue teniendo.
  */
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
@@ -51,6 +68,7 @@ import { faq as faqPersonas, type Concern, type FaqItem } from '../content/home.
 import { faq as faqEmpresas } from '../content/business.ts';
 import { generalFaq } from '../content/general.ts';
 import { glossary } from '../content/glossary.ts';
+import TabletMockup from '../components/TabletMockup.astro';
 import { contact } from '../lib/config/site.ts';
 
 /*
@@ -115,110 +133,78 @@ if (colocadas !== todas.length) {
 }
 
 /*
-  ── La portada: un punto por pregunta ──────────────────────────────────────
+  ── La portada: una tableta con una conversación dentro ────────────────────
 
-  Nueve puntos, no cinco: **un punto por cada pregunta que tiene lado.** Arriba
-  las que hace una persona, abajo las que hace una empresa, y cuando las dos
-  preguntan por lo mismo comparten la vertical. Las dos asimetrías de los
-  extremos son las dos preguntas que sólo hace un lado.
+  «El producto, no un diagrama del producto.» Lo dice `tarifas.astro` de su
+  tarjeta, y es lo que a esta página le faltaba: lo que da `/preguntas` es una
+  respuesta, así que la portada enseña una respuesta.
 
-  **Decía «el recuento de la figura es el recuento de la página» y desde el
-  2026-09-29 eso ya no es cierto**, porque la página ganó una sexta sección con
-  preguntas generales que no tienen lado. El dibujo sigue siendo exacto sobre lo
-  que dibuja —el cruce de los dos públicos— y no intenta representar las que no
-  entran en ese cruce: un punto sin lado no tendría dónde ir, ni arriba ni
-  abajo, y ponerlo sobre el eje le daría al eje un tercer significado.
+  El objeto es la **tercera pieza de la familia de dispositivos** —el portátil
+  de `/empresas` y el teléfono de `/como-funciona` son las otras dos—, y vive en
+  `components/TabletMockup.astro`. En su pantalla, un cliente pregunta y DLPay
+  responde.
 
-  Lo que la figura afirma, y ninguna otra página del sitio puede afirmarlo
-  porque es la única que junta a los dos públicos: **una persona y una empresa
-  preguntan casi lo mismo.** De las cinco preocupaciones, tres las preguntan las
-  dos partes y cada una tiene exactamente una suya.
+  **El hilo no se escribe: sale de `general.ts`, palabra por palabra.** La
+  pregunta de la burbuja es la pregunta que esta misma página publica más abajo,
+  y la respuesta es su respuesta. Si no coincidieran, la web se contradiría a sí
+  misma en dos pantallas de scroll. Cambiar lo que se ve es cambiar `claves`,
+  nunca un texto.
 
-  **Lo que NO hace es enumerar los cinco grupos.** Sebastián retiró de esta
-  página el índice pegajoso y la numeración 01–05 el 2026-09-24 por estética, y
-  una portada que los listara sería el mismo índice con otra ropa. La figura dice
-  la forma sin nombrar ni un grupo.
+  ── Qué había antes acá, y qué se llevó al retirarse ───────────────────────
 
-  ── Se construye de los datos, y eso es la mitad del asunto ────────────────
+  Hasta el 2026-09-30 la portada era **una figura de nueve puntos**, uno por
+  cada pregunta con lado, arriba las de una persona y abajo las de una empresa.
+  Duró un día y se retira con dos defectos medidos y uno de fondo:
 
-  Las posiciones **se cuentan**, no se escriben: si mañana entra una pregunta a
-  `home.ts` o a `business.ts`, aparece su punto y el lienzo se ensancha. Escrita
-  a mano, la figura empezaría a mentir el día siguiente y nadie lo vería.
+  · **Contaba 9 cuando la página tiene 13.** Su propio comentario lo confesaba
+    desde que entró `general.ts`: las generales no tienen lado, así que un punto
+    sin lado no tenía dónde ir.
+  · **El rótulo «empresa» llegaba justo al borde inferior del héroe, con cero
+    holgura.** `PageHero` en `stacked` no tiene relleno abajo, así que el canto
+    del rótulo y el canto de la banda coincidían — medido por tinta y no por
+    caja. La tableta no hereda el problema porque **cruza ese borde a
+    propósito**, con 132 px por delante.
+  · Y el de fondo: **dibujaba una estadística sobre la página** en vez de
+    enseñar lo que la página entrega.
 
-  No hace falta una guarda propia: la de arriba ya falla el build si alguna
-  pregunta se queda sin grupo, y es la misma condición que esto necesita.
-
-  ── Las marcas, contra el §6.2 ─────────────────────────────────────────────
-
-  · **El eje verde** es «el tramo que es nuestro», su significado publicado: lo
-    que se responde es nuestro, y es lo único nuestro en la figura.
-  · **El punto lleno neutro** significa **una pregunta**. Es marca nueva del
-    2026-09-29, escrita en el §6.2 antes de dibujarla, y requirió enmendar la
-    regla dura de `CLAUDE.md` §5 porque una pregunta no es dinero ni su
-    recorrido. No puede ser verde: el verde diría que lo es.
-  · **Los tallos** van en `--on-tinta` al 40 %: unen cada pregunta con su
-    respuesta y no afirman nada.
-
-  ── La geometría, y por qué estos tres números ─────────────────────────────
-
-  Dentro de una preocupación los puntos van juntos (`INTRA`) y entre
-  preocupaciones separados (`INTER`): así se ve el agrupamiento **sin rotularlo**.
-  Una preocupación ocupa tantas columnas como preguntas tenga el lado que más
-  haga, que hoy es `recibo` con dos de persona y ninguna de empresa.
+  **Se llevó consigo una marca del vocabulario.** El punto lleno neutro —«una
+  pregunta del visitante», Design System §6.2— y la enmienda de la regla dura de
+  `CLAUDE.md` §5 que hizo falta para dibujarlo nacieron el 2026-09-29 para esta
+  figura y **hoy no tienen ningún consumidor en el sitio**. La enmienda la
+  concedió Sebastián y no se revoca sola: queda anotada como concedida y
+  dormida, en los dos documentos. Quien vuelva a necesitar un trazo para una
+  pregunta no tiene que pedir permiso otra vez; quien no, debe saber que el §6.2
+  dejó de describir sólo lo que el build usa.
 */
-const INTRA = 42;
-const INTER = 106;
-const MARGEN = 40;
-
-const racimos = grupos.map((g) => ({
-  persona: faqPersonas.filter((f) => f.concern === g.concern).length,
-  empresa: faqEmpresas.filter((f) => f.concern === g.concern).length,
-}));
-
-type Columna = { x: number; arriba: boolean; abajo: boolean };
-const columnas: Columna[] = [];
-let cursor = 0;
-racimos.forEach((r, i) => {
-  if (i > 0) cursor += INTER;
-  const ranuras = Math.max(r.persona, r.empresa);
-  for (let j = 0; j < ranuras; j += 1) {
-    if (j > 0) cursor += INTRA;
-    columnas.push({ x: MARGEN + cursor, arriba: j < r.persona, abajo: j < r.empresa });
-  }
-});
 /*
-  El lienzo crece con los datos en vez de apretarlos: hoy da 546 de ancho.
+  El hilo de la portada: UN intercambio, y se pasa por el TEXTO de la pregunta.
 
-  Y la vertical **también se deriva**, de tres medidas y no de cuatro números
-  escritos: `AIRE` es el borde, `BRAZO` la distancia del eje al punto y `RADIO`
-  el punto. El tallo llega hasta el punto menos su radio menos 3 px de holgura,
-  que es lo que separa el trazo del círculo sin que se toquen.
+  **Por qué uno y no dos está medido en el componente**, con su cifra: a 390 px
+  un segundo par se sale de la pantalla por 76 px y el hilo centrado lo recorta
+  por los dos extremos. No es una preferencia de composición.
 
-  Las tres son las de la maqueta aprobada, y **estuvieron a punto de no serlo.**
-  Montada en `layout="split"`, la portada cerraba en **402 px a 1280**, dentro
-  del hueco de 288 a 460 que el propio §4.8 declara prohibido, así que lo primero
-  que probé fue estirar el dibujo: `BRAZO` a 96 subía el héroe a 447, todavía
-  corto, y de paso dejaba una figura espigada y llena de vacío.
-
-  **El problema no era el tamaño del dibujo: era el layout.** Una figura de
-  2,63:1 va apretada en media columna, y ésa es exactamente la razón por la que
-  las otras tres páginas interiores con figura ancha —`/confianza`,
-  `/como-funciona` y `/tarifas`— usan `stacked`. Con `stacked` el dibujo recupera
-  sus proporciones originales y la portada cierra en **523 px**, dentro de su
-  familia a todos los anchos.
-
-  Queda dicho porque la tentación de tocar el dibujo llega antes que la de mirar
-  la rejilla, y esta vez el dibujo estaba bien.
+  Ésta se eligió porque empieza diciendo que sí y acaba diciendo que no se cobra
+  nada. **Cuál se enseña es decisión de Sebastián, no de esta página.**
 */
-const LIENZO_W = cursor + MARGEN * 2;
-const AIRE = 34;
-const BRAZO = 70;
-const RADIO = 5.5;
-const EJE_Y = AIRE + BRAZO;
-const LIENZO_H = EJE_Y + BRAZO + AIRE;
-const Y_ABAJO = EJE_Y + BRAZO;
-/* El tallo se detiene antes del punto: radio más 3 px de holgura. */
-const TALLO = RADIO + 3;
+const HILO_PORTADA = ['¿Puedo cancelar una operación después de aceptar el precio?'];
+
+/*
+  La sexta sección no sale de `grupos` —no tiene `concern`, y el porqué está
+  junto a ella en el cuerpo—, así que su `id` y su título viven acá: los
+  necesitan la banda de entrada y la propia sección, y escribirlos dos veces es
+  cómo un ancla deja de apuntar a nada sin que nada falle.
+*/
+const PRACTICA = { id: 'en-la-practica', title: 'Cómo es en la práctica' };
+
+/*
+  La banda de entrada, derivada. El recuento es el de cada grupo y no una cifra
+  escrita: si entra una pregunta a cualquiera de los tres archivos, el número
+  sube solo.
+*/
+const entrada = [
+  ...secciones.map((s) => ({ id: s.id, title: s.title, n: s.preguntas.length })),
+  { ...PRACTICA, n: generalFaq.length },
+];
 
 const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.');
 ---
@@ -237,48 +223,44 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
       layout="stacked"
     >
       {/*
-        Los rótulos van FUERA del SVG, y es la regla que ya aplican el riel del
-        artículo y la línea de tenencia de `/confianza`: dentro del `viewBox`
-        escalan con el ancho y a 390 px caen a menos de 10 px reales. Acá son
-        texto con la escala del sistema.
-
-        `aria-hidden` sobre el `<figure>` entero, rótulos incluidos: sin eso un
-        lector de pantalla leería «persona, empresa» sueltos entre el titular y
-        el cuerpo. Lo que la figura dice, lo dice la página con sus nueve
-        preguntas agrupadas justo debajo.
+        El aparato va `aria-hidden` dentro del propio componente: es cromo, y lo
+        que dice lo dicen las trece preguntas que están justo debajo con su
+        texto de verdad. Un lector de pantalla no necesita oír dos veces la
+        pregunta de cancelar.
 
         No lleva `data-enter`: el movimiento que tiene es el de la secuencia de
         carga del héroe (M6), que la prop `sequence` ya aplica a esta ranura
         igual que en `/confianza` y en `/empresas`. No se le añade una entrada
         propia.
       */}
-      <figure class="nueve" slot="aside" aria-hidden="true">
-        <svg viewBox={`0 0 ${LIENZO_W} ${LIENZO_H}`} preserveAspectRatio="xMidYMid meet">
-          <line class="eje" x1="0" y1={EJE_Y} x2={LIENZO_W} y2={EJE_Y} />
-          {columnas.map((c) => (
-            <>
-              {c.arriba && (
-                <>
-                  <line class="tallo" x1={c.x} y1={EJE_Y - 2} x2={c.x} y2={AIRE + TALLO} />
-                  <circle class="pregunta" cx={c.x} cy={AIRE} r={RADIO} />
-                </>
-              )}
-              {c.abajo && (
-                <>
-                  <line class="tallo" x1={c.x} y1={EJE_Y + 2} x2={c.x} y2={Y_ABAJO - TALLO} />
-                  <circle class="pregunta" cx={c.x} cy={Y_ABAJO} r={RADIO} />
-                </>
-              )}
-            </>
-          ))}
-        </svg>
-        <span class="rot arriba">persona</span>
-        <span class="rot abajo">empresa</span>
-      </figure>
+      <TabletMockup slot="aside" claves={HILO_PORTADA} />
     </PageHero>
 
     <div class="cuerpo">
       <div class="inner">
+        {/*
+          La banda de entrada. `aria-label` NO dice cuántos grupos hay: la lista
+          se deriva, así que un número escrito acá empezaría a mentir el día que
+          entre una preocupación al tipo `Concern`.
+
+          El recuento lleva su unidad oculta —«Quién te atiende · 1 pregunta»—
+          porque un «1» suelto no dice de qué.
+        */}
+        <nav class="entrada" aria-label="Los grupos de preguntas">
+          <ol>
+            {entrada.map((g) => (
+              <li>
+                <a href={`#${g.id}`}>
+                  <span class="t">{g.title}</span>
+                  <span class="n">
+                    {g.n}<span class="sr-only">{g.n === 1 ? ' pregunta' : ' preguntas'}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+
         <div class="grupos">
             {secciones.map((s) => (
               <section class="grupo" id={s.id} aria-labelledby={`${s.id}-t`}>
@@ -317,9 +299,9 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
               El porqué de estas tres, y de las dos que faltan, está en la
               cabecera de `content/general.ts`.
             */}
-            <section class="grupo" id="en-la-practica" aria-labelledby="en-la-practica-t">
+            <section class="grupo" id={PRACTICA.id} aria-labelledby={`${PRACTICA.id}-t`}>
               <header class="g-cab" data-enter>
-                <h2 id="en-la-practica-t">Cómo es en la práctica</h2>
+                <h2 id={`${PRACTICA.id}-t`}>{PRACTICA.title}</h2>
                 <span class="quienes">persona y empresa</span>
               </header>
               <div class="qs">
@@ -334,6 +316,21 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
               </div>
             </section>
         </div>
+
+        {/*
+          La salida, al acabar las preguntas. Antes, entre la última respuesta y
+          «escríbenos» había 1.467 px de glosario: quien no encontraba la suya
+          tenía que cruzar una sección de referencia para llegar a la puerta.
+
+          **Es redundancia deliberada** —el cierre de abajo dice lo mismo— y el
+          cierre no se toca. Si sobra una de las dos, la que sale es ésta.
+
+          El enlace lleva el mismo mensaje prellenado que el cierre, así que no
+          engrosa la lista de D22: nace resuelto.
+        */}
+        <p class="salida">
+          ¿No está la tuya? <a href={wa} target="_blank" rel="noopener">Te responde una persona por WhatsApp</a>
+        </p>
       </div>
     </div>
 
@@ -365,6 +362,9 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
             </div>
           ))}
         </dl>
+        {/* Al final del glosario, que es el final del contenido largo. `main` ya
+            tiene su `id` y es el destino del salto de accesibilidad. */}
+        <p class="arriba"><a href="#main">↑ Volver arriba</a></p>
       </div>
     </section>
 
@@ -387,73 +387,113 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
 
 <style>
   /*
-    ── La portada: los estilos de la figura de las nueve preguntas ───────────
+    ── La banda de entrada ───────────────────────────────────────────────────
 
-    Viven acá y no en `PageHero` porque la figura la renderiza esta página: el
-    ámbito de Astro alcanza a lo que la página pone en una ranura, no al interior
-    del componente. Es lo mismo que hacen `.track` en `/confianza` y `.tarjeta`
-    en `/tarifas`.
+    Los seis grupos con su recuento, enlazados a los `id` que la página YA
+    tiene. **Sin JavaScript y sin mecanismo nuevo:** son anclas nativas, y el
+    aterrizaje a y = 64 lo hace el `scroll-margin-top` que ya estaba puesto.
 
-    Y va en la página y no en un componente propio por el Principio 5: hay un
-    solo caso. Cuando aparezca el segundo se extrae, como pasó con `Puente`.
+    No es el índice que se retiró el 2026-09-24 —aquél era pegajoso y numeraba
+    los grupos 01–05—, y el porqué está entero en la cabecera de esta página.
+
+    ── Mobile-first, y no es una preferencia de estilo ───────────────────────
+
+    Los filetes verticales se AÑADEN al ensanchar en vez de quitarse al
+    estrechar. Escrito al revés —tres columnas por omisión y dos excepciones
+    para deshacerlo— hacía falta un `!important` en el tramo de una columna,
+    porque `li:nth-child(2n + 1)` gana a `li` por especificidad. Así no hace
+    falta: cada anchura añade sólo lo suyo.
   */
-  /*
-    `max-width` y no ancho libre: bajo 900 px la figura deja de ser columna y
-    toma el contenedor entero, y a 768 eso le daba **713 px de ancho, más que
-    los 468 que tiene en escritorio**. El dibujo salía más grande en la tableta
-    que en el monitor y aplastaba al titular. Con el tope se queda en el tamaño
-    que tiene arriba, centrado.
-  */
-  .nueve {
-    margin: var(--s-7) 0 0;
-    position: relative;
-    padding-block: var(--s-6);
-    width: 100%;
-    max-width: 480px;
-    margin-inline: auto;
+  .entrada { margin-bottom: var(--s-9); }
+  .entrada ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    border-top: 1px solid var(--line);
   }
-  .nueve svg { display: block; width: 100%; height: auto; }
-  /* El eje: «el tramo que es nuestro» (§6.2). `--verde` porque el fondo es
-     tinta y el fondo elige el verde; da 8,45:1, muy por encima del 3:1. */
-  .nueve .eje { stroke: var(--verde); stroke-width: 3; }
-  /*
-    Los tallos no afirman nada: unen cada pregunta con su respuesta. Y eso es lo
-    que permite dejarlos como están en móvil: a 320 px el dibujo va a escala
-    0,485, así que el tallo cae a **0,61 px** y se dibuja como una línea muy
-    clara. **Los dos trazos que SÍ cargan significado aguantan**: el punto mide
-    5,34 px de diámetro y el eje 1,46 px, los dos por encima de 1 px.
-
-    Comprobado antes de decidir no tocarlo, porque la alternativa tenía coste:
-    subir el grosor del tallo bajo 900 px lo dejaba en 2,2 px a 768 contra los
-    2,64 del eje, y entonces el trazo sin significado pesaría casi lo mismo que
-    el que lo tiene.
-  */
-  .nueve .tallo { stroke: var(--on-tinta); stroke-width: 1.25; opacity: 0.4; }
-  /* El punto: una pregunta. Neutro a propósito — ver la cabecera y el §6.2. */
-  .nueve .pregunta { fill: var(--on-tinta); }
-  .nueve .rot {
-    position: absolute;
-    left: 0;
+  /* El filete es `--line`: §6.2, «separador sin significado». Separa celdas y
+     no afirma nada, que es exactamente lo que hace falta acá. */
+  .entrada li { border-bottom: 1px solid var(--line); }
+  .entrada a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+    padding: var(--s-4) var(--s-4) var(--s-4) 0;
+    color: inherit;
+    text-decoration: none;
+  }
+  .entrada .t { font-weight: 600; line-height: var(--lh-h3); }
+  /* El recuento en `--verde-deep` sobre papel: 5,45:1, AA. Sobre claro nunca
+     `--verde`, que da 2,02:1 (§2.4). */
+  .entrada .n {
+    margin-left: auto;
     font-family: var(--f-num);
     font-size: var(--t-dato-sm);
-    color: var(--on-tinta-mute);
-    line-height: 1;
+    color: var(--verde-deep);
+    flex: none;
   }
-  .nueve .rot.arriba { top: 0; }
-  .nueve .rot.abajo { bottom: 0; }
-  @media (min-width: 900px) {
-    .nueve { margin: 0; }
-  }
+  /* El subrayado aparece al pasar por encima; el foco lo dibuja el
+     `:focus-visible` global de `tokens.css`. */
+  .entrada a:hover .t { text-decoration: underline; text-underline-offset: 3px; }
 
-  .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
-  .cuerpo { background: var(--papel); padding: var(--s-9) 0; }
+  @media (min-width: 560px) {
+    .entrada ol { grid-template-columns: repeat(2, 1fr); }
+    .entrada li:nth-child(2n) { border-left: 1px solid var(--line); }
+    .entrada li:nth-child(2n) a { padding-left: var(--s-4); }
+  }
+  @media (min-width: 900px) {
+    .entrada ol { grid-template-columns: repeat(3, 1fr); }
+    /* Al pasar de dos columnas a tres cambia qué celda abre fila: la cuarta
+       deja de llevar filete y las dos reglas van en este orden a propósito,
+       porque tienen la misma especificidad y decide la última. */
+    .entrada li:nth-child(2n) { border-left: 0; }
+    .entrada li:nth-child(2n) a { padding-left: 0; }
+    .entrada li:not(:nth-child(3n + 1)) { border-left: 1px solid var(--line); }
+    .entrada li:not(:nth-child(3n + 1)) a { padding-left: var(--s-4); }
+  }
 
   /*
-    Sin índice, la columna de texto se queda sola en un contenedor ancho. El
-    `max-width` lo devuelve a una medida de lectura: sin él, los títulos de
-    grupo y sus filetes cruzarían los 1.200px del contenedor y la página se
-    leería como una tabla.
+    ── La salida y el «volver arriba» ────────────────────────────────────────
+
+    La salida cierra las preguntas y el «volver arriba» cierra el glosario. Las
+    dos son de navegación, así que van en la tipografía del sistema y sin peso:
+    lo que tiene que resaltar en esta página son las respuestas.
   */
+  .salida {
+    margin-top: var(--s-9);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--line);
+    color: var(--ink-mute);
+  }
+  .salida a { color: var(--verde-deep); font-weight: 600; }
+  .arriba { margin-top: var(--s-6); }
+  .arriba a { font-family: var(--f-num); font-size: var(--t-dato-sm); color: var(--verde-deep); }
+
+  .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
+
+  /*
+    ── El montaje de la tableta ──────────────────────────────────────────────
+
+    Cuánto del aparato queda sobre la superficie clara. Es el mismo mecanismo
+    que usan `/empresas` con su portátil, `/tarifas` con su tarjeta y
+    `/como-funciona` con su carril: `PageHero` en `stacked` cede su relleno
+    inferior y **el saliente lo decide la página**, porque depende del alto de
+    la pieza y del aire que necesite la sección de abajo.
+
+    El componente no sabe nada de esto: los estilos del saliente viven en
+    `PageHero` (`margin-bottom` negativo sobre `.aside`) y el número acá. Sin
+    `--montaje` el saliente es cero y la portada sigue siendo una columna
+    centrada, que es una degradación sensata y no un layout roto.
+  */
+  main { --montaje: 96px; }
+  @media (min-width: 900px) { main { --montaje: 132px; } }
+  .cuerpo {
+    background: var(--papel);
+    padding: calc(var(--montaje) + var(--s-9)) 0 var(--s-9);
+  }
+
   /*
     Sin tope propio: la columna la limita `.inner`, como en el resto del sitio.
 
