@@ -28,6 +28,13 @@ repositorio.
    **Por qué no esperar al remoto:** el historial es valioso por sí mismo. Un repo local se
    empuja a cualquier remoto después sin perder nada.
 
+   > **CUMPLIDO el 2026-10-01 — D3 cerrada.** El remoto existe:
+   > **`DLPay-Digital/dlpay-web`**, privado, en una organización que pertenece a la empresa y no a
+   > una cuenta personal, que es lo que este punto exigía. Se subieron **177 commits** con `push`
+   > normal. **Y la previsión se cumplió literalmente:** veintiocho días de historial local se
+   > empujaron al remoto sin perder nada y sin tocar un commit. *Ver `CLAUDE.md` §10 para la
+   > credencial, su caducidad y lo que el remoto no respalda.*
+
 2. **Rama principal: `main`.**
 
 3. **`.gitignore` desde el commit inicial**, cubriendo: artefactos de build y dependencias,

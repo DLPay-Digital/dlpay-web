@@ -632,23 +632,45 @@ funcionamiento · revisión manual.
 
 ## 10. Git, GitHub y documentación
 
-- **Repositorio inicializado y sólo local.** 78 commits al 2026-09-15, sin remoto. Todo el historial está
-  firmado por `Sebastián Villanueva Pereira <sebastian@dlpay.cl>`, fijado en `.git/config` de
-  este repo (no en la configuración global). La identidad quedó saneada el 2026-09-11: hasta
-  entonces los commits iban a nombre de un usuario y un hostname locales.
-- **PENDIENTE DE DECISIÓN — crear la organización GitHub de DLPay (D3).** Mientras no exista, el
-  repositorio **no tiene copia fuera de este equipo** y esa es la mayor exposición del proyecto:
-  un disco que falla se lleva las Fases 3 y 4 completas. El repositorio debe **pertenecer a
-  DLPay** (organización, no una cuenta personal como único dueño).
-- **Respaldo provisional en Google Drive** (decidido el 2026-09-11, hasta que exista la
-  organización). Se guarda un **`git bundle`**, no la carpeta sincronizada: el cliente de Drive
-  sincroniza `.git/` mientras git escribe dentro y puede dejar el repositorio corrupto, además de
-  arrastrar `node_modules/` y `dist/`. Un bundle es **un solo archivo**, contiene el historial
-  completo y se restaura con `git clone <bundle> <carpeta>`. Se regenera con:
+- **El repositorio vive en GitHub desde el 2026-10-01: `DLPay-Digital/dlpay-web`, privado.**
+  177 commits, una rama (`main`), sin etiquetas. Todo el historial está firmado por
+  `Sebastián Villanueva Pereira <sebastian@dlpay.cl>`, fijado en `.git/config` de este repo (no en
+  la configuración global). La identidad quedó saneada el 2026-09-11: hasta entonces los commits
+  iban a nombre de un usuario y un hostname locales.
+
+  **Privado y no público, por un motivo concreto:** `docs/auditoria-preproduccion.md` lista los
+  claims publicados sin firma de Compliance y los bloqueantes abiertos (D9, D19, D20), y
+  `cowork/README.md` lleva los veredictos internos de cada entrega. Nada de eso se lee fuera.
+
+- **No se actualiza solo: hay que empujar.** Un commit sin `push` **no está respaldado**. El
+  remoto se pone al día con `git push` en un segundo, y eso sustituye al ritual del bundle. Es la
+  diferencia con una carpeta sincronizada, y es a propósito: un `push` es atómico y ocurre cuando
+  se pide.
+
+- **Credencial.** HTTPS con un *personal access token* clásico de permiso `repo`, guardado en el
+  llavero de macOS. **Caduca el 2026-12-30** (90 días desde el 2026-10-01). Cuando se renueve,
+  conviene estrecharlo a un *fine-grained token* limitado a este repositorio y a
+  «Contents: read and write» — el `repo` clásico alcanza a **todos** los repositorios de la cuenta,
+  y el Principio 8 pide mínimo privilegio. *El primer `push` se hizo desde una terminal real: el
+  `!` de la sesión no tiene terminal interactiva y git no puede preguntar una contraseña ahí.*
+
+- **El `git bundle` en Drive se conserva como SEGUNDO respaldo**, no como el principal. Se decidió
+  el 2026-09-11 mientras no había remoto y se mantiene porque dos copias independientes es el
+  Principio 10: no se depende de que una sola empresa siga existiendo. Se guarda un bundle y **no
+  la carpeta sincronizada**, porque el cliente de Drive copia `.git/` mientras git escribe dentro y
+  puede dejar el repositorio corrupto. Se regenera con:
   `git bundle create ../dlpay-web-<fecha>.bundle --all`
-- **Al subir a la organización, `push` normal, nunca `push --mirror`.** `--mirror` sube todas las
-  referencias, incluidas las de respaldo de cualquier reescritura, y republicaría historiales que
-  se limpiaron a propósito.
+
+- **`push` normal, nunca `push --mirror`.** `--mirror` sube todas las referencias, incluidas las de
+  respaldo de cualquier reescritura, y republicaría historiales que se limpiaron a propósito. El
+  push del 2026-10-01 fue normal.
+
+- **Lo que GitHub NO respalda, y conviene no confundirlo.** El remoto guarda lo versionado, no la
+  carpeta: `Claude outputs/` —**37 MB, 239 archivos** de entregas de Cowork— está en el
+  `.gitignore` y **no sube**. Lo que valía de ahí está integrado en `src/` y razonado en
+  `cowork/README.md`, pero el material original (maquetas, PNG, GIF, JSON de medición) existe sólo
+  en el disco de Sebastián. `.env` tampoco sube, y eso es correcto: se reconstruye con
+  `.env.example`.
 - Historial limpio, commits comprensibles, branches y PRs para cambios relevantes, secretos fuera
   del repo. Sin commits masivos e inexplicables.
 - `docs/`: arquitectura · decisiones (ADRs) · desarrollo · deployment · edición de contenido ·
@@ -687,9 +709,15 @@ funcionamiento · revisión manual.
   `PUBLIC_SITE_URL`, cero dependencias en runtime, sin auth, sin datos y sin servidor— y el lado
   que falla se cubre midiendo sobre el build y con revisión cruzada de quien entiende el proyecto.
 
-  **Si se reabre**, el momento natural es cuando exista el repositorio en la organización (D3) y
-  haya varias personas commiteando: ahí el producto tiene su modo propio, revisar pull requests, y
-  el precio por desarrollador compra algo. Hoy compraría la versión menos valiosa.
+  **Si se reabre**, el momento natural es cuando haya varias personas commiteando: ahí el producto
+  tiene su modo propio, revisar pull requests, y el precio por desarrollador compra algo. Hoy
+  compraría la versión menos valiosa.
+
+  *Media condición se cumplió el 2026-10-01:* el repositorio ya está en la organización (D3
+  cerrada). **Falta la otra mitad, que es la que importa** — sigue habiendo una sola persona
+  commiteando, y mientras siga así no hay pull requests que revisar. Y hay un orden: en el plan
+  Free **no se puede exigir revisión en un repo privado**, así que antes de CodeRabbit vendría
+  Team a $4, que es seis veces más barato y resuelve el problema anterior.
 
 Tener estos plugins no elimina el criterio humano ni los principios de §2. **Una herramienta que
 declara ser la autoridad de diseño sigue siendo una herramienta:** en conflicto manda §12, y ahí
@@ -716,7 +744,7 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | D1b | **Proveedor de hosting** (candidatos: Cloudflare, Vercel). Desarrollo en local mientras tanto | No — portabilidad protegida por ADR-0005 | Sebastián, cuando haya qué publicar |
 | ~~D1c~~ | ~~Instalar Node.js~~ | ✅ Resuelto: v24.20.0 / npm 11.19.0 | — |
 | ~~D2~~ | ~~Familia tipográfica~~ | ✅ Cerrado 2026-09-04: **T-C** (Familjen Grotesk + Spline Sans Mono) | ADR-0001 §4 |
-| D3 | **Crear la organización GitHub de DLPay** y trasladar ahí el repositorio, que debe pertenecer a la empresa y no a una cuenta personal (ADR-0003). Al 2026-09-11 la organización **no existe** y el repo **no tiene copia fuera del equipo de Sebastián**; el respaldo provisional es un `git bundle` en Google Drive (ver §10). Al trasladarlo: `push` normal, nunca `--mirror` | No bloquea construir, **sí es el mayor riesgo operativo abierto**: hoy no hay redundancia del historial | Sebastián |
+| ~~D3~~ | ~~Organización GitHub de DLPay~~ | ✅ **Cerrada 2026-10-01.** Sebastián creó la organización **`DLPay-Digital`** y el repositorio **`DLPay-Digital/dlpay-web`**, privado, en plan **Free**. Subidos los **177 commits** con `push` normal; verificado contra el remoto: mismo recuento y **mismo hash de árbol** (`1d7c674`), y ni `.env` ni `Claude outputs/` subieron. **Con eso deja de ser cierta la frase que este registro repitió veinte días —«el repositorio no tiene copia fuera de este equipo»— y desaparece el mayor riesgo operativo del proyecto.** *Free se eligió midiendo contra lo que el proyecto necesita, no contra la lista de funciones: resuelve el riesgo que D3 nombraba, admite repos privados ilimitados y miembros ilimitados, y sus 2.000 minutos de Actions sobran para un build de 400 ms. **Lo único que Free retiene es proteger `main` en un repo privado**, que hoy protege contra una segunda persona que no existe; el día que exista, Team cuesta $4 por usuario y mes. Anotado: la página anuncia ese precio como «los primeros 12 meses» y **no se pudo confirmar qué queda después** — se pregunta antes de pagar, que es la lección de D15.* | — | — |
 | ~~D4~~ | ~~Idioma de código y commits~~ | ✅ Cerrado: código en inglés, commits/docs/contenido en español | ADR-0003 |
 | D5 | **Transparencia del spread**: ¿la web muestra la lógica de tramos o solo un referencial? Define la tabla de `/tarifas` | **Sí — es lo único que falta para completar `/tarifas`** | DLPay (I10/I11) |
 | ~~D6~~ | ~~Monto mínimo real y monto de muestra del cotizador~~ | ✅ **Cerrada 2026-09-25.** Sebastián confirmó las dos: el mínimo real es **CLP 500.000** —eran 50.000 de placeholder— y el monto de muestra **CLP 2.000.000** se ratifica tal como está. Gracias a D24 el primero costó una línea en `environment.ts`, y la web publica y aplica el mismo número por construcción. **Lo que NO cerraba D6 es la tasa** con la que se cotiza (919,70): ésa nunca vivió acá, vive en `ConfigPriceSource` y es **D7** | — |
