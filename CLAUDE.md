@@ -487,9 +487,16 @@ colección.
 **El índice cambió de portada el 2026-10-01, y con él se cerró el §4.8.** Abría con el titular y
 236 px de tinta —la última página no legal sin objeto— y abre ahora con **la hoja del último
 artículo**: su portada tal como el sistema ya la razona, su titular, su bajada y «Leer el
-artículo», con los cantos de las hojas de detrás. **Se deriva entera de `publishedPosts()[0]`**, así
-que cambia sola el día que se publique otro y nadie la edita. La lista de abajo arranca en el
-segundo artículo, para que el mismo titular no salga dos veces en 300 px.
+artículo», con **los cantos de las hojas de detrás llevando su titular y su fecha**, cada uno como
+enlace propio y hasta dos. **Se deriva entera de `publishedPosts()`**, así que cambia sola el día
+que se publique otro y nadie la edita. La lista de abajo arranca en el segundo artículo, para que el
+titular de la hoja no salga dos veces en 300 px.
+
+*Los cantos nacieron ese día como rebanadas en blanco y ganaron su titular unas horas después.*
+Sebastián preguntó si las tres hojas podían **alternarse cada 2 segundos**; se descartó porque **la
+hoja es el enlace y es la primera acción de la página**, así que el destino cambiaría bajo el
+cursor. El razonamiento completo —y lo que además habría costado en reglas— está en
+`motion-system-v1.md` §7, para que no haya que rehacerlo.
 
 Con eso **la primera acción de la página sube de 442 a 339 px** y la familia «sin objeto» del
 Design System §4.8 queda siendo exactamente las tres páginas legales, que es lo que esa sección

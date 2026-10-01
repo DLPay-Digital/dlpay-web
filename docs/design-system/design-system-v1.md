@@ -577,7 +577,7 @@ a 1280 px** —el rango se mide ahí y sólo ahí, ver más abajo— sobre el bu
 
 | familia | páginas y alto | rango |
 |---|---|---|
-| **con objeto** | Home 781 · `/blog` 719 · `/confianza` 698 · `/como-funciona` 660 · `/preguntas` 634 · `/precio` 589 · `/empresas` 569 · `/tarifas` 529 | **529–781 px** |
+| **con objeto** | `/blog` 791 · Home 781 · `/confianza` 698 · `/como-funciona` 660 · `/preguntas` 634 · `/precio` 589 · `/empresas` 569 · `/tarifas` 529 | **529–791 px** |
 | **sin objeto** | `/canal-de-denuncias` 288 · `/terminos` 262 · `/privacidad` 236 | **236–288 px** |
 
 **Entre 288 y 460 px no hay ninguna.** Ese hueco de 172 px es la regla y no una casualidad: **una
@@ -625,6 +625,12 @@ ser: la sobriedad es parte de lo que esas páginas dicen.
 
 **El piso de la familia con objeto subió a 529** al dejar `/confianza` los 460: hoy ninguna baja de
 ahí, y el hueco prohibido quedó vacío por los dos lados.
+
+**Y el techo lo tiene ahora `/blog` con 791**, diez por encima de la Home. Pasó el mismo 2026-10-01,
+unas horas después de entrar su portada: los cantos de las hojas de detrás **dejaron de ser
+rebanadas en blanco y pasaron a llevar el titular y la fecha de su artículo**, cada uno como enlace
+propio. Costó 72 px. *No rompe nada —el rango es una observación, no un tope— pero conviene saber que
+la portada más alta del sitio ya no es la de la Home.*
 
 **Y la regla se cumplió cuatro veces seguidas, con la misma forma.** `/preguntas`, `/precio`,
 `/confianza` y `/blog` abrían todas sin objeto o en el borde de la familia, y en las cuatro la
@@ -1113,7 +1119,7 @@ cada una, no qué significa.
 | **Carril de dos columnas** | `/como-funciona`: qué hace cada parte y dónde cambia de manos | La colocación en rejilla va **explícita**: el flujo automático deshace el carril |
 | **Eje de alcance** | Hasta dónde llega el servicio | `EjeDeAlcance`, en **tres** páginas: `/como-funciona`, `/empresas` y el artículo del blog. *Salió de la Home el 2026-09-25.* Es la regla dura de `CLAUDE.md` §1 dibujada, y por eso es un componente y no CSS repetido |
 | **Portada de dato** | La cifra de la que habla un artículo | Dos tipos: `cifra` y `rango`. **La cuña no entra** (§6.1). `fuente` es obligatoria |
-| **Hoja del último artículo** | `/blog`: la portada del artículo más reciente, con su titular y su enlace | `UltimoArticulo`. **Misma materia que el panel de `/precio`** —cabecera, pozo hundido y cuerpo sobre papel— para que los dos objetos de papel se lean como parientes. Se deriva entero de `publishedPosts()[0]`, así que **cambia sola al publicar**. Reusa `PortadaFigura` en su variante `marca` y los formateadores de `lib/pricing`: **no reescribe ni el dibujo ni el dato**. No trae la banda de tinta del artículo —oscuro dentro de claro dentro de oscuro se lee como un agujero— y los cantos de detrás van `aria-hidden`, como mucho dos |
+| **Pila de artículos** | `/blog`: el último artículo completo y los dos anteriores por su lomo | `UltimoArticulo`. **Misma materia que el panel de `/precio`** —cabecera, pozo hundido y cuerpo sobre papel— para que los dos objetos de papel se lean como parientes. Se deriva entera de `publishedPosts()`, así que **cambia sola al publicar**. Reusa `PortadaFigura` en su variante `marca` y los formateadores de `lib/pricing`: **no reescribe ni el dibujo ni el dato**. No trae la banda de tinta del artículo —oscuro dentro de claro dentro de oscuro se lee como un agujero—. **Los cantos llevan su titular y son enlaces**, hasta dos, así que son **hermanos** del enlace de la hoja y nunca sus hijos: un enlace dentro de otro es HTML inválido y el teclado no llega al de dentro. El titular del canto se corta con elipsis, y **es el único sitio del sitio donde un titular se corta**: un canto que crece con el texto deja de ser un canto |
 | **Panel del precio** | `/precio`: el mismo número al aceptar y al recibir | `FiguraPrecio`. **Sin props**: lo que enseña no se configura. Las dos cifras son **una variable renderizada dos veces** (D24), así que no pueden diferir. Lleva la etiqueta «ejemplo» porque el `Quote` es `isReferential`. El filete que separa las dos mitades va en `--line` y **no punteado**: ver §6.2 |
 | **Índice del blog** | `/blog` | Filas con filete y fecha tabular en columna propia. Se ve igual con un artículo que con cincuenta |
 | **Globo rotativo** | El alcance del dólar digital, en la Home | Tres excepciones autorizadas: ADR-0007, 0008 y 0009. **No va nunca solo**, porque sin nada que lo acote el dibujo afirma de más. Hasta el 2026-09-25 lo acotaba el eje de alcance; desde que Sebastián lo retiró, lo acota el titular de su banda —«Nuestro tramo termina en tu billetera»— y la bajada. **Si algún día se cambia ese titular por uno que no nombre el límite, el globo se queda desnudo** |

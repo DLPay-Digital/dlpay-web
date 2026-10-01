@@ -3178,3 +3178,30 @@ porque el template dejó de parsearse. Ningún error mencionaba un comentario.
 de esa categoría. **Cowork lo detectó y no lo tocó, que era lo correcto** —es una cadena con firma—,
 y Sebastián la quitó. Se repone el día que haya un artículo `DLPay`; el esquema ya la admite. Queda
 en la auditoría con fecha.
+
+**Añadido unas horas después, y no es de Cowork.** Sebastián preguntó si las tres hojas de la
+portada podían **ir alternándose cada 2 segundos**. Se descartó el mecanismo y se dio lo que
+buscaba: **los cantos pasaron a llevar el titular y la fecha de su artículo**, cada uno como enlace
+propio.
+
+El motivo decisivo no fue de reglas: **la hoja es el enlace y es la primera acción de la página**,
+así que un cambio cada 2 s mueve el destino bajo el cursor, y 2 segundos es menos de lo que cuesta
+leer un titular de 90 caracteres y decidir. Lo que además habría costado —cuarto movimiento infinito,
+JavaScript nuevo, el control de pausa de WCAG 2.2.2 que la regla del objeto prohíbe— está en
+`motion-system-v1.md` §7, junto con una precisión de método: **la investigación de Fase 1 nunca
+cubrió carruseles**, así que esto no era una regla preexistente sino una decisión nueva.
+
+**Lo que costó, medido:** la portada sube de 719 a **791 px** y con eso `/blog` pasa a ser **la
+portada más alta del sitio**, diez por encima de la Home. Tres enlaces en la pila, **cero anidados**
+—los cantos son hermanos del enlace de la hoja, no sus hijos—, cero desborde en los seis anchos, y
+el foco de teclado cae en cada canto con su anillo.
+
+**Y un defecto que apareció al medir:** bajo 560 px la fecha del canto se oculta, y al perder ese
+elemento alineado por la base la caja de línea se encogía a **43 px** — uno por debajo del objetivo
+táctil, justo en los dos anchos donde el dedo es el único puntero. Resuelto con `min-height: 44px`.
+
+*Queda una redundancia asumida:* los artículos 2 y 3 aparecen en los cantos y otra vez en la lista
+de abajo, a unos 300 px, con distinto nivel de detalle —titular y fecha arriba, titular, bajada,
+categoría y dato abajo—. Se deja así porque la alternativa, arrancar la lista después de lo que
+enseña la portada, **la dejaría vacía mientras haya tres artículos o menos**. Se revisa cuando haya
+un cuarto.

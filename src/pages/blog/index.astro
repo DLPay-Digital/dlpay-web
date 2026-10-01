@@ -112,7 +112,7 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
         layout="stacked"
       >
         <div class="ua-caja" slot="aside">
-          <UltimoArticulo post={ultimo} detras={anteriores.length} />
+          <UltimoArticulo post={ultimo} anteriores={anteriores} />
         </div>
       </PageHero>
     ) : (

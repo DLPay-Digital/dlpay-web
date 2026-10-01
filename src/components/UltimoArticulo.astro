@@ -13,8 +13,25 @@
  * razona, en una hoja con su titular, y debajo, los cantos de las hojas que
  * hay detrás.
  *
- * · **Los cantos son el archivo.** Uno por cada artículo anterior, hasta dos.
- *   Dicen «hay más» con el objeto mismo, sin un rótulo que lo explique.
+ * · **Los cantos llevan su titular, y cada uno es un enlace.** Uno por cada
+ *   artículo anterior, hasta dos. *Nacieron el 2026-09-30 como rebanadas de
+ *   9 px en blanco, decorativas y `aria-hidden`; el 2026-10-01 pasaron a llevar
+ *   el titular y la fecha de su artículo, por decisión de Sebastián.*
+ *
+ *   **El porqué del cambio, que es lo que conviene conservar.** Preguntó si las
+ *   tres hojas podían **ir alternándose cada 2 segundos**. Lo que buscaba —que
+ *   los tres artículos tengan presencia y no sólo el último— es razonable; el
+ *   mecanismo no, y el motivo decisivo no era de reglas: **la hoja ES el
+ *   enlace y es la primera acción de la página**, así que un cambio cada 2 s
+ *   mueve el destino bajo el cursor. Dos segundos es menos de lo que cuesta
+ *   leer un titular de 90 caracteres y decidir. Además habría sido el cuarto
+ *   movimiento infinito del sitio —hay tres, cada uno con su ADR—, JavaScript
+ *   nuevo en una página que no tiene ninguno, y WCAG 2.2.2 pidiendo un control
+ *   de pausa que la regla del objeto prohíbe.
+ *
+ *   **Los cantos con titular dan lo mismo sin ninguno de esos costes:** los
+ *   tres artículos legibles a la vez, quietos, y dos entradas más en vez de dos
+ *   rebanadas en blanco.
  * · **Se deriva entero.** Cambia sola el día que se publica otro artículo: la
  *   hoja es el primero de `publishedPosts()`, que ya viene ordenado y filtrado
  *   por el candado de publicación. Nadie la edita.
@@ -49,12 +66,18 @@ import type { Post } from '../lib/blog.ts';
 
 interface Props {
   post: Post;
-  /** Cuántos artículos hay detrás. Dibuja un canto por cada uno, hasta dos. */
-  detras: number;
+  /**
+   * Los artículos que hay detrás, en orden. Dibuja un canto por cada uno,
+   * **hasta dos**, y cada canto es su propio enlace con su titular.
+   *
+   * Recibe los artículos y no su número —como en la primera versión— porque los
+   * cantos dejaron de ser decorativos: ver la cabecera.
+   */
+  anteriores: readonly Post[];
 }
-const { post, detras } = Astro.props;
+const { post, anteriores } = Astro.props;
 const p = post.data.portada;
-const cantos = Math.min(Math.max(detras, 0), 2);
+const detras = anteriores.slice(0, 2);
 
 /* `timeZone: 'UTC'`: la fecha del frontmatter es medianoche UTC; en la zona de
    Chile retrocedería un día. Es la nota del propio índice. */
@@ -68,6 +91,12 @@ const publicado = fecha.format(post.data.pubDate);
 const fechaDato = p && p.tipo !== 'figura' ? fecha.format(p.fecha) : '';
 const otraFecha = fechaDato !== '' && fechaDato !== publicado;
 ---
+{/*
+  **Los cantos son HERMANOS de la hoja y no sus hijos, y es obligatorio.** Cada
+  uno es un enlace, y un enlace dentro de otro enlace es HTML inválido y un
+  fallo de accesibilidad: el teclado no puede llegar al de dentro. Por eso la
+  hoja cierra su `<a>` antes de que empiecen.
+*/}
 <a class="ua" href={`/blog/${post.id}/`}>
   <span class="ua-hoja">
     <span class="ua-cab">
@@ -116,10 +145,15 @@ const otraFecha = fechaDato !== '' && fechaDato !== publicado;
       <span class="ua-leer">Leer el artículo <span aria-hidden="true">→</span></span>
     </span>
   </span>
-  {Array.from({ length: cantos }, (_, i) => (
-    <span class:list={['ua-canto', `c${i + 1}`]} aria-hidden="true"></span>
-  ))}
 </a>
+{detras.map((anterior, i) => (
+  <a class:list={['ua-canto', `c${i + 1}`]} href={`/blog/${anterior.id}/`}>
+    <span class="ua-canto-tit">{anterior.data.title}</span>
+    <time class="ua-canto-fecha" datetime={anterior.data.pubDate.toISOString()}>
+      {fecha.format(anterior.data.pubDate)}
+    </time>
+  </a>
+))}
 
 <style>
   .ua {
@@ -264,17 +298,73 @@ const otraFecha = fechaDato !== '' && fechaDato !== publicado;
     y hasta dos. Más estrechos cuanto más atrás, y más oscuros, porque les llega
     menos luz. Sin sombra: la sombra ya la da la hoja de arriba.
   */
+  /*
+    ── Los cantos: las hojas de detrás, ahora legibles ───────────────────────
+
+    Siguen leyéndose como hojas apiladas —entrantes por los dos lados, en el
+    papel un escalón y dos escalones más oscuro, con el canto inferior
+    redondeado y una sombra de contacto— pero **llevan el titular y la fecha de
+    su artículo y cada uno es un enlace**.
+
+    El sangrado creciente es lo que hace la pila: cada hoja asoma menos que la
+    de delante. Y el `margin-top` negativo las mete debajo de la anterior, así
+    que el borde superior de cada canto queda tapado y sólo se ve lo que asoma.
+  */
   .ua-canto {
     --canto-1: #E2E0D8;   /* la hoja de detrás: el papel, un escalón más oscuro */
     --canto-2: #CFCDC5;   /* la siguiente, otro escalón                          */
-    display: block;
-    height: 9px;
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-4);
     margin: -2px var(--s-3) 0;
+    padding: var(--s-3) var(--s-4) var(--s-3) var(--s-4);
     border-radius: 0 0 var(--r-card) var(--r-card);
     background: var(--canto-1);
     border-bottom: 1px solid rgba(11, 19, 32, .18);
+    box-shadow: 0 1px 3px rgba(11, 19, 32, .10);
+    text-decoration: none;
+    color: var(--ink);
+    /*
+      **44 px de objetivo táctil (§7), y hacía falta medirlo.** Con el relleno y
+      la línea del titular el canto da 45 de 560 arriba, pero **bajo 560 la
+      fecha se oculta** y, al perder ese elemento alineado por la base, la caja
+      de línea se encoge: medido, **43 px a 320 y a 390**. Un píxel por debajo
+      del piso, justo en los dos anchos donde el dedo es el único puntero.
+    */
+    min-height: 44px;
+    box-sizing: border-box;
   }
+  /*
+    El titular a una línea con elipsis. **Es el único sitio del sitio donde un
+    titular se corta**, y se justifica: un canto que crece con el texto deja de
+    ser un canto y la pila se convierte en tres tarjetas. El titular entero está
+    en el `href`, en la lista de abajo y en el propio artículo — acá es la
+    etiqueta del lomo, no el titular.
+  */
+  .ua-canto-tit {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ua-canto-fecha {
+    flex: none;
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    color: var(--ink-mute);
+    font-variant-numeric: tabular-nums;
+  }
+  .ua-canto:hover .ua-canto-tit { text-decoration: underline; text-underline-offset: 3px; }
   .ua-canto.c2 { margin: -2px var(--s-6) 0; background: var(--canto-2); }
+  /* Bajo 560 la fecha sobra: el titular necesita el ancho entero para que la
+     elipsis no se coma media frase. La fecha está en la lista de abajo. */
+  @media (max-width: 559px) {
+    .ua-canto-fecha { display: none; }
+  }
 
   @media (min-width: 900px) {
     .ua-titulo { font-size: var(--t-h3); }

@@ -398,6 +398,27 @@ comprobada: cero JavaScript.** M6 es una animación CSS de carga, así que estas
 - **Parallax, movimiento continuo, elementos flotantes.** Movimiento decorativo puro.
 - **Transiciones de página.** Añaden latencia percibida a un sitio cuyo argumento es la velocidad.
 - **Movimiento en la tabla de `/empresas` ni en la actividad.** Son datos.
+- **Carruseles y portadas que se alternan solas.** *Añadido el 2026-10-01, al proponerse uno.*
+  Sebastián preguntó si las tres hojas de la portada de `/blog` podían ir cambiando **cada 2
+  segundos**. Se descartó, y el motivo decisivo **no es de este documento**: **la hoja es el enlace
+  y es la primera acción de la página**, así que un cambio cada 2 s mueve el destino bajo el cursor
+  —vas a pulsar un artículo y aterrizas en otro—, y 2 segundos es menos de lo que cuesta leer un
+  titular de 90 caracteres y decidir. El criterio ya estaba escrito en §5 para la portada del
+  artículo: *«Nada. Es lo primero que ves al llegar y tiene que estar ahí.»*
+
+  Lo que además habría costado, y conviene tenerlo junto: **el cuarto movimiento infinito del
+  sitio** —hay tres, cada uno con su ADR—, **JavaScript nuevo** en una página que no tiene ninguno
+  (regla dura 5), y **WCAG 2.2.2** pidiendo un control de pausa visible que la regla del objeto
+  —«el dispositivo no lleva controles»— prohíbe.
+
+  *Una precisión de método:* la investigación de Fase 1, que es el filtro para decidir patrones,
+  **nunca cubrió carruseles** — cero menciones. Así que esto no era una regla preexistente sino una
+  decisión nueva, y se toma acá para que la próxima vez no haya que rehacerla.
+
+  **Lo que sí se hizo, porque la intención era buena:** lo que se buscaba era que los tres artículos
+  tuvieran presencia y no sólo el último. Los cantos de las hojas de detrás **pasaron a llevar su
+  titular y a ser enlaces**. Tres artículos legibles a la vez, **cero movimiento y cero
+  JavaScript**.
 
 ---
 
