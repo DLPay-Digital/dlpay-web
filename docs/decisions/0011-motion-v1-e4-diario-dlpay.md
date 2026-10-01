@@ -1,5 +1,12 @@
 # ADR-0011 — Enmienda Motion System V1: cuarta excepción, el Diario DLPay
 
+> **ENMENDADA el 2026-10-01, el mismo día, para admitir una SEGUNDA pieza.** Esta decisión decía
+> «única pieza fuera del registro de ADR-0001» y ya no es cierto: el abanico de etiquetas de
+> `/precio` entró ese mismo día con cartulina, relieve y sombras de material. **Lo que se enmienda
+> es sólo el registro visual —el Principio 3—, no el movimiento:** las etiquetas están quietas y el
+> cuarto movimiento infinito sigue siendo uno solo, el Diario. Ver *La lista, y por qué es cerrada*
+> al final.
+
 - **Estado:** Aceptada — 2026-10-01
 - **Decide:** Sebastián Villanueva (maqueta y medición de Claude Cowork; análisis, correcciones e
   integración de Claude Code, Fase 4)
@@ -64,8 +71,36 @@ anotada por si algún día se prefiere.
 
 El diario trae **grano de papel, mancha, relieve, luz simulada y perspectiva 3D**. ADR-0001 fija
 A×C —«mesa de operaciones», bordes finos, radios discretos— y los cuatro dispositivos del sitio
-llevan escrito *«plano y sin trucos: nada de 3D, reflejos ni desenfoques»*. **Esta pieza es la
-excepción a ese registro**, acotada a ella y a `/blog`.
+llevan escrito *«plano y sin trucos: nada de 3D, reflejos ni desenfoques»*.
+
+**Esta pieza era la excepción a ese registro. El 2026-10-01 pasaron a ser dos.**
+
+### La lista, y por qué es cerrada  ·  *enmienda del 2026-10-01*
+
+| pieza | dónde | qué trae fuera del registro | ¿se mueve? |
+|---|---|---|---|
+| **Diario DLPay** | portada de `/blog` | grano, mancha, relieve, luz, **perspectiva 3D** | **sí**, cuarto movimiento infinito |
+| **Abanico de etiquetas** | portada de `/precio` | cartulina con cuatro ruidos, relieve, **sombras de material** | **no**, está quieto |
+
+**La segunda entró el mismo día que se escribió esta ADR, y eso es exactamente lo que había que
+mirar.** Un documento que dice «única» y deja de ser cierto en veinticuatro horas no se corrige
+borrando la palabra: se corrige decidiendo qué está pasando. Se le planteó a Sebastián como la
+elección entre *dos excepciones en un sitio cuya dirección sigue siendo A×C* y *la dirección está
+cambiando y ADR-0001 debería decirlo*. **Eligió lo primero, con la lista cerrada y nombrada.**
+
+**Qué significa «cerrada», en concreto:**
+
+- **Son estas dos y ninguna más.** Una tercera pieza con materia **no entra por este ADR**: vuelve
+  a abrir la conversación, y ahí la pregunta honesta ya no será «¿la autorizo?» sino «¿sigue
+  ADR-0001 describiendo este sitio?».
+- **El resto del sitio no se toca.** Los cuatro dispositivos en CSS conservan su regla escrita —
+  *plano y sin trucos*— y el cotizador, las figuras y las bandas siguen en A×C.
+- **La excepción es de REGISTRO, no de movimiento.** Las etiquetas están quietas. El cuarto
+  movimiento infinito sigue siendo uno solo.
+
+*Lo que costó llegar hasta aquí, por si sirve:* la primera excepción se concedió con el argumento
+de que era única. **Ese argumento ya no está disponible para la segunda**, y por eso ésta se
+concede con una lista en vez de con una promesa.
 
 ## Consecuencias
 

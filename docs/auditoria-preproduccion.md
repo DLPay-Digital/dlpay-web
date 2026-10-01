@@ -514,6 +514,36 @@ declara los dos modos y prohíbe expresamente la negación absoluta.
 enseña la mitad del producto. Mientras no se haga, la única página que lo menciona es `/preguntas`,
 en la respuesta de volver a pesos, y eso está al revés de como debería ser.
 
+### Copy aprobado por Compliance — 2026-10-01  ·  **el abanico de etiquetas de `/precio`**
+
+**Firmado por Sebastián Villanueva Pereira como Compliance el 2026-10-01.**
+
+| Qué se aprobó | Dónde vive |
+|---|---|
+| «Convertir» · «Un solo cobro» · «El spread, ya incluido en el precio que ves.» · «Todo lo demás no tiene costo.» | la etiqueta de delante |
+| «Registro» · «Cotización» · «Ejecutivo» · «Costo de red», cada una con «sin costo» | las cuatro de detrás |
+
+**Ninguna cadena es nueva en su afirmación.** Las cuatro de detrás son las filas de la tabla de
+costos que esta misma página publica desde el 2026-09-23, y «El spread, ya incluido en el precio
+que ves» es la fila de «Convertir», literal. Lo que cambia es dónde se dicen, no qué dicen.
+
+**«Cotizar ahora» sustituye a «Cotizar otro monto»** en la puerta bajo la portada, y tampoco es
+nueva: es la cadena de la banda de cierre de esta página. El cambio tiene motivo —el panel enseñaba
+un monto de ejemplo, así que «otro» tenía a qué referirse; sin monto, no.
+
+**Y SALEN del sitio las cadenas del panel**, firmadas el día anterior: «aceptas», «recibes»,
+«ejemplo», «sin costo de red» y «un solo cobro, y va dentro». *Retirar copy publicado no necesita
+firma nueva —se afirma menos, no más— pero queda anotado para que nadie las busque.*
+
+**Lo que esto cambia en D7, y es a mejor:** la cifra **2.174,62 USD** sale de la portada. La tasa de
+muestra vuelve a vivir sólo dentro del cotizador y deja de ser *la* cifra de una página titulada
+«Un solo número».
+
+**Una consecuencia de contenido que conviene tener presente:** `/precio` vuelve a no enseñar ninguna
+cifra, que es como estaba antes del 2026-09-30 y es lo que Sebastián pidió —«sin números ni
+diagramas»—. No contradice el titular: «Un solo número» afirma **cómo se cobra**, y la etiqueta de
+delante lo dice con palabras. Lo que se pierde es el ejemplo concreto.
+
 ### Copy aprobado por Compliance — 2026-10-01  ·  **el Diario DLPay**
 
 **Firmado por Sebastián Villanueva Pereira como Compliance el 2026-10-01.**

@@ -3284,3 +3284,84 @@ comprobar y queda escrito como pendiente**, en la ADR y en la auditoría.
 - **El texto simulado de las columnas se queda**, por su decisión, y queda registrado en el §6.2
   como lo que es: **la única marca del sitio que no representa nada**. Con la alternativa escrita
   —el primer párrafo real del artículo— por si algún día se prefiere.
+
+---
+
+### Notas de la integración de `2026-10-01 · precio: el abanico de etiquetas, con cartulina`
+
+**Integradas las dos entregas** —el abanico y el relieve— con tres decisiones de Sebastián:
+montarlo con cartulina, **enmendar ADR-0011 a una lista cerrada de dos piezas**, y **borrar los dos
+componentes que quedaban sin consumidores**.
+
+#### La decisión que no era de diseño
+
+ADR-0011 se escribió ayer y decía, con estas palabras, **«única pieza fuera del registro de
+ADR-0001»**. Hoy hay una segunda. Eso se le planteó a Sebastián no como «¿la autorizo?» sino como
+la elección entre **dos excepciones en un sitio cuya dirección sigue siendo A×C** y **la dirección
+está cambiando y ADR-0001 debería decirlo**.
+
+Eligió lo primero, y por eso el ADR pasa de una promesa a una **lista cerrada y nombrada**: el
+Diario y el abanico, y una tercera pieza con materia no entra por ahí. *El argumento con el que se
+concedió la primera —que era única— ya no está disponible para la segunda.*
+
+Queda escrito que la excepción es **de registro y no de movimiento**: las etiquetas están quietas y
+el cuarto movimiento infinito sigue siendo uno solo.
+
+#### El delta de la página, limpio
+
+95 líneas. Import y ranura, `.fp-caja` → `.et-hueco`, `.fp-otro` → `.et-otro` y el texto de la
+puerta. **Cero CSS huérfano** —lo comprobé clase por clase— y sobrevive entero lo de ayer: la tabla
+de costos con «Cancelar antes de transferir», la sección de preguntas y su `throw`.
+
+#### Reproducido contra el build
+
+Portada **731 a 960, 1280 y 2560** y **709 a 640 y 768** — exacto. Cinco etiquetas en las ocho
+anchuras, aire de 53 a 55 px entre la bajada y la etiqueta más alta (declaran 47–54), **cero
+desplazamiento lateral** y ninguna anchura en el hueco prohibido del §4.8.
+
+**El contraste lo medí con su propio método** —máscara de tinta en rojo, captura del papel sin
+texto, y comparación **píxel a píxel sobre los glifos**—:
+
+| | peor píxel · yo | declarado |
+|---|---|---|
+| «Todo lo demás no tiene costo.» | **4,98** | 4,72 |
+| «Convertir» | 5,51 | 5,07 |
+| nombres de detrás | 11,80 – 13,24 | 9,22 |
+| «Un solo cobro» · «El spread…» | 14,49 – 14,64 | 14,08 · 13,19 |
+
+**Todos mis números salen por encima de los suyos y el orden coincide: sus cifras son
+conservadoras**, que es la dirección correcta para una afirmación de seguridad. *Límite de mi
+comprobación: 1280 a densidad 1×; su peor caso lo declaran a 390@3×, que muestrea el grano distinto
+y aquí no se puede reproducir.*
+
+**1.4.12: el abanico pasa.** Lo que se sale a 320 con el espaciado son **2 px de `.lienzo`**, dentro
+de la banda de los 12 minutos y a 3.000 px de la portada — y eso ya estaba documentado en
+`tarifas.astro` desde el 2026-09-28.
+
+#### Dos errores míos de medición, en la misma sesión
+
+El primer intento de medir el contraste dio **1,00** para los textos de la etiqueta de delante y
+**1,07** para dos rótulos. Los dos eran míos:
+
+1. **Mi CSS no ocultó los textos de delante** —el selector no los alcanzaba—, así que medí tinta
+   contra tinta.
+2. **Las cajas de los rótulos girados se salen de su etiqueta.** Medí el rectángulo envolvente y
+   dentro caía la banda oscura del fondo.
+
+> **Es la tercera vez esta semana que una caja se me cuela por una tinta**, y la tercera con la
+> misma forma: el resultado era absurdo —1,00 es «el mismo color»— y eso es lo que delata el
+> instrumento. **Un contraste de 1,00 nunca es un hallazgo; es una medición rota.**
+
+#### Lo que se borró, y por qué no se pierde
+
+`FiguraPrecio.astro` y `UltimoArticulo.astro` salieron del repositorio: dos portadas que duraron un
+día cada una y se quedaron sin consumidores. **Están en el historial** y se recuperan de cualquier
+commit. Era lo que pedía el Principio 5 —nada de componentes que ninguna página necesita— y evita
+que dentro de un mes nadie sepa si sobran o esperan algo. La referencia que `blog/index.astro` hace
+a `UltimoArticulo` en un comentario queda fechada en vez de borrada.
+
+#### Sin verificar
+
+**Safari y Firefox**, otra vez. Cowork lo declara —los `drop-shadow` encadenados y la `mask` del
+aro— y este entorno sigue sin WebKit. **Van dos piezas seguidas con el mismo pendiente**, y conviene
+resolverlo antes de Fase 6 en vez de acumularlo: son dos minutos en un Safari de verdad.

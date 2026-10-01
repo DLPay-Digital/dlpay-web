@@ -365,6 +365,15 @@ caso, conviene revisar si sigue siendo "bloque contenido" o si se está usando c
 
 ### 4.5 Elevación (mínima, por rol) — **reescrita el 2026-09-25**
 
+> **Lo que esta sección NO gobierna, añadido el 2026-10-01.** Las sombras de las dos piezas con
+> materia —el Diario DLPay y el abanico de etiquetas de `/precio`— **no son elevación por rol**: no
+> dicen «esto flota sobre aquello», dicen «esto es cartulina» y «esto es papel apilado». Son
+> **textura de material**, y entran por la lista cerrada de ADR-0011, no por los tokens de acá.
+>
+> La distinción importa para no contarlas mal: el abanico lleva **tres `drop-shadow` encadenados**
+> en cada etiqueta —canto, borde y caída— y **cero `--elev-card`**. Si alguien audita elevaciones
+> y las suma, obtendrá un número que no significa nada. **Se cuentan los tokens, no las sombras.**
+
 > **Qué decía antes, y por qué se cambió.** La versión anterior era una lista de nombres propios:
 > `--elev-card` «**sólo** la tarjeta del cotizador sobre la tinta» y `--elev-pop` «menús/popovers
 > (futuro)». Se escribió cuando el sitio era el cotizador y poco más. Hoy son once rutas, y la
@@ -577,7 +586,7 @@ a 1280 px** —el rango se mide ahí y sólo ahí, ver más abajo— sobre el bu
 
 | familia | páginas y alto | rango |
 |---|---|---|
-| **con objeto** | Home 781 · `/confianza` 698 · `/blog` 674 · `/como-funciona` 660 · `/preguntas` 634 · `/precio` 589 · `/empresas` 569 · `/tarifas` 529 | **529–781 px** |
+| **con objeto** | Home 781 · `/precio` 731 · `/confianza` 698 · `/blog` 674 · `/como-funciona` 660 · `/preguntas` 634 · `/empresas` 569 · `/tarifas` 529 | **529–781 px** |
 | **sin objeto** | `/canal-de-denuncias` 288 · `/terminos` 262 · `/privacidad` 236 | **236–288 px** |
 
 **Entre 288 y 460 px no hay ninguna.** Ese hueco de 172 px es la regla y no una casualidad: **una
@@ -1143,7 +1152,8 @@ cada una, no qué significa.
 | **Portada de dato** | La cifra de la que habla un artículo | Dos tipos: `cifra` y `rango`. **La cuña no entra** (§6.1). `fuente` es obligatoria |
 | **Diario DLPay** | `/blog`: una hoja por artículo, que pasan solas cada 3 s | `DiarioDLPay`. **Cuarto movimiento infinito del sitio y única pieza fuera del registro de ADR-0001**: grano, mancha, relieve, luz y perspectiva 3D. Ver **ADR-0011**, que es de lectura obligada antes de tocarla. CSS puro, 0 JS; los `@keyframes` se generan en el build desde `posts.length`. Casilla de pausa nativa **fuera** del objeto (WCAG 2.2.2) y una hoja quieta con `prefers-reduced-motion`. **Dos reglas que ya rompieron algo:** `perspective` va en `.diario`, el padre directo, y `steps(1, end)` en el fotograma `p`. **El arranque de columnas es texto simulado** y es la única marca del sistema que no representa nada: excepción autorizada, no marca nueva |
 | **Pila de artículos** | *Sin consumidores desde el 2026-10-01.* El último artículo completo y los dos anteriores por su lomo | `UltimoArticulo`. **Misma materia que el panel de `/precio`** —cabecera, pozo hundido y cuerpo sobre papel— para que los dos objetos de papel se lean como parientes. Se deriva entera de `publishedPosts()`, así que **cambia sola al publicar**. Reusa `PortadaFigura` en su variante `marca` y los formateadores de `lib/pricing`: **no reescribe ni el dibujo ni el dato**. No trae la banda de tinta del artículo —oscuro dentro de claro dentro de oscuro se lee como un agujero—. **Los cantos llevan su titular y son enlaces**, hasta dos, así que son **hermanos** del enlace de la hoja y nunca sus hijos: un enlace dentro de otro es HTML inválido y el teclado no llega al de dentro. El titular del canto se corta con elipsis, y **es el único sitio del sitio donde un titular se corta**: un canto que crece con el texto deja de ser un canto |
-| **Panel del precio** | `/precio`: el mismo número al aceptar y al recibir | `FiguraPrecio`. **Sin props**: lo que enseña no se configura. Las dos cifras son **una variable renderizada dos veces** (D24), así que no pueden diferir. Lleva la etiqueta «ejemplo» porque el `Quote` es `isReferential`. El filete que separa las dos mitades va en `--line` y **no punteado**: ver §6.2 |
+| **Abanico de etiquetas** | `/precio`: cinco etiquetas en un ojal, y sólo una cobra | `EtiquetasPrecio`. **Segunda pieza de la lista cerrada de ADR-0011**: cartulina con cuatro ruidos en `data:`, relieve y sombras de material. Plana y **quieta** — la excepción es de registro, no de movimiento. La forma va en un `span` propio y no en el `li` ni en un `::before`: en el `li` el `clip-path` recorta sus propias sombras, y en un `::before` el fondo deja de ser visible para una auditoría automática. **Los ruidos llevan su opacidad topada** con `feFuncA`; sin el tope el peor píxel de «Todo lo demás no tiene costo» caía a 3,07:1 |
+| ~~**Panel del precio**~~ | *Retirado el 2026-10-01.* `FiguraPrecio` enseñaba el mismo número al aceptar y al recibir. Lo sustituyó el abanico, y el componente se borró al quedarse sin consumidores. Está en el historial |
 | **Índice del blog** | `/blog` | Filas con filete y fecha tabular en columna propia. Se ve igual con un artículo que con cincuenta |
 | **Globo rotativo** | El alcance del dólar digital, en la Home | Tres excepciones autorizadas: ADR-0007, 0008 y 0009. **No va nunca solo**, porque sin nada que lo acote el dibujo afirma de más. Hasta el 2026-09-25 lo acotaba el eje de alcance; desde que Sebastián lo retiró, lo acota el titular de su banda —«Nuestro tramo termina en tu billetera»— y la bajada. **Si algún día se cambia ese titular por uno que no nombre el límite, el globo se queda desnudo** |
 | **Franja de notificación** | Aviso a todo el ancho | ADR-0006. Se oculta sola en la página que enlaza |

@@ -258,12 +258,22 @@ operaciones, APIs financieras, infraestructura de datos de usuarios. La arquitec
    hero y dashboards genéricos, iconos e ilustraciones 3D de stock, estética SaaS intercambiable,
    componentes copiados de templates, parecido a otra fintech. Identidad **propia de DLPay**.
 
-   **Una excepción, del 2026-10-01, acotada a una pieza: el Diario DLPay** de `/blog`
-   (`ADR-0011`). Trae grano de papel, mancha, relieve, luz simulada y perspectiva 3D, y eso es
-   textura y animación decorativas — la categoría que este principio nombra. Autorizada por
-   Sebastián. **No abre la puerta a nada más:** el resto del sitio sigue en el registro de
-   ADR-0001, y los cuatro dispositivos en CSS conservan su regla escrita —*plano y sin trucos:
-   nada de 3D, reflejos ni desenfoques*—.
+   **Dos excepciones, ambas del 2026-10-01 y con lista cerrada en `ADR-0011`:**
+
+   | pieza | dónde | qué trae | ¿se mueve? |
+   |---|---|---|---|
+   | **Diario DLPay** | portada de `/blog` | grano, mancha, relieve, luz, perspectiva 3D | sí |
+   | **Abanico de etiquetas** | portada de `/precio` | cartulina, relieve, sombras de material | no |
+
+   Las dos traen textura o animación decorativa, que es la categoría que este principio nombra, y
+   las dos las autorizó Sebastián. **La primera se concedió diciendo que era «la única pieza fuera
+   del registro»; la segunda llegó el mismo día.** Por eso ADR-0011 pasó de una promesa a una
+   **lista cerrada y nombrada**: una tercera pieza con materia no entra por ese ADR, vuelve a abrir
+   la conversación, y entonces la pregunta será si ADR-0001 sigue describiendo este sitio.
+
+   **Lo que NO se toca:** el resto del sitio sigue en el registro de ADR-0001, y los cuatro
+   dispositivos en CSS conservan su regla escrita —*plano y sin trucos: nada de 3D, reflejos ni
+   desenfoques*—.
 4. **Identidad antes que componentes.** El sistema visual está definido (ADR-0001 + Design System
    V1); los componentes lo expresan, no al revés.
 5. **Arquitectura mínima y modular.** Sin microservicios, monorepos, capas, sistemas de plugins ni
@@ -427,9 +437,18 @@ solo número» y no enseñaba ninguno—, el enlace «Cotizar otro monto» que b
 «Preguntas sobre el precio» con tres respuestas **importadas** de `home.ts` y `general.ts` por el
 texto de su pregunta: si alguna se reescribe, el build para. La figura de las dos barras se retiró.
 
-**Y con eso el ejemplo del panel hace que D7 pese más.** Hasta hoy `PUBLIC_QUOTE_SAMPLE_RATE` daba
-cifras dentro del cotizador; ahora da **la** cifra de la portada de una página titulada «Un solo
-número». Ver §13.
+**El panel duró un día.** El 2026-10-01 Sebastián pidió otro objeto —«ya usa algo parecido al
+cotizador»— y la portada pasó a ser **un abanico de cinco etiquetas de precio colgadas del mismo
+ojal**, de las que sólo la de delante cobra. Es la segunda pieza de la lista cerrada de ADR-0011.
+
+**Con eso `/precio` vuelve a no enseñar ninguna cifra, y es deliberado.** Sebastián lo pidió «sin
+números ni diagramas». No es una contradicción con el titular: «Un solo número» es una afirmación
+sobre **cómo se cobra**, y la etiqueta de delante la dice con palabras —«Un solo cobro»—. Lo que se
+pierde es el ejemplo concreto.
+
+**Y baja la exposición de D7**, que el panel había subido: la cifra 2.174,62 sale de la portada y
+`PUBLIC_QUOTE_SAMPLE_RATE` vuelve a vivir sólo dentro del cotizador. Sigue abierta, pero deja de
+ser *la* cifra de una página.
 
 **La FAQ sigue viviendo en la Home y en `/empresas`**, no como página propia: `/preguntas` las
 reúne desde la misma fuente tipada, no las muda.
@@ -752,7 +771,7 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | ~~D22~~ | ~~Mensaje prellenado en cinco enlaces planos a WhatsApp~~ | ✅ **Cerrada 2026-09-29.** Los cinco que abrían el chat en blanco —el pie, `/tarifas`, `/confianza`, `/como-funciona` y el botón del héroe de `/empresas`— llevan mensaje. Comprobado sobre el build: **cero enlaces sin texto en las once páginas**, once mensajes distintos, cada uno escrito para el sitio desde donde se pulsa. El del pie es a propósito el más vago —está en todas las páginas y no puede suponer por qué escribes—, y `/empresas` lleva dos distintos: el del héroe es de quien acaba de llegar y el del cierre de quien ya leyó. **El texto del botón «Habla con nosotros» se queda**, decisión de Sebastián del mismo día | — | — |
 | D23 | **Canal de respaldo si WhatsApp no abre.** Todo el funnel termina en un único canal; si el enlace no abre, la persona queda sin salida visible en ese momento | No | Sebastián |
 | ~~D24~~ | ~~Consolidar el monto mínimo en `lib/config`~~ | ✅ **Cerrada 2026-09-09.** Los límites del cotizador (`PUBLIC_QUOTE_MIN_CLP`, `PUBLIC_QUOTE_MAX_CLP`) y el monto de muestra se resuelven UNA vez en `lib/config/environment.ts` (`resolveQuoteLimits`, puro y testeado) y se exponen como `quoteLimits` en `lib/config/site.ts`. Los cinco consumidores —cotizador, `/tarifas`, mockup y las dos ilustraciones de la Home— dejaron de leer el entorno: `/tarifas` publica por construcción el mismo mínimo que el cotizador aplica. Commit `c5f0ad5` | — | — |
-| D7 | **Fuente oficial de market price**, y con ella la tasa que el sitio publica hoy: `PUBLIC_QUOTE_SAMPLE_RATE`, **919,70 CLP por dólar**, que es el número del que cuelgan todas las cifras de muestra de la web. *Anotado el 2026-09-25, al cerrar D6:* el registro llamaba «precio de muestra» a dos cosas distintas y la tasa es ésta, no el monto. **Subió de exposición el 2026-09-30:** el panel de `/precio` publica **2.174,62 USD por CLP 2.000.000** en la portada de una página titulada «Un solo número», así que la tasa dejó de vivir dentro del cotizador y pasó a ser *la* cifra de una página. Cowork reporta que el 30 de septiembre el USDT se cotizaba entre 969,88 y 981 pesos, lo que haría el ejemplo **entre un 5,5 % y un 6,7 % más generoso que el mercado**; **ese dato no está verificado acá** y verificarlo pide una cotización de mercado. No corre prisa —el sitio no está publicado— pero **el orden correcto es fijar la tasa antes de publicar esta página, no después**: la etiqueta «ejemplo» protege de que la cifra se lea como oferta, no de que sea inverosímil | No — `ConfigPriceSource` cubre v1 | DLPay |
+| D7 | **Fuente oficial de market price**, y con ella la tasa que el sitio publica hoy: `PUBLIC_QUOTE_SAMPLE_RATE`, **919,70 CLP por dólar**, que es el número del que cuelgan todas las cifras de muestra de la web. *Anotado el 2026-09-25, al cerrar D6:* el registro llamaba «precio de muestra» a dos cosas distintas y la tasa es ésta, no el monto. **Subió de exposición el 2026-09-30 y volvió a bajar el 2026-10-01:** el panel de `/precio` publicó durante un día **2.174,62 USD por CLP 2.000.000** en su portada; el abanico de etiquetas lo sustituyó y esa cifra salió de la página. **La tasa vuelve a vivir sólo dentro del cotizador.** Sigue abierta y sigue siendo el número del que cuelgan las cifras de muestra, pero ya no es *la* cifra de una portada. Cowork reporta que el 30 de septiembre el USDT se cotizaba entre 969,88 y 981 pesos, lo que haría el ejemplo **entre un 5,5 % y un 6,7 % más generoso que el mercado**; **ese dato no está verificado acá** y verificarlo pide una cotización de mercado. No corre prisa —el sitio no está publicado— pero **el orden correcto es fijar la tasa antes de publicar esta página, no después**: la etiqueta «ejemplo» protege de que la cifra se lea como oferta, no de que sea inverosímil | No — `ConfigPriceSource` cubre v1 | DLPay |
 | ~~D8~~ | ~~Alcance de servicios a comunicar~~ | ✅ Cerrado 2026-09-04: el amplio, alineado con los T&C publicados | Equipo DLPay |
 | ~~D16~~ | ~~Cómo llega el dinero al destinatario final~~ | ✅ Cerrado 2026-09-04: DLPay entrega **dólar digital en la billetera**; no deposita en cuentas bancarias en el extranjero. Ver §1 | Equipo DLPay |
 | ~~D17~~ | ~~"Sin esperar días"~~ | ✅ Reformulado 2026-09-04: la rapidez se predica de la conversión y del movimiento del dólar digital, nunca de una recepción bancaria en destino | Equipo DLPay |

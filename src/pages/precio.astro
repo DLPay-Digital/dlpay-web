@@ -40,7 +40,7 @@ import PageHero from '../components/PageHero.astro';
 import Motion from '../components/Motion.astro';
 import Puente from '../components/Puente.astro';
 import FiguraMonto from '../components/FiguraMonto.astro';
-import FiguraPrecio from '../components/FiguraPrecio.astro';
+import EtiquetasPrecio from '../components/EtiquetasPrecio.astro';
 import { volumeTerms } from '../content/business.ts';
 import { faq as homeFaq } from '../content/home.ts';
 import { generalFaq } from '../content/general.ts';
@@ -125,17 +125,22 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
       sequence
       layout="stacked"
     >
-      <div class="fp-caja" slot="aside">
-        <FiguraPrecio />
+      {/*
+        La portada es un abanico de etiquetas de precio en un mismo ojal: cinco
+        etiquetas y una sola cobra. Sustituye al panel de la cifra de ejemplo
+        (2026-10-01, Sebastián: «ya usa algo parecido al cotizador»). Ver la
+        cabecera de `EtiquetasPrecio.astro`.
+      */}
+      <div class="et-hueco" slot="aside">
+        <EtiquetasPrecio />
         {/*
-          La puerta del ejemplo a la cifra propia. El panel es el precio de
-          ejemplo para el caso típico, que es lo que NN/g pide cuando el exacto
-          no se puede publicar; esto es el camino al exacto. Sin ella, la
-          primera acción de la página estaba a 3.190 px en escritorio y a 3.801
-          en un teléfono; con ella, a 622 y 824. Fuera del panel, porque el
-          objeto no lleva controles; sobre la tinta, en `--verde` (8,45:1).
+          La puerta a cotizar, fuera del objeto: las etiquetas no son enlaces.
+          Decía «Cotizar otro monto» porque el panel enseñaba un monto de
+          ejemplo; sin monto, «otro» no tiene a qué referirse. «Cotizar ahora»
+          es la cadena de la banda de cierre de esta misma página: no es nueva.
+          Sobre la tinta, en `--verde` (8,45:1).
         */}
-        <p class="fp-otro"><a href="/#cotizador">Cotizar otro monto <span aria-hidden="true">→</span></a></p>
+        <p class="et-otro"><a href="/#cotizador">Cotizar ahora <span aria-hidden="true">→</span></a></p>
       </div>
     </PageHero>
 
@@ -377,14 +382,14 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
 
 <style>
   /*
-    La caja de la portada: el ancho del objeto y el aire bajo él. `PageHero` en
-    `stacked` no tiene relleno inferior. Antes eran 44 px bajo el panel; ahora lo
-    último de la caja es la puerta «Cotizar otro monto», cuyo objetivo táctil ya
-    trae 11 px de aire bajo el texto, así que la caja lleva 32 y el texto queda a
-    43 de la sección clara — la misma holgura que tenía el panel.
+    La caja de la portada. **Sin margen arriba en ningún ancho**: el abanico
+    reserva él mismo lo que suben sus etiquetas al girar, así que el aire entre
+    la bajada y la etiqueta más alta es el `--s-8` que ya pone `PageHero` a su
+    ranura — 47 a 54 px medidos de 320 a 1300. El panel llevaba `--s-7` extra
+    en móvil porque no subía nada. Abajo, los 32 px de siempre: el objetivo
+    táctil de la puerta acaba a 32 de la sección clara, como con el panel.
   */
-  .fp-caja { width: 100%; max-width: 560px; margin: var(--s-7) auto 0; padding-bottom: var(--s-6); }
-  @media (min-width: 900px) { .fp-caja { margin-top: 0; } }
+  .et-hueco { width: 100%; max-width: 560px; margin: 0 auto; padding-bottom: var(--s-6); }
 
   .inner { max-width: 760px; margin: 0 auto; padding: 0 var(--pad-section-m); }
   /*
@@ -456,13 +461,13 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
   .salida a { color: var(--verde-deep); font-weight: 600; }
 
   /*
-    La puerta bajo el panel. Sobre la tinta, en `--verde` (8,45:1). El alto de
-    44 px es el objetivo táctil del §2.5.5, no aire: el relleno inferior de la
-    caja se descuenta lo mismo para que la holgura contra la sección clara siga
-    siendo la de antes.
+    La puerta bajo el abanico. Sobre la tinta, en `--verde` (8,45:1). El alto
+    de 44 px es el objetivo táctil del §2.5.5, no aire. 24 px arriba y no 16
+    como bajo el panel: la etiqueta de delante va girada −3° y su esquina de
+    abajo a la izquierda baja 13 px por debajo de su caja.
   */
-  .fp-otro { margin: var(--s-4) 0 0; text-align: center; }
-  .fp-otro a {
+  .et-otro { margin: var(--s-6) 0 0; text-align: center; }
+  .et-otro a {
     display: inline-flex;
     align-items: center;
     gap: var(--s-2);
@@ -472,7 +477,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     font-weight: 600;
     text-decoration: none;
   }
-  .fp-otro a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .et-otro a:hover { text-decoration: underline; text-underline-offset: 4px; }
 
   /* ── La banda «No cambia después de que lo aceptas» ──────────────────── */
   .seguro-banda {

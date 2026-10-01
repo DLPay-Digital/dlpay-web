@@ -1,0 +1,472 @@
+---
+/**
+ * La portada de `/precio`: **un abanico de etiquetas de precio colgadas del
+ * mismo ojal. La de delante es la única que cobra; las de detrás, no.**
+ *
+ * Pedido por Sebastián el 2026-10-01: la portada «no se entiende muy bien lo
+ * que quiere transmitir», el panel de la cifra «ya usa algo parecido al
+ * cotizador», y quería en su lugar «una figura, un objeto, un diseño, un
+ * icono», «diferente y novedoso», y «no simplemente números y líneas ni
+ * diagramas».
+ *
+ * ── Qué dice, y por qué una etiqueta ───────────────────────────────────────
+ *
+ * La etiqueta de precio es el objeto que todo el mundo reconoce como «esto es
+ * lo que cuesta», sin leer nada. Y un abanico de etiquetas en un mismo ojal
+ * dice lo que promete la bajada de la página —«acá ves dónde está el cobro y
+ * dónde no lo hay»— de un vistazo: **cinco etiquetas y una sola cobra.**
+ *
+ * · **La de delante** es la fila «Convertir» de la tabla de costos, con sus
+ *   palabras: «El spread, ya incluido en el precio que ves». Encima, «Un solo
+ *   cobro», que es como la página lo nombra. Y al pie, la frase de la bajada de
+ *   `.costos`: «Todo lo demás no tiene costo».
+ * · **Las de detrás** son las cuatro que la `description` de la página ya
+ *   publica —«registro, cotización, ejecutivo y costo de red, sin costo»—, con
+ *   esas palabras. **No son la tabla entera, y no lo pretenden**: la tabla está
+ *   justo debajo, con sus siete filas, y la etiqueta de delante cierra con
+ *   «Todo lo demás». Por eso «Cancelar antes de transferir» no está: su
+ *   etiqueta no cabe sin perder el «antes de transferir», y sin él diría algo
+ *   que el sitio no publica (ver la cabecera de `precio.astro`).
+ *
+ * **Cadenas nuevas: ninguna.** Todo lo escrito en las etiquetas son fragmentos
+ * ya publicados. Lo que es nuevo es leerlos sueltos, en una etiqueta, y eso
+ * puede pedir la firma de Compliance igual.
+ *
+ * ── La forma, que es de DLPay ─────────────────────────────────────────────
+ *
+ * · **El abanico abre 30°**, de −3° a −33° (34°, hasta −37°, bajo 600 px): el ángulo de
+ *   referencia del sistema geométrico, que es el del corte del isotipo.
+ * · **Las dos esquinas del lado del ojal van cortadas a 33°** (28 px de alto
+ *   por 44 de ancho), el mismo ángulo.
+ * · **El ojal y el hilo van en `--verde`**: es lo único verde de la pieza y
+ *   está donde se juntan todas, que es lo que las ata a DLPay. El isotipo va en
+ *   `--verde-deep` porque está sobre papel (5,44:1).
+ * · **Las etiquetas de detrás se oscurecen un 3,5 % cada una**, con un filo de
+ *   1 px en el canto de arriba.
+ *
+ * ── La cartulina y el relieve · *pedido el 2026-10-01* ─────────────────────
+ *
+ * Sebastián, sobre la primera versión, plana: «dale más textura y relieve».
+ * Lleva ahora:
+ *
+ * · **Cartulina**: grano fino, brillo de fibra, motas y una nube cálida, cuatro
+ *   ruidos SVG en `data:` (el `img-src` del sitio lo admite), con la opacidad
+ *   TOPADA para que el texto pase 4,5:1 en el peor píxel.
+ * · **Luz** desde arriba a la izquierda, el extremo que la pierde al curvarse y
+ *   el hundido que deja el ojal.
+ * · **Relieve**: cada etiqueta lleva su canto, una sombra corta que marca su
+ *   borde sobre la de detrás y la que cae sobre la banda. La de delante, además,
+ *   un marco en golpe seco; el isotipo y los textos, el filo claro de lo
+ *   estampado.
+ * · **Un ojal de metal** —un aro cónico entre los tres verdes del sitio, con su
+ *   canto de dentro y su sombra— y **un cordón** con su torsión y su brillo.
+ *
+ * **Esto es una excepción, y hay que llamarla así.** Grano, luz y sombras son
+ * la textura y las sombras decorativas que el Principio 3 de `CLAUDE.md`
+ * prohíbe, y ADR-0011 las autorizó SÓLO para el Diario DLPay: «no abre la
+ * puerta a nada más». Necesita la firma de Sebastián y su ADR, o una enmienda
+ * de ADR-0011 que pase de una pieza a dos. **La ventaja:** el sitio tiene ahora
+ * dos objetos de papel —el diario y las etiquetas— y con esto hablan el mismo
+ * idioma de material: papel que se toca, frente a los cuatro dispositivos en
+ * CSS, que siguen planos y sin trucos. **Lo que no hace:** 3D, perspectiva ni
+ * movimiento; y cero `--elev-card` en la página.
+ *
+ * ── El objeto no lleva controles ──────────────────────────────────────────
+ *
+ * Ninguna etiqueta es un enlace ni un botón. La puerta a cotizar va fuera, en
+ * la página, como «Pausar» va fuera del diario.
+ *
+ * ── Accesibilidad ─────────────────────────────────────────────────────────
+ *
+ * · **Es una lista de verdad**, con la de delante primero en el código —que es
+ *   la primera que se ve— y las de detrás después. El orden de pintado lo pone
+ *   `z-index`, no el orden del documento.
+ * · **El texto de las de detrás está dos veces, y a propósito.** El que lee el
+ *   lector va en cada `li`, oculto a la vista y entero en todos los anchos. El
+ *   que se ve va en una capa `aria-hidden` por encima de las etiquetas (ver
+ *   `.et-rotulos`), y en un teléfono se acorta: «sin costo» sale de la vista
+ *   bajo 460 y el nombre bajo 360. A la vista lo dice entonces la de delante
+ *   (regla de evidencia 6: lo que se oculta a la vista no se borra del árbol).
+ * · El isotipo de la etiqueta va `aria-hidden`: el lector ya oye «DLPay» en la
+ *   cabecera del sitio, y aquí sería ruido.
+ */
+import Logo from './Logo.astro';
+
+/* Las cuatro de detrás, de la más cercana a la más alta del abanico. */
+const libres = ['Registro', 'Cotización', 'Ejecutivo', 'Costo de red'] as const;
+---
+<div class="et-caja">
+  <div class="et-abanico">
+    <ul class="et-lista" role="list">
+      <li class="et frente">
+        <span class="et-forma" aria-hidden="true"></span>
+        <p class="et-cab">
+          <span>Convertir</span>
+          <span class="et-isotipo" aria-hidden="true"><Logo /></span>
+        </p>
+        <p class="et-cobro">Un solo cobro</p>
+        <p class="et-dentro">El spread, ya incluido en el precio que ves.</p>
+        <p class="et-resto">Todo lo demás no tiene costo.</p>
+      </li>
+      {libres.map((que, i) => (
+        <li class="et atras" style={`--k: ${i + 1}`}><span class="et-forma" aria-hidden="true"></span><span class="sr-only">{que} sin costo</span></li>
+      ))}
+    </ul>
+    {/*
+      Los nombres de las de detrás, en una capa propia ENCIMA de todas las
+      etiquetas y girada igual que la suya. Dentro de su etiqueta los tapaba la
+      de delante en cuanto el texto crecía: medido en tinta, hasta 31 px de
+      «Costo de red» a 360 con el espaciado de WCAG 1.4.12, y 5 px sin él. Una
+      etiqueta girada es un contexto de apilamiento y nada de dentro puede
+      pasar por encima de la siguiente, así que el texto visible va aquí,
+      `aria-hidden`, y el que lee el lector va en cada `li`, oculto a la vista.
+    */}
+    <div class="et-rotulos" aria-hidden="true">
+      {libres.map((que, i) => (
+        <span class="et-rotulo" style={`--k: ${i + 1}`}>
+          <span class="et-libre"><span class="et-que">{que}</span> <span class="et-cuanto">sin costo</span></span>
+        </span>
+      ))}
+    </div>
+    {/* El ojal, uno para todas: va encima de la pila porque las atraviesa. */}
+    <span class="et-ojal" aria-hidden="true"><span class="et-ojal-aro"></span></span>
+    {/*
+      El hilo: entra por el ojal, sale por la punta y da una vuelta suelta. El
+      tramo que pasa por detrás de las etiquetas no se dibuja. Coordenadas con
+      el origen en el centro del ojal.
+    */}
+    <svg class="et-hilo" viewBox="-120 -140 140 160" aria-hidden="true" focusable="false">
+      {/* Tres trazos del mismo camino: el cordón, su torsión en hebras y el
+          brillo que le da cuerpo. */}
+      <path class="et-cordon" d="M0 0 L -36 -3 C -48 -8, -54 -40, -54 -76 C -54 -112, -26 -122, -20 -100 C -15 -80, -28 -34, -40 2" />
+      <path class="et-torsion" d="M0 0 L -36 -3 C -48 -8, -54 -40, -54 -76 C -54 -112, -26 -122, -20 -100 C -15 -80, -28 -34, -40 2" />
+      <path class="et-brillo-hilo" d="M0 0 L -36 -3 C -48 -8, -54 -40, -54 -76 C -54 -112, -26 -122, -20 -100 C -15 -80, -28 -34, -40 2" />
+    </svg>
+  </div>
+</div>
+
+<style>
+  /*
+    La caja es el contenedor de medida: el abanico se dimensiona con su ancho
+    (`cqw`) y no con el de la ventana, así que funciona en cualquier hueco.
+  */
+  .et-caja {
+    /* Tonos de las etiquetas de detrás, locales a la pieza: `--papel` con un
+       3,5 % más de gris cálido en cada una. La tinta sobre la más oscura da
+       14,0:1. */
+    --et-1: #F2F1ED;
+    --et-2: #EFEEE9;
+    --et-3: #EBEAE5;
+    --et-4: #E8E6E1;
+    --et-filo: rgba(11, 19, 32, .14);
+    /*
+      La cartulina. Parte un punto más clara que `--papel` (`#FAF9F5`, el
+      mismo papel del Diario DLPay) porque el grano la oscurece, y la media
+      vuelve a la del sitio.
+      · grano: motas oscuras de 1 px;
+      · brillo: motas claras, la fibra que coge la luz;
+      · motas: pocas y algo mayores, las de la cartulina de verdad;
+      · nube: manchas anchas y cálidas, la cartulina que no es uniforme.
+      `color-interpolation-filters='sRGB'` para que los colores del
+      `feColorMatrix` sean los escritos. El canal rojo del ruido decide la
+      opacidad, y en el grano, las motas y la nube una tabla la TOPA (8 %, 10 % y 5 %): el
+      contraste se mide en el peor punto, y una mota de 0,7 bajo un trazo de
+      13 px dejaba «Todo lo demás no tiene costo» en 3,07:1. Con el tope,
+      `--ink-mute` queda en 4,72 en el peor píxel y no hace falta un gris
+      local, como sí lo hizo en el diario.
+    */
+    --et-papel: #FAF9F5;
+    --et-grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .07 0 0 0 0 .1 0 0 0 0 .15 1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0 0 0 0 .03 .06 .08 .08 .08'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    --et-brillo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='b' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='19' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0 0 0 0 .25 .5 .75 .9 .9'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E");
+    --et-nube: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='3' seed='23' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .36 0 0 0 0 .24 1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0 0 0 .02 .04 .05 .05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --et-motas: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='m' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.42' numOctaves='1' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .31 0 0 0 0 .23 1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0 0 0 0 0 0 .04 .09 .1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E");
+    /* El canto de la cartulina, que asoma bajo la de delante. */
+    --et-canto: #D3CEC1;
+
+    --et-ojal: 40px;
+    --et-giro: -3deg;
+    --et-paso: -7.5deg;
+    --et-ojal-y: 92px;
+    container-type: inline-size;
+    width: 100%;
+  }
+  /*
+    El abanico. Dos reservas, y las dos son geometría, no aire:
+    · ARRIBA, lo que sube la etiqueta más alta sobre la de delante al girar
+      sobre el ojal: (ancho − 40) · sen 33° menos lo que baja su canto, unos
+      16 px. Sin esto se metería en la bajada.
+    · A LOS LADOS, 20 px a la izquierda para la vuelta del hilo y 16 a la
+      derecha para la esquina de abajo de las etiquetas giradas, que asoma por
+      el canto de la de delante. Sin esto, a 390 abría desplazamiento lateral.
+  */
+  .et-abanico {
+    --et-ancho: min(500px, 100cqw - 36px);
+    --et-sen: .545;
+    --et-baja: 42px;
+    position: relative;
+    width: var(--et-ancho);
+    margin: calc((var(--et-ancho) - var(--et-ojal)) * var(--et-sen) - var(--et-baja)) auto 0;
+    transform: rotate(var(--et-giro));
+  }
+
+  .et-lista { display: grid; margin: 0; padding: 0; list-style: none; }
+  .et {
+    grid-area: 1 / 1;
+    position: relative;
+    margin: 0;
+    padding: var(--s-5) var(--s-6) var(--s-5) 88px;
+    color: var(--ink);
+    /*
+      El relieve de cada etiqueta, en tres sombras que siguen su forma —punta y
+      agujero incluidos—, por eso `drop-shadow` y no `box-shadow`:
+      · el canto de la cartulina, 1,5 px más abajo;
+      · una sombra corta alrededor, la que marca su borde sobre la de detrás;
+      · y la que cae sobre la banda.
+      La forma va en `.et-forma` y no en la etiqueta: un `clip-path` en el
+      elemento con el filtro recortaría también sus sombras. Y es un elemento,
+      no un `::before`: `axe-core` no ve los pseudoelementos, buscaba el fondo
+      detrás de los nombres, encontraba la banda y daba «Costo de red» en
+      1,03:1. Medido en píxeles es 9,22.
+    */
+    filter:
+      drop-shadow(0 1.5px 0 var(--et-canto))
+      drop-shadow(0 0 3px rgba(11, 19, 32, .28))
+      drop-shadow(0 8px 10px rgba(11, 19, 32, .38));
+  }
+  .et-forma {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 0 var(--r-2) var(--r-2) 0;
+    /* La punta: dos esquinas cortadas a 33°, 44 px de ancho por 28 de alto. */
+    clip-path: polygon(44px 0, 100% 0, 100% 100%, 44px 100%, 0 calc(100% - 28px), 0 28px);
+    /* El agujero del ojal: transparente de verdad, se ve la banda a través. */
+    -webkit-mask: radial-gradient(circle at var(--et-ojal) var(--et-ojal-y), transparent 0 8px, #000 8.5px);
+    mask: radial-gradient(circle at var(--et-ojal) var(--et-ojal-y), transparent 0 8px, #000 8.5px);
+    /*
+      De arriba abajo: la luz que entra desde arriba a la izquierda; el
+      extremo, que se curva un poco y la pierde; el hundido que deja el ojal al
+      apretar la cartulina; y la cartulina.
+    */
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 42%),
+      linear-gradient(to right, rgba(11, 19, 32, 0) 62%, rgba(11, 19, 32, .06)),
+      radial-gradient(circle at var(--et-ojal) var(--et-ojal-y), rgba(11, 19, 32, .16) 0 14px, rgba(11, 19, 32, 0) 24px),
+      var(--et-brillo) 0 0 / 180px 180px,
+      var(--et-grano) 0 0 / 200px 200px,
+      var(--et-motas) 0 0 / 240px 240px,
+      var(--et-nube) 0 0 / 480px 480px,
+      var(--et-tono, var(--et-papel));
+  }
+  /*
+    El golpe en seco de la de delante: un marco hundido a 7 px del canto, con
+    la sombra arriba a la izquierda y la luz abajo a la derecha, que es como
+    queda la cartulina al prensarla. Empieza pasado el ojal y no toca el texto
+    (el relleno más estrecho es de 16 px). Sólo en la de delante: en las de
+    detrás cruzaría los nombres.
+  */
+  .et.frente::after {
+    content: '';
+    position: absolute;
+    inset: 7px 7px 7px 60px;
+    border-radius: 3px;
+    box-shadow:
+      inset 1px 1px 0 rgba(11, 19, 32, .13),
+      inset -1px -1px 0 rgba(255, 255, 255, .85),
+      1px 1px 0 rgba(255, 255, 255, .85),
+      -1px -1px 0 rgba(11, 19, 32, .06);
+    pointer-events: none;
+  }
+  /* Nunca más baja que las de detrás: si lo fuera, sus cantos de abajo
+     asomarían por debajo de ella. */
+  .et.frente { z-index: 5; min-height: calc(2 * var(--et-ojal-y)); }
+  /*
+    El ojal va a una distancia FIJA del canto de arriba (`--et-ojal-y`), no en
+    la mitad, y las de detrás tienen su propio alto: el doble de esa distancia.
+    Así el abanico no depende del texto de la de delante: si crece —con el
+    espaciado de WCAG 1.4.12 pasa de 230 a 400 px en un teléfono—, crece hacia
+    abajo y no tapa ni empuja a las de detrás. Con el ojal a la mitad, las de
+    detrás asomaban 46 px por la derecha y la de delante tapaba sus nombres.
+  */
+  .et.atras,
+  .et-rotulo {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: calc(2 * var(--et-ojal-y));
+    transform-origin: var(--et-ojal) 50%;
+    transform: rotate(calc(var(--k) * var(--et-paso)));
+  }
+  .et.atras { z-index: calc(5 - var(--k)); }
+  /* El filo de arriba, encima de la luz: es el canto que asoma por la franja. */
+  .et.atras .et-forma {
+    background:
+      linear-gradient(var(--et-filo) 0 1px, transparent 1px),
+      linear-gradient(160deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 42%),
+      linear-gradient(to right, rgba(11, 19, 32, 0) 62%, rgba(11, 19, 32, .06)),
+      var(--et-brillo) 0 0 / 180px 180px,
+      var(--et-grano) 0 0 / 200px 200px,
+      var(--et-motas) 0 0 / 240px 240px,
+      var(--et-nube) 0 0 / 480px 480px,
+      var(--et-tono);
+  }
+  .et.atras:nth-child(2) { --et-tono: var(--et-1); }
+  .et.atras:nth-child(3) { --et-tono: var(--et-2); }
+  .et.atras:nth-child(4) { --et-tono: var(--et-3); }
+  .et.atras:nth-child(5) { --et-tono: var(--et-4); }
+
+  /* ── La de delante ─────────────────────────────────────────────────────── */
+  .et-cab {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s-4);
+    margin: 0 0 var(--s-3);
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .et-isotipo { display: inline-flex; color: var(--verde-deep); }
+  /* El isotipo, estampado: un filo claro debajo, como un golpe en seco. */
+  .et-isotipo :global(svg) { width: 26px; height: auto; filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .85)); }
+  .et-cobro {
+    margin: 0;
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+  }
+  .et-dentro { margin: var(--s-1) 0 0; font-size: var(--t-body); }
+  .et-resto {
+    margin: var(--s-4) 0 0;
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    color: var(--ink-mute);
+  }
+  /*
+    La tinta impresa en la cartulina: un filo claro de 1 px bajo cada letra,
+    que es como se ve un texto apretado contra el papel. No toca el contraste:
+    va por debajo de la letra y es más claro que el fondo.
+  */
+  .et-cab,
+  .et-cobro,
+  .et-dentro,
+  .et-resto,
+  .et-libre { text-shadow: 0 1px 0 rgba(255, 255, 255, .7); }
+
+  /* ── Las de detrás: sólo asoma el canto de arriba, cerca del extremo ──── */
+  /* Fuera de las etiquetas no hereda su tinta: sin `color` salían en el
+     `--on-tinta` de la banda, claro sobre claro. */
+  .et-rotulos { position: absolute; inset: 0; z-index: 6; color: var(--ink); pointer-events: none; }
+  .et-libre {
+    position: absolute;
+    top: 7px;
+    right: var(--s-5);
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-2);
+    margin: 0;
+    white-space: nowrap;
+  }
+  .et-que { font-size: var(--t-body-sm); font-weight: 600; }
+  .et-cuanto { font-family: var(--f-num); font-size: var(--t-label); }
+
+  /* ── El ojal y el hilo ─────────────────────────────────────────────────── */
+  /*
+    El ojal, de metal: un aro con la luz arriba a la izquierda —un degradado
+    cónico entre `--verde-hi`, `--verde` y `--verde-deep`, los tres del
+    sitio—, el canto de dentro oscuro, que es la profundidad del agujero, y su
+    sombra sobre la cartulina. La sombra va en el contenedor y el aro dentro,
+    porque la máscara que vacía el aro se comería la sombra.
+  */
+  .et-ojal {
+    position: absolute;
+    z-index: 7;
+    left: var(--et-ojal);
+    top: var(--et-ojal-y);
+    width: 30px;
+    height: 30px;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(1px 2px 1.5px rgba(11, 19, 32, .45));
+  }
+  .et-ojal-aro {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, rgba(4, 20, 14, 0) 0 9px, rgba(4, 20, 14, .6) 9.5px 10.5px, rgba(4, 20, 14, 0) 11.5px),
+      radial-gradient(circle, rgba(255, 255, 255, 0) 0 13px, rgba(255, 255, 255, .35) 14px, rgba(255, 255, 255, 0) 15px),
+      conic-gradient(from 200deg, var(--verde-hi), var(--verde) 22%, var(--verde-deep) 48%, var(--verde) 70%, var(--verde-hi));
+    -webkit-mask: radial-gradient(circle, transparent 0 9px, #000 9.5px);
+    mask: radial-gradient(circle, transparent 0 9px, #000 9.5px);
+  }
+  .et-hilo {
+    position: absolute;
+    z-index: 8;
+    left: var(--et-ojal);
+    top: var(--et-ojal-y);
+    width: 140px;
+    height: 160px;
+    transform: translate(-120px, -140px);
+    overflow: visible;
+    pointer-events: none;
+    /* La sombra del cordón sobre la cartulina y la banda. */
+    filter: drop-shadow(1px 2px 1.2px rgba(11, 19, 32, .4));
+  }
+  .et-hilo path {
+    fill: none;
+    stroke-width: 3.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .et-cordon { stroke: var(--verde); }
+  /* La torsión: hebras cortas del verde oscuro, una cada 3,4 px. */
+  .et-torsion { stroke: var(--verde-deep); stroke-dasharray: 1.4 2; stroke-linecap: butt; opacity: .5; }
+  /* Y un hilo de luz por el lomo del cordón. */
+  .et-brillo-hilo { stroke: var(--verde-hi); stroke-width: 1 !important; opacity: .7; }
+
+  /*
+    Bajo 600 el abanico abre 4° más (de −3° a −37°) para dar franja a los
+    nombres, y la etiqueta se corre a la izquierda todo lo que deja el hilo.
+    Y bajo 460 la franja que asoma de cada etiqueta ya no da para «Costo de
+    red · sin costo» (180 px de largo): se queda el nombre, y «sin costo» sale
+    de la vista; el lector lo sigue leyendo en el `li`. A la vista lo dice la
+    etiqueta de delante: «Todo lo demás no tiene costo».
+  */
+  @media (max-width: 599px) {
+    .et-abanico {
+      --et-ancho: calc(100cqw - 50px);
+      --et-sen: .602;
+      --et-baja: 40px;
+      margin-left: 34px;
+    }
+    .et-caja { --et-paso: -8.5deg; --et-ojal-y: 96px; }
+    .et { padding: var(--s-4) var(--s-4) var(--s-4) 72px; }
+    .et.frente::after { inset: 6px 6px 6px 54px; }
+    .et-libre { right: 6px; top: 6px; }
+  }
+  @media (max-width: 459px) {
+    .et-cuanto { display: none; }
+  }
+  /* Bajo 360 tampoco cabe el nombre: las de detrás se quedan en blanco a la
+     vista. El lector las lee enteras, porque su texto está en cada `li`. */
+  @media (max-width: 359px) {
+    .et-rotulos { display: none; }
+  }
+  @media (min-width: 900px) {
+    .et-cobro { font-size: var(--t-h2); }
+  }
+  /*
+    Con colores forzados (alto contraste de Windows) los fondos pasan al color
+    del lienzo y las etiquetas desaparecían: quedaba el texto, legible y sin
+    solaparse, pero no el objeto. Un borde del color del texto les devuelve la
+    forma. El corte de la punta se lo come el `clip-path`, y es aceptable.
+  */
+  @media (forced-colors: active) {
+    .et-forma { border: 1px solid CanvasText; }
+  }
+</style>
