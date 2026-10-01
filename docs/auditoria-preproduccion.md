@@ -514,6 +514,36 @@ declara los dos modos y prohíbe expresamente la negación absoluta.
 enseña la mitad del producto. Mientras no se haga, la única página que lo menciona es `/preguntas`,
 en la respuesta de volver a pesos, y eso está al revés de como debería ser.
 
+### Copy aprobado por Compliance — 2026-10-01  ·  **el índice del blog**
+
+**Firmado por Sebastián Villanueva Pereira como Compliance el 2026-10-01.**
+
+| Qué se aprobó | Dónde vive |
+|---|---|
+| «Lo que conviene entender del dólar y del dólar digital antes de operar.» | bajada de `/blog` |
+| «Análisis del mercado cambiario: lo que conviene entender del dólar y del dólar digital antes de operar.» | `description` de `/blog` |
+| «lo último» · «Leer el artículo» | `UltimoArticulo.astro` |
+| «Artículos anteriores» *(sólo lector de pantalla)* | `/blog` |
+
+**Y se RETIRA una promesa, que es lo que importa de esta firma.** La `description` decía «Análisis
+del mercado cambiario **y novedades de DLPay**», y la categoría `DLPay` del esquema tiene **cero
+artículos**: los tres publicados son `Mercado`. Es un claim de SEO —lo que el buscador enseña— que
+prometía una sección que no existe.
+
+**Lo detectó Cowork el 2026-09-30 y lo dejó anotado sin tocarlo.** Fue lo correcto: es una cadena con
+firma, y una entrega no cambia una cadena firmada por su cuenta. **Se repone el día que haya un
+artículo de esa categoría**, y el esquema ya la admite (`content.config.ts` acepta `DLPay` como uno
+de sus dos valores), así que retirarla no cierra ninguna puerta.
+
+**La bajada también cambió por una razón de fondo, no de estilo.** Decía «Qué mueve el precio del
+dólar y cómo leerlo antes de operar», y de los tres artículos **sólo uno** trata de qué mueve el
+precio; los otros dos explican qué es el dólar digital y qué son los activos tokenizados. Con la
+hoja del último artículo justo debajo de la bajada, la promesa y el objeto dejaban de coincidir a la
+vista.
+
+**Nada del dato se teclea:** la hoja sale de `publishedPosts()[0]` y su cifra, unidad, etiqueta y
+fuente del frontmatter, con los mismos formateadores que la portada del propio artículo.
+
 ### Copy aprobado por Compliance — 2026-09-30  ·  **la portada de `/confianza`**
 
 **Firmado por Sebastián Villanueva Pereira como Compliance el 2026-09-30.**

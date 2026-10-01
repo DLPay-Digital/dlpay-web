@@ -3104,3 +3104,77 @@ el culpable.**
 3. **La primera acción de la página sigue a 3.024 px** en escritorio. Él no la subió porque el
    teléfono llega a ras de la costura y no deja sitio; queda dicho.
 4. **D7, por tercera vez:** la tasa de muestra aparece ya en **dos portadas**.
+
+---
+
+### Notas de la integración de `2026-09-30 · blog: el índice abre con la hoja del último artículo`
+
+**Integrada entera**, con las cuatro decisiones de Sebastián del 2026-10-01: la hoja, la lista desde
+el segundo, la bajada nueva y **quitar «novedades de DLPay» de la `description`**. Más dos
+correcciones mías de detalle.
+
+**Con esto se cierra el §4.8:** no queda ninguna página no legal abriendo sin objeto. Y la regla se
+cumplió cuatro veces seguidas con la misma forma —`/preguntas`, `/precio`, `/confianza`, `/blog`—:
+**no agrandar la figura que hay, preguntar cuál es el objeto de la página.** Acá el objeto estaba
+delante todo el tiempo: *el objeto de un blog son sus artículos.*
+
+#### Es la entrega más limpia de la serie, y hay dos motivos concretos
+
+**Hizo el `grep` sin que nadie se lo pidiera.** Su §2 declara que `publishedPosts()` lo consumen
+además `[slug].astro` y `sitemap.xml.ts` y que ninguno cambia, «es la lección de `phases` de ayer».
+Comprobado: exacto. **Ayer esa misma frase —«queda sin uso»— estaba mal dos veces; hoy está bien y
+viene con el método declarado.**
+
+**Y se adelantó a la corrección de la barra de scroll.** Su §4 dice: «medí sin barra clásica, con
+barra las cifras de móvil varían, como anotaste en `/confianza`». A 390 yo mido 783 y él 755, y la
+diferencia está explicada antes de que yo la midiera. **Primera entrega que se adelanta a una
+corrección en vez de recibirla.**
+
+#### Reproducido contra el build
+
+Portada **884 · 783 · 735 · 735 · 715 · 715 · 715** (la de 390 con barra). Primera acción **442 →
+339** a 1280, con el «antes» exacto. Desborde cero, ningún recorte, y **WCAG 1.4.12 limpio**: con el
+espaciado aplicado nada se sale de la hoja ni del pozo y la portada crece de 715 a 752. El foco de
+teclado cae en la hoja con el anillo `--verde` a 2 px, y la hoja es enfocable.
+
+**Los tres tipos de portada, probados poniendo cada artículo como el más reciente** —que es lo que
+hacía falta porque hoy sólo se ejercita `cifra`—: `cifra` 715, `rango` 709 con los extremos a 26 px
+y su segmento con topes, `figura` 709 con el pictograma de 112×112 dentro del pozo. Ninguna cifra se
+parte, nada se sale. **Y el `rango` no repite el fallo de `PortadaDato`**: usa `formatRate` donde
+toca y sale «3,75–4,00 %», no «3,75000».
+
+**Su arreglo de los 8 px estaba justificado y lo verifiqué midiendo tinta.** En el build anterior el
+hueco entre la cifra y su unidad era de **3 px**, y el primer enlace de la página se leía
+literalmente **«292mil millones de dólares»**. Ahora son 8, los mismos en la lista y en la hoja.
+
+#### Una cifra que no reproduce
+
+**`figura` me da 709 y él dice 731.** Nada se sale y 709 está dentro de la familia, así que no es un
+defecto — pero es un número que no sale y queda dicho. Las otras dos salen al píxel.
+
+#### Dos correcciones mías, pequeñas
+
+1. **`padding-bottom: 44px`** en la caja de la portada, fuera de la escala. En `/precio` ese hueco
+   son 44 **porque se derivan**: bajo el panel hay un enlace cuyo objetivo táctil mide 44 y la caja
+   los descuenta. Acá no hay nada debajo —la hoja *es* el enlace—, así que el 44 no venía de ningún
+   sitio. Pasa a `--s-7`: la portada queda en **719** y la holgura en 48.
+2. **El encabezado oculto decía «Artículos anteriores» también sin artículos**, donde un lector de
+   pantalla oiría «Artículos anteriores · Todavía no hay artículos publicados». Condicional.
+
+#### Y un error mío al montarlo, que conviene dejar escrito
+
+Puse el comentario de la `description` **entre los atributos de `<Base>`**, y eso rompe la plantilla
+entera: `astro check` devolvió **catorce «declarado y no usado»** —el `<style>`, los imports, todo—
+porque el template dejó de parsearse. Ningún error mencionaba un comentario.
+
+> **Es la tercera vez que un comentario en una posición inválida rompe el build en este proyecto**, y
+> las tres veces el mensaje de error apuntó a otra parte. La forma de un comentario mal puesto es
+> **un montón de símbolos que de pronto no se usan**. La `description` acabó en una constante del
+> frontmatter, que es donde el comentario sí cabe.
+
+#### Lo que decidió Sebastián y queda registrado
+
+**La promesa del SEO se retira.** La `description` prometía «novedades de DLPay» con cero artículos
+de esa categoría. **Cowork lo detectó y no lo tocó, que era lo correcto** —es una cadena con firma—,
+y Sebastián la quitó. Se repone el día que haya un artículo `DLPay`; el esquema ya la admite. Queda
+en la auditoría con fecha.

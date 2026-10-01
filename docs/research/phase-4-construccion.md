@@ -264,6 +264,25 @@ propio `iframe`. En el viewport real la costura es **0,00**.
 Es la quinta trampa de medición de esta fase y la primera en la que el instrumento inventó un
 defecto en vez de esconderlo. Estuvo a punto de costarle a Cowork un hallazgo falso en su contra.
 
+### 4.10 Un comentario mal puesto se presenta como símbolos sin usar  ·  *2026-10-01*
+
+Montando el índice del blog puse un comentario JSX **entre los atributos de un componente**, donde
+no cabe. `astro check` devolvió **catorce errores de «declarado y no usado»**: el `<style>`, los
+cuatro imports, las dos variables de la desestructuración. Ninguno mencionaba un comentario, porque
+desde el punto de vista del compilador el template dejó de existir y por tanto nada de lo de arriba
+se usaba.
+
+**Es la tercera vez en esta fase.** Las anteriores fueron un comentario como primer hermano dentro
+de una expresión entre paréntesis, dos veces, y el error de entonces fue «Expected `,` or `)` but
+found `class`».
+
+> **La forma de un comentario mal puesto es un montón de símbolos que de pronto no se usan.** Cuando
+> `check` dice que no se usa el `<style>` de una página, el problema no está en el `<style>`: está
+> en que la plantilla no se parsea.
+
+El arreglo también es siempre el mismo: lo que el comentario quería explicar sale a una **constante
+del frontmatter**, que es donde un comentario sí cabe, y de paso el atributo queda más corto.
+
 ---
 
 ## 5. Errores propios, registrados

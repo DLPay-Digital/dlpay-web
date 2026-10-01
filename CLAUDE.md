@@ -484,6 +484,23 @@ derivaba de `src/pages/**/*.astro` y publicaba `/blog/index/` y `/blog/[slug]/` 
 colapsa los `index` anidados, descarta las rutas dinámicas y añade cada artículo desde la
 colección.
 
+**El índice cambió de portada el 2026-10-01, y con él se cerró el §4.8.** Abría con el titular y
+236 px de tinta —la última página no legal sin objeto— y abre ahora con **la hoja del último
+artículo**: su portada tal como el sistema ya la razona, su titular, su bajada y «Leer el
+artículo», con los cantos de las hojas de detrás. **Se deriva entera de `publishedPosts()[0]`**, así
+que cambia sola el día que se publique otro y nadie la edita. La lista de abajo arranca en el
+segundo artículo, para que el mismo titular no salga dos veces en 300 px.
+
+Con eso **la primera acción de la página sube de 442 a 339 px** y la familia «sin objeto» del
+Design System §4.8 queda siendo exactamente las tres páginas legales, que es lo que esa sección
+siempre dijo que debía ser.
+
+**Y se retiró una promesa del SEO.** La `description` del índice decía «Análisis del mercado
+cambiario **y novedades de DLPay**», y la categoría `DLPay` tiene **cero artículos**: los tres
+publicados son `Mercado`. Lo detectó Cowork y lo dejó anotado sin tocarlo, que era lo correcto.
+Sebastián la quitó ese día. **Se repone el día que haya un artículo de esa categoría**; el esquema
+ya la admite.
+
 **Ningún artículo se publica sin pasar por Compliance.** Un análisis de mercado es, por
 definición, contenido que afirma algo sobre precios: cae de lleno en §3. El candado es el campo
 `estado` del esquema, **cerrado por omisión**: un artículo sin `estado: publicado` se ve con

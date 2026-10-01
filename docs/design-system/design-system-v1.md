@@ -566,9 +566,10 @@ objeto, porque describe el servicio y no obligaciones contractuales, que es la m
 la que su contenido es real y el de `/terminos` es una página de estado.
 
 **Las demás abren con el objeto de la página:** el cotizador en la Home, el teléfono en
-`/como-funciona`, el MacBook en `/empresas`, la barra del precio en `/tarifas` y, desde el
-2026-09-30, **la tableta con una conversación dentro en `/preguntas`**, **el panel de la cifra en
-`/precio`** y **el teléfono con los tres avisos en `/confianza`**.
+`/como-funciona`, el MacBook en `/empresas`, la barra del precio en `/tarifas`, la tableta con una
+conversación dentro en `/preguntas`, el panel de la cifra en `/precio`, el teléfono con los tres
+avisos en `/confianza` y —desde el 2026-10-01, la última— **la hoja del último artículo en
+`/blog`**.
 
 **Y las dos familias están separadas por un hueco vacío.** Las trece portadas publicadas, **medidas
 a 1280 px** —el rango se mide ahí y sólo ahí, ver más abajo— sobre el build de `67abaa9`, con
@@ -576,8 +577,8 @@ a 1280 px** —el rango se mide ahí y sólo ahí, ver más abajo— sobre el bu
 
 | familia | páginas y alto | rango |
 |---|---|---|
-| **con objeto** | Home 781 · `/confianza` 698 · `/como-funciona` 660 · `/preguntas` 634 · `/precio` 589 · `/empresas` 569 · `/tarifas` 529 | **529–781 px** |
-| **sin objeto** | `/canal-de-denuncias` 288 · `/terminos` 262 · `/blog` 236 · `/privacidad` 236 | **236–288 px** |
+| **con objeto** | Home 781 · `/blog` 719 · `/confianza` 698 · `/como-funciona` 660 · `/preguntas` 634 · `/precio` 589 · `/empresas` 569 · `/tarifas` 529 | **529–781 px** |
+| **sin objeto** | `/canal-de-denuncias` 288 · `/terminos` 262 · `/privacidad` 236 | **236–288 px** |
 
 **Entre 288 y 460 px no hay ninguna.** Ese hueco de 172 px es la regla y no una casualidad: **una
 portada de altura intermedia es una que no ha decidido a qué familia pertenece.**
@@ -616,9 +617,21 @@ valen para las dos portadas que faltan:
   La pieza además **sobresale 132 px** sobre la sección clara (`--montaje`), así que **la portada no
   contiene a su objeto** y medir el objeto no mide la portada.
 
-**Queda una portada por hacer:** el índice del blog, la única página no legal que sigue abriendo
-sin objeto. **El piso de la familia subió a 529** al dejar `/confianza` los 460: hoy ninguna portada
-con objeto baja de ahí.
+**No queda ninguna portada por hacer.** `/blog` fue la última, el 2026-10-01: abre con **la hoja del
+último artículo** —su portada, su titular, su bajada y el enlace— y los cantos de las hojas de
+detrás. Pasó de **236 a 719 px**. Con eso **la familia «sin objeto» son exactamente las tres páginas
+legales que abren sólo con su titular**, que es lo que esta sección dice desde el principio que debe
+ser: la sobriedad es parte de lo que esas páginas dicen.
+
+**El piso de la familia con objeto subió a 529** al dejar `/confianza` los 460: hoy ninguna baja de
+ahí, y el hueco prohibido quedó vacío por los dos lados.
+
+**Y la regla se cumplió cuatro veces seguidas, con la misma forma.** `/preguntas`, `/precio`,
+`/confianza` y `/blog` abrían todas sin objeto o en el borde de la familia, y en las cuatro la
+solución fue la misma: **no agrandar la figura que había, sino preguntar cuál es el objeto de la
+página.** Una tableta, una cifra, un teléfono y una hoja. En las cuatro la figura anterior **no se
+estiró: se fue** —y en `/blog` no había ninguna que retirar, porque el objeto estaba delante todo el
+tiempo: *el objeto de un blog son sus artículos.*
 
 **Y `/confianza` deja el hallazgo más incómodo de los tres.** Su portada era la línea de tenencia y
 medía **460 px a 1280 —el piso exacto— pero 437 a 768**, o sea **dentro del hueco de 288 a 460 que
@@ -1100,6 +1113,7 @@ cada una, no qué significa.
 | **Carril de dos columnas** | `/como-funciona`: qué hace cada parte y dónde cambia de manos | La colocación en rejilla va **explícita**: el flujo automático deshace el carril |
 | **Eje de alcance** | Hasta dónde llega el servicio | `EjeDeAlcance`, en **tres** páginas: `/como-funciona`, `/empresas` y el artículo del blog. *Salió de la Home el 2026-09-25.* Es la regla dura de `CLAUDE.md` §1 dibujada, y por eso es un componente y no CSS repetido |
 | **Portada de dato** | La cifra de la que habla un artículo | Dos tipos: `cifra` y `rango`. **La cuña no entra** (§6.1). `fuente` es obligatoria |
+| **Hoja del último artículo** | `/blog`: la portada del artículo más reciente, con su titular y su enlace | `UltimoArticulo`. **Misma materia que el panel de `/precio`** —cabecera, pozo hundido y cuerpo sobre papel— para que los dos objetos de papel se lean como parientes. Se deriva entero de `publishedPosts()[0]`, así que **cambia sola al publicar**. Reusa `PortadaFigura` en su variante `marca` y los formateadores de `lib/pricing`: **no reescribe ni el dibujo ni el dato**. No trae la banda de tinta del artículo —oscuro dentro de claro dentro de oscuro se lee como un agujero— y los cantos de detrás van `aria-hidden`, como mucho dos |
 | **Panel del precio** | `/precio`: el mismo número al aceptar y al recibir | `FiguraPrecio`. **Sin props**: lo que enseña no se configura. Las dos cifras son **una variable renderizada dos veces** (D24), así que no pueden diferir. Lleva la etiqueta «ejemplo» porque el `Quote` es `isReferential`. El filete que separa las dos mitades va en `--line` y **no punteado**: ver §6.2 |
 | **Índice del blog** | `/blog` | Filas con filete y fecha tabular en columna propia. Se ve igual con un artículo que con cincuenta |
 | **Globo rotativo** | El alcance del dólar digital, en la Home | Tres excepciones autorizadas: ADR-0007, 0008 y 0009. **No va nunca solo**, porque sin nada que lo acote el dibujo afirma de más. Hasta el 2026-09-25 lo acotaba el eje de alcance; desde que Sebastián lo retiró, lo acota el titular de su banda —«Nuestro tramo termina en tu billetera»— y la bajada. **Si algún día se cambia ese titular por uno que no nombre el límite, el globo se queda desnudo** |
