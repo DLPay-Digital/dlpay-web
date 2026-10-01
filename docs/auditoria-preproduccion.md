@@ -514,6 +514,36 @@ declara los dos modos y prohíbe expresamente la negación absoluta.
 enseña la mitad del producto. Mientras no se haga, la única página que lo menciona es `/preguntas`,
 en la respuesta de volver a pesos, y eso está al revés de como debería ser.
 
+### Copy aprobado por Compliance — 2026-10-01  ·  **el Diario DLPay**
+
+**Firmado por Sebastián Villanueva Pereira como Compliance el 2026-10-01.**
+
+| Qué se aprobó | Dónde vive |
+|---|---|
+| «Diario DLPay», la cabecera | `DiarioDLPay.astro` |
+| «N.º 1 / 2 / 3», las orejas, derivadas del orden de publicación | ídem |
+| «Pausar» / «Seguir» visibles · «Detener el paso de las hojas» para el lector de pantalla | ídem |
+| «Diario DLPay: los artículos publicados», el nombre de la lista | ídem |
+
+**«Diario DLPay» es un nombre de marca nuevo, no una cadena de interfaz.** El sitio tenía dos
+—DLPay y DLPZ INCZ SpA— y éste es el tercero. Queda acotado a esa pieza: no va al menú, ni al pie,
+ni a los artículos, ni al `title` de ninguna página. Ver `CLAUDE.md` §5 y ADR-0011.
+
+**El titular, la fecha y la sección de cada hoja salen del frontmatter del artículo**, así que no
+estrenan nada: ya están aprobadas donde viven.
+
+**Tres defectos declarados y aceptados, que no son de copy pero se anotan acá porque afectan a lo
+publicado:**
+
+1. **El 30 % de cada ciclo, un toque abre el artículo que llega en vez del que se va.** En un
+   teléfono no hay puntero que pause. Es el coste aceptado de la pieza y está en la ADR.
+2. **El contraste de las orejas era una distribución con mínimo 4,12**, por debajo del 4,5 de AA
+   allí donde el grano oscurece el papel. **Corregido al integrar**: `#525B68`, que deja el peor
+   punto en 4,72.
+3. **La máscara de la tinta no está verificada en Safari.** Ni Cowork ni este entorno tienen
+   WebKit. El fallo sería benigno —la letra saldría entera— pero **está sin comprobar**, y conviene
+   hacerlo en un Safari real antes de Fase 6.
+
 ### Copy aprobado por Compliance — 2026-10-01  ·  **el índice del blog**
 
 **Firmado por Sebastián Villanueva Pereira como Compliance el 2026-10-01.**

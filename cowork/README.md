@@ -3205,3 +3205,82 @@ de abajo, a unos 300 px, con distinto nivel de detalle —titular y fecha arriba
 categoría y dato abajo—. Se deja así porque la alternativa, arrancar la lista después de lo que
 enseña la portada, **la dejaría vacía mientras haya tres artículos o menos**. Se revisa cuando haya
 un cuarto.
+
+---
+
+### Notas de la integración de `2026-10-01 · blog: el Diario DLPay`
+
+**Integrada**, por decisión de Sebastián, con **ADR-0011** y cuatro enmiendas: la regla dura 1 del
+Motion System, su §7 —que se escribió el día anterior—, el Principio 3 de `CLAUDE.md` y el §6.2.
+Más la nomenclatura, que gana un tercer nombre.
+
+**Dije que no a esto el 2026-09-30 y Sebastián lo pidió otra vez. Se monta.** Y de mis cuatro
+argumentos de entonces **dos cayeron con esta implementación**, lo cual conviene reconocer sin
+rodeos: es **CSS puro, cero JavaScript**, y la casilla de pausa vive **fuera** del objeto, así que
+no es un control dentro del aparato. Cowork lo dijo él mismo, argumento por argumento, en vez de
+rodearlo. Los otros dos siguen en pie y están en la ADR como coste aceptado.
+
+#### El trabajo de ingeniería es real, y hay que decir cuál
+
+**Encontró su propio fallo y lo demostró midiendo.** La perspectiva estaba en el abuelo de la hoja
+y `perspective` sólo actúa sobre los hijos directos: la cara medía 567×368 —620 · cos 24° por el
+mismo alto— en vez de 564×387. **Un bug de 3D que no se ve mirando el CSS.**
+
+**Y cazó un fotograma fantasma de 0,9 ms**: entre `p` y `p + 0,01 %` la hoja interpolaba de vuelta
+a 0° estando visible. Uno de cada ~18 ciclos a 60 Hz. Lo arregló con `steps(1, end)` y barrió 817
+instantes.
+
+#### Reproducido contra el build
+
+Portada **627 a 320 y 674 a 1280** — sus dos números exactos. Subida de la hoja **52**, exacto.
+**La hoja no tapa el control en ninguno de los 451 instantes** del ciclo, a 320 ni a 1280. Cero
+desborde, el canto no pasa del borde derecho. 0 JS, 0 archivos, 0 `--elev-card`. Los `@keyframes`
+se generan en el build (cuatro `diario-*`) con los retrasos negativos 0, −3, −6 s.
+
+**La casilla pausa de verdad:** 12 animaciones de `running` a `paused` al marcarla, el texto visible
+cambia a «Seguir», es enfocable y su objetivo táctil mide 78×44. **Con `prefers-reduced-motion`:
+0 animaciones, una hoja quieta, el control no se dibuja.**
+
+#### Un error mío de medición, que casi se convierte en un hallazgo falso
+
+Escribí un detector de fantasmas y **dio 358 casos**. Todos falsos. Buscaba «hoja visible, girada
+más de 90°, con el dorso por debajo de 0,98 de opacidad» y **no comprobé si la cara podía verse
+siquiera**: `.hoja-cara` lleva `backface-visibility: hidden`, así que una hoja girada 180° no pinta
+nada. Lo que mi detector llamaba fantasma era el desvanecimiento previsto. Lo confirmé con una
+captura congelada a 2.997 ms: limpia.
+
+> **Es la misma familia que el filtro `width > 0` que escondió `.edge`:** una condición que parece
+> razonable y que ignora justo la propiedad que decide. Antes de reportar 358 de algo, una captura.
+
+#### Y dos medidas suyas que no salen
+
+1. **«Holgura con Pausar: 12».** Mi primera medición dio **−20** y la suya era la correcta: yo medí
+   **cajas** y la hoja gira en 3D, así que su caja envolvente sube mucho más que su tinta. Repetido
+   con `elementFromPoint`, como él declara: **12**. *Su número y mi error.*
+2. **«Bajo el pliegue: 0».** Medido en tinta: **8 px durante los primeros 220 ms de cada ciclo**, en
+   los dos anchos, y es `.hoja-cara`. Papel claro sobre papel claro, así que no se ve — pero el
+   número es 8, no 0.
+
+#### Lo que corregí al integrar
+
+**El contraste de las orejas.** Lo reportaba como «de 5,10 a 5,56 **de media**, p5 ≥ 4,66, mínimo
+4,12». **WCAG no tiene contraste medio:** donde el grano oscurece el papel bajo un trazo de 13 px,
+ese punto no llega al 4,5 de AA, y «es una mota» no es como funciona el criterio. `--ink-mute` da
+5,69 sobre el papel limpio; un paso más oscuro —`#525B68`— da 6,52 y deja el peor punto del grano en
+**4,72**. Local, sin tocar `--ink-mute`, y a simple vista el mismo gris.
+
+#### Lo que no pude verificar, y lo pidió él
+
+**La máscara de la tinta en Safari.** Cowork sólo tiene Chromium y lo declaró; **este entorno
+tampoco tiene WebKit**, y no voy a instalar un motor de navegador por mi cuenta. Leído el código,
+el riesgo es bajo —es `-webkit-mask` en forma abreviada, con soporte largo en WebKit— y el fallo
+sería benigno: sin máscara la letra sale entera, que para contraste es mejor. **Pero está sin
+comprobar y queda escrito como pendiente**, en la ADR y en la auditoría.
+
+#### Lo que queda abierto
+
+- **`UltimoArticulo.astro` se queda sin consumidores.** No lo borro: regla 3. Decide él.
+- **El Safari**, arriba.
+- **El texto simulado de las columnas se queda**, por su decisión, y queda registrado en el §6.2
+  como lo que es: **la única marca del sitio que no representa nada**. Con la alternativa escrita
+  —el primer párrafo real del artículo— por si algún día se prefiere.

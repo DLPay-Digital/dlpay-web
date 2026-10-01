@@ -30,7 +30,7 @@
 | Regla de este documento | Estado |
 |---|---|
 | §4 — el catálogo son **seis movimientos, ni uno más** | **Enmendado por ADR-0006.** La rotación de la franja de notificación es un **séptimo** movimiento, fuera del catálogo y sin sigla. No se le asigna M7 a propósito: no es un movimiento del sistema, es una excepción de una pieza |
-| §4, regla dura 1 — **"Una sola vez.** Nada se re-anima… Un elemento que reaparece cada vez que pasas es el sello del movimiento decorativo" | **Enmendado, y sólo para la franja.** Su rotación es infinita: se re-anima cada 5 s indefinidamente. Es el caso que esta regla describe literalmente. Sigue vigente para todo lo demás |
+| §4, regla dura 1 — **"Una sola vez.** Nada se re-anima… Un elemento que reaparece cada vez que pasas es el sello del movimiento decorativo" | **Enmendado, y sólo para la franja.** Su rotación es infinita: se re-anima cada 5 s indefinidamente. Es el caso que esta regla describe literalmente. Sigue vigente para todo lo demás. *Con el globo (ADR-0008, dos movimientos) y el Diario DLPay (ADR-0011) son **cuatro** movimientos infinitos en todo el sitio.* |
 | §4, regla dura 6 — `prefers-reduced-motion` da una salida limpia | **Intacto y respetado.** Con la preferencia activa la rotación se cancela y queda fijo el primer mensaje |
 | §2 — techo de **280 ms** | **No aplica.** El techo gobierna la duración de una transición, no el intervalo entre dos estados. Los fundidos de la franja son de 600 ms, por encima del techo |
 
@@ -398,7 +398,16 @@ comprobada: cero JavaScript.** M6 es una animación CSS de carga, así que estas
 - **Parallax, movimiento continuo, elementos flotantes.** Movimiento decorativo puro.
 - **Transiciones de página.** Añaden latencia percibida a un sitio cuyo argumento es la velocidad.
 - **Movimiento en la tabla de `/empresas` ni en la actividad.** Son datos.
-- **Carruseles y portadas que se alternan solas.** *Añadido el 2026-10-01, al proponerse uno.*
+- ~~**Carruseles y portadas que se alternan solas.**~~ **ENMENDADO AL DÍA SIGUIENTE — ver ADR-0011.**
+  Se escribió el 2026-09-30 y el 2026-10-01 Sebastián volvió a pedir la pieza, como un diario cada
+  3 s. **Se conserva entero, con su refutación, porque el razonamiento sigue sirviendo para el
+  próximo caso y porque un párrafo que se enmienda a las veinticuatro horas dice algo que borrarlo
+  ocultaría.** De sus cuatro argumentos, **dos cayeron** con la implementación del diario —es CSS
+  puro, sin JavaScript, y la casilla de pausa vive fuera del objeto— y **dos siguen en pie**: el
+  cuarto movimiento infinito, que la ADR autoriza, y el destino que cambia bajo el cursor, que es el
+  coste aceptado. El texto original:
+
+  > *Añadido el 2026-10-01, al proponerse uno.*
   Sebastián preguntó si las tres hojas de la portada de `/blog` podían ir cambiando **cada 2
   segundos**. Se descartó, y el motivo decisivo **no es de este documento**: **la hoja es el enlace
   y es la primera acción de la página**, así que un cambio cada 2 s mueve el destino bajo el cursor

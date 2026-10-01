@@ -257,6 +257,13 @@ operaciones, APIs financieras, infraestructura de datos de usuarios. La arquitec
    gratuito, exceso de tarjetas / border-radius / botones pill, sombras y animaciones decorativas,
    hero y dashboards genéricos, iconos e ilustraciones 3D de stock, estética SaaS intercambiable,
    componentes copiados de templates, parecido a otra fintech. Identidad **propia de DLPay**.
+
+   **Una excepción, del 2026-10-01, acotada a una pieza: el Diario DLPay** de `/blog`
+   (`ADR-0011`). Trae grano de papel, mancha, relieve, luz simulada y perspectiva 3D, y eso es
+   textura y animación decorativas — la categoría que este principio nombra. Autorizada por
+   Sebastián. **No abre la puerta a nada más:** el resto del sitio sigue en el registro de
+   ADR-0001, y los cuatro dispositivos en CSS conservan su regla escrita —*plano y sin trucos:
+   nada de 3D, reflejos ni desenfoques*—.
 4. **Identidad antes que componentes.** El sistema visual está definido (ADR-0001 + Design System
    V1); los componentes lo expresan, no al revés.
 5. **Arquitectura mínima y modular.** Sin microservicios, monorepos, capas, sistemas de plugins ni
@@ -352,6 +359,12 @@ del sitio de Guita o de documentos anteriores. La paleta completa, neutros y sem
 
 **Nomenclatura:** **DLPay** es la marca y protagoniza toda la comunicación comercial.
 **DLPZ INCZ SpA** es la razón social: va en footer y páginas legales, no es protagonista.
+
+**Y desde el 2026-10-01 hay un tercer nombre: «Diario DLPay»**, la cabecera de la portada de
+`/blog`. Es una decisión de marca y no de diseño, y la tomó Sebastián. **Está acotado a esa
+pieza**: no es una sub-marca del blog, no aparece en el menú, ni en el pie, ni en los artículos, ni
+en el `title` de ninguna página. Si algún día se quiere usar fuera de ahí, es una conversación de
+marca, no un cambio de CSS. Ver ADR-0011.
 
 **Tipografía (cerrada 2026-09-04): set T-C** — **Familjen Grotesk** (display, títulos y texto) +
 **Spline Sans Mono** (cifras). Ambas SIL OFL, variables, **auto-hospedadas** (nunca desde un CDN

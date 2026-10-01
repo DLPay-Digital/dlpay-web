@@ -1,0 +1,657 @@
+---
+/**
+ * La portada del índice del blog: **un diario, doblado por la mitad, que pasa
+ * de hoja cada pocos segundos.** Cada hoja es la primera plana de un artículo
+ * publicado: el nombre del diario, la fecha en que salió y su titular.
+ *
+ * Pedido por Sebastián el 2026-10-01, con estas condiciones: «como un diario la
+ * forma y el estilo», «que se muestre sólo la cabecera (la parte de arriba)»,
+ * «Diario DLPay» con la fecha y el título, y que «cada 3 segundos vaya cambiando
+ * de página haciendo un movimiento que imite el cambio de página de un diario».
+ *
+ * ── «Sólo la parte de arriba» es la mitad sobre el pliegue ─────────────────
+ *
+ * Un diario doblado enseña la mitad de arriba de la portada, y el pliegue es la
+ * costura de la banda. La hoja está DIBUJADA hasta ahí y termina recta: no está
+ * recortada (sin `overflow: hidden`), así que si el texto crece por WCAG 1.4.12,
+ * la hoja crece con él. Es la misma construcción que el teléfono de
+ * `/confianza`.
+ *
+ * ── El estilo de diario, con la identidad congelada ────────────────────────
+ *
+ * Un diario se reconoce por su ARMADO, no por una tipografía con serifas, que
+ * aquí no hay: cabecera centrada y grande, filete doble grueso-fino bajo ella,
+ * las dos «orejas» arriba (número y sección), la línea de la fecha entre
+ * filetes, el titular y el arranque de las columnas con su corondel. Todo en
+ * Familjen Grotesk y Spline Sans Mono, en tinta sobre papel.
+ *
+ * ── El papel y el relieve ──────────────────────────────────────────────────
+ *
+ * Pedido el 2026-10-01: «más textura, más relieve de diario». Todo es CSS y
+ * tres ruidos SVG en `data:` (el `img-src` del sitio admite `data:`), ninguno
+ * pesa un archivo:
+ *
+ * · **El papel prensa**: un grano fino y unas manchas anchas y cálidas, debajo
+ *   del texto.
+ * · **La tinta**: la cabecera, el filete y el titular llevan la tinta un poco
+ *   corrida (`text-shadow` de medio píxel) y gastada (una máscara de ruido que
+ *   deja asomar el papel en puntos sueltos).
+ * · **La forma de la hoja**: más luz al centro y menos en los bordes, la sombra
+ *   del lomo a la izquierda y la del pliegue abajo, donde el papel se curva
+ *   hacia atrás. Van en `.relieve`, ENCIMA del texto, porque la curva también
+ *   oscurece la tinta.
+ * · **El arranque de las columnas** lleva líneas de texto en gris, y el dorso
+ *   las de la página 2, como se transparentan en el papel prensa.
+ * · **El grueso del diario**: tres hojas asoman por arriba y por el canto,
+ *   desalineadas como en un diario de verdad.
+ *
+ * Nada de esto va en `.hoja`: un `filter`, una `opacity` o una máscara en el
+ * elemento con `preserve-3d` lo aplanan, y aplanado enseña el revés.
+ *
+ * ── Todo se deriva ─────────────────────────────────────────────────────────
+ *
+ * Una hoja por artículo de `publishedPosts()`, que ya viene filtrado por el
+ * candado de publicación y ordenado: la de arriba es la más reciente. La fecha
+ * sale de `pubDate` y el número («N.º 3») es el orden del artículo en el blog,
+ * contado desde el primero. **Nadie edita esto**: el día que se publica otro
+ * artículo, el diario tiene una hoja más.
+ *
+ * ── La vuelta de página: CSS, cero JavaScript ──────────────────────────────
+ *
+ * Las hojas se apilan en la misma celda de una rejilla —la técnica de la franja
+ * de notificación, `AnnouncementBar.astro`— y un `@keyframes` por cada hoja
+ * gobierna su ciclo: arriba durante su turno, y al final del turno gira sobre
+ * el lomo (el canto izquierdo) hasta quedar del revés y desaparecer, dejando a
+ * la vista la siguiente, que ya estaba debajo.
+ *
+ * Los porcentajes del `@keyframes` dependen de cuántas hojas hay, así que se
+ * escriben en el build a partir de `posts.length` y van en un `<style>` en
+ * línea (el `style-src` del sitio ya admite `'unsafe-inline'`). La franja tenía
+ * los suyos fijos para dos mensajes; éstos sirven para cualquier número.
+ *
+ * **La perspectiva va en `.diario`, el padre directo de cada hoja**, porque
+ * `perspective` sólo actúa sobre los hijos. En la primera versión estaba en la
+ * escena, un nivel más arriba, y no hacía nada: medido, la hoja a 24° medía
+ * 567 × 368, que es 620 · cos 24° por el mismo alto. Era una hoja que se
+ * estrechaba, no una que se levantaba. Ahora, en el mismo instante, mide
+ * 564 × 387: el canto que se acerca crece.
+ *
+ * **Y mira desde la esquina inferior derecha**, que no es estética: con el
+ * origen ahí, lo que se acerca al lector crece hacia arriba y hacia la
+ * izquierda, nunca a la derecha del canto ni por debajo del pliegue. Hacia
+ * arriba SÍ sale —hasta 52 px a 1280 y 22 a 390, con la hoja casi de canto—
+ * y por eso el control está más separado del papel de lo que pediría la vista:
+ * es el hueco por el que pasa la esquina. Medido barriendo las tres vueltas
+ * cada 20 ms en siete anchos y tocando el control con `elementFromPoint`: la
+ * esquina pasa a 8 px o más de él, y nunca toca el titular ni la bajada.
+ *
+ * ── Lo que exige poner algo en movimiento por su cuenta ────────────────────
+ *
+ * · **WCAG 2.2.2, con un control de verdad.** Un movimiento que arranca solo y
+ *   dura más de 5 s necesita pausa. La franja sólo pudo pausar al pasar el
+ *   puntero o al recibir el foco, porque «sin JavaScript no se puede ofrecer un
+ *   botón de pausa de verdad» (ADR-0006). **Sí se puede**: una casilla nativa
+ *   con su etiqueta, que se maneja con el teclado y la lee el lector de
+ *   pantalla. Aquí están las tres: la casilla, el puntero y el foco.
+ * · **Lo que se oculta sale del orden de tabulación** con `visibility: hidden`,
+ *   igual que en la franja. Y como la hoja de debajo SÍ está visible —tiene que
+ *   estarlo para aparecer al girar la de arriba—, la que recibe el foco sube al
+ *   frente con `!important`, que es lo único que gana a una animación.
+ * · **`prefers-reduced-motion`**: no gira nada. Se queda la hoja más reciente,
+ *   las demás salen del documento y el control desaparece, porque no hay nada
+ *   que pausar.
+ * · **Con una sola hoja no hay vuelta**: el diario se queda quieto y sin
+ *   control.
+ */
+import type { Post } from '../lib/blog.ts';
+
+interface Props {
+  posts: readonly Post[];
+  /** Segundos que dura cada hoja, vuelta incluida. Sebastián pidió 3. */
+  cadencia?: number;
+  /** Segundos que dura la vuelta de página, dentro de la cadencia. */
+  vuelta?: number;
+}
+const { posts, cadencia = 3, vuelta = 0.9 } = Astro.props;
+
+const n = posts.length;
+const gira = n > 1;
+
+/* «Martes, 29 de septiembre de 2026». `timeZone: 'UTC'` porque la fecha del
+   frontmatter es medianoche UTC; en la hora de Chile retrocedería un día. */
+/* La fecha en dos partes: el día de la semana, que se suelta bajo 360 px, y el
+   resto. A 320 la línea entera en mono pedía 262 px y la hoja da 256. */
+const sinDia = new Intl.DateTimeFormat('es-CL', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+const diaSemana = new Intl.DateTimeFormat('es-CL', { weekday: 'long', timeZone: 'UTC' });
+const fechaDiario = (d: Date): { dia: string; resto: string } => {
+  const w = diaSemana.format(d);
+  return { dia: `${w.charAt(0).toUpperCase()}${w.slice(1)}, `, resto: sinDia.format(d) };
+};
+
+const hojas = posts.map((post, i) => ({
+  href: `/blog/${post.id}/`,
+  numero: n - i,
+  seccion: post.data.category,
+  fecha: fechaDiario(post.data.pubDate),
+  iso: post.data.pubDate.toISOString(),
+  titulo: post.data.title,
+  /* Retraso NEGATIVO: cada hoja arranca ya en su punto del ciclo, así que el
+     primer fotograma no tiene huecos. La primera está arriba en su turno; la
+     segunda, debajo, esperando; las demás, fuera. */
+  retraso: i === 0 ? 0 : -(n - i) * cadencia,
+}));
+
+/*
+  Los cuatro `@keyframes`, escritos para ESTE número de hojas. En fracciones del
+  ciclo: `p` es el turno de una hoja y `t` su vuelta.
+
+  **El regreso de `p` a `p + 0,01` es un SALTO** (`steps(1, end)`), no una
+  interpolación. Sin él, durante 0,9 ms la hoja volvía de −180° a 0° visible y
+  el dorso reaparecía: un fotograma que cae ahí (a 60 Hz, uno de cada ~18
+  vueltas; a 120 Hz, uno de cada ~9) enseñaba un fantasma de la hoja a la
+  izquierda del diario o asomando por encima. Visto en los fotogramas de
+  3,0002 s, 3,00045 s y 3,0007 s de la primera versión.
+*/
+const ciclo = n * cadencia;
+const p = (100 * cadencia) / ciclo;
+const t = (100 * vuelta) / ciclo;
+const f = (x: number): string => `${x.toFixed(3)}%`;
+const nombre = `diario-${n}-${String(cadencia).replace('.', '_')}`;
+const conFuera = n > 2;
+const keyframes = gira
+  ? `
+@keyframes ${nombre}-hoja {
+  0% { z-index: 3; visibility: visible; transform: rotateY(0deg); }
+  ${f(p - t)} { z-index: 3; visibility: visible; transform: rotateY(0deg); animation-timing-function: cubic-bezier(.45, .05, .35, 1); }
+  ${f(p)} { z-index: 3; visibility: visible; transform: rotateY(-180deg); animation-timing-function: steps(1, end); }
+  ${
+    conFuera
+      ? `${f(p + 0.01)} { z-index: 1; visibility: hidden; transform: rotateY(0deg); }
+  ${f(100 - p - 0.01)} { z-index: 1; visibility: hidden; transform: rotateY(0deg); }`
+      : `${f(p + 0.01)} { z-index: 2; visibility: visible; transform: rotateY(0deg); }`
+  }
+  ${f(100 - p)} { z-index: 2; visibility: visible; transform: rotateY(0deg); }
+  100% { z-index: 2; visibility: visible; transform: rotateY(0deg); }
+}
+@keyframes ${nombre}-dorso {
+  0%, ${f(p - t * 0.45)} { opacity: 1; }
+  ${f(p)} { opacity: 0; animation-timing-function: steps(1, end); }
+  ${f(p + 0.01)}, 100% { opacity: 1; }
+}
+@keyframes ${nombre}-luz {
+  0%, ${f(p - t)} { opacity: 0; }
+  ${f(p - t / 2)} { opacity: .22; }
+  ${f(p)} { opacity: .4; animation-timing-function: steps(1, end); }
+  ${f(p + 0.01)}, 100% { opacity: 0; }
+}
+@keyframes ${nombre}-sombra {
+  0%, ${f(100 - t)} { opacity: 0; }
+  ${f(100 - t * 0.55)} { opacity: .5; }
+  100% { opacity: 0; }
+}`
+  : '';
+const idPausa = `diario-pausa-${n}`;
+---
+{gira && <style is:inline set:html={keyframes}></style>}
+
+<div class:list={['diario-caja', { gira }]} style={`--ciclo: ${ciclo}s; --a-hoja: ${nombre}-hoja; --a-luz: ${nombre}-luz; --a-sombra: ${nombre}-sombra; --a-dorso: ${nombre}-dorso`}>
+  {gira && (
+    <>
+      {/*
+        La pausa de WCAG 2.2.2, sin JavaScript: una casilla nativa. Su nombre
+        accesible es fijo —«Detener el paso de las hojas»— y su estado, marcada o
+        no, es lo que lee el lector de pantalla. El texto que se ve cambia entre
+        «Pausar» y «Seguir», y va `aria-hidden` para no cambiar el nombre.
+      */}
+      <input type="checkbox" id={idPausa} class="diario-pausa sr-only" />
+      <label for={idPausa} class="diario-boton">
+        <span class="sr-only">Detener el paso de las hojas</span>
+        <span class="ico" aria-hidden="true"></span>
+        <span class="vis pausar" aria-hidden="true">Pausar</span>
+        <span class="vis seguir" aria-hidden="true">Seguir</span>
+      </label>
+    </>
+  )}
+
+  <div class="diario-escena">
+    <ol class="diario" role="list" aria-label="Diario DLPay: los artículos publicados">
+      {hojas.map((h, i) => (
+        <li class:list={['hoja', { primera: i === 0 }]} style={`--d: ${h.retraso}s`}>
+          <a class="hoja-cara" href={h.href}>
+            <span class="orejas">
+              <span>N.º {h.numero}</span>
+              <span>{h.seccion}</span>
+            </span>
+            <span class="cabecera">Diario DLPay</span>
+            <span class="filete-doble" aria-hidden="true"></span>
+            <time class="fecha" datetime={h.iso}><span class="dia">{h.fecha.dia}</span>{h.fecha.resto}</time>
+            <span class="titular">{h.titulo}</span>
+            {/* El arranque de las columnas, con su corondel: el diario sigue
+                bajo el pliegue. */}
+            <span class="columnas" aria-hidden="true"></span>
+            {/* La forma de la hoja: luz, lomo y pliegue, encima del texto. */}
+            <span class="relieve" aria-hidden="true"></span>
+          </a>
+          {/* El dorso: lo que se ve de la hoja cuando gira. */}
+          <span class="hoja-dorso" aria-hidden="true"></span>
+        </li>
+      ))}
+    </ol>
+  </div>
+</div>
+
+<style>
+  /* Tonos del papel de diario y de sus cantos, locales a esta pieza. */
+  .diario-caja {
+    /*
+      El papel de la pieza parte un punto MÁS CLARO que `--papel` porque la
+      textura lo oscurece: grano y manchas le quitan 9 de 255 de media, y así
+      la media vuelve a quedar en el papel del sitio. Partiendo de `--papel`,
+      las orejas en `--ink-mute` bajaban de 5,5:1 a 4,3:1.
+    */
+    --diario-papel: #FAF9F5;
+    --diario-dorso: #E6E3DA;
+    --diario-pila-1: #E4E1D8;
+    --diario-pila-2: #D5D2C9;
+    --diario-pila-3: #C6C3BA;
+    --diario-filo: rgba(11, 19, 32, .16);
+    /*
+      Las líneas de texto de las columnas: palabras de largo variable, en gris
+      de texto y no en tinta llena, con un fin de párrafo y una sangría. Ocho
+      líneas cada 8 px; se estira al ancho de la columna (`preserveAspectRatio
+      ='none'`), así que en un teléfono las palabras son más cortas.
+    */
+    --diario-lineas: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='64' viewBox='0 0 180 64' preserveAspectRatio='none'%3E%3Cpath d='M0 1.5h13m3 0h17m3 0h17m3 0h25m3 0h28m3 0h31m3 0h19m3 0h9M0 9.5h28m3 0h11m3 0h13m3 0h9m3 0h31m3 0h11m3 0h6m3 0h11m3 0h22m3 0h11M0 17.5h13m3 0h17m3 0h13m3 0h28m3 0h15m3 0h15m3 0h19m3 0h13m3 0h17M0 25.5h13m3 0h25m3 0h13m3 0h15m3 0h22m3 0h15M8 33.5h11m3 0h17m3 0h19m3 0h25m3 0h6m3 0h22m3 0h19m3 0h28M0 41.5h22m3 0h9m3 0h9m3 0h31m3 0h22m3 0h19m3 0h11m3 0h19m3 0h11M0 49.5h31m3 0h25m3 0h15m3 0h6m3 0h22m3 0h22m3 0h6m3 0h28M0 57.5h22m3 0h31m3 0h28m3 0h25m3 0h22m3 0h11m3 0h22' stroke='%23131A26' stroke-width='3' stroke-opacity='.17' fill='none'/%3E%3C/svg%3E");
+    /*
+      Los tres ruidos. `color-interpolation-filters='sRGB'` para que los colores
+      del `feColorMatrix` sean los que están escritos, y no se lean en RGB
+      lineal. El canal rojo del ruido decide la opacidad.
+      · grano: motas oscuras de 1 px, el papel prensa;
+      · mancha: nubes anchas y cálidas, el papel que no es uniforme;
+      · gastada: máscara de la tinta, opaca casi entera, con puntos donde el
+        papel asoma.
+    */
+    --diario-grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .07 0 0 0 0 .1 0 0 0 0 .15 .36 0 0 0 -.18'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    --diario-mancha: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='560' height='560'%3E%3Cfilter id='m' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.006' numOctaves='3' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .34 0 0 0 0 .29 0 0 0 0 .17 .3 0 0 0 -.13'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E");
+    --diario-gastada: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='t' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='1' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.4 0 0 0 2.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23t)'/%3E%3C/svg%3E");
+    display: grid;
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  /* ── El control ────────────────────────────────────────────────────────── */
+  .diario-boton {
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 44px;
+    padding: 0 var(--s-2);
+    /* No es aire: es el hueco por el que pasa la esquina de la hoja al
+       levantarse (ver «La vuelta de página»). Con 8 px la tapaba hasta 12. */
+    margin-bottom: var(--s-5);
+    /* En la tipografía de texto y no en mono: en Spline a 13 px «Pausar» se leía
+       «Pau sar», porque la u y la s ocupan cada una su celda entera. */
+    font-family: var(--f-text);
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    color: var(--on-tinta-mute);
+    cursor: pointer;
+    user-select: none;
+  }
+  .diario-boton:hover { color: var(--on-tinta); }
+  .diario-pausa:focus-visible + .diario-boton { outline: 2px solid var(--focus); outline-offset: 2px; }
+  /* El icono: dos barras (pausar) o un triángulo (seguir), dibujados en CSS. */
+  .ico { position: relative; width: 10px; height: 12px; flex: none; }
+  .ico::before,
+  .ico::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 3px;
+    height: 12px;
+    background: currentColor;
+  }
+  .ico::before { left: 1px; }
+  .ico::after { right: 1px; }
+  .seguir { display: none; }
+  .diario-pausa:checked + .diario-boton .pausar { display: none; }
+  .diario-pausa:checked + .diario-boton .seguir { display: inline; }
+  .diario-pausa:checked + .diario-boton .ico::before {
+    left: 1px;
+    width: 0;
+    height: 0;
+    background: none;
+    border-style: solid;
+    border-width: 6px 0 6px 10px;
+    border-color: transparent transparent transparent currentColor;
+  }
+  .diario-pausa:checked + .diario-boton .ico::after { display: none; }
+
+  /* ── La escena y la pila ───────────────────────────────────────────────── */
+  .diario-escena { position: relative; }
+  .diario {
+    position: relative;
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    /* AQUÍ y no en la escena: `perspective` sólo actúa sobre los hijos. */
+    perspective: 5000px;
+    perspective-origin: 100% 100%;
+  }
+  /*
+    El grueso del diario: tres hojas de debajo que asoman por arriba y por el
+    canto, desalineadas, cada una con su filo. Abajo todas acaban en el
+    pliegue, y por la izquierda en el lomo. Van con o sin vuelta: un diario de
+    una hoja también tiene grueso.
+    Orden, de la más cercana a la más honda: `.diario::after`, `.diario::before`
+    (las dos en z −1 dentro de `.diario`, que es contexto de apilamiento por la
+    perspectiva) y `.diario-escena::before`, que se pinta antes que todo.
+  */
+  .diario::before,
+  .diario::after,
+  .diario-escena::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    border-radius: 2px 2px 0 0;
+    box-shadow: inset -1px 1px 0 var(--diario-filo);
+    pointer-events: none;
+  }
+  .diario::after { z-index: -1; top: -2px; right: -2px; left: 2px; background: var(--diario-pila-1); }
+  .diario::before { z-index: -1; top: -1px; right: -5px; left: 5px; background: var(--diario-pila-2); }
+  .diario-escena::before { top: -4px; right: -4px; left: 9px; background: var(--diario-pila-3); }
+  .hoja {
+    grid-area: 1 / 1;
+    position: relative;
+    transform-origin: 0 50%;
+    transform-style: preserve-3d;
+  }
+  .gira .hoja {
+    animation: var(--a-hoja) var(--ciclo) linear var(--d) infinite;
+    will-change: transform;
+  }
+
+  /*
+    La cara: la primera plana. Papel, tinta, y nada de radio abajo: termina en el
+    pliegue. Arriba, un radio de 2 px, que es lo que tiene un papel cortado.
+  */
+  .hoja-cara {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: var(--s-4) var(--s-4) 0;
+    /* El papel prensa, debajo del texto: grano fino, manchas anchas y el
+       papel, con más luz hacia el centro. */
+    background:
+      /* La luz que entra por arriba aclara también el grano: es la franja de
+         las orejas, que van en `--ink-mute` a 13 px y piden 4,5:1. */
+      linear-gradient(rgba(255, 255, 255, .45), rgba(255, 255, 255, 0) 60px),
+      var(--diario-grano) 0 0 / 220px 220px,
+      var(--diario-mancha) 0 0 / 560px 560px,
+      radial-gradient(120% 100% at 44% 28%, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 48%),
+      var(--diario-papel);
+    color: var(--ink);
+    text-decoration: none;
+    text-align: left;
+    border-radius: 2px 2px 0 0;
+    /* El filo de la hoja y su contacto con la de debajo, sólo arriba y en el
+       canto, que es por donde asoma la pila. No es una elevación: es un
+       papel sobre otro. */
+    box-shadow: inset 0 0 0 1px rgba(11, 19, 32, .06), 1px -1px 1px rgba(11, 19, 32, .16);
+    backface-visibility: hidden;
+  }
+  /* La luz que se va al girar (::after) y la sombra que cae sobre la hoja de
+     debajo mientras la de arriba se levanta (::before). */
+  .hoja-cara::before,
+  .hoja-cara::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    border-radius: inherit;
+  }
+  .hoja-cara::before { background: linear-gradient(to right, rgba(11, 19, 32, .55), rgba(11, 19, 32, 0) 70%); }
+  .hoja-cara::after { background: linear-gradient(to left, rgba(11, 19, 32, .5), rgba(11, 19, 32, .05)); }
+  .gira .hoja-cara::before { animation: var(--a-sombra) var(--ciclo) linear var(--d) infinite; }
+  .gira .hoja-cara::after { animation: var(--a-luz) var(--ciclo) linear var(--d) infinite; }
+
+  /*
+    La forma de la hoja, encima del texto: una hoja de diario no está plana.
+    De arriba abajo en la pila de fondos:
+    · el pliegue: justo antes, el lomo del doblez coge la luz; en el borde, el
+      papel se curva hacia atrás y la pierde;
+    · el lomo, a la izquierda, donde se juntan las hojas;
+    · el canto derecho y la parte baja, algo más apagados. Arriba no: ahí están
+      las orejas, en `--ink-mute`, y cada punto de oscuridad les quita
+      contraste.
+    Sólo sombra: la luz del centro va DEBAJO del texto, en el fondo de la cara.
+    Encima, aclaraba la cabecera hasta dejarla gris.
+  */
+  .relieve {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background:
+      linear-gradient(to top, rgba(11, 19, 32, .24), rgba(11, 19, 32, .08) 5px, rgba(11, 19, 32, 0) 11px, rgba(255, 255, 255, .32) 16px, rgba(255, 255, 255, 0) 26px),
+      linear-gradient(to right, rgba(11, 19, 32, .10), rgba(11, 19, 32, .03) 6px, rgba(11, 19, 32, 0) 22px),
+      linear-gradient(to left, rgba(11, 19, 32, .06), rgba(11, 19, 32, 0) 40px),
+      radial-gradient(140% 90% at 50% 0%, rgba(11, 19, 32, 0) 62%, rgba(11, 19, 32, .05));
+  }
+
+  /*
+    El dorso se desvanece al aterrizar. La opacidad va AQUÍ y no en la hoja, y
+    no es un detalle: una opacidad menor que 1 en un elemento con
+    `preserve-3d` lo aplana, y aplanado deja de ocultar la cara de atrás — en el
+    primer intento, a mitad de vuelta se veía el titular al revés.
+  */
+  .gira .hoja-dorso { animation: var(--a-dorso) var(--ciclo) linear var(--d) infinite; }
+  /*
+    El dorso es la página 2, y en papel prensa se transparenta: su filete de
+    folio arriba, tres columnas de líneas de texto en gris claro y sus
+    corondeles. Al aterrizar, el lomo le queda a la DERECHA (está girado), y
+    ahí va su sombra; abajo, la del pliegue.
+  */
+  .hoja-dorso {
+    --g: var(--s-3);
+    --m: var(--s-4);
+    --w: calc((100% - 2 * var(--m) - 2 * var(--g)) / 3);
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to left, rgba(11, 19, 32, .14), rgba(11, 19, 32, 0) 24px),
+      linear-gradient(to top, rgba(11, 19, 32, .14), rgba(11, 19, 32, 0) 18px),
+      linear-gradient(rgba(11, 19, 32, .2), rgba(11, 19, 32, .2)) var(--m) 18px / calc(100% - 2 * var(--m)) 1px no-repeat,
+      linear-gradient(to right,
+        transparent calc(var(--m) + var(--w) + var(--g) / 2 - .5px),
+        rgba(11, 19, 32, .1) 0 calc(var(--m) + var(--w) + var(--g) / 2 + .5px),
+        transparent 0 calc(var(--m) + 2 * var(--w) + 1.5 * var(--g) - .5px),
+        rgba(11, 19, 32, .1) 0 calc(var(--m) + 2 * var(--w) + 1.5 * var(--g) + .5px),
+        transparent 0) 0 30px / 100% 100% no-repeat,
+      /* Un velo del color del dorso deja las líneas a la mitad: se leen como
+         lo que se transparenta, no como lo impreso. */
+      linear-gradient(rgba(230, 227, 218, .55), rgba(230, 227, 218, .55)),
+      var(--diario-lineas) var(--m) 30px / var(--w) 64px repeat-y,
+      var(--diario-lineas) 50% 6px / var(--w) 64px repeat-y,
+      var(--diario-lineas) calc(100% - var(--m)) -10px / var(--w) 64px repeat-y,
+      var(--diario-grano) 0 0 / 220px 220px,
+      var(--diario-dorso);
+    /* Igual que en las columnas: el velo y las líneas, sólo bajo el folio. */
+    padding-top: 28px;
+    background-clip: border-box, border-box, border-box, border-box, content-box, content-box, content-box, content-box, border-box;
+    border-radius: 2px 2px 0 0;
+    transform: rotateY(180deg);
+    backface-visibility: hidden;
+  }
+
+  /* ── El armado de la primera plana ─────────────────────────────────────── */
+  .orejas {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding-bottom: var(--s-2);
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    /*
+      ── Un paso más oscuro que `--ink-mute`, y es por contraste ─────────────
+
+      La entrega dejaba las orejas en `--ink-mute` —`rgb(90,100,114)`, **5,69:1
+      sobre el papel limpio**— y reportaba el contraste real como una
+      distribución: de 5,10 a 5,56 de media, p5 ≥ 4,66 y **mínimo 4,12**.
+      **WCAG no tiene contraste medio.** Donde el grano oscurece el papel bajo
+      un trazo de 13 px, ahí el punto no llega al 4,5 de AA, y «es una mota» no
+      es como funciona el criterio.
+
+      Un paso más oscuro sube la base a **6,52**, y con la misma caída relativa
+      que midió Cowork el peor punto queda en **4,72**: por encima del piso en
+      todo el rango del grano. A simple vista es el mismo gris.
+
+      **Es local y no toca `--ink-mute`**, que gobierna el texto secundario de
+      las quince páginas y no tiene este problema porque no vive sobre grano.
+    */
+    color: #525B68;
+  }
+  .cabecera {
+    display: block;
+    padding: var(--s-1) 0 var(--s-3);
+    font-size: var(--t-display-m);
+    font-weight: 700;
+    line-height: var(--lh-display);
+    letter-spacing: -.02em;
+    text-align: center;
+    color: var(--ink);
+  }
+  /* Grueso arriba, fino abajo: el filete de una cabecera de diario. */
+  .filete-doble {
+    display: block;
+    height: 7px;
+    border-top: 3px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+  /*
+    La tinta impresa: un poco corrida (medio píxel de sombra del mismo color) y
+    gastada (la máscara deja asomar el papel en puntos sueltos). Sólo en lo
+    grande —cabecera, filete y titular—; en la letra de 13 px se perdería
+    legibilidad sin ganar nada.
+  */
+  .cabecera,
+  .titular { text-shadow: 0 0 .6px rgba(19, 26, 38, .55); }
+  .cabecera,
+  .filete-doble,
+  .titular {
+    -webkit-mask: var(--diario-gastada) 0 0 / 180px 180px;
+    mask: var(--diario-gastada) 0 0 / 180px 180px;
+  }
+  .fecha {
+    display: block;
+    padding: var(--s-2) 0;
+    border-bottom: 1px solid var(--ink);
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    letter-spacing: var(--ls-label);
+    text-align: center;
+    color: var(--ink);
+  }
+  .titular {
+    display: block;
+    padding: var(--s-4) 0 var(--s-3);
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  /*
+    Las columnas: un filete arriba, tres columnas de líneas de texto en gris
+    —el arranque de los artículos, que siguen bajo el pliegue— y los dos
+    corondeles en el centro de cada calle.
+  */
+  .columnas {
+    --g: var(--s-3);
+    --w: calc((100% - 2 * var(--g)) / 3);
+    flex: 1;
+    min-height: var(--s-6);
+    border-top: 1px solid var(--line);
+    background:
+      linear-gradient(to right,
+        transparent calc(var(--w) + var(--g) / 2 - .5px),
+        var(--line) 0 calc(var(--w) + var(--g) / 2 + .5px),
+        transparent 0 calc(2 * var(--w) + 1.5 * var(--g) - .5px),
+        var(--line) 0 calc(2 * var(--w) + 1.5 * var(--g) + .5px),
+        transparent 0) 0 var(--s-2) / 100% 100% no-repeat,
+      /* Cada columna arranca en otra línea del mismo tejido, para que no se
+         repitan de lado a lado. */
+      var(--diario-lineas) 0 11px / var(--w) 64px repeat-y,
+      var(--diario-lineas) 50% -13px / var(--w) 64px repeat-y,
+      var(--diario-lineas) 100% -29px / var(--w) 64px repeat-y;
+    /* El tejido se repite hacia arriba también: el relleno y el recorte al
+       contenido hacen que la primera línea sea la de los 11 px, y no una pegada
+       al filete. Con `border-box` global, el relleno no cambia el alto. */
+    padding-top: 10px;
+    background-clip: border-box, content-box, content-box, content-box;
+  }
+
+  /* ── Pausas: la casilla, el puntero y el foco ──────────────────────────── */
+  .diario-pausa:checked ~ .diario-escena .hoja,
+  .diario-pausa:checked ~ .diario-escena .hoja-cara::before,
+  .diario-pausa:checked ~ .diario-escena .hoja-cara::after,
+  .diario-escena:hover .hoja,
+  .diario-escena:hover .hoja-cara::before,
+  .diario-escena:hover .hoja-cara::after,
+  .diario-escena:focus-within .hoja,
+  .diario-escena:focus-within .hoja-cara::before,
+  .diario-escena:focus-within .hoja-cara::after,
+  .diario-pausa:checked ~ .diario-escena .hoja-dorso,
+  .diario-escena:hover .hoja-dorso,
+  .diario-escena:focus-within .hoja-dorso { animation-play-state: paused; }
+  /*
+    La hoja con el foco sube al frente, entera y plana, aunque la pilla a mitad
+    de vuelta. `!important` es lo único que gana a una animación en la cascada.
+  */
+  .gira .hoja:focus-within {
+    z-index: 5 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+  .gira .hoja:focus-within .hoja-cara::before,
+  .gira .hoja:focus-within .hoja-cara::after { opacity: 0 !important; }
+  .hoja-cara:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  /* ── Salida limpia (Motion System, regla dura 6) ───────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .gira .hoja,
+    .gira .hoja-cara::before,
+    .gira .hoja-cara::after,
+    .gira .hoja-dorso { animation: none; }
+    .gira .hoja:not(.primera) { display: none; }
+    .diario-boton,
+    .diario-pausa { display: none; }
+  }
+
+  /* Bajo 360 la hoja da 256 px y la fecha larga en mono pide 262: partía el año
+     en otra línea. Se suelta el día de la semana y el relleno baja a 12. */
+  @media (max-width: 359px) {
+    .hoja-cara { padding: var(--s-3) var(--s-3) 0; }
+    .dia { display: none; }
+  }
+  @media (min-width: 900px) {
+    .diario-boton { margin-bottom: var(--s-6); }
+    .hoja-cara { padding: var(--s-5) var(--s-6) 0; }
+    .cabecera { font-size: var(--t-display); padding: var(--s-2) 0 var(--s-4); }
+    .titular { font-size: var(--t-h2); padding: var(--s-5) 0 var(--s-4); }
+    .columnas { min-height: var(--s-7); }
+  }
+</style>

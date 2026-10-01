@@ -577,7 +577,7 @@ a 1280 px** —el rango se mide ahí y sólo ahí, ver más abajo— sobre el bu
 
 | familia | páginas y alto | rango |
 |---|---|---|
-| **con objeto** | `/blog` 791 · Home 781 · `/confianza` 698 · `/como-funciona` 660 · `/preguntas` 634 · `/precio` 589 · `/empresas` 569 · `/tarifas` 529 | **529–791 px** |
+| **con objeto** | Home 781 · `/confianza` 698 · `/blog` 674 · `/como-funciona` 660 · `/preguntas` 634 · `/precio` 589 · `/empresas` 569 · `/tarifas` 529 | **529–781 px** |
 | **sin objeto** | `/canal-de-denuncias` 288 · `/terminos` 262 · `/privacidad` 236 | **236–288 px** |
 
 **Entre 288 y 460 px no hay ninguna.** Ese hueco de 172 px es la regla y no una casualidad: **una
@@ -626,11 +626,11 @@ ser: la sobriedad es parte de lo que esas páginas dicen.
 **El piso de la familia con objeto subió a 529** al dejar `/confianza` los 460: hoy ninguna baja de
 ahí, y el hueco prohibido quedó vacío por los dos lados.
 
-**Y el techo lo tiene ahora `/blog` con 791**, diez por encima de la Home. Pasó el mismo 2026-10-01,
-unas horas después de entrar su portada: los cantos de las hojas de detrás **dejaron de ser
-rebanadas en blanco y pasaron a llevar el titular y la fecha de su artículo**, cada uno como enlace
-propio. Costó 72 px. *No rompe nada —el rango es una observación, no un tope— pero conviene saber que
-la portada más alta del sitio ya no es la de la Home.*
+**El techo vuelve a ser el de la Home, 781.** `/blog` lo rebasó durante unas horas el 2026-10-01
+—llegó a 791 cuando los cantos ganaron su titular— y volvió a bajar, a **674**, al sustituirse la
+pila por el **Diario DLPay** (ADR-0011). *Tres alturas en un día para la misma portada: 236, 719,
+791 y 674. Queda dicho porque esta tabla se cita, y citarla sin rehacer la foto es cómo envejeció el
+recuento del §6.2.*
 
 **Y la regla se cumplió cuatro veces seguidas, con la misma forma.** `/preguntas`, `/precio`,
 `/confianza` y `/blog` abrían todas sin objeto o en el borde de la familia, y en las cuatro la
@@ -928,6 +928,28 @@ dos.*
 > **Antes de poner la única marca punteada del sistema, hay que preguntarse si lo que separa cambia
 > algo.** Si la figura existe para decir que no cambia nada, el punteado la contradice.
 
+**Una excepción al vocabulario entero, del 2026-10-01: el arranque de columnas del Diario DLPay.**
+
+Son **líneas de texto simuladas**, dibujadas con un tejido repetido, y **no representan nada**: ni
+movimiento, ni flujo de valor, ni un paso de un proceso, ni una pregunta del visitante. Son la
+primera marca del sitio de la que eso es cierto, y la regla dura de `CLAUDE.md` §5 llama a eso
+exactamente **papel tapiz**.
+
+**Se quedan por decisión de Sebastián**, tomada con el argumento delante. Se registra sin
+maquillarlo, y con tres acotaciones que son lo que hace que esto no sea una grieta:
+
+- **Es una excepción, no una marca.** No entra en la tabla de arriba: no hay nada que significar.
+- **No autoriza texto simulado en ninguna otra pieza.** Si aparece en una segunda, vuelve esta
+  conversación.
+- **Hay una alternativa escrita, por si algún día se prefiere:** el primer párrafo real del
+  artículo, cortado. Diría algo, saldría del contenido y nadie lo teclearía. Se ofreció y no se
+  eligió.
+
+*Y conviene saber por qué el caso es distinto del `coverImage` que se retiró el 2026-09-16.* Aquél
+era un PNG de cuñas reutilizado dos veces en el mismo artículo: papel tapiz **y** una imagen, en un
+sistema donde las portadas las dibuja el código. Esto es papel tapiz dibujado, dentro de una pieza
+que ya es una excepción declarada de registro. Sigue siendo papel tapiz.
+
 **Generalizada el 2026-09-24, de «frontera» a «límite».** Nació describiendo el único punteado que
 existía —la frontera de `cruza`, que separa Chile del extranjero—. La banda de `/precio` estrenó un
 segundo: una vertical punteada en el instante en que el cliente acepta el precio. No es una frontera
@@ -1119,7 +1141,8 @@ cada una, no qué significa.
 | **Carril de dos columnas** | `/como-funciona`: qué hace cada parte y dónde cambia de manos | La colocación en rejilla va **explícita**: el flujo automático deshace el carril |
 | **Eje de alcance** | Hasta dónde llega el servicio | `EjeDeAlcance`, en **tres** páginas: `/como-funciona`, `/empresas` y el artículo del blog. *Salió de la Home el 2026-09-25.* Es la regla dura de `CLAUDE.md` §1 dibujada, y por eso es un componente y no CSS repetido |
 | **Portada de dato** | La cifra de la que habla un artículo | Dos tipos: `cifra` y `rango`. **La cuña no entra** (§6.1). `fuente` es obligatoria |
-| **Pila de artículos** | `/blog`: el último artículo completo y los dos anteriores por su lomo | `UltimoArticulo`. **Misma materia que el panel de `/precio`** —cabecera, pozo hundido y cuerpo sobre papel— para que los dos objetos de papel se lean como parientes. Se deriva entera de `publishedPosts()`, así que **cambia sola al publicar**. Reusa `PortadaFigura` en su variante `marca` y los formateadores de `lib/pricing`: **no reescribe ni el dibujo ni el dato**. No trae la banda de tinta del artículo —oscuro dentro de claro dentro de oscuro se lee como un agujero—. **Los cantos llevan su titular y son enlaces**, hasta dos, así que son **hermanos** del enlace de la hoja y nunca sus hijos: un enlace dentro de otro es HTML inválido y el teclado no llega al de dentro. El titular del canto se corta con elipsis, y **es el único sitio del sitio donde un titular se corta**: un canto que crece con el texto deja de ser un canto |
+| **Diario DLPay** | `/blog`: una hoja por artículo, que pasan solas cada 3 s | `DiarioDLPay`. **Cuarto movimiento infinito del sitio y única pieza fuera del registro de ADR-0001**: grano, mancha, relieve, luz y perspectiva 3D. Ver **ADR-0011**, que es de lectura obligada antes de tocarla. CSS puro, 0 JS; los `@keyframes` se generan en el build desde `posts.length`. Casilla de pausa nativa **fuera** del objeto (WCAG 2.2.2) y una hoja quieta con `prefers-reduced-motion`. **Dos reglas que ya rompieron algo:** `perspective` va en `.diario`, el padre directo, y `steps(1, end)` en el fotograma `p`. **El arranque de columnas es texto simulado** y es la única marca del sistema que no representa nada: excepción autorizada, no marca nueva |
+| **Pila de artículos** | *Sin consumidores desde el 2026-10-01.* El último artículo completo y los dos anteriores por su lomo | `UltimoArticulo`. **Misma materia que el panel de `/precio`** —cabecera, pozo hundido y cuerpo sobre papel— para que los dos objetos de papel se lean como parientes. Se deriva entera de `publishedPosts()`, así que **cambia sola al publicar**. Reusa `PortadaFigura` en su variante `marca` y los formateadores de `lib/pricing`: **no reescribe ni el dibujo ni el dato**. No trae la banda de tinta del artículo —oscuro dentro de claro dentro de oscuro se lee como un agujero—. **Los cantos llevan su titular y son enlaces**, hasta dos, así que son **hermanos** del enlace de la hoja y nunca sus hijos: un enlace dentro de otro es HTML inválido y el teclado no llega al de dentro. El titular del canto se corta con elipsis, y **es el único sitio del sitio donde un titular se corta**: un canto que crece con el texto deja de ser un canto |
 | **Panel del precio** | `/precio`: el mismo número al aceptar y al recibir | `FiguraPrecio`. **Sin props**: lo que enseña no se configura. Las dos cifras son **una variable renderizada dos veces** (D24), así que no pueden diferir. Lleva la etiqueta «ejemplo» porque el `Quote` es `isReferential`. El filete que separa las dos mitades va en `--line` y **no punteado**: ver §6.2 |
 | **Índice del blog** | `/blog` | Filas con filete y fecha tabular en columna propia. Se ve igual con un artículo que con cincuenta |
 | **Globo rotativo** | El alcance del dólar digital, en la Home | Tres excepciones autorizadas: ADR-0007, 0008 y 0009. **No va nunca solo**, porque sin nada que lo acote el dibujo afirma de más. Hasta el 2026-09-25 lo acotaba el eje de alcance; desde que Sebastián lo retiró, lo acota el titular de su banda —«Nuestro tramo termina en tu billetera»— y la bajada. **Si algún día se cambia ese titular por uno que no nombre el límite, el globo se queda desnudo** |

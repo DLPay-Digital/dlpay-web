@@ -25,23 +25,29 @@ import Motion from '../../components/Motion.astro';
 import { publishedPosts } from '../../lib/blog.ts';
 import PortadaFigura from '../../components/PortadaFigura.astro';
 import { formatFigure, formatFigureRange } from '../../lib/pricing/format.ts';
-import UltimoArticulo from '../../components/UltimoArticulo.astro';
+import DiarioDLPay from '../../components/DiarioDLPay.astro';
 
 /* Ya vienen filtrados por el candado de publicación y ordenados. Ver lib/blog.ts. */
 const posts = await publishedPosts();
 
 /*
-  ── El último va en la portada, y la lista es de los demás ──────────────────
+  ── La portada: el Diario DLPay ─────────────────────────────────────────────
 
-  La portada enseña la hoja del artículo más reciente (`UltimoArticulo`). Si la
-  lista lo repitiera, el mismo titular aparecería dos veces en 300 px. Así que
-  la lista arranca en el segundo, y su encabezado —que el lector de pantalla sí
-  lee— dice que son los anteriores.
+  Pedido por Sebastián el 2026-10-01: un diario cuyas hojas pasan solas, una
+  por artículo publicado. Sustituye a la hoja del último artículo con sus
+  cantos (`UltimoArticulo`). El porqué y el cómo, en la cabecera de
+  `DiarioDLPay.astro`; la decisión frente al §7 del Motion System, en la ficha
+  de Cowork `blog-diario-ficha.md`.
 
-  Sin artículos, la portada vuelve a ser la de antes: titular y bajada, sin
-  objeto, y el estado vacío de la lista. Con uno solo, la lista no se dibuja.
+  **La lista vuelve a estar entera.** Con la hoja fija, la portada enseñaba el
+  último quieto y la lista arrancaba en el segundo para no repetirlo en 300 px.
+  El diario enseña una hoja a la vez y cada una está a la vista un tercio del
+  tiempo: es una vitrina, no un índice. Quien busca un artículo necesita
+  verlos todos quietos, y eso es la lista.
+
+  Sin artículos, la portada vuelve a ser titular y bajada, sin objeto, y la
+  lista da el estado vacío.
 */
-const [ultimo, ...anteriores] = posts;
 
 /*
   ── La `description`, y la promesa que se retiró ────────────────────────────
@@ -101,18 +107,19 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
       La bajada decía «Qué mueve el precio del dólar y cómo leerlo antes de
       operar», y de los tres artículos publicados sólo uno —el de la Fed— trata
       de qué mueve el precio. Los otros dos explican qué es el dólar digital y
-      qué son los activos tokenizados. Con la hoja del último artículo justo
-      debajo, la promesa y el objeto dejaban de coincidir. Cadena nueva: firma.
+      qué son los activos tokenizados. Con la portada enseñando los tres
+      artículos, la promesa y lo que se ve dejaban de coincidir. Cadena nueva:
+      firma.
     */}
-    {ultimo ? (
+    {posts.length > 0 ? (
       <PageHero
         title="Blog"
         lead="Lo que conviene entender del dólar y del dólar digital antes de operar."
         sequence
         layout="stacked"
       >
-        <div class="ua-caja" slot="aside">
-          <UltimoArticulo post={ultimo} anteriores={anteriores} />
+        <div class="diario-hueco" slot="aside">
+          <DiarioDLPay posts={posts} cadencia={3} />
         </div>
       </PageHero>
     ) : (
@@ -123,22 +130,15 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
       />
     )}
 
-    {(posts.length === 0 || anteriores.length > 0) && (
     <section class="list" aria-labelledby="list-title">
       <div class="inner">
-        {/*
-          «anteriores» sólo tiene sentido si hay uno delante. Sin artículos
-          publicados la sección existe para dar el estado vacío, y un lector de
-          pantalla oiría «Artículos anteriores · Todavía no hay artículos
-          publicados», que es una contradicción en dos líneas.
-        */}
-        <h2 id="list-title" class="sr-only">{anteriores.length > 0 ? 'Artículos anteriores' : 'Artículos'}</h2>
+        <h2 id="list-title" class="sr-only">Artículos</h2>
 
         {posts.length === 0 ? (
           <p class="empty">Todavía no hay artículos publicados.</p>
         ) : (
           <ul class="posts" role="list">
-            {anteriores.map((post) => {
+            {posts.map((post) => {
               const p = post.data.portada;
               /*
                 La cifra de la marca se arma acá y no en la plantilla porque un
@@ -210,25 +210,18 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
         )}
       </div>
     </section>
-    )}
   </main>
   <Footer />
 </Base>
 
 <style>
   /*
-    La caja de la portada: el ancho de la hoja —el del panel de `/precio`— y el
-    aire bajo ella. `PageHero` en `stacked` no tiene relleno inferior, así que
-    sin este relleno los cantos quedarían a ras de la sección clara.
-
-    **Va en `--s-7` y no en 44 px sueltos**, que es como venía. En `/precio` ese
-    hueco son 44 porque ahí **se derivan**: bajo el panel hay un enlace cuyo
-    objetivo táctil mide 44, y la caja los descuenta. Acá no hay nada debajo de
-    la hoja —la hoja *es* el enlace—, así que el 44 no venía de ningún sitio.
-    Un número que no se deriva de nada sale de la escala (§4.1).
+    La caja de la portada. En móvil el diario se separa de la bajada; desde 900
+    lo hace el `gap` de `PageHero`. Abajo, NADA: el diario está dibujado hasta el
+    pliegue, que es la costura de la banda.
   */
-  .ua-caja { width: 100%; max-width: 560px; margin: var(--s-7) auto 0; padding-bottom: var(--s-7); }
-  @media (min-width: 900px) { .ua-caja { margin-top: 0; } }
+  .diario-hueco { width: 100%; margin-top: var(--s-6); }
+  @media (min-width: 900px) { .diario-hueco { margin-top: 0; } }
 
   .list { background: var(--papel); padding: var(--s-9) 0; }
   .inner {
