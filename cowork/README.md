@@ -3365,3 +3365,37 @@ a `UltimoArticulo` en un comentario queda fechada en vez de borrada.
 **Safari y Firefox**, otra vez. Cowork lo declara —los `drop-shadow` encadenados y la `mask` del
 aro— y este entorno sigue sin WebKit. **Van dos piezas seguidas con el mismo pendiente**, y conviene
 resolverlo antes de Fase 6 en vez de acumularlo: son dos minutos en un Safari de verdad.
+
+**Corregido el mismo día: faltaba el movimiento, y era mi fallo.** Sebastián lo vio de inmediato
+—*«no tiene movimiento y ni siquiera se parecen en aspecto»*— y tenía razón en las dos mitades,
+que resultaron ser la misma.
+
+**Qué pasó.** El movimiento venía en la ficha de la primera entrega, en su §7, **fuera del
+componente y marcado como opcional**, con sus cuatro líneas de CSS escritas. El prompt lo listaba
+entre las cosas que Sebastián tenía que aprobar —«el abanico o la etiqueta sola, el titular, qué
+hacer con `FiguraPrecio`, **el movimiento opcional** y la firma de Compliance»— y yo cité esa lista
+en mi revisión **y luego hice tres preguntas que no lo incluían**.
+
+> **Una entrega con una parte marcada «opcional» no está revisada hasta que esa parte se decide.**
+> Lo opcional no es lo prescindible: es lo que alguien tiene que elegir.
+
+**Y por qué explica también el aspecto.** Sin la apertura, el abanico está desplegado desde el
+primer fotograma. Lo que él recordaba del GIF era el abanico **abriéndose**, y un abanico quieto no
+se parece a eso por mucho que la geometría coincida al grado. *Comprobado antes de tocar nada: el
+componente que monté es byte a byte el entregado, las cinco etiquetas abren sus 30° declarados, las
+tres sombras encadenadas están, y los cuatro ruidos de la cartulina llegan al CSS del build.* El
+código era fiel; lo que faltaba era la mitad que no estaba en el código.
+
+**Montado y medido.** 440 ms con 160 de retraso, **una iteración**, girando sobre el ojal.
+Reproducida a mano: 0° → −5,5° → −7° → −7,4° → −7,5°. Los rótulos llevan la misma animación y el
+mismo eje —viven fuera del `li`, así que si no, los nombres se quedarían quietos sobre etiquetas que
+giran—. Con `prefers-reduced-motion` el `animation-name` calculado es `none` y el abanico sale
+abierto. **Cero JavaScript**: no cuelga del observador ni de `.js-motion`.
+
+**Gobierno:** enmienda interna del Motion System, no ADR. Pasa del techo de 280 ms, como la banda de
+los 12 minutos de esta misma página, y **la regla dura 1 queda intacta porque ocurre una sola vez**.
+El sitio sigue teniendo cuatro movimientos infinitos.
+
+*Un aviso de instrumento, por si alguien repite la comprobación:* `getAnimations()` devolvió **cero**
+y no era un fallo — con relleno `backwards` la animación desaparece de la lista en cuanto termina, y
+600 ms después de cargar ya no está. Se verifica por el estilo calculado y reproduciéndola a mano.

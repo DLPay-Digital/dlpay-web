@@ -469,4 +469,48 @@ const libres = ['Registro', 'Cotización', 'Ejecutivo', 'Costo de red'] as const
   @media (forced-colors: active) {
     .et-forma { border: 1px solid CanvasText; }
   }
+
+  /*
+    ── El abanico ABRE una vez al cargar  ·  añadido el 2026-10-01 ───────────
+
+    Las cuatro de detrás arrancan sin girar —apiladas tras la de delante— y se
+    abren hasta su ángulo en **440 ms**. Giran sobre el ojal, que es su eje
+    físico: el mismo `transform-origin` que ya tienen quietas, así que lo único
+    que se anima es el ángulo.
+
+    **Cuenta la historia en orden**: primero se ve la única que cobra, y después
+    aparecen las cuatro que no. Quieto, el abanico afirma las cinco a la vez;
+    abriéndose, afirma una y luego las otras, que es como se lee la página.
+
+    ── Lo que enmienda, y lo que no ─────────────────────────────────────────
+
+    **440 ms pasa del techo de 280** del Motion System §2c. Es una *enmienda
+    interna* acotada a esta pieza —el mismo mecanismo que usó la banda de los 12
+    minutos de esta misma página, con sus 2.190 ms— y está escrita allá con su
+    fecha.
+
+    **NO es un quinto movimiento infinito.** Ocurre **una vez**, al cargar, y no
+    se repite: la regla dura 1 queda intacta. El sitio sigue teniendo cuatro
+    infinitos, y el cuarto es el Diario.
+
+    · **Sin JavaScript**, al revés que el resto de las entradas del sitio: no
+      cuelga del observador ni de `.js-motion`. Es `animation` pura con
+      `backwards`, así que el estado de partida sólo existe durante el retraso.
+      Sin JS se ve igual.
+    · **`prefers-reduced-motion` lo apaga entero**, y entonces el abanico sale
+      abierto desde el primer fotograma — que es exactamente como estaba antes
+      de esto, así que la degradación ya está probada.
+    · **Los rótulos se mueven con su etiqueta.** Viven fuera del `li` —ver más
+      arriba— así que si no se animaran igual, los nombres se quedarían quietos
+      sobre unas etiquetas que giran. Llevan la misma animación y el mismo eje.
+
+    *Por qué el retraso de 160 ms:* el héroe entra con la secuencia M6 y sus
+    palabras tardan eso en asentarse. Abrir antes solapa dos movimientos que no
+    tienen nada que ver.
+  */
+  @media (prefers-reduced-motion: no-preference) {
+    .et.atras,
+    .et-rotulo { animation: et-abre 440ms cubic-bezier(.2, .7, .2, 1) 160ms backwards; }
+  }
+  @keyframes et-abre { from { transform: rotate(0deg); } }
 </style>

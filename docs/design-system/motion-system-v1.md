@@ -110,6 +110,38 @@ globo: **enmienda la pieza, no los seis movimientos ni el techo fuera de ella.**
 cuya duración está justificada porque el movimiento es la afirmación. Una entrada decorativa de
 2.190 ms sigue prohibida por el §4, y sin esa distinción la enmienda sería un cheque en blanco.
 
+### Enmienda interna — 2026-10-01  ·  el abanico de `/precio` abre
+
+Las cuatro etiquetas de detrás arrancan **sin girar** —apiladas tras la de delante— y se abren
+hasta su ángulo en **440 ms**, girando sobre el ojal. Mismo alcance acotado que la enmienda de
+2026-09-24 le dio a la banda de esta misma página: **enmienda la pieza, no los seis movimientos ni
+el techo fuera de ella.**
+
+| Regla de este documento | Estado |
+|---|---|
+| §2c — techo de **280 ms** | **Enmendado, y sólo para esta pieza.** 440 ms. **El orden ES el contenido**: quieto, el abanico afirma las cinco etiquetas a la vez; abriéndose, afirma primero la única que cobra y después las cuatro que no, que es como se lee la página. En 280 ms las cinco aparecen a la vez otra vez |
+| §4, regla dura 1 — **una sola vez** | **Intacto, y es la diferencia con ADR-0011.** Una iteración, al cargar, sin repetición — comprobado en el estilo calculado. **El sitio sigue teniendo cuatro movimientos infinitos**, y el cuarto es el Diario |
+| §4, regla dura 3 — las cifras no entran | **No aplica.** El abanico no lleva ninguna cifra |
+| §4, regla dura 5 — sin JavaScript todo se ve | **Intacto, y por una vía distinta al resto del sitio.** No cuelga del observador ni de `.js-motion`: es `animation` pura con relleno `backwards`, así que sin JavaScript se ve y se abre igual |
+| `prefers-reduced-motion` | **Intacto y verificado.** Con la preferencia activa el `animation-name` calculado es `none` en las etiquetas y en los rótulos, y el abanico sale abierto desde el primer fotograma — que es exactamente como estuvo publicado unas horas, así que la degradación está probada en producción |
+| Eje diagonal de marca | **No aplica**: gira sobre el ojal, que es su eje físico. El abanico abre **30°**, que es el ángulo del corte del isotipo |
+
+**Los rótulos se animan con su etiqueta, y no es un detalle.** Viven fuera del `li` —por una razón
+de apilamiento escrita en el componente— así que si no llevaran la misma animación y el mismo eje,
+los nombres se quedarían quietos sobre unas etiquetas que giran.
+
+**Lo que esta enmienda no abre.** No autoriza entradas de 440 ms en otras piezas: autoriza **ésta**,
+cuya duración está justificada porque **el orden de aparición es la afirmación**. Una entrada
+decorativa de 440 ms sigue prohibida por el §4.
+
+*Y cómo llegó aquí, que conviene no repetir:* el movimiento venía en la ficha de Cowork como
+**opcional**, fuera del componente y con sus líneas de CSS escritas, y el prompt lo listaba entre
+las cosas que Sebastián tenía que aprobar. **Al integrar no se le preguntó**, así que la pieza se
+publicó quieta y él lo notó de inmediato: *«no tiene movimiento y ni siquiera se parecen en
+aspecto»*. Tenía razón en las dos mitades, y son la misma — un abanico desplegado desde el primer
+fotograma no se parece a uno que abre. **Una entrega con una parte marcada "opcional" no está
+revisada hasta que esa parte se decide.**
+
 ### Enmienda interna — 2026-09-25 (b)
 
 Pedida por Sebastián: **que los tres mecanismos de `/confianza` entren cada uno por su lado.** Es
