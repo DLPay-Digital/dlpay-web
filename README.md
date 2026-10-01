@@ -36,6 +36,21 @@ Open Graph, el JSON-LD, el sitemap y el robots. La guarda rechaza hosts locales,
 
 > `build` en verde **no** quiere decir «terminado». El Definition of Done está en `CLAUDE.md` §9.
 
+### Para escribir, `dev`. Para JUZGAR, `preview`
+
+```bash
+PUBLIC_SITE_URL=https://dlpay.cl npm run build && npm run preview
+```
+
+**No mires el resultado en `npm run dev`.** El servidor de desarrollo sirve los estilos como
+módulos asíncronos, así que llegan **después del primer pintado**: cualquier animación que ocurra
+**una sola vez** ya se perdió cuando su CSS aterriza. Tampoco aplica la cadena de producción, ni
+exige `PUBLIC_SITE_URL`, ni pasa la guarda de despliegue.
+
+Y **reinícialo a menudo**: un `astro dev` de días acaba sirviendo el HTML nuevo con el CSS viejo,
+sin un solo error en consola. Ha costado cuatro diagnósticos en esta fase; el último, cinco rondas
+y un commit que no arreglaba nada porque no había nada roto.
+
 ---
 
 ## Qué hay dentro

@@ -172,6 +172,36 @@ veces**, y una de ellas costó un reporte de bug que no existía.
 El diagnóstico está en `development.md`: contar si la regla que debería aplicar existe siquiera en
 las hojas cargadas. Si la clase está en el DOM y el contador da cero, el viejo es el servidor.
 
+**Cuarta vez, el 2026-10-01, y con un mecanismo distinto que conviene añadir porque el diagnóstico
+de arriba NO lo detecta.** Sebastián reportó que el abanico de `/precio` «no tiene movimiento», y
+tenía razón en su pantalla: lo revisaba en un `astro dev` levantado el **17 de septiembre**. Pero
+esta vez **el CSS sí llegaba** —la regla estaba, con su hash de ámbito correcto, y el contador daba
+dos—. Lo que fallaba era *cuándo* llegaba:
+
+| | dev | build |
+|---|---|---|
+| estilos | **10 módulos** por `<script type="module">`, asíncronos | **2 hojas** bloqueantes en el `<head>` |
+
+En el build el CSS entra **antes del primer pintado**, así que el estado de partida de la animación
+—las etiquetas apiladas— se ve. En el dev el CSS del componente aterriza **después** de que la
+página pintó: la animación corre, pero para entonces el abanico ya se vio desplegado.
+
+> **Una animación de UNA SOLA VEZ no se puede juzgar en el servidor de desarrollo.** Da igual que el
+> CSS sea correcto: si llega después del primer pintado, el estado inicial no existió nunca para el
+> ojo.
+
+**Y la pista que lo desenredó fue una comparación, no una medición.** En el mismo navegador y el
+mismo servidor, el Diario DLPay de `/blog` **sí** se veía girar y el abanico no. La diferencia no
+estaba en el CSS de ninguno de los dos: **el diario se repite cada 3 s y el abanico ocurre una vez.**
+Una animación en bucle tiene segunda oportunidad y sobrevive a que su CSS llegue tarde; una de un
+solo disparo, no.
+
+*La regla de proceso, que es lo reutilizable:* **para escribir código, `npm run dev`; para juzgar un
+resultado, `npm run preview` sobre el build.** El dev no aplica la cadena de producción, no exige
+`PUBLIC_SITE_URL`, no pasa la guarda de despliegue y no muestra bien nada que ocurra una sola vez.
+*Esta vez costó cinco rondas de diagnóstico, dos hipótesis descartadas —WebKit y `prefers-reduced-motion`—
+y un commit de corrección que no corregía nada, porque el código ya estaba bien.*
+
 ### 4.3 Un SVG escala su texto
 
 Dos piezas se diseñaron en SVG y hubo que rehacerlas: los rótulos del globo y la portada del blog.
