@@ -14,6 +14,8 @@ import Motion from '../components/Motion.astro';
 import IconBadge from '../components/ui/IconBadge.astro';
 import Icon from '../components/Icon.astro';
 import TelefonoAvisos from '../components/TelefonoAvisos.astro';
+import FiguraMecanismo from '../components/FiguraMecanismo.astro';
+import CarpetaRequisitos from '../components/CarpetaRequisitos.astro';
 import { mechanisms, honesty, requirements } from '../content/trust.ts';
 import { site, contact } from '../lib/config/site.ts';
 /*
@@ -109,11 +111,16 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
                escritorio cada uno lo hace desde el lado que ocupa. El eje está
                abajo, en el bloque de 900 px, junto al zigzag que lo justifica. */
             <li class="item" data-enter>
-              <IconBadge name={item.icon} size="sm" />
-              <div>
-                <h3>{item.title}</h3>
-                <p>{item.body}</p>
+              <div class="item-texto">
+                <IconBadge name={item.icon} size="sm" />
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.body}</p>
+                </div>
               </div>
+              {/* El objeto del mecanismo, en el lado que el zigzag dejaba
+                  vacío. Ver `FiguraMecanismo.astro`. */}
+              <div class="item-fig"><FiguraMecanismo kind={item.icon} /></div>
             </li>
           ))}
         </ul>
@@ -126,20 +133,8 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
           <h2 id="req-title" data-enter>Qué te pedimos, y por qué</h2>
           <p>Los requisitos no son burocracia: son lo que permite operar con un banco de por medio.</p>
         </header>
-        <ul class="req-list" role="list">
-          {/* `Icon` suelto y no `IconBadge`: la insignia está reservada a lo
-              que hacemos nosotros —«Qué pasa con tu plata», justo encima— y el
-              icono suelto marca lo que traes tú. Ver la nota de `trust.ts`. */}
-          {requirements.map((item) => (
-            <li>
-              <Icon name={item.icon} size={20} class="req-icon" />
-              <div>
-                <h3>{item.title}</h3>
-                <p>{item.body}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+        {/* La carpeta: lo que traes tú. Ver `CarpetaRequisitos.astro`. */}
+        <CarpetaRequisitos items={requirements} />
 
         {/*
           La mención institucional va acá y no en otro sitio porque acá informa:
@@ -283,17 +278,25 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
     padding: 0;
     display: grid;
     gap: var(--s-7);
-    max-width: 47ch;
   }
+
+  /*
+    Cada fila es ahora texto + objeto (`FiguraMecanismo`). En móvil el objeto
+    va ARRIBA aunque en el DOM vaya después, como en los casos de `/empresas`:
+    la figura presenta el mecanismo y el texto lo explica.
+  */
+  .item { display: grid; gap: var(--s-5); }
+  .item-fig { order: -1; display: flex; justify-content: center; }
 
   /* Columna fija para el icono: proximidad de 12px con SU mensaje frente a 48px
      entre mensajes. Esa proporción 1:4 es lo que hace que el icono se lea como
      parte de su bloque y no como un elemento suelto entre dos. */
-  .item {
+  .item-texto {
     display: grid;
     grid-template-columns: 36px 1fr;
     column-gap: var(--s-3);
     align-items: start;
+    max-width: 47ch;
   }
 
   /* 20px, escalón del Design System §7. El trazo adelgaza solo: 1.6 en un viewBox
@@ -305,7 +308,7 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
   /* La insignia ya no se alinea a la altura de mayúscula del titular: al tener
      cuerpo propio, se alinea por su centro con la primera línea. El icono sigue
      en 20px, el escalón que fijamos. */
-  .item :global(.badge) { margin-top: -6px; }
+  .item-texto :global(.badge) { margin-top: -6px; }
   .item h3 {
     font-size: var(--t-h3-m);
     font-weight: 600;
@@ -316,36 +319,30 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
   .item p { color: var(--ink-mute); }
 
   .req { background: var(--papel-2); padding: var(--s-9) 0; }
-  .req-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-5); }
-  /*
-    El icono al lado del título, no encima. Design System §7: «la proximidad
-    manda sobre el tamaño» — la distancia al texto propio tiene que ser muy
-    menor que la distancia al requisito siguiente, y acá `--s-3` contra `--s-5`
-    da esa relación.
-  */
-  .req-list li {
-    padding-top: var(--s-4);
-    border-top: 1px solid var(--line);
-    display: flex;
-    gap: var(--s-3);
-    align-items: flex-start;
-  }
-  /* `margin-top` para que la caja del icono case con la altura de x del `h3`,
-     que es mayor que la del cuerpo. */
-  .req-icon { color: var(--verde-deep); flex: none; margin-top: 3px; }
-  .req-list h3 {
-    font-size: var(--t-h3-m);
-    font-weight: 600;
-    line-height: var(--lh-h3);
-    margin-bottom: var(--s-2);
-  }
-  .req-list p { color: var(--ink-mute); max-width: 47ch; }
 
   /* La sección más honesta del sitio: va sobre tinta, con peso propio */
   .honesty { background: var(--tinta); color: var(--on-tinta); padding: var(--s-9) 0; }
   .honesty h2 { color: var(--on-tinta); }
   .honesty .head p { color: var(--on-tinta-mute); }
-  .honesty-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-5); }
+  /*
+    ── Un registro, no una rejilla ───────────────────────────────────────────
+
+    *2026-10-02.* Eran cinco bloques en dos columnas, con alturas distintas y
+    **el quinto huérfano** abajo a la izquierda. Ahora es un registro: una fila
+    por afirmación, con su porqué al lado en escritorio, y separadores
+    `--line-on-tinta`, que no significan nada.
+
+    El filete de la nota de abajo **se queda con su significado**, pero pasa de
+    uno por bloque a uno solo: la línea de margen del registro, que recorre las
+    cinco filas.
+  */
+  .honesty-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 var(--s-5);
+    border-left: 2px solid var(--on-tinta-mute);
+    display: grid;
+  }
   /*
     ── El filete decía lo contrario de lo que la sección dice ────────────────
 
@@ -368,10 +365,9 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
 
     Hallado por Cowork el 2026-09-29.
   */
-  .honesty-list li {
-    padding-left: var(--s-4);
-    border-left: 2px solid var(--on-tinta-mute);
-  }
+  .honesty-list li { padding: var(--s-5) 0; border-top: 1px solid var(--line-on-tinta); }
+  .honesty-list li:first-child { padding-top: 0; border-top: 0; }
+  .honesty-list li:last-child { padding-bottom: 0; }
   .honesty-list h3 {
     font-size: var(--t-h3-m);
     font-weight: 600;
@@ -385,7 +381,6 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
   .who-grid { display: grid; gap: var(--s-7); }
   .who p { color: var(--ink-mute); max-width: 47ch; margin-bottom: var(--s-3); }
   .who strong { color: var(--ink); font-weight: 600; }
-  .who .note { font-size: var(--t-body-sm); }
 
   .contact-card {
     background: var(--papel-2);
@@ -398,7 +393,7 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
     font-weight: 600;
     margin-bottom: var(--s-2);
   }
-  .contact-card p { margin-bottom: var(--s-5); font-size: var(--t-body-sm); }
+  .contact-card p { margin-bottom: var(--s-5); }
   .cta {
     display: inline-flex;
     align-items: center;
@@ -416,29 +411,43 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
   .wa-icon { width: 16px; height: 16px; }
 
   @media (min-width: 760px) {
-    .req-list { grid-template-columns: repeat(3, 1fr); gap: var(--s-6); }
-    .honesty-list { grid-template-columns: repeat(2, 1fr); gap: var(--s-6) var(--s-7); }
     .who-grid { grid-template-columns: 1.4fr 1fr; gap: var(--s-8); align-items: start; }
   }
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
     h2 { font-size: var(--t-h2); }
-    .item h3, .req-list h3, .honesty-list h3, .contact-card h3 { font-size: var(--t-h3); }
-    .item :global(.badge) { margin-top: -5px; }
+    .item h3, .honesty-list h3, .contact-card h3 { font-size: var(--t-h3); }
+    .item-texto :global(.badge) { margin-top: -5px; }
 
-    /* El zigzag. Ver la nota de `.list`. */
-    .list { max-width: none; gap: var(--s-8); }
-    /* La medida de lectura baja del contenedor a cada bloque. */
-    .item { max-width: 47ch; }
-    .item:nth-child(even) {
+    /* El registro: la afirmación a la izquierda y su porqué al lado. */
+    .honesty-list li {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      column-gap: var(--s-7);
+      align-items: baseline;
+    }
+    .honesty-list h3 { margin-bottom: 0; }
+
+    /* El zigzag, ahora con el objeto en el lado que quedaba vacío. Ver la
+       nota de `.list`. La posición se fija con `grid-column`/`grid-row`, así
+       que el `order: -1` del móvil deja de tener efecto sin anularlo. */
+    .item {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-8);
+      align-items: center;
+    }
+    .item-texto { grid-row: 1; grid-column: 1; }
+    .item-fig { grid-row: 1; grid-column: 2; }
+    .item:nth-child(even) .item-fig { grid-column: 1; }
+    .item:nth-child(even) .item-texto {
+      grid-column: 2;
       margin-inline-start: auto;
       grid-template-columns: 1fr 36px;
-      column-gap: var(--s-3);
       text-align: right;
     }
     /* Se espeja colocando, no reordenando: el DOM sigue siendo insignia → texto. */
-    .item:nth-child(even) :global(.badge) { grid-column: 2; grid-row: 1; }
-    .item:nth-child(even) > div { grid-column: 1; grid-row: 1; }
+    .item:nth-child(even) .item-texto :global(.badge) { grid-column: 2; grid-row: 1; }
+    .item:nth-child(even) .item-texto > div { grid-column: 1; grid-row: 1; }
     /* El `h3` tiene medida propia (34ch); sin esto se quedaría pegado al borde
        izquierdo de su celda mientras el texto se alinea a la derecha. */
     .item:nth-child(even) h3 { margin-inline-start: auto; }

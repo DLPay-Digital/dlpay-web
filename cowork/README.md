@@ -3547,3 +3547,91 @@ verlos.
 **Y un rótulo que sí carga una regla dura:** «Tu empresa» bajo la cajonera. Está ahí porque la figura
 dibuja una caja con saldos dentro, y `CLAUDE.md` §1 dice que **DLPay no guarda saldos** en el modo
 asistido. Sin ese rótulo la caja se lee como nuestra. **No se quita.**
+
+---
+
+### Notas de la integración de `2026-10-02 · confianza: las cuatro secciones` + el arreglo del relevo
+
+**Veredicto: integradas las dos partes**, los cuatro archivos sin tocar una línea. `npm run check`
+en 0 errores, 80 pruebas, build en 490 ms. Los doce md5 del prompt coinciden y la cabeza seguía en
+`d573851`.
+
+#### Parte B primero, porque es la que corrige algo publicado
+
+**Confirmado antes de integrar, sobre el build de ayer: el piso del §4.7 se rompía.** Barriendo cada
+1 px, entre **417 y 419 px** de ancho la frase de la bisagra quedaba a **37,99 px** de la recta del
+corte, bajo los 40. Con el arreglo —`--s-4` a `--s-5`— pasa a **44,63 px**, y en escritorio queda en
+44,33; con el espaciado de 1.4.12, 64,8. Ningún ancho por debajo del piso en todo el rango.
+
+**Y el resto de `/empresas` no se movió:** mismo alto a 1280 y 390, 0 incidencias en el barrido, los
+mismos 8 enfocables y el mismo árbol de la tabla a 390.
+
+**Una precisión sobre la causa, porque la ficha la atribuye a dos cosas y sólo una es mía.** Apunta a
+la métrica (medir en horizontal en vez de perpendicular a la recta) y al paso. **La métrica explica
+su medición, no la mía**: mi script medía perpendicular, y lo verifiqué calculando a la vez la
+distancia al segmento del chaflán y a la recta que lo contiene — **dan el mismo número**, porque el
+punto proyectado cae dentro del chaflán. Mi error fue sólo el paso, y fue suficiente.
+
+**Lo que de verdad falló es lo que escribí con ese número.** Puse «nada está roto, el piso son 40 px
+y los dos lo pasan». *«Nada está roto» es una afirmación, no la ausencia de un hallazgo, y pide la
+misma prueba que un hallazgo.* Corregido en `phase-4-construccion.md` §4.12, dejando visible lo que
+decía antes.
+
+#### Parte A, sobre el build
+
+| Qué | Declarado | Medido acá |
+|---|---|---|
+| Contraste, peor píxel (7 casos, 1×/2×/3×) | 4,98 los rótulos · ≥5,50 el resto | **4,98**, y el siguiente 5,44 ✔ |
+| Figuras 320→1300, cada 2 px bajo 500, con y sin 1.4.12 | nada fuera de su lámina ni de su etiqueta, ninguna palabra partida, mínimo 13 px | **0 incidencias en 131 anchos × 2**, mínimo 13 px ✔ |
+| Página 320→1300 cada 20, con y sin 1.4.12 | sin desplazamiento salvo la cabecera a 320 | **5 px a 320 con espaciado, y sólo eso** ✔ |
+| `axe-core` 4.13 a 1280 y 390 | 0 violaciones, 0 incompletos | **0 y 0**, antes y después ✔ |
+| Enfocables en `main` | 1 | **1** (WhatsApp) ✔ |
+| Árbol | cuatro listas, los mismos `h2`, figuras ocultas | **4 listas, 4 `h2`, 12 `h3`, todas las figuras `aria-hidden`** ✔ |
+| Alto a 1280 | 4.661 (+654) | **4.656 (+673)** ✔ |
+| Alto a 390 | 6.427 (+1.159) | **6.408 (+1.180)** ✔ |
+| Peso | +2,2 KB gzip | **+2,26 KB** (13.651 → 15.911) ✔ |
+| JavaScript nuevo | 0 | **0**: cuatro scripts en línea antes y después ✔ |
+
+**El diff de la página es tan limpio como el de `/empresas`.** Dos imports, el `li` de cada mecanismo
+envuelto, la lista de requisitos sustituida por el componente, CSS del registro y dos `font-size`
+retirados. **`Icon` se queda porque lo usa el botón de WhatsApp** —lo comprobé antes de copiar, que
+es donde se han ido dos entregas de esta fase— y la frase institucional sigue importada de
+`alliances.ts`, fuera de la carpeta.
+
+#### Lo que la entrega no vio
+
+**El recuento de marcas punteadas sube a DIEZ** con `.fm-frontera`, la frontera «acreditada». Lo
+recontó mi barrido, no copié su número: el sweep devuelve once entradas, y la que sobra sigue siendo
+`.et-torsion`, que es materia y no vocabulario.
+
+**Y al recontar apareció un error mío de ayer, de aritmética y no de medición:** escribí «las otras
+diez rutas no tienen ninguna» cuando eran **once**, y la lista que venía justo detrás enumeraba
+once. Hoy el número sí es diez, porque `/confianza` cambió de lado. *Un recuento se puede equivocar
+en la resta, y la resta no la comprueba ningún instrumento.*
+
+**Comprobado aparte:** los mecanismos **no estrenan ninguna marca**. Punto lleno verde dentro del
+edificio, filete `--ink-mute` para la transferencia —que es tuya y no nuestra—, tramo verde sólo
+**después** de la frontera, y trazo punteado. Mesa, persona, placa, riel e hilos son partes del
+objeto, como el tirador de la cajonera.
+
+#### Compliance
+
+**Ninguna cadena nueva.** Los rótulos de figura son «Tu banco», «Cuenta de DLPay», «acreditada», «Tu
+ejecutivo», «en la web», «referencial», «con tu ejecutivo» y «final». Tres de ellos cargan una
+decisión ya tomada y conviene que se sepa antes de tocarlos:
+
+- **«Cuenta de DLPay» y no la razón social.** Mismo motivo que el aviso del teléfono de la portada:
+  **D9** sigue abierta. Una figura sobre «confianza que se comprueba» no puede publicar un nombre que
+  quizá no coincida con la cartola del cliente.
+- **El banco sin nombre.** BCI es un claim con marcador y no gana un segundo sitio por estar
+  dibujado *(Sebastián, 2026-09-25)*.
+- **La placa sin nombre ni foto**, porque **D11 está cerrada**: no se publican.
+
+#### Sin verificar
+
+**Las dos `@container` de las etiquetas**, que son nuevas aquí. Las `cqw` ya las cerró Sebastián en
+`/empresas`, en Safari de escritorio y en iPhone, y `@container` es la misma familia y la misma
+versión de Safari — pero **no es la misma declaración**, así que queda dicho. Se cierra igual que la
+otra vez: `npx astro preview --host 0.0.0.0 --port 4380` y el teléfono en la misma Wi-Fi.
+
+**Firefox** y **un lector de pantalla real**, como siempre.

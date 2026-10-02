@@ -75,6 +75,8 @@ src/
 │   ├── ComparaEmpresa.astro # persona y empresa: la tabla en dos carriles
 │   ├── ComoEmpezamos.astro  # la carpeta «Ten esto a mano» y los cuatro pasos
 │   ├── AlcanceEmpresa.astro # el relevo: hasta dónde llega nuestra parte, en /empresas
+│   ├── FiguraMecanismo.astro # los tres objetos de «Qué pasa con tu plata» en /confianza
+│   ├── CarpetaRequisitos.astro # la carpeta de «Qué te pedimos, y por qué»
 │   ├── hero/GloboRotativo.astro # el globo de la Home (SVG + datos en línea)
 │   ├── Header · Footer · Hero · PageHero · Trust · UseCases
 │   ├── Business · Faq · Alliances · AnnouncementBar · PortadaDato

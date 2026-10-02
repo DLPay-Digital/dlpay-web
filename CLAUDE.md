@@ -536,6 +536,39 @@ eran de esta reforma —una región desplazable sin foco a 390 (WCAG) y un encab
 (buena práctica)—, y los dos desaparecen. Lo único que `axe` sigue marcando en la página es el
 contraste dentro del portátil dibujado del encabezado, **idéntico a antes** y ajeno a esto.
 
+**`/confianza` rehízo sus cuatro secciones de contenido el 2026-10-02**, el mismo día que
+`/empresas` y con el mismo criterio, pedido por Sebastián. **Tampoco cambia una palabra**: todo sigue
+saliendo de `trust.ts` y `alliances.ts`.
+
+- **«Qué pasa con tu plata»**: el zigzag dejaba vacía la mitad de cada fila y lo único dibujado eran
+  tres insignias de 20 px. El lado vacío pasa a tener **el objeto del mecanismo**: el edificio de por
+  medio, la placa del escritorio y las dos etiquetas de precio. El zigzag se queda, con su entrada
+  por cada lado.
+- **«Qué te pedimos, y por qué»**: los tres requisitos pasan a **una carpeta**, la misma de «Ten esto
+  a mano» de `/empresas`. La distinción de la página se conserva y se ve mejor: **placa cuadrada = lo
+  que traes tú; insignia redonda = lo que hacemos nosotros.**
+- **«Lo que no vas a leer acá»**: eran cinco bloques en dos columnas con el quinto huérfano abajo.
+  Pasa a **un registro**, una fila por afirmación. **El filete conserva su significado** —«existe, es
+  real, no es nuestro»— y pasa de uno por bloque a una sola línea de margen.
+- **«Quiénes somos»**: el texto sube de 14 a 16 px, el cuerpo de la página.
+
+**Dos cosas que la figura NO dice, y las dos son decisiones ya tomadas:**
+
+- **El banco no lleva nombre.** La mención de BCI es un claim con marcador de Compliance y no gana un
+  segundo sitio por estar dibujado *(decisión de Sebastián del 2026-09-25)*.
+- **La placa del ejecutivo no lleva nombre ni foto**, porque **D11 está cerrada**: no se publican. La
+  placa dice «Tu ejecutivo» y lleva el isotipo, que identifica sin exponer a nadie.
+
+**Y la razón social sigue sin ganar peso.** La figura del banco rotula «Cuenta de DLPay», no la razón
+social, por lo mismo que el aviso del teléfono de la portada: hasta que **D9** cierre, el sitio no
+publica un nombre que pueda no coincidir con la cartola del cliente.
+
+**El mismo día se corrigió un defecto de `/empresas`** que esta entrega encontró: la frase de la
+bisagra del relevo quedaba a 37,99 px de la recta del corte entre 417 y 419 px de ancho, **bajo el
+piso de 40 px** del Design System §4.7. Es un valor —el margen pasa de 16 a 24 px— y deja la holgura
+en 44 px o más en cualquier ancho. Lo que lo escondía está en `phase-4-construccion.md` §4.12: un
+barrido cada 20 px salta por encima de una ventana de 3 px.
+
 **`/blog` se añadió el 2026-09-11.** Colección tipada de Astro (`src/content.config.ts`) con
 esquema cerrado: `title`, `description`, `pubDate`, `category` —sólo `DLPay` o `Mercado`, un valor
 fuera de esa lista rompe el build—, `estado` y `portada`. Sin paquetes nuevos: `package.json` sigue

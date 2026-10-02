@@ -1,0 +1,387 @@
+---
+/**
+ * Las tres figuras de «Qué pasa con tu plata», en `/confianza`: **tres objetos.**
+ *
+ * Pedido por Sebastián el 2026-10-02 («mismo criterio» que `/empresas`). La
+ * sección medía 906 px a 1280 y su texto cubría el 11,9 % del área: el zigzag
+ * dejaba vacía la mitad de cada fila, y lo único dibujado eran tres insignias
+ * de 20 px. El zigzag se queda —es pedido suyo, con su entrada por cada lado—;
+ * lo que cambia es que el lado vacío pasa a tener el objeto del mecanismo.
+ *
+ * ── Un objeto por mecanismo, y lo que cada uno deja comprobar ──────────────
+ *
+ * · **El banco: el edificio de por medio.** Tu banco a la izquierda; la línea
+ *   de tu transferencia, en `--ink-mute` —es tuya, no nuestra—, entra al
+ *   edificio, que es la cuenta de DLPay. La unidad de valor queda DENTRO. A la
+ *   derecha, la frontera punteada rotulada «acreditada», y sólo al otro lado
+ *   empieza el tramo verde, que es lo nuestro: «confirmamos que está acreditada
+ *   antes de mover nada», dicho con el hueco entre el edificio y la frontera.
+ *   **El banco no lleva nombre**: la mención de BCI es un claim con marcador y
+ *   no gana un segundo sitio (decisión de Sebastián del 2026-09-25).
+ * · **La persona: la placa del escritorio.** Una persona detrás de una mesa y,
+ *   delante, la placa con «Tu ejecutivo» y el isotipo: identificable sin
+ *   publicar un nombre (D11, cerrada: no se publican nombres ni fotos).
+ * · **El precio: las dos etiquetas.** La de la web, ladeada, porque el mercado
+ *   la mueve: «referencial». La de tu ejecutivo, quieta: «final». Entre las
+ *   dos, el chevron del marcador de paso (Design System §6). Es el mismo
+ *   objeto con que `/precio` habla del precio, en plano.
+ *
+ * Marcas del §6.2 con su significado y **ninguna nueva**: punto lleno verde
+ * (la unidad de valor), tramo verde (lo nuestro), filete `--ink-mute` (real,
+ * no nuestro) y trazo punteado (un límite). La mesa, la persona, la placa, el
+ * riel y los hilos son **partes del objeto**, como el tirador de la cajonera.
+ *
+ * Los rótulos salen de los textos de al lado o ya están publicados: «Tu
+ * banco», «Cuenta de DLPay», «acreditada», «Tu ejecutivo», «en la web»,
+ * «referencial», «con tu ejecutivo» y «final». Ninguna cifra.
+ *
+ * ── Cómo está hecho ────────────────────────────────────────────────────────
+ *
+ * Igual que `FiguraCaso`: HTML y CSS sobre una lámina en `--papel-2` de
+ * 460×280, con el dibujo en `cqw` y el texto en px, para que los rótulos sean
+ * texto de verdad a 13 px en todos los anchos. La lámina repite las ocho
+ * reglas de base de `FiguraCaso` en vez de importarlas: dos usos no justifican
+ * extraer una pieza, y tocar la de `/empresas` para esto sería cambiar algo
+ * integrado sin necesidad. Si aparece un tercero, se extrae.
+ *
+ * Va `aria-hidden`: el `h3` y el párrafo de al lado ya lo dicen con palabras.
+ */
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+import type { Mechanism } from '../content/trust.ts';
+
+interface Props {
+  /** El icono del mecanismo decide su objeto: `bank`, `people` o `clock`. */
+  kind: Mechanism['icon'];
+}
+const { kind } = Astro.props;
+---
+<div class:list={['fm', `fm-${kind}`]} aria-hidden="true">
+  {kind === 'bank' && (
+    <>
+      <span class="fm-pieza"><Icon name="bank" size={24} /></span>
+      <span class="fm-pie fm-pie-tuyo">Tu banco</span>
+      <span class="fm-linea fm-transferencia"></span>
+      <span class="fm-edificio">
+        <span class="fm-fronton"></span>
+        <span class="fm-friso"></span>
+        <span class="fm-columnas"><i></i><i></i><i></i><i></i></span>
+        <span class="fm-basa"></span>
+        <span class="fm-grada"></span>
+      </span>
+      <span class="fm-unidad"></span>
+      <span class="fm-pie fm-pie-cuenta">Cuenta de DLPay</span>
+      <span class="fm-rot fm-rot-acreditada">acreditada</span>
+      <span class="fm-frontera"></span>
+      <span class="fm-linea fm-nuestro"></span>
+    </>
+  )}
+
+  {kind === 'people' && (
+    <>
+      <span class="fm-persona"><span class="fm-cabeza"></span><span class="fm-hombros"></span></span>
+      <span class="fm-mesa"></span>
+      <span class="fm-pata fm-pata-a"></span>
+      <span class="fm-pata fm-pata-b"></span>
+      <span class="fm-placa">
+        <Logo class="fm-marca" />
+        <span>Tu ejecutivo</span>
+      </span>
+    </>
+  )}
+
+  {kind === 'clock' && (
+    <>
+      <span class="fm-riel"></span>
+      <span class="fm-hilo fm-hilo-web"></span>
+      <span class="fm-hilo fm-hilo-final"></span>
+      <span class="fm-etiqueta fm-web">
+        <span class="fm-et-fondo"></span>
+        <span class="fm-ojal"></span>
+        <span class="fm-et-rot">en la web</span>
+        <span class="fm-et-grande">referencial</span>
+      </span>
+      <span class="fm-hacia"><Icon name="chevron" size={20} /></span>
+      <span class="fm-etiqueta fm-final">
+        <span class="fm-ojal"></span>
+        <span class="fm-et-rot">con tu ejecutivo</span>
+        <span class="fm-et-grande">final</span>
+      </span>
+    </>
+  )}
+</div>
+
+<style>
+  /* La lámina, la misma de `FiguraCaso`. */
+  .fm {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    aspect-ratio: 460 / 280;
+    container-type: inline-size;
+    background: var(--papel-2);
+    border-radius: var(--r-3);
+    overflow: hidden;
+    border: 1px solid transparent;
+  }
+  .fm > * { position: absolute; }
+  .fm-rot, .fm-pie {
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .fm-rot { letter-spacing: .06em; color: var(--ink-mute); }
+  .fm-pie { color: var(--ink); transform: translateX(-50%); width: max-content; white-space: normal; text-align: center; }
+
+  /* ── El banco de por medio ─────────────────────────────────────────────── */
+  .fm-bank { --fm-y: 52%; --fm-x: 70%; --fm-cx: 43%; --fm-tx: 14%; --fm-tile: 13cqw; }
+  .fm-pieza {
+    left: var(--fm-tx);
+    top: var(--fm-y);
+    width: var(--fm-tile);
+    height: var(--fm-tile);
+    display: grid;
+    place-items: center;
+    background: var(--papel);
+    border: 1.5px solid var(--ink-mute);
+    border-radius: var(--r-3);
+    color: var(--ink);
+    transform: translate(-50%, -50%);
+  }
+  /* Encima de su pieza, para dejar libre la esquina de abajo al rótulo de la
+     cuenta. Si no cabe en un renglón entre el borde y el edificio, se parte en
+     dos, hacia arriba. */
+  .fm-pie-tuyo { left: var(--fm-tx); bottom: calc(100% - var(--fm-y) + var(--fm-tile) / 2 + var(--s-2)); max-width: calc(2 * var(--fm-tx) - 8px); }
+  .fm-linea { height: 3px; margin-top: -1.5px; top: var(--fm-y); }
+  /* Tu transferencia: real, y no nuestra. */
+  .fm-transferencia { left: calc(var(--fm-tx) + var(--fm-tile) / 2); right: calc(100% - var(--fm-cx) + 13cqw); background: var(--ink-mute); }
+
+  /*
+    El edificio, del dibujo del icono `bank`: frontón, friso, cuatro columnas,
+    basa y grada. Es la cuenta de DLPay; la unidad de valor queda dentro,
+    entre las columnas del medio.
+  */
+  .fm-edificio {
+    left: calc(var(--fm-cx) - 13cqw);
+    width: 26cqw;
+    top: calc(var(--fm-y) - 15.6cqw);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .fm-fronton {
+    width: 100%;
+    height: 7cqw;
+    background: var(--tinta);
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  }
+  .fm-friso { width: 100%; height: 2cqw; background: var(--tinta); margin-top: .6cqw; }
+  .fm-columnas {
+    width: 86%;
+    height: 12cqw;
+    display: flex;
+    justify-content: space-between;
+  }
+  .fm-columnas i { width: 3.4cqw; height: 100%; background: var(--tinta); }
+  .fm-basa { width: 100%; height: 2cqw; background: var(--tinta); }
+  .fm-grada { width: 112%; height: 1.4cqw; background: var(--tinta); margin-top: .6cqw; }
+  .fm-unidad {
+    left: var(--fm-cx);
+    top: var(--fm-y);
+    width: 4cqw;
+    height: 4cqw;
+    border-radius: 50%;
+    background: var(--verde-deep);
+    transform: translate(-50%, -50%);
+  }
+  .fm-pie-cuenta {
+    left: var(--fm-cx);
+    top: calc(var(--fm-y) + 10cqw + var(--s-2) + 2px);
+    /* Hasta 12 px antes de la frontera; si no cabe, se parte en dos. */
+    max-width: calc(2 * (var(--fm-x) - var(--fm-cx)) - 12px);
+  }
+
+  /* La frontera: el límite que hay que cruzar antes de mover nada. Su rótulo
+     va encima, como un letrero en su poste: así cabe a 320 px con el
+     espaciado de 1.4.12. */
+  .fm-rot-acreditada { left: var(--fm-x); top: var(--s-4); transform: translateX(-50%); }
+  .fm-frontera {
+    left: var(--fm-x);
+    top: calc(var(--s-4) + 16px + var(--s-2));
+    bottom: var(--s-4);
+    border-left: 1.5px dashed var(--ink-mute);
+  }
+  /* Lo nuestro empieza al otro lado, y sigue fuera de la lámina. */
+  .fm-nuestro { left: calc(var(--fm-x) + 1.5px); right: 0; background: var(--verde-deep); }
+
+  /* ── La placa del escritorio ───────────────────────────────────────────── */
+  .fm-people { --fm-mesa: 66%; }
+  .fm-persona {
+    left: 50%;
+    bottom: calc(100% - var(--fm-mesa));
+    width: 22cqw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateX(-50%);
+  }
+  .fm-cabeza {
+    width: 9cqw;
+    height: 9cqw;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    background: var(--papel);
+    margin-bottom: 1.2cqw;
+  }
+  .fm-hombros {
+    width: 100%;
+    height: 17cqw;
+    border: 1.5px solid var(--ink);
+    border-bottom: 0;
+    border-radius: 11cqw 11cqw 0 0;
+    background: var(--papel);
+  }
+  .fm-mesa {
+    left: 10%;
+    right: 10%;
+    top: var(--fm-mesa);
+    height: 3.6cqw;
+    background: var(--tinta);
+    border-radius: var(--r-1);
+  }
+  .fm-pata { top: calc(var(--fm-mesa) + 3.6cqw); bottom: 8%; width: 2.4cqw; background: var(--tinta); }
+  .fm-pata-a { left: 16%; }
+  .fm-pata-b { right: 16%; }
+  /* La placa se apoya en la mesa, delante de la persona. Puede crecer hacia
+     arriba si el espaciado de 1.4.12 parte su rótulo en dos. */
+  .fm-placa {
+    left: 50%;
+    bottom: calc(100% - var(--fm-mesa));
+    max-width: 52%;
+    min-height: 8cqw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2px var(--s-2);
+    padding: var(--s-1) var(--s-4);
+    background: var(--papel);
+    border: 1.5px solid var(--ink);
+    border-bottom-width: 3px;
+    border-radius: var(--r-1) var(--r-1) 0 0;
+    transform: translateX(-50%);
+    font-size: var(--t-label);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .fm-placa :global(.fm-marca) { width: 18px; height: auto; color: var(--verde-deep); flex: none; }
+
+  /* ── Las dos etiquetas ─────────────────────────────────────────────────── */
+  .fm-clock { --fm-riel: 15%; --fm-cuelga: 27%; --fm-ancho: 38cqw; --fm-alto: 34cqw; --fm-a: 26%; --fm-b: 74%; }
+  .fm-riel {
+    left: 8%;
+    right: 8%;
+    top: var(--fm-riel);
+    height: 3px;
+    border-radius: 2px;
+    background: var(--ink-mute);
+  }
+  .fm-hilo { top: var(--fm-riel); height: calc(var(--fm-cuelga) - var(--fm-riel) + 3.1cqw); border-left: 1.5px solid var(--ink-mute); }
+  .fm-hilo-web { left: var(--fm-a); }
+  .fm-hilo-final { left: var(--fm-b); border-color: var(--verde-deep); }
+  .fm-etiqueta {
+    top: var(--fm-cuelga);
+    width: var(--fm-ancho);
+    min-height: var(--fm-alto);
+    padding: 8cqw var(--s-2) 5cqw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-1);
+    text-align: center;
+    transform-origin: 50% 3cqw;
+    clip-path: polygon(22% 0, 78% 0, 100% 16%, 100% 100%, 0 100%, 0 16%);
+  }
+  /*
+    El borde de la de la web es la propia etiqueta en `--ink-mute`, con el
+    papel en una capa 1,5 px más adentro y la misma forma: un `clip-path` se
+    come el `border` y un `box-shadow` no sigue las esquinas cortadas.
+  */
+  .fm-web {
+    left: calc(var(--fm-a) - var(--fm-ancho) / 2);
+    background: var(--ink-mute);
+    transform: rotate(-9deg);
+    color: var(--ink);
+  }
+  .fm-et-fondo {
+    position: absolute;
+    inset: 1.5px;
+    background: var(--papel);
+    clip-path: polygon(22% 0, 78% 0, 100% 16%, 100% 100%, 0 100%, 0 16%);
+  }
+  .fm-web > :not(.fm-et-fondo) { position: relative; }
+  .fm-final {
+    left: calc(var(--fm-b) - var(--fm-ancho) / 2);
+    background: var(--tinta);
+    color: var(--on-tinta);
+  }
+  .fm-ojal {
+    position: absolute;
+    top: 1.6cqw;
+    left: 50%;
+    width: 3cqw;
+    height: 3cqw;
+    border-radius: 50%;
+    background: var(--papel-2);
+    transform: translateX(-50%);
+  }
+  .fm-web .fm-ojal { position: absolute; box-shadow: inset 0 0 0 1.5px var(--ink-mute); }
+  .fm-et-rot {
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    line-height: 1.2;
+    color: var(--ink-mute);
+  }
+  .fm-final .fm-et-rot { color: var(--on-tinta-mute); }
+  .fm-et-grande { font-size: var(--t-label); font-weight: 700; line-height: 1.2; overflow-wrap: anywhere; }
+  /* A partir de 380 px de lámina, la palabra grande sube a 16: abajo no cabe
+     «referencial» con el espaciado de 1.4.12. */
+  @container (min-width: 380px) {
+    .fm-et-grande { font-size: var(--t-body); }
+  }
+  /* Y bajo 380 la etiqueta afina sus márgenes para que la palabra quepa entera
+     con ese mismo espaciado. */
+  @container (max-width: 379.98px) {
+    .fm-etiqueta { padding: 7cqw var(--s-1) 4cqw; }
+    /* El chevron baja al escalón de 16 del §7: el hueco entre las dos
+       etiquetas mide ahí 22 px. */
+    .fm-hacia, .fm-hacia :global(svg) { width: 16px; height: 16px; }
+  }
+  .fm-hacia {
+    left: 50%;
+    top: calc(var(--fm-cuelga) + var(--fm-alto) / 2);
+    width: 20px;
+    height: 20px;
+    color: var(--ink-mute);
+    transform: translate(-50%, -50%);
+  }
+  .fm-hacia :global(svg) { display: block; width: 20px; height: 20px; }
+
+  /*
+    ── Colores forzados ────────────────────────────────────────────────────
+    Como en `FiguraCaso`: lo que es fondo pasa a `CanvasText` y las piezas
+    macizas ganan borde.
+  */
+  @media (forced-colors: active) {
+    .fm-linea, .fm-unidad, .fm-fronton, .fm-friso, .fm-columnas i, .fm-basa, .fm-grada,
+    .fm-mesa, .fm-pata, .fm-riel {
+      forced-color-adjust: none;
+      background: CanvasText;
+    }
+    .fm-etiqueta { border: 1px solid CanvasText; }
+  }
+</style>

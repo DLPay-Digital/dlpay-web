@@ -343,22 +343,72 @@ selector de siempre —enlaces, botones, campos, `tabindex`— y me dieron **cua
 decía ocho. Los otros cuatro son los `<summary>` de la FAQ, que son enfocables y no están en esa
 lista. **El número que no cuadra era el mío.**
 
-### 4.12 Una holgura declarada con el peor de nueve anchos no es la peor  ·  *2026-10-02*
+### 4.12 Un mínimo cabe entre dos anchos de un barrido  ·  *2026-10-02, corregido el mismo día*
 
-La entrega del relevo de `/empresas` declaraba que el texto queda **a 55 px o más del corte en
-escritorio y a 51 o más en móvil**. Midiendo los mismos anchos que ellos, me salía parecido. Barriendo
-de 320 a 1300 cada 20 px salió otra cosa: **44,81 px a 920** y **40,48 px a 420**.
+**La primera versión de esta sección se equivocó en lo que importaba, y conviene leerla entera.**
 
-Nada está roto —el piso del §4.7 son 40 px y los dos lo pasan, y mi medida es conservadora porque
-parte de la caja del renglón y no del trazo— pero **la diferencia entre «41 px de margen» y «0,48 px
-de margen» es toda la diferencia**. Con el primer número, mover el chaflán un poco parece gratis.
+Decía: la entrega declaraba «≥ 55 px en escritorio y ≥ 51 en móvil»; barriendo de 320 a 1300 cada
+20 px salían **44,81 a 920 y 40,48 a 420**; y concluía que **«nada está roto, el piso del §4.7 son
+40 px y los dos lo pasan»**. La lección que sacaba era que un mínimo se barre en vez de tomarse de
+una lista de anchos redondos.
 
-Lo que cierra el caso es que **el componente lo decía**: su comentario de móvil anuncia «la frase
-queda a 40 px de la esquina donde empieza el corte». El comentario tenía razón y la tabla de medidas,
-no.
+**La conclusión era falsa.** Barriendo **cada 1 px**, entre **417 y 419 px** de ancho la frase
+quedaba a **37,99 px**: por debajo del piso. Tres anchos, y los tres invisibles para un barrido de
+20 px, que salta de 400 a 420. *(Cowork lo situó en 424–426 con 37,88; la ventana se mueve unos
+píxeles entre equipos porque depende de dónde parte el último renglón, pero es la misma.)*
 
-> **Un mínimo se barre; no se toma de una lista de anchos bonitos.** Los anchos redondos son los que
-> alguien eligió mirar, y un mínimo suele vivir justo entre dos de ellos.
+**Lo que NO fue la causa, y lo compruebo porque la ficha lo atribuía a eso.** La ficha apunta dos
+motivos: la métrica —medir en horizontal y no perpendicular a la recta del corte— y el paso. El
+primero explica **su** medición, no la mía: mi script medía perpendicular, y lo verifiqué calculando
+las dos variantes a la vez —al segmento del chaflán y a la recta que lo contiene—. **Dan el mismo
+número** (37,99 y 37,99), porque el punto proyectado cae dentro del chaflán. Mi único error fue el
+paso.
+
+**Y el comentario del componente era medio cierto, que es lo que lo hacía creíble.** Anunciaba «la
+frase queda a 40 px de la esquina donde empieza el corte». De la **esquina**, sí. De la **recta**,
+que es lo que mide el §4.7, no. En la primera versión lo cité como la prueba de que el componente
+tenía razón y la tabla no; en realidad las dos cosas estaban mal, cada una a su manera.
+
+**El arreglo es un valor:** el margen derecho de esa frase en móvil pasa de `--s-4` a `--s-5`, 16 a
+24 px. Comprobado cada 1 px de 320 a 899 y de 900 a 1300: **44,63 px en móvil y 44,33 en
+escritorio**, sin ningún ancho por debajo del piso, y 64,8 con el espaciado de 1.4.12.
+
+> **Un barrido tiene un paso, y un paso es una apuesta sobre el tamaño del defecto más pequeño.**
+> Cada 20 px se ve un defecto de 20 px. Una ventana de 3 px pasa por debajo, y lo que llega al
+> registro no es «no lo encontré» sino **«no hay nada»**, que es peor. Donde el valor medido ande
+> cerca de un piso, el paso baja a 1 px.
+
+> **Y el corolario, que es el que me costó:** la frase «nada está roto» es una **afirmación**, no la
+> ausencia de un hallazgo. Pide la misma prueba que un hallazgo, y la mía no la tenía.
+
+### 4.13 Dos instrumentos que mienten por ser más rápidos  ·  *2026-10-02*
+
+Los dos aparecieron integrando `/confianza`, los dos por haber optimizado el barrido, y los dos
+devolvieron números creíbles.
+
+**1 · Un barrido que no recarga mide la página anterior.** Para no abrir un contexto por ancho,
+reutilicé la página y sólo cambié el viewport con `setViewportSize`. El desplazamiento lateral salió
+en **10 px a 400, 41 px a 440 y 16 px entre 900 y 1020** — un patrón con una pinta estupenda de
+hallazgo. Cargando la página **ya a 400 px**, el desplazamiento es **0**. El `scrollWidth` del
+documento no se recalcula del todo al redimensionar, así que el barrido estaba informando del ancho
+anterior. Lo delató que ningún elemento tenía su borde fuera de la pantalla: **un desplazamiento sin
+culpable no es un desplazamiento, es un instrumento.**
+
+**2 · Una captura de 4.000 px no se superpone consigo misma.** La medición de contraste compara dos
+tomas del mismo elemento. Tomándolas sobre `#main` entero —3.980 px de alto, 7.962 a 2×— salió un
+contraste de **1,01 en el titular de la portada**, que es `--on-tinta` sobre `--tinta`: 14,8 reales.
+Las dos capturas se desplazan una respecto de otra lo justo para que la máscara de un sitio se
+compare con el fondo de otro. Tomándolas **por sección** —ninguna de más de 1.000 px— el mismo
+titular da 14,82.
+
+> **Las dos veces el atajo era el mismo: medir de una pasada lo que estaba hecho para medirse por
+> partes.** Y las dos veces el resultado no fue un error visible, sino un número plausible. Un
+> instrumento que va más rápido tiene que demostrar que mide lo mismo; si no, lo barato sale caro en
+> la ronda siguiente.
+
+*Las dos se detectaron igual: contra una página que no había tocado.* El desplazamiento fantasma
+aparecía también en el build anterior; el 1,01 era de un titular que esta entrega no toca. **Cuando
+un hallazgo cae en algo que no tocaste, el primer sospechoso es el instrumento.**
 
 ---
 
@@ -375,6 +425,8 @@ Se anotan porque un registro que sólo cuenta aciertos no sirve para nada.
 | La alternancia de superficies de `/empresas` rota al integrar el eje | Cowork, verificando mi integración |
 | El bloque `PENDIENTE DE ASSET` del artículo de la Fed revivió en una actualización | Detectado al ir a ejecutarlo |
 | El recuento de marcas punteadas del DS §6.2 llevaba un día desfasado: `.et-torsion` entró con el abanico el 2026-10-01 | Al rehacer el barrido para integrar `/empresas` |
+| «Nada está roto» en el relevo de `/empresas`: el piso de 40 px SÍ se rompía, a 37,99 entre 417 y 419 px | Cowork, barriendo cada 1 px donde yo barrí cada 20 |
+| «Las otras diez rutas» del recuento del §6.2, cuando eran once — y la lista de al lado enumeraba once | Al rehacer el recuento al día siguiente |
 
 El último es el más instructivo: pedía producir un asset que una regla del Design System prohíbe
 —escrita a raíz de ese mismo asset— y rellenar un campo que se había eliminado. **Decidir sobre un

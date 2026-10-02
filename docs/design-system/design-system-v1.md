@@ -876,6 +876,12 @@ unidad de valor que viaja— con el relevo de la misma página —donde el tramo
 nuestro— concluirá, razonablemente, que el verde se usa de dos maneras incompatibles, y
 «arreglará» una.
 
+**Las figuras de mecanismo del 2026-10-02 tampoco estrenan ninguna**, y se comprobó igual: punto
+lleno verde (la unidad de valor, dentro del edificio), filete `--ink-mute` (la transferencia, que es
+tuya y no nuestra), tramo verde (lo nuestro, y sólo **después** de la frontera) y trazo punteado. La
+mesa, la persona, la placa, el riel y los hilos son **partes del objeto**, igual que el tirador de la
+cajonera.
+
 **Las figuras de caso del 2026-10-02 no estrenan ninguna marca, y se comprobó una por una.** El
 cruce usa punto lleno verde (la unidad de valor que viaja), cuña, filete `--ink-mute` —el pago al
 proveedor, que **no es nuestro**— y trazo punteado; la cajonera, tramo verde y cuña, con la frontera
@@ -891,7 +897,7 @@ bisagra del portátil. Un filete `--ink-mute` significa «existe, es real, no es
 **Sobre la frontera punteada, añadida el 2026-09-22.** Estaba en producción desde que existe
 `UseCaseFigure` y no estaba escrita, y eso resultó ser lo que hacía ambiguo todo un par de figuras.
 
-**Recontado el 2026-10-02 barriendo las quince rutas del build: son NUEVE.**
+**Recontado el 2026-10-02 barriendo las quince rutas del build: son DIEZ.**
 
 | dónde | clase | qué límite marca |
 |---|---|---|
@@ -901,11 +907,18 @@ bisagra del portátil. Un filete `--ink-mute` significa «existe, es real, no es
 | `/tarifas` ×3 | `.limite`, `.sw sw-linea`, `.corte` | dónde acaba el precio · el spread · dónde se conversa |
 | Home y `/precio`, los puentes | `.limite` y `.corte` | los mismos dos, copiados a sus figuras |
 | `/empresas` ×2 | `.fc-frontera` de `FiguraCaso` | la frontera de Chile, en el cruce y en la cajonera |
+| `/confianza` | `.fm-frontera` de `FiguraMecanismo` | cuándo la transferencia está **acreditada** — antes no movemos nada |
 
-**Las otras diez rutas no tienen ninguna**, y eso también se midió: `/como-funciona`, `/confianza`,
-`/preguntas`, `/blog` y sus tres artículos, las tres legales sin `/tarifas` y la 404.
+**Las otras diez rutas no tienen ninguna**, y eso también se midió: `/como-funciona`, `/preguntas`,
+`/blog` y sus tres artículos, las tres legales sin `/tarifas` y la 404.
 
-**El barrido devuelve DIEZ, y la décima no es una marca.** Es `.et-torsion`, el
+> *Y una corrección de aritmética, no de medición:* la versión del 2026-10-02 por la mañana decía
+> también «las otras diez» cuando sólo cuatro rutas tenían marcas, así que eran **once** — y la
+> propia lista que venía detrás enumeraba once. El número de hoy sí es diez, porque `/confianza`
+> cambió de lado. **Un recuento se puede equivocar en la resta y no sólo en el barrido**, y la resta
+> no la comprueba ningún instrumento.
+
+**El barrido devuelve ONCE, y una de las once no es una marca.** Es `.et-torsion`, el
 `stroke-dasharray: 1.4 2` con el que el abanico de etiquetas de `/precio` dibuja la torsión del
 cordón. Entró el 2026-10-01 con `a3d3bf6` y es **materia, no vocabulario**: no marca ningún límite,
 dice «esto es un cordón trenzado», y la trae una de las dos piezas a las que ADR-0011 concede
@@ -914,8 +927,8 @@ punteados, y desde que existe una pieza con materia los dos números dejan de co
 
 > **El método necesita una exclusión más, y es de clase y no de lista:** un `stroke-dasharray` puede
 > ser **textura de un material** y no una marca. Antes sólo había que descontar el de `[data-draw]`,
-> que es un mecanismo; ahora también el de las piezas de ADR-0011. Quien recuente y obtenga diez no
-> ha encontrado una marca nueva: ha encontrado esta frase.
+> que es un mecanismo; ahora también el de las piezas de ADR-0011. Quien recuente y obtenga una marca
+> más que esta tabla no ha encontrado una marca nueva: ha encontrado esta frase.
 
 **Esta frase ha envejecido cuatro veces, y las dos últimas son la misma lección.** Dijo «dos» y era
 cierta el 2026-09-24; la invalidaron el rediseño de `/tarifas` del día siguiente, que estrenó tres, y
@@ -1182,6 +1195,7 @@ cada una, no qué significa.
 | **Héroe con cotizador** | El primer viewport de la Home | El cotizador **no entra** animado: es el instrumento y tiene que estar encendido al llegar. Lo que entra es el texto (M6) |
 | **Encabezado de página** | Las ocho rutas que no son la Home | `PageHero`. Dos composiciones: a dos columnas y **apilada y centrada**, ésta con la pieza del `aside` montada sobre la costura con la sección siguiente |
 | **Dispositivos en CSS: teléfono, portátil, tableta y teléfono de avisos** | Enseñar el producto sin imágenes. El teléfono de chat (`/como-funciona`, Home) una **operación negociándose**; el portátil (`/empresas`) la plataforma; la tableta (`/preguntas`) **una duda resolviéndose**; el teléfono bloqueado con avisos (`/confianza`, desde el 2026-09-30) **una operación comprobándose desde fuera** | Cero archivos. **El texto nunca se teclea**: las cifras salen de `lib/pricing` y la pregunta de la tableta se busca en `general.ts` por su texto. Los cuatro van `aria-hidden` y **el chasis va claro**, que es lo único que recorta un objeto contra la tinta. **Dos teléfonos y no uno, a propósito:** aquél tiene la app abierta y una conversación; éste está bloqueado y enseña tres avisos de tres remitentes, de los que **sólo uno es nuestro**. Si el hilo de la tableta empieza a hablar de montos, deja de ser tableta y pasa a ser teléfono |
+| **Figura de mecanismo** | Los tres mecanismos de `/confianza` | `FiguraMecanismo`. El edificio de por medio, la placa del escritorio y las dos etiquetas, en el lado que el zigzag dejaba vacío. La misma lámina que `FiguraCaso`, repetida y no importada: dos usos no justifican extraer una pieza. **El banco no lleva nombre** —BCI es un claim con marcador— y **lo nuestro empieza después de la frontera «acreditada»**. *2026-10-02.* |
 | **Figura de caso** | Las cuatro operaciones de `/empresas` | `FiguraCaso`. Un objeto por caso —el cruce, la cajonera, el calendario y las dos pilas— sobre una lámina en `--papel-2`, con las marcas del §6.2 y ninguna cifra. HTML y no SVG: los rótulos son texto a 13 px en todos los anchos. **El pago al proveedor va en `--ink-mute`, no en verde**: lo hace la empresa, no DLPay. *Sustituye al emblema de caso el 2026-10-02.* |
 | **Línea de tenencia** | `/confianza`: de quién es la cuenta donde está el dinero | HTML, no SVG. Un solo tramo es nuestro |
 | **Carril de dos columnas** | `/como-funciona`: qué hace cada parte y dónde cambia de manos | La colocación en rejilla va **explícita**: el flujo automático deshace el carril |

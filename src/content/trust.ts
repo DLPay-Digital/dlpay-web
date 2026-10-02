@@ -124,6 +124,12 @@ export const honesty: { claim: string; reality: string }[] = [
  * insignias. **Insignia = lo que hacemos nosotros; icono suelto = lo que traes
  * tú.** Repetir las pastillas acá dejaría la página en una pared de píldoras y
  * borraría una diferencia que sí existe.
+ *
+ * **Desde el 2026-10-02 el icono va en una placa CUADRADA, dentro de la
+ * carpeta** (`CarpetaRequisitos.astro`). La distinción no cambia, se hace más
+ * visible: **placa cuadrada = lo que traes tú; insignia redonda = lo que
+ * hacemos nosotros.** Sigue sin ser `IconBadge`, que es lo que importa de la
+ * regla de arriba; lo que gana es forma propia en vez de un icono suelto.
  */
 export const requirements: { icon: IconName; title: string; body: string }[] = [
   {

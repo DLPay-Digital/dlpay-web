@@ -329,9 +329,19 @@ const FUERA = 2;
     .al-que { grid-column: 2; padding-top: 2px; max-width: none; }
     .al-dato { grid-column: 2; }
     .al-bisagra {
-      /* 16 px más de margen a la derecha: con los 24 del bloque, la frase queda
-         a 40 px de la esquina donde empieza el corte. */
-      margin: var(--s-6) var(--s-4) 0 calc(var(--al-nodo) + var(--s-4));
+      /*
+        24 px más de margen a la derecha: con los 24 del bloque, la frase
+        termina a 48 px del canto y 8 px por encima del chaflán, y eso la deja
+        a **44 px o más de la recta del corte en cualquier ancho**, por
+        geometría y no por cómo caigan los renglones.
+
+        *Corregido el 2026-10-02.* Eran 16, y el comentario decía «a 40 px de
+        la esquina». A la esquina sí; a la recta del corte, que es lo que mide
+        el Design System §4.7, no: entre 424 y 426 px de ancho el último
+        renglón llegaba al tope y quedaba a 37,9. Lo encontró un barrido de
+        1 px; el de cada 20 px pasaba entre medias.
+      */
+      margin: var(--s-6) var(--s-5) 0 calc(var(--al-nodo) + var(--s-4));
       font-size: var(--t-h3-m);
       max-width: none;
     }

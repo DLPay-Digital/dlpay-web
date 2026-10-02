@@ -1,0 +1,101 @@
+---
+/**
+ * «Qué te pedimos, y por qué», en `/confianza`: **la carpeta.**
+ *
+ * Pedido por Sebastián el 2026-10-02 («mismo criterio» que `/empresas`). Eran
+ * tres columnas con un icono suelto de 20 px sobre un filete: correctas, y
+ * planas. Lo que se piden son cosas que **traes tú**, y el sitio ya tiene el
+ * objeto para eso: la carpeta de «Ten esto a mano» en `/empresas`
+ * (`ComoEmpezamos.astro`), aprobada el mismo día. Acá es la misma carpeta, con
+ * los tres requisitos dentro.
+ *
+ * · **La pestaña baja en la diagonal de la marca** (30 px de ancho por 44 de
+ *   alto, los 34° del isotipo). No lleva texto: el titular de la sección está
+ *   justo encima y repetirlo sería decir dos veces lo mismo. Una carpeta tiene
+ *   pestaña aunque no tenga rótulo, y aquí es parte del objeto.
+ * · **Cada requisito, con su icono en una placa cuadrada de 48 px.** La
+ *   distinción de la página se conserva y se hace más clara: **placa cuadrada =
+ *   lo que traes tú; insignia redonda = lo que hacemos nosotros** («Qué pasa
+ *   con tu plata», justo encima). Ver la nota de `requirements` en `trust.ts`.
+ *
+ * Ningún dato nuevo: los tres salen de `requirements`. La frase institucional
+ * NO entra en la carpeta: la importa la página, sin reescribirla, y va debajo,
+ * discreta, como estaba (`alliances.ts`).
+ *
+ * La pestaña repite la de `ComoEmpezamos` en vez de importarla, por lo mismo
+ * que la lámina de `FiguraMecanismo`: dos usos no justifican extraer una pieza
+ * ni tocar una integrada. Si aparece un tercero, se extrae.
+ */
+import Icon from './Icon.astro';
+import type { IconName } from './Icon.astro';
+
+interface Props {
+  items: readonly { icon: IconName; title: string; body: string }[];
+}
+const { items } = Astro.props;
+---
+<div class="cr">
+  <span class="cr-pestana" aria-hidden="true"></span>
+  <ul class="cr-lista" role="list">
+    {items.map((item) => (
+      <li>
+        <span class="cr-placa" aria-hidden="true"><Icon name={item.icon} size={24} /></span>
+        <h3>{item.title}</h3>
+        <p>{item.body}</p>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .cr { position: relative; }
+  .cr-pestana {
+    display: block;
+    width: calc(var(--s-9) + 30px);
+    height: 44px;
+    margin-bottom: -1px;
+    background: var(--papel);
+    border-radius: var(--r-3) 0 0 0;
+    clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 100%, 0 100%);
+  }
+  .cr-lista {
+    display: grid;
+    gap: var(--s-6);
+    margin: 0;
+    padding: var(--s-6);
+    list-style: none;
+    background: var(--papel);
+    border-radius: 0 var(--r-3) var(--r-3) var(--r-3);
+  }
+  .cr-placa {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: var(--s-4);
+    border-radius: var(--r-3);
+    background: var(--papel-2);
+    color: var(--verde-deep);
+  }
+  .cr-placa :global(svg) { width: 24px; height: 24px; }
+  h3 {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    margin-bottom: var(--s-2);
+  }
+  p { color: var(--ink-mute); max-width: 47ch; }
+
+  @media (min-width: 760px) {
+    .cr-lista { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-7); padding: var(--s-7); }
+  }
+  @media (min-width: 900px) {
+    h3 { font-size: var(--t-h3); }
+  }
+
+  /* Colores forzados: la carpeta pierde su fondo; un borde la mantiene. */
+  @media (forced-colors: active) {
+    .cr-pestana, .cr-lista { border: 1px solid CanvasText; }
+    .cr-pestana { border-bottom: 0; }
+  }
+</style>
