@@ -1,0 +1,309 @@
+---
+/**
+ * Las tres figuras de «Tres formas de usarlo», en la Home: **tres objetos.**
+ *
+ * Sustituyen a `UseCaseFigure.astro`. Pedido por Sebastián el 2026-10-02 («mismo
+ * criterio» que `/empresas` y `/confianza`). Medido sobre el render: aquellas
+ * abstracciones medían 132×46 px en escritorio y sus rótulos CLP/USD quedaban
+ * **a 11 px, bajo el piso de 13** del sitio, porque eran `<text>` dentro de un
+ * SVG que se escala.
+ *
+ * ── La topología se conserva: es el dato ───────────────────────────────────
+ *
+ * `UseCaseFigure` distinguía los tres usos por su forma —cruza, convierte,
+ * reparte— y eso era lo correcto. Se queda. Lo que cambia es que ahora la forma
+ * la dibujan objetos que se reconocen, con la gramática de las figuras de
+ * `/empresas` y `/confianza`:
+ *
+ * · **Cruza: tu billetera, la frontera y quien recibe.** Lo que viaja es una
+ *   unidad de valor —el punto lleno, rotulado USD— y la cuña cae en la
+ *   frontera, donde cambia de manos. **La línea es `--ink-mute`, no verde**: el
+ *   envío lo haces tú desde tu billetera, no DLPay (`CLAUDE.md` §1). Y el USD
+ *   va del lado de Chile, en tu billetera: la figura de antes rotulaba CLP en
+ *   un extremo y USD en el otro, como si el cambio ocurriera al cruzar, y el
+ *   texto dice lo contrario —«Recibes dólar digital y desde ahí lo envías»—.
+ * · **Convierte: las dos monedas.** CLP y USD, el mismo tamaño porque el valor
+ *   no cambia, y entre ellas dos tramos verdes con su cuña: ida y vuelta, que es
+ *   lo nuestro. **Sin frontera, a propósito**, igual que en la figura de antes:
+ *   el dinero no se va a ninguna parte, y eso es «no hace falta abrir una
+ *   cuenta afuera».
+ * · **Reparte: tu empresa y varios destinos.** Un tronco que cruza la frontera y
+ *   se abre en tres, en `--ink-mute` por lo mismo que el cruce: el pago lo hace
+ *   la empresa. Es el anticipo de `/empresas`, a donde lleva la sección. **La
+ *   frontera es nueva aquí**: la figura de antes sólo la tenía en el cruce, y
+ *   el texto de esta tarjeta dice «en el exterior». Ninguna pieza es verde: en
+ *   este uso DLPay no hace ningún tramo que se pueda dibujar.
+ *
+ * Los rótulos son texto a 13 px: «Tu billetera», «A quien necesites», «Tu
+ * empresa», CHILE, EXTERIOR, USD y CLP. Salen del texto de al lado o ya están
+ * publicados. Ninguna cifra.
+ *
+ * ── La lámina, por tercera vez ─────────────────────────────────────────────
+ *
+ * Es la de `FiguraCaso` y `FiguraMecanismo`: ocho reglas de base repetidas.
+ * Las dos anteriores decían «si aparece un tercero, se extrae», y aquí está el
+ * tercero. **No se extrae en esta entrega a propósito**: hacerlo obliga a tocar
+ * dos piezas recién integradas, y el ámbito de estilos de Astro no deja que
+ * una carcasa estilice lo que llega por su ranura sin `:global`, que es justo
+ * lo que hay que medir con calma. Queda propuesto como limpieza aparte en la
+ * ficha de esta entrega, con las tres piezas medidas antes y después.
+ *
+ * Va `aria-hidden`: el `h3` y el párrafo de al lado ya lo dicen con palabras.
+ */
+import Icon from './Icon.astro';
+import type { UseCase } from '../content/home.ts';
+
+interface Props {
+  kind: UseCase['figure'];
+}
+const { kind } = Astro.props;
+
+/* La cuña del sistema (la de `EjeDeAlcance`), en su caja de 56×20. */
+const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
+---
+<div class:list={['fu', `fu-${kind}`]} aria-hidden="true">
+  {kind === 'cruza' && (
+    <>
+      <span class="fu-frontera"></span>
+      <span class="fu-rot fu-aca">Chile</span>
+      <span class="fu-rot fu-alla">Exterior</span>
+      <span class="fu-linea fu-a"></span>
+      <span class="fu-linea fu-b"></span>
+      <svg class="fu-cuna fu-cuna-cruce" viewBox="0 0 56 20" fill="none">
+        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+      </svg>
+      <span class="fu-unidad"></span>
+      <span class="fu-rot fu-usd">USD</span>
+      <span class="fu-pieza fu-tuya"><Icon name="wallet" size={24} /></span>
+      <span class="fu-pieza fu-suya"><Icon name="people" size={24} /></span>
+      <span class="fu-pie fu-pie-tuya">Tu billetera</span>
+      <span class="fu-pie fu-pie-suya">A quien necesites</span>
+    </>
+  )}
+
+  {kind === 'convierte' && (
+    <>
+      <span class="fu-moneda fu-clp">CLP</span>
+      <span class="fu-moneda fu-usd-m">USD</span>
+      <span class="fu-tramo fu-ida"></span>
+      <span class="fu-tramo fu-vuelta"></span>
+      <svg class="fu-cuna fu-cuna-ida" viewBox="0 0 56 20" fill="none">
+        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+      </svg>
+      <svg class="fu-cuna fu-cuna-vuelta" viewBox="0 0 56 20" fill="none">
+        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+      </svg>
+    </>
+  )}
+
+  {kind === 'reparte' && (
+    <>
+      <span class="fu-frontera"></span>
+      <span class="fu-rot fu-aca">Chile</span>
+      <span class="fu-rot fu-alla">Exterior</span>
+      <span class="fu-pieza fu-tuya"><Icon name="empresa" size={24} /></span>
+      <span class="fu-pie fu-pie-tuya">Tu empresa</span>
+      <span class="fu-linea fu-tronco"></span>
+      <svg class="fu-cuna fu-cuna-cruce" viewBox="0 0 56 20" fill="none">
+        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+      </svg>
+      <span class="fu-rama-v"></span>
+      <span class="fu-rama fu-r1"></span>
+      <span class="fu-rama fu-r2"></span>
+      <span class="fu-rama fu-r3"></span>
+      <span class="fu-destino fu-d1"><Icon name="empresa" size={20} /></span>
+      <span class="fu-destino fu-d2"><Icon name="empresa" size={20} /></span>
+      <span class="fu-destino fu-d3"><Icon name="empresa" size={20} /></span>
+    </>
+  )}
+</div>
+
+<style>
+  /* La lámina, la misma de `FiguraCaso` y `FiguraMecanismo`. */
+  .fu {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    aspect-ratio: 460 / 280;
+    container-type: inline-size;
+    background: var(--papel-2);
+    border-radius: var(--r-3);
+    overflow: hidden;
+    border: 1px solid transparent;
+  }
+  .fu > * { position: absolute; }
+  .fu-rot, .fu-pie {
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    line-height: 1.2;
+  }
+  .fu-rot { text-transform: uppercase; letter-spacing: .06em; color: var(--ink-mute); white-space: nowrap; }
+  /* Centrado bajo su pieza; si no cabe en un renglón, se parte en dos. */
+  .fu-pie {
+    color: var(--ink);
+    width: max-content;
+    text-align: center;
+    transform: translateX(-50%);
+  }
+
+  /* La frontera: el límite. Punteada, que es su marca y la de nadie más. */
+  .fu-frontera {
+    top: calc(var(--s-4) + 16px + var(--s-2));
+    bottom: var(--s-4);
+    left: var(--fu-x);
+    border-left: 1.5px dashed var(--ink-mute);
+  }
+  .fu-aca { top: var(--s-4); right: calc(100% - var(--fu-x) + var(--s-2)); }
+  .fu-alla { top: var(--s-4); left: calc(var(--fu-x) + var(--s-2)); }
+
+  .fu-cuna { width: 14cqw; height: 5cqw; }
+  .fu { --fu-tx: 18%; }
+  .fu-linea { height: 3px; margin-top: -1.5px; top: var(--fu-y); background: var(--ink-mute); }
+
+  /* Las piezas: la tuya en tinta, la del otro lado con borde. */
+  .fu-pieza {
+    top: var(--fu-y);
+    width: 18cqw;
+    height: 18cqw;
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-3);
+    transform: translate(-50%, -50%);
+  }
+  .fu-tuya { left: var(--fu-tx); background: var(--tinta); color: var(--on-tinta); }
+  .fu-suya { left: calc(100% - var(--fu-tx)); background: var(--papel); border: 1.5px solid var(--ink-mute); color: var(--ink); }
+  .fu-pie { top: calc(var(--fu-y) + 9cqw + var(--s-2)); max-width: calc(2 * var(--fu-tx) - 8px); }
+  .fu-pie-tuya { left: var(--fu-tx); }
+  .fu-pie-suya { left: calc(100% - var(--fu-tx)); }
+
+  /* ── Cruza ─────────────────────────────────────────────────────────────── */
+  .fu-cruza { --fu-x: 50%; --fu-y: 52%; }
+  .fu-a { left: calc(var(--fu-tx) + 9cqw); right: calc(50% + 7cqw); }
+  .fu-b { left: calc(50% + 7cqw); right: calc(var(--fu-tx) + 9cqw); }
+  .fu-cuna-cruce {
+    left: var(--fu-x);
+    top: var(--fu-y);
+    transform: translate(-50%, -50%);
+    color: var(--ink-mute);
+    /* Con el fondo de la lámina, para que el tronco del reparto no la tache. */
+    background: var(--papel-2);
+  }
+  .fu-unidad {
+    left: 36%;
+    top: var(--fu-y);
+    width: 4cqw;
+    height: 4cqw;
+    border-radius: 50%;
+    background: var(--verde-deep);
+    transform: translate(-50%, -50%);
+  }
+  .fu-usd {
+    left: 36%;
+    bottom: calc(100% - var(--fu-y) + 2cqw + var(--s-1));
+    transform: translateX(-50%);
+    color: var(--verde-deep);
+  }
+
+  /* ── Convierte ─────────────────────────────────────────────────────────── */
+  .fu-convierte { --fu-y: 50%; --fu-m: 24cqw; --fu-c1: 28%; --fu-c2: 72%; }
+  .fu-moneda {
+    top: var(--fu-y);
+    width: var(--fu-m);
+    height: var(--fu-m);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    letter-spacing: .06em;
+    transform: translate(-50%, -50%);
+  }
+  .fu-clp { left: var(--fu-c1); background: var(--papel); border: 1.5px solid var(--ink); color: var(--ink); }
+  .fu-usd-m { left: var(--fu-c2); background: var(--tinta); color: var(--on-tinta); }
+  /* Ida por arriba y vuelta por abajo, entre los cantos de las dos monedas. */
+  .fu-tramo {
+    left: calc(var(--fu-c1) + var(--fu-m) / 2 - 1cqw);
+    right: calc(100% - var(--fu-c2) + var(--fu-m) / 2 - 1cqw);
+    height: 3px;
+    background: var(--verde-deep);
+  }
+  .fu-ida { top: calc(var(--fu-y) - 5cqw); }
+  .fu-vuelta { top: calc(var(--fu-y) + 5cqw - 3px); }
+  .fu-cuna-ida, .fu-cuna-vuelta {
+    left: 50%;
+    width: 12cqw;
+    height: 4.3cqw;
+    color: var(--verde-deep);
+    background: var(--papel-2);
+    transform: translate(-50%, -50%);
+  }
+  .fu-cuna-ida { top: calc(var(--fu-y) - 5cqw + 1.5px); }
+  .fu-cuna-vuelta { top: calc(var(--fu-y) + 5cqw - 1.5px); }
+
+  /* ── Reparte ───────────────────────────────────────────────────────────── */
+  /* Más abajo y más juntos que el cruce: a 216 px de lámina, el destino de
+     arriba tocaba el rótulo EXTERIOR con el espaciado de 1.4.12. Y la pieza
+     un poco más adentro (22 % y no 18): así su pie cabe en un renglón con ese
+     espaciado entre 260 y 300 px de lámina; en dos, se salía por abajo. */
+  .fu-reparte { --fu-tx: 22%; --fu-x: 46%; --fu-y: 60%; --fu-ramas: 64%; --fu-sep: 12cqw; }
+  .fu-tronco { left: calc(var(--fu-tx) + 9cqw); right: calc(100% - var(--fu-ramas)); }
+  .fu-rama-v {
+    left: calc(var(--fu-ramas) - 1.5px);
+    top: calc(var(--fu-y) - var(--fu-sep));
+    height: calc(2 * var(--fu-sep));
+    border-left: 3px solid var(--ink-mute);
+  }
+  .fu-rama {
+    left: calc(var(--fu-ramas) - 1.5px);
+    right: calc(100% - 82%);
+    height: 3px;
+    margin-top: -1.5px;
+    background: var(--ink-mute);
+  }
+  .fu-r1 { top: calc(var(--fu-y) - var(--fu-sep)); }
+  .fu-r2 { top: var(--fu-y); }
+  .fu-r3 { top: calc(var(--fu-y) + var(--fu-sep)); }
+  .fu-destino {
+    left: 86%;
+    width: 11cqw;
+    height: 11cqw;
+    display: grid;
+    place-items: center;
+    background: var(--papel);
+    border: 1.5px solid var(--ink-mute);
+    border-radius: var(--r-2);
+    color: var(--ink);
+    transform: translate(-50%, -50%);
+  }
+  .fu-destino :global(svg) { width: 20px; height: 20px; }
+  .fu-d1 { top: calc(var(--fu-y) - var(--fu-sep)); }
+  .fu-d2 { top: var(--fu-y); }
+  .fu-d3 { top: calc(var(--fu-y) + var(--fu-sep)); }
+
+  /*
+    ── Bajo 260 px de lámina ───────────────────────────────────────────────
+    Es la tarjeta del carril a 320 px de pantalla (216 px) y la fila de tres
+    entre 760 y unos 1000 px (208–260). Los pies de pieza no caben ahí sin
+    partir una palabra, y se retiran: el icono de cada pieza y el texto de la
+    tarjeta ya dicen de quién es. Los rótulos de la frontera se quedan. Y los
+    destinos del reparto bajan su icono al escalón de 16. (La consulta mide la
+    caja de contenido, dentro del borde de 1 px: 260 de contenido son 262 de
+    lámina.)
+  */
+  @container (max-width: 259.98px) {
+    .fu-pie { display: none; }
+    .fu-destino :global(svg) { width: 16px; height: 16px; }
+  }
+
+  /* Colores forzados: lo que es fondo pasa a `CanvasText`; las piezas macizas
+     ganan borde. */
+  @media (forced-colors: active) {
+    .fu-linea, .fu-unidad, .fu-tramo, .fu-rama {
+      forced-color-adjust: none;
+      background: CanvasText;
+    }
+    .fu-rama-v { forced-color-adjust: none; border-color: CanvasText; }
+    .fu-cuna { forced-color-adjust: none; color: CanvasText; background: Canvas; }
+    .fu-tuya, .fu-moneda { border: 1px solid CanvasText; }
+  }
+</style>

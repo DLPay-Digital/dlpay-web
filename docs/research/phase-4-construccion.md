@@ -410,6 +410,33 @@ titular da 14,82.
 aparecía también en el build anterior; el 1,01 era de un titular que esta entrega no toca. **Cuando
 un hallazgo cae en algo que no tocaste, el primer sospechoso es el instrumento.**
 
+### 4.14 Un umbral a 0,02 px de dispararse donde no debe  ·  *2026-10-02*
+
+`FiguraMecanismo` pasó a usarse en dos sitios con láminas de tamaños distintos, y ganó un
+`@container (max-width: 277.98px)` que retira los rótulos secundarios. En la Home tiene que
+aplicarse; en `/confianza`, **nunca**, y `/confianza` está publicada y revisada.
+
+La lámina más estrecha de `/confianza` mide **280 px de borde a borde** y, como lleva un borde
+transparente de 1 px, **278 px de caja de contenido** — que es lo que mide una consulta de
+contenedor. Con el umbral en 277,98, el margen es de **0,02 px**. La versión anterior usaba 279,98 y
+sí se disparaba: dos figuras de `/confianza` cambiaban a 320 px de pantalla.
+
+Lo verifiqué como se debe, **por identidad de píxel y no por tamaño de caja**: 42 capturas de las
+tres figuras de `/confianza` —siete anchos, con y sin el espaciado de 1.4.12— comparadas por hash
+contra el build anterior. **42 idénticas, 0 distintas.** Una caja del mismo tamaño con un rótulo
+movido dentro daría el mismo número; un hash, no.
+
+> **Está bien hoy y es frágil mañana.** No por el valor, que es correcto, sino por lo que lo
+> sostiene: un píxel de borde transparente y el relleno de una sección. Cualquiera de las dos cosas
+> que cambie 1 px, y `/confianza` cambia sin que nadie toque `/confianza`. Lo que convierte eso en
+> un riesgo manejable no es el número: es que **esté escrito en el componente con su medición**, que
+> es donde lo encontrará quien rompa el supuesto.
+
+*Por qué no se cambió a algo menos fino:* el umbral tiene que caer entre 278 (la lámina chica de
+`/confianza`) y los 208–290 px que la Home produce entre 760 y 1100, así que los dos rangos se
+solapan y **no existe un valor cómodo**. Separarlos de verdad pide un parámetro explícito en vez de
+una consulta de contenedor, y eso es rediseñar una pieza ya aprobada. Queda anotado, no hecho.
+
 ---
 
 ## 5. Errores propios, registrados

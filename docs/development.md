@@ -77,10 +77,11 @@ src/
 │   ├── AlcanceEmpresa.astro # el relevo: hasta dónde llega nuestra parte, en /empresas
 │   ├── FiguraMecanismo.astro # los tres objetos de «Qué pasa con tu plata» en /confianza
 │   ├── CarpetaRequisitos.astro # la carpeta de «Qué te pedimos, y por qué»
+│   ├── FiguraUso.astro      # los tres objetos de «Tres formas de usarlo» en la Home
 │   ├── hero/GloboRotativo.astro # el globo de la Home (SVG + datos en línea)
 │   ├── Header · Footer · Hero · PageHero · Trust · UseCases
 │   ├── Business · Faq · Alliances · AnnouncementBar · PortadaDato
-│   ├── Icon · Logo · UseCaseFigure · PendingNotice
+│   ├── Icon · Logo · PendingNotice
 │   └── ui/                # IconBadge, ArrowLink — sólo donde corresponden
 ├── content.config.ts # esquema de la colección del blog (Content Layer)
 ├── content/          # dato tipado, separado de la presentación

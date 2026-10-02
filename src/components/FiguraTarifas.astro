@@ -1,55 +1,113 @@
 ---
 /**
- * La figura del puente a `/tarifas`: la composición del precio.
+ * La figura del puente a `/tarifas`: **el número, y lo que tiene dentro.**
  *
  * Es la figura de `pages/tarifas.astro`, **copiada y no factorizada**, a pedido
  * explícito de la entrega: si mañana la de destino cambia, el puente se queda
  * como está hasta que alguien lo mire. Un puente que se actualiza solo puede
  * acabar prometiendo algo distinto de lo que hay al otro lado.
  *
+ * ── Qué cambió el 2026-10-02, y por qué ─────────────────────────────────────
+ *
+ * Pedido por Sebastián («mismo criterio» que `/empresas` y `/confianza`). La
+ * figura era sólo la barra de `/tarifas`, con su llave: medía 460×75 px y
+ * ocupaba **el 5,5 % de la banda** a 1280, una línea verde flotando en la
+ * tinta. El titular dice «Ese número» y el rótulo «el número que viste», y el
+ * número no estaba.
+ *
+ * Ahora **el número está**: la fila «Recibes» del cotizador, la misma que la
+ * portada de `/tarifas` enseña en su tarjeta, con la cifra que el cotizador
+ * carga al abrir. Encima, la llave, que abarca la fila entera. A la derecha, el
+ * límite y el vacío. **Es un trozo de la tarjeta de destino, no un dibujo
+ * nuevo**, así que el puente sigue anticipando lo que hay al otro lado. Lo que
+ * se deja fuera es la fila «Das» y la barra, y no por sitio: el titular habla
+ * de un número, y el número es el que recibes.
+ *
+ * **La leyenda de la llave tampoco viene**, y ésta sí por sitio. Se probó: con
+ * «la referencia de mercado y nuestro spread, los dos adentro» encima, la
+ * figura sube dos renglones y su esquina de arriba a la izquierda queda a
+ * 40,0 px del corte —justo en el piso del Design System §4.7— y a 16 con el
+ * espaciado de WCAG 1.4.12, donde la leyenda pasa a tres renglones. Sin ella,
+ * 67,9 y 69,3. Y no hace falta: el párrafo del puente, a la izquierda, ya dice
+ * qué hay dentro del número. La leyenda se queda donde se explica, en
+ * `/tarifas`.
+ *
  * ── Las tres reglas del dibujo, que no se pueden relajar ────────────────────
  *
- * Son las de la cabecera de `pages/tarifas.astro` y valen igual acá:
+ * Son las de la cabecera de `pages/tarifas.astro`, y valen igual con la fila
+ * en el sitio de la barra:
  *
- * 1. **La llave abarca la barra ENTERA** y mide lo que mide la barra. Si llegara
+ * 1. **La llave abarca la fila ENTERA** y mide lo que mide la fila. Si llegara
  *    al borde nombraría también el vacío. La página dice «un solo número, con el
  *    spread ya incorporado»: una llave partida afirmaría lo contrario.
- * 2. **La barra no se parte.** Es una sola magnitud.
+ * 2. **La fila no se parte.** Es un solo número, y el titular dice que lo
+ *    incluye todo: lo de dentro no se ve por separado.
  * 3. **A la derecha del punteado no hay nada**, y ése es el argumento, no un
  *    margen. La frase más fuerte de `/tarifas` —«no hay una comisión aparte que
  *    se sume al final»— no se ilustra: se demuestra con el vacío.
  *
- * ── El verde ────────────────────────────────────────────────────────────────
+ * **La cifra no se teclea**: sale de la misma cadena `ConfigPriceSource →
+ * convert` que usan el cotizador, `Steps`, `Process` y `/tarifas`, con el monto
+ * de muestra de `quoteLimits` (D24). Y las tres cadenas de la figura son de
+ * las que Sebastián firmó como Compliance para `/tarifas` el 2026-09-25: «el
+ * precio que ves», «acá termina» y «y no se suma nada». Más «Recibes», que es
+ * la del cotizador.
  *
- * `--verde` y no `--verde-deep`, y no es un descuido: el §6.2 dice que **el
- * fondo elige el verde**, y esta figura vive en la mitad de tinta del puente.
- * Sobre tinta el vivo da 8,45:1; el `--verde-deep` de `/tarifas` es para papel.
+ * ── Los verdes ──────────────────────────────────────────────────────────────
+ *
+ * Esta figura vive en la mitad de tinta del puente, así que el fondo elige
+ * `--verde` (§6.2). La fila es papel, como la tarjeta de `/tarifas`: la cifra
+ * va en `--ink`, igual que en la fila «Das» de allá.
  */
+import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
+import { convert, formatAmount } from '../lib/pricing/quote.ts';
+import { quoteLimits } from '../lib/config/site.ts';
+
+const price = await new ConfigPriceSource().getPrice();
+const recibes = formatAmount(convert('to_usd', quoteLimits.samplePayClp, price.rate), 'USD').replace('US$ ', '');
 ---
-<div class="llave" data-enter></div>
-<div class="tramo" data-enter>
-  <div class="barra"></div>
-  <div class="limite"></div>
-  <p class="pie">el precio que ves</p>
+<div class="ft">
+  <div class="llave" data-enter></div>
+  <div class="tramo" data-enter>
+    <div class="fila">
+      <span class="rot">Recibes</span>
+      <span class="num">{recibes} <span class="div">USD</span></span>
+    </div>
+    <div class="limite"></div>
+    <p class="pie">el precio que ves</p>
+  </div>
+  <p class="fin" data-enter><b>acá termina</b><span>y no se suma nada</span></p>
 </div>
-<p class="fin" data-enter><b>acá termina</b><span>y no se suma nada</span></p>
 
 <style>
   /*
-    `display: contents` en un envoltorio no serviría: los tres hermanos tienen
-    que ser hijos de la rejilla, y en una ranura de Astro lo que llega son estos
-    tres elementos directamente. Así que la rejilla se declara acá, sobre el
-    padre que pone la carcasa, con `:global` — es el único sitio desde el que se
-    puede, porque `.fig` es de la carcasa y su clase de ámbito es otra.
+    **La rejilla va en un envoltorio propio, `.ft`, y ya no sobre `.fig`.** La
+    figura de antes la declaraba con `:global` sobre el `<figure>` de la
+    carcasa, porque no necesitaba moverlo. Ésta sí: hay que empujarla a la
+    derecha, y la carcasa le pone `margin: 0` a `.fig` en un `<style>` que en
+    la página llega después del CSS de esta figura; a igual especificidad gana
+    el último, y el empuje no se aplicaba (medido: la esquina no se movía ni un
+    píxel). Con el envoltorio la regla vuelve a ser del ámbito de la figura y
+    la carcasa queda sin tocar. El escalonado de `data-enter` es por
+    `:nth-child` entre hermanos, así que sigue igual.
   */
-  :global(.fig:has(> .llave)) {
+  .ft {
     display: grid;
     grid-template-columns: var(--barra, 56%) 1fr;
     gap: var(--s-3);
     column-gap: var(--s-4);
   }
+  /*
+    **Desde 960 px, 340 px de ancho y empujada a la derecha.** Con el número
+    dentro, la figura es más alta que la barra sola, y su esquina de arriba a
+    la izquierda —la que se acerca al corte, que baja hacia la izquierda— se
+    quedaba a 15,9 px de la recta: bajo el piso de 40 del Design System §4.7.
+    Se empuja con `margin-inline-start: auto` y no con `justify-self: end`, que
+    es la lección del segundo puente (`FiguraRiel.astro`): la celda sigue
+    llenando la columna y lo que se mueve es el dibujo.
+  */
   @media (min-width: 960px) {
-    :global(.fig:has(> .llave)) { --barra: 64%; }
+    .ft { --barra: 64%; max-width: 340px; margin-inline-start: auto; }
   }
 
   /* La llave son BORDES y no un SVG: así la punta no se deforma al escalar y el
@@ -72,7 +130,35 @@
     border-bottom: 0;
   }
   .tramo { grid-area: 2 / 1; position: relative; }
-  .barra { height: 18px; border-radius: 2px; background: var(--verde); }
+
+  /* La fila «Recibes», como en la tarjeta de `/tarifas`: papel, con la cifra
+     en la voz de cifras. El rótulo va encima de la cifra para que la fila
+     quepa en 218 px. Es UNA pieza siempre (regla 2). */
+  .fila {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: var(--s-3) var(--s-4);
+    background: var(--papel);
+    border-radius: var(--r-3);
+    color: var(--ink);
+  }
+  .rot { font-size: var(--t-label); color: var(--ink-mute); }
+  .num {
+    font-family: var(--f-num);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--t-h3);
+    letter-spacing: var(--ls-dato);
+    /* Con el espaciado de 1.4.12 la divisa puede bajar de renglón; la cifra,
+       no. */
+    overflow-wrap: normal;
+  }
+  .div { font-size: var(--t-label); color: var(--ink-mute); }
+  @media (min-width: 960px) {
+    .num { font-size: 24px; }
+  }
+
   .limite {
     position: absolute;
     right: 0;
@@ -85,12 +171,17 @@
   .pie { margin: var(--s-2) 0 0; color: var(--on-tinta); }
   .fin {
     grid-area: 2 / 2;
-    align-self: start;
-    margin: -2px 0 0;
+    align-self: center;
+    margin: 0;
     font-family: var(--f-num);
     font-size: var(--t-dato-sm);
     line-height: 1.5;
   }
   .fin b { display: block; color: var(--on-tinta); font-weight: 400; }
   .fin span { color: var(--on-tinta-mute); }
+
+  /* Colores forzados: la fila pierde su fondo; un borde la mantiene. */
+  @media (forced-colors: active) {
+    .fila { border: 1px solid CanvasText; }
+  }
 </style>

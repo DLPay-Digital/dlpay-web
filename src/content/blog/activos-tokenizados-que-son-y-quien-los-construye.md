@@ -206,11 +206,12 @@ compraventa de una acción tokenizada.
   donde ya viven los del resto del cuerpo. **Si una segunda pieza la necesita,
   deja de ser contenido y pasa a ser componente.**
 
-  `aria-hidden` envuelve al dibujo Y a sus etiquetas. En `UseCaseFigure` los
-  rótulos van DENTRO del SVG, así que quedan ocultos con él; acá van fuera —para
-  que no escalen con el ancho— y sin esta envoltura un lector de pantalla leería
-  «pesos, dólar digital» sueltos entre dos párrafos. El párrafo de abajo dice lo
-  mismo con palabras, y por eso no es opcional.
+  `aria-hidden` envuelve al dibujo Y a sus etiquetas. En `UseCaseFigure` —la
+  figura de la Home hasta el 2026-10-02— los rótulos iban DENTRO del SVG y
+  quedaban ocultos con él; acá van fuera —para que no escalen con el ancho— y
+  sin esta envoltura un lector de pantalla leería «pesos, dólar digital» sueltos
+  entre dos párrafos. El párrafo de abajo dice lo mismo con palabras, y por eso
+  no es opcional.
 -->
 <!--
   SIN LÍNEAS EN BLANCO dentro de este bloque. En Markdown un bloque de HTML

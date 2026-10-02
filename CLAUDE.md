@@ -501,6 +501,27 @@ es el que estos avisos describen. Ver «Dos modos de operar» en §1.
 - **`Phase` y `phases` se retiraron de `trust.ts`.** La entrega decía que quedaban sin uso; tenían
   un segundo consumidor, que era ese puente.
 
+**La Home pasó a objetos el 2026-10-02**, la última de las tres y con el mismo criterio. Tampoco
+cambia una palabra: todo sigue saliendo de `home.ts`.
+
+- **«Tres formas de usarlo»**: las tres figuras abstractas pasan a **tres objetos** —cruza, convierte
+  y reparte— sobre la lámina de `/empresas`. **La topología es el dato y se conserva**: lo que
+  significaba cada trazo sigue significando lo mismo.
+- **«Confianza que se comprueba»**: los tres bloques llevan encima **el objeto de `/confianza`**, que
+  es a donde lleva su enlace. **El del precio NO es el de `/confianza`, a propósito**: allá el bloque
+  del reloj dice «el precio es referencial» y acá dice «ya incluye el spread, no se suma nada». Mismo
+  icono, otra afirmación, así que lleva otro objeto —una sola etiqueta y un gancho vacío— y por eso
+  el objeto se pide **por nombre y no por el icono**.
+- **El puente a `/tarifas` enseña el número.** El titular dice «Ese número ya lo incluye todo» y el
+  número no estaba: la figura era sólo una barra. Ahora es la fila «Recibes» de la tarjeta de
+  `/tarifas`, con la cifra que **sale de la cadena `ConfigPriceSource → convert`**, la misma del
+  cotizador, nunca tecleada. Comprobado sobre el build: el puente dice **exactamente** lo que el
+  cotizador trae cargado al abrir.
+
+**Se borró `UseCaseFigure.astro`**, sin consumidores. Sus citas en comentarios y documentos **no se
+borraron: se fecharon**, porque lo que decían —el dibujo del punteado, la relación 14,4 del riel— es
+un dato que sigue valiendo y conviene saber de dónde salió.
+
 **`/empresas` rehízo sus cuatro secciones de contenido el 2026-10-02**, y **no cambió ni una
 palabra**: todo sigue saliendo de `business.ts` y `scope.ts`. Lo que cambió es el dibujo.
 
@@ -839,7 +860,7 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | ~~D22~~ | ~~Mensaje prellenado en cinco enlaces planos a WhatsApp~~ | ✅ **Cerrada 2026-09-29.** Los cinco que abrían el chat en blanco —el pie, `/tarifas`, `/confianza`, `/como-funciona` y el botón del héroe de `/empresas`— llevan mensaje. Comprobado sobre el build: **cero enlaces sin texto en las once páginas**, once mensajes distintos, cada uno escrito para el sitio desde donde se pulsa. El del pie es a propósito el más vago —está en todas las páginas y no puede suponer por qué escribes—, y `/empresas` lleva dos distintos: el del héroe es de quien acaba de llegar y el del cierre de quien ya leyó. **El texto del botón «Habla con nosotros» se queda**, decisión de Sebastián del mismo día | — | — |
 | D23 | **Canal de respaldo si WhatsApp no abre.** Todo el funnel termina en un único canal; si el enlace no abre, la persona queda sin salida visible en ese momento | No | Sebastián |
 | ~~D24~~ | ~~Consolidar el monto mínimo en `lib/config`~~ | ✅ **Cerrada 2026-09-09.** Los límites del cotizador (`PUBLIC_QUOTE_MIN_CLP`, `PUBLIC_QUOTE_MAX_CLP`) y el monto de muestra se resuelven UNA vez en `lib/config/environment.ts` (`resolveQuoteLimits`, puro y testeado) y se exponen como `quoteLimits` en `lib/config/site.ts`. Los cinco consumidores —cotizador, `/tarifas`, mockup y las dos ilustraciones de la Home— dejaron de leer el entorno: `/tarifas` publica por construcción el mismo mínimo que el cotizador aplica. Commit `c5f0ad5` | — | — |
-| D7 | **Fuente oficial de market price**, y con ella la tasa que el sitio publica hoy: `PUBLIC_QUOTE_SAMPLE_RATE`, **919,70 CLP por dólar**, que es el número del que cuelgan todas las cifras de muestra de la web. *Anotado el 2026-09-25, al cerrar D6:* el registro llamaba «precio de muestra» a dos cosas distintas y la tasa es ésta, no el monto. **Subió de exposición el 2026-09-30 y volvió a bajar el 2026-10-01:** el panel de `/precio` publicó durante un día **2.174,62 USD por CLP 2.000.000** en su portada; el abanico de etiquetas lo sustituyó y esa cifra salió de la página. **La tasa vuelve a vivir sólo dentro del cotizador.** Sigue abierta y sigue siendo el número del que cuelgan las cifras de muestra, pero ya no es *la* cifra de una portada. Cowork reporta que el 30 de septiembre el USDT se cotizaba entre 969,88 y 981 pesos, lo que haría el ejemplo **entre un 5,5 % y un 6,7 % más generoso que el mercado**; **ese dato no está verificado acá** y verificarlo pide una cotización de mercado. No corre prisa —el sitio no está publicado— pero **el orden correcto es fijar la tasa antes de publicar esta página, no después**: la etiqueta «ejemplo» protege de que la cifra se lea como oferta, no de que sea inverosímil | No — `ConfigPriceSource` cubre v1 | DLPay |
+| D7 | **Fuente oficial de market price**, y con ella la tasa que el sitio publica hoy: `PUBLIC_QUOTE_SAMPLE_RATE`, **919,70 CLP por dólar**, que es el número del que cuelgan todas las cifras de muestra de la web. *Anotado el 2026-09-25, al cerrar D6:* el registro llamaba «precio de muestra» a dos cosas distintas y la tasa es ésta, no el monto. **Subió de exposición el 2026-09-30 y volvió a bajar el 2026-10-01:** el panel de `/precio` publicó durante un día **2.174,62 USD por CLP 2.000.000** en su portada; el abanico de etiquetas lo sustituyó y esa cifra salió de la página. **Y volvió a subir el 2026-10-02**, ahora en la Home: el puente a `/tarifas` publica esa misma cifra, **2.174,62 USD**, porque el titular promete un número y la figura no lo enseñaba. Así que la frase «la tasa vive sólo dentro del cotizador» duró un día y hoy es falsa. **Lo que la hace menos grave de lo que suena:** la cifra sale de la misma cadena `ConfigPriceSource → convert`, no está tecleada, y aparece **en la misma página que el cotizador**, que ya la mostraba — así que el día que D7 se cierre, las dos cambian juntas y no hay nada que sincronizar a mano. **Lo que sí cambia:** el número deja de estar sólo dentro de un control que el visitante manipula y pasa a estar también en una afirmación de la página. Sigue abierta y sigue siendo el número del que cuelgan las cifras de muestra. Cowork reporta que el 30 de septiembre el USDT se cotizaba entre 969,88 y 981 pesos, lo que haría el ejemplo **entre un 5,5 % y un 6,7 % más generoso que el mercado**; **ese dato no está verificado acá** y verificarlo pide una cotización de mercado. No corre prisa —el sitio no está publicado— pero **el orden correcto es fijar la tasa antes de publicar esta página, no después**: la etiqueta «ejemplo» protege de que la cifra se lea como oferta, no de que sea inverosímil | No — `ConfigPriceSource` cubre v1 | DLPay |
 | ~~D8~~ | ~~Alcance de servicios a comunicar~~ | ✅ Cerrado 2026-09-04: el amplio, alineado con los T&C publicados | Equipo DLPay |
 | ~~D16~~ | ~~Cómo llega el dinero al destinatario final~~ | ✅ Cerrado 2026-09-04: DLPay entrega **dólar digital en la billetera**; no deposita en cuentas bancarias en el extranjero. Ver §1 | Equipo DLPay |
 | ~~D17~~ | ~~"Sin esperar días"~~ | ✅ Reformulado 2026-09-04: la rapidez se predica de la conversión y del movimiento del dólar digital, nunca de una recepción bancaria en destino | Equipo DLPay |

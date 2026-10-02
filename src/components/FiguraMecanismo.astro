@@ -51,8 +51,17 @@ import Logo from './Logo.astro';
 import type { Mechanism } from '../content/trust.ts';
 
 interface Props {
-  /** El icono del mecanismo decide su objeto: `bank`, `people` o `clock`. */
-  kind: Mechanism['icon'];
+  /**
+   * El icono del mecanismo decide su objeto: `bank`, `people` o `clock`.
+   *
+   * `precio` es el cuarto, y lo usa la Home (`Trust.astro`, desde el
+   * 2026-10-02) para «El precio, sin letra chica»: una sola etiqueta y, al
+   * lado, un gancho vacío. Allí el bloque del precio lleva el icono `clock`
+   * pero dice otra cosa que el de `/confianza` —no «referencial», sino «ya
+   * incluye el spread, no se suma nada»—, así que el objeto se pide por su
+   * nombre y no por el icono.
+   */
+  kind: Mechanism['icon'] | 'precio';
 }
 const { kind } = Astro.props;
 ---
@@ -87,6 +96,22 @@ const { kind } = Astro.props;
         <Logo class="fm-marca" />
         <span>Tu ejecutivo</span>
       </span>
+    </>
+  )}
+
+  {kind === 'precio' && (
+    <>
+      <span class="fm-riel"></span>
+      <span class="fm-hilo fm-hilo-uno"></span>
+      <span class="fm-etiqueta fm-final fm-una">
+        <span class="fm-ojal"></span>
+        <span class="fm-et-rot">el precio que ves</span>
+        <span class="fm-et-grande">un solo número</span>
+      </span>
+      {/* El gancho vacío: donde colgaría un cobro aparte, no cuelga nada. */}
+      <span class="fm-hilo fm-hilo-vacio"></span>
+      <span class="fm-gancho"></span>
+      <span class="fm-rot fm-rot-nada">y no se suma nada</span>
     </>
   )}
 
@@ -370,6 +395,73 @@ const { kind } = Astro.props;
     transform: translate(-50%, -50%);
   }
   .fm-hacia :global(svg) { display: block; width: 20px; height: 20px; }
+
+  /*
+    ── Una etiqueta y un gancho vacío (`precio`, en la Home) ────────────────
+    La misma etiqueta que la «final» de `clock`, sola, y a su derecha el hilo
+    sin nada colgado: el vacío es el argumento, como el de `/tarifas` a la
+    derecha del punteado. Sus tres cadenas están publicadas en `/tarifas`: «el
+    precio que ves» y «y no se suma nada» las firmó Sebastián el 2026-09-25, y
+    «un solo número» abre el lead de esa página («Un solo número, y ese número
+    ya lo incluye todo»).
+  */
+  .fm-precio { --fm-riel: 15%; --fm-cuelga: 27%; --fm-ancho: 52cqw; --fm-alto: 34cqw; --fm-a: 32%; --fm-b: 82%; }
+  .fm-una { left: calc(var(--fm-a) - var(--fm-ancho) / 2); }
+  .fm-hilo-uno { left: var(--fm-a); border-color: var(--verde-deep); }
+  .fm-hilo-vacio { left: var(--fm-b); height: calc(var(--fm-cuelga) - var(--fm-riel) + 6cqw); }
+  /* El gancho: la punta del hilo, abierta. Es parte del objeto, no una marca. */
+  .fm-gancho {
+    left: var(--fm-b);
+    top: calc(var(--fm-cuelga) + 6cqw);
+    width: 4cqw;
+    height: 4cqw;
+    border: 1.5px solid var(--ink-mute);
+    border-top-color: transparent;
+    border-radius: 50%;
+    transform: translate(-50%, -25%) rotate(-45deg);
+  }
+  .fm-rot-nada {
+    left: var(--fm-b);
+    top: calc(var(--fm-cuelga) + 12cqw);
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: calc(2 * (100% - var(--fm-b)) - 8px);
+    white-space: normal;
+    text-align: center;
+  }
+
+  /*
+    ── Bajo 280 px de lámina: sólo en la Home ─────────────────────────────
+    En `/confianza` la lámina más chica mide 280 (la pantalla de 320), así que
+    allí este bloque no se aplica nunca. En la Home sí: «Confianza que se
+    comprueba» pone tres láminas en fila desde 760 px, y entre 760 y 1100
+    miden 208–290; en el carril del móvil, 216 a 320 px de pantalla. Ahí los
+    rótulos de 13 px no caben junto al dibujo —«Cuenta de DLPay» se salía por
+    abajo y «acreditada» tocaba el frontón; con el espaciado de 1.4.12 la
+    etiqueta del precio se salía de la lámina—, y se retiran, como los pies de
+    `FiguraUso` bajo 260. Queda el objeto, y el `h3` y el párrafo que van
+    debajo lo dicen con palabras. Lo que se queda es lo que es parte del
+    objeto: la placa «Tu ejecutivo» y la etiqueta «un solo número».
+
+    La consulta dice 278 y no 280 porque mide la caja de contenido, dentro del
+    borde transparente de 1 px: con 279,98 se aplicaba también a la lámina de
+    280 de `/confianza` (medido: cambiaban dos figuras a 320 px de pantalla).
+  */
+  @container (max-width: 277.98px) {
+    .fm-pie, .fm-rot { display: none; }
+    /* El precio: la etiqueta sola, al centro y más ancha; sin el gancho vacío,
+       que sin su rótulo no se explica. Va en las piezas y no en las variables
+       de `.fm-precio`: una consulta de contenedor no alcanza al propio
+       contenedor, sólo a lo que lleva dentro. */
+    .fm-una { left: 18%; width: 64cqw; }
+    .fm-hilo-uno { left: 50%; }
+    .fm-una .fm-et-rot, .fm-hilo-vacio, .fm-gancho { display: none; }
+    /* La placa, en un renglón, para que no tape la cabeza. Con `left: 50%`
+       su ancho disponible es la mitad de la lámina, y ahí el isotipo bajaba a
+       un renglón propio: `max-content` la deja medir lo que mide su texto,
+       hasta el 80 %. */
+    .fm-placa { width: max-content; max-width: 80%; padding-inline: var(--s-2); }
+  }
 
   /*
     ── Colores forzados ────────────────────────────────────────────────────

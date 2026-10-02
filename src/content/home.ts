@@ -43,7 +43,7 @@ export interface FaqItem {
 export interface UseCase {
   title: string;
   body: string;
-  /** Topología de la operación. Ver UseCaseFigure.astro: es el dato, no un adorno. */
+  /** Topología de la operación. Ver FiguraUso.astro: es el dato, no un adorno. */
   figure: 'cruza' | 'convierte' | 'reparte';
 }
 

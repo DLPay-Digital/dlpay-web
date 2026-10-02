@@ -3635,3 +3635,88 @@ versión de Safari — pero **no es la misma declaración**, así que queda dich
 otra vez: `npx astro preview --host 0.0.0.0 --port 4380` y el teléfono en la misma Wi-Fi.
 
 **Firefox** y **un lector de pantalla real**, como siempre.
+
+---
+
+### Notas de la integración de `2026-10-02 · Home: tres formas, el puente y confianza`
+
+**Veredicto: integrada entera**, los cinco archivos sin tocar una línea, más el borrado de
+`UseCaseFigure.astro` y las cinco citas fechadas. `astro check` en **0 errores, 0 avisos y 27
+sugerencias** —las de la base, exactamente—, 80 pruebas y build en 430 ms. Los catorce md5 coinciden
+y la cabeza seguía en `730ef17`.
+
+#### La comprobación que importaba
+
+**`FiguraMecanismo` se toca y `/confianza` está publicada.** El componente gana un `kind` y una
+consulta `@container` que allí no debe dispararse nunca. Lo verifiqué **por identidad de píxel y no
+por tamaño de caja**: 42 capturas de las tres figuras —siete anchos, con y sin el espaciado de
+1.4.12— comparadas por hash contra `730ef17`. **42 idénticas, 0 distintas.** Una caja del mismo
+tamaño con un rótulo movido dentro daría el mismo número; un hash, no.
+
+**Y el margen es de 0,02 px.** La lámina chica de `/confianza` mide 278 px de caja de contenido y el
+umbral está en 277,98. Es correcto —y el comentario del componente explica por qué 279,98 no servía,
+con la medición—, pero **lo sostienen un borde transparente de 1 px y el relleno de una sección**:
+si cualquiera de los dos cambia un píxel, `/confianza` cambia sin que nadie la toque. No se arregla
+sin rediseñar la pieza, porque los dos rangos se solapan y no hay valor cómodo. Queda escrito en
+`phase-4-construccion.md` §4.14.
+
+#### Lo demás, sobre el build
+
+| Qué | Declarado | Medido acá |
+|---|---|---|
+| `astro check` | 0 / 0 / 27 | **0 / 0 / 27** ✔ |
+| Puente, holgura al corte (§4.7) | 67,9 @960 · 131 desde 1280 | **67,9 y 131**, exacto ✔ |
+| Puente, con 1.4.12 | 69,3 | **49,2 @960** — ver abajo |
+| `/precio`, control | sin cambio | **71,5 y 109,6, idénticos antes y después** ✔ |
+| Figuras de `/confianza` | idénticas | **42 de 42** ✔ |
+| Cifra del puente = cotizador | 2.174,62 | **2.174,62 = 2.174,62** ✔ |
+| `axe` en `/` a 1280 y 390 | 0 violaciones; incompletos 26→22 y 28→24 | **0 violaciones; 26→22 y 28→24**, exacto ✔ |
+| Árbol de las tres secciones | idéntico; carriles con `role` y `tabindex` | **idéntico**, los dos carriles con `role="group"` y `tabindex="0"`, 20 enfocables ✔ |
+| `.js` del build | idénticos | **mismo hash**, un solo archivo ✔ |
+| Marcas punteadas | diez; la Home de 2 a 4 instancias | **diez y de 2 a 4**, recontado con mi barrido ✔ |
+
+#### Donde no me sale lo declarado
+
+**La holgura del puente con el espaciado de 1.4.12 es 49,2 px, no 69,3.** Medido en el peor punto de
+tinta —la esquina de arriba a la izquierda de la llave, que es un elemento con bordes y no una caja
+de maquetación— a 960 px, que es donde el corte aparece. Antes de esta entrega eran **68**, así que
+la figura con el número dentro **pierde 19 px de holgura** cuando el texto crece.
+
+**No hay nada roto: el piso del §4.7 son 40 px y 49,2 los pasa.** Pero la diferencia entre «69,3» y
+«49,2» es la diferencia entre creer que sobran 29 px y saber que sobran 9, y es justo el tipo de
+margen que invita a mover algo. *La lección es la de ayer, aplicada sin que costara un defecto esta
+vez.*
+
+El control de `/precio` me da 71,5 en vez de 86,3, pero ahí el número absoluto no importa: **es un
+control, y lo que tiene que valer es que no se mueva.** No se mueve — idéntico al píxel antes y
+después, con y sin espaciado.
+
+#### Lo que la entrega no menciona, y toca al registro
+
+**Esto sube la exposición de D7 otra vez, y en la Home.** El registro dice desde ayer que «la tasa
+vuelve a vivir sólo dentro del cotizador»; con el puente enseñando **2.174,62 USD**, esa frase es
+falsa.
+
+**Es menos grave de lo que suena, y conviene decir por qué:** la cifra sale de la misma cadena
+`ConfigPriceSource → convert`, no está tecleada, y aparece **en la misma página que el cotizador**,
+que ya la mostraba. El día que D7 se cierre cambian juntas y no hay nada que sincronizar a mano.
+**Lo que sí cambia** es que el número deja de estar sólo dentro de un control que el visitante
+manipula —donde se lee como «lo que yo pedí»— y pasa a estar en una afirmación de la página.
+Actualizado en `CLAUDE.md` §13.
+
+#### Las citas del componente borrado
+
+**Se fecharon, no se borraron**, y en un caso eso importa: el comentario de `/precio` decía que la
+frontera de `UseCaseFigure` era «la otra —y única otra— marca punteada del sitio». Eso era cierto el
+2026-09-24 y hoy hay **diez**. Ahora apunta al recuento vigente del §6.2 en vez de llevar su propia
+cuenta. *Un dato copiado a un comentario envejece sin que nadie lo mire; un puntero, no.*
+
+El comentario del artículo del blog es un `<!-- -->` que **sí llega al HTML publicado**, así que esa
+edición cambia bytes servidos aunque no cambie nada visible. Comprobado que es lo único que cambia
+en ese artículo.
+
+#### Sin verificar
+
+**Firefox** y **un lector de pantalla real**, como siempre. **WebKit no queda pendiente aquí**:
+`cqw` y `@container` ya los cerró Sebastián en `/empresas` y `/confianza`, y esta entrega no estrena
+ninguna otra declaración de ese grupo.

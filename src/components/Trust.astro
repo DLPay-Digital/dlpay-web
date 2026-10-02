@@ -5,7 +5,23 @@
  */
 import IconBadge from './ui/IconBadge.astro';
 import ArrowLink from './ui/ArrowLink.astro';
+import FiguraMecanismo from './FiguraMecanismo.astro';
 import { trust } from '../content/home.ts';
+
+/*
+  ── El objeto de cada bloque (2026-10-02) ──────────────────────────────────
+
+  Los tres bloques llevaban sólo una insignia de 48 px. Ahora llevan encima el
+  objeto de `/confianza` (`FiguraMecanismo`), que es a donde lleva el enlace de
+  abajo: el banco de por medio y la placa del ejecutivo, los mismos que allá.
+
+  **El del precio NO es el de `/confianza`, a propósito.** Allá el bloque del
+  reloj dice «el precio es referencial»; acá dice «ya incluye nuestro spread,
+  no hay comisiones que aparezcan después». Mismo icono, otra afirmación, así
+  que va otro objeto: una sola etiqueta y un gancho vacío (`precio`). Por eso
+  el objeto se pide por nombre y no por el icono.
+*/
+const OBJETO = { bank: 'bank', clock: 'precio', people: 'people' } as const;
 ---
 <section class="trust" id="confianza" aria-labelledby="trust-title">
   <div class="inner">
@@ -28,8 +44,14 @@ import { trust } from '../content/home.ts';
       <ul class="grid" role="list">
         {trust.map((block) => (
           <li class="block">
-            <IconBadge name={block.icon} />
-            <h3>{block.title}</h3>
+            <div class="block-fig"><FiguraMecanismo kind={OBJETO[block.icon]} /></div>
+            {/* La insignia se queda —insignia = lo que hacemos nosotros— y pasa
+                al lado del titular, a 36 px, como en `/confianza`: arriba
+                ya está el objeto. */}
+            <div class="block-tit">
+              <IconBadge name={block.icon} size="sm" />
+              <h3>{block.title}</h3>
+            </div>
             <p>{block.body}</p>
           </li>
         ))}
@@ -70,8 +92,21 @@ import { trust } from '../content/home.ts';
   .head p { color: var(--ink-mute); text-wrap: balance; }
 
   .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
+  /*
+    El objeto, sin lámina visible: la de `FiguraMecanismo` es `--papel-2`, el
+    mismo fondo de esta sección, así que lo que se ve son los objetos sobre la
+    banda y no tres tarjetas. Es lo que distingue esta sección de «Tres formas
+    de usarlo», donde la lámina sí se ve.
+  */
+  .block-fig { margin-bottom: var(--s-4); }
   /* La insignia no trae margen propio: el espaciado lo pone quien la coloca. */
-  .block :global(.badge) { margin-bottom: var(--s-4); }
+  .block-tit {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    margin-bottom: var(--s-2);
+  }
+  .block-tit h3 { margin-bottom: 0; }
   h3 { font-size: var(--t-h3-m); font-weight: 600; line-height: var(--lh-h3); margin-bottom: var(--s-2); }
   .block p { color: var(--ink-mute); max-width: 46ch; }
   .more { margin-top: var(--s-6); }
@@ -97,9 +132,9 @@ import { trust } from '../content/home.ts';
     /*
       El asomo se resta en PÍXELES, no en porcentaje: así lo que se ve del
       bloque siguiente son 48px exactos en cualquier ancho, en vez de depender
-      del tamaño de pantalla. Y 48px es justo el ancho de `IconBadge` en su
-      tamaño `md`, así que lo que asoma es la insignia COMPLETA del bloque
-      siguiente — una señal más legible que un recorte de texto.
+      del tamaño de pantalla. Hasta el 2026-10-02 eran justo el ancho de la
+      insignia `md` del bloque siguiente; desde que cada bloque lleva su objeto
+      arriba, lo que asoma es el borde de ese objeto, que se reconoce igual.
     */
     .block {
       flex: 0 0 calc(100% - var(--s-8));

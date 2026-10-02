@@ -332,7 +332,7 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 | Héroe | **M6**: la tarjeta del cotizador ya está; entra el titular palabra por palabra, y detrás subtítulo y franja | El instrumento primero, las palabras después |
 | Cuñas del héroe | **M6**, una vez, al cargar | *Corregido el 2026-09-17.* La propuesta decía M3, pero son un `<div>` con `clip-path` y entran con un fundido de opacidad: no hay trazo que recorrer, así que M3 ahí no está mal implementado, es imposible. Entran con la secuencia de carga y comparten su regla de `prefers-reduced-motion` |
 | Cotizador | **M1** en opciones y botón · **M2** al recalcular | Acuse de recibo y dato que cambió |
-| Tres usos | **M4** en el titular + **M5** en las tres tarjetas | 3 hermanos: dentro del máximo. *Corregido el 2026-09-17:* la propuesta añadía M3 en las reglas de acento y nunca se implementó — `UseCaseFigure` no lleva `data-draw` |
+| Tres usos | **M4** en el titular + **M5** en las tres tarjetas | 3 hermanos: dentro del máximo. *Corregido el 2026-09-17:* la propuesta añadía M3 en las reglas de acento y nunca se implementó — `UseCaseFigure` no llevaba `data-draw`, y `FiguraUso`, que lo sustituye desde el 2026-10-02, tampoco |
 | Cómo funciona | **M4** en el titular | *Corregido el 2026-09-17:* la propuesta pedía M3 en las cuñas entre pasos y ese bloque de la Home no las tiene. La idea sí se cumplió, pero en `/como-funciona`, donde las cuñas de traspaso sí se dibujan |
 | Confianza | **M4** sólo en el titular de sección | Los tres bloques **no** escalonan: son afirmaciones, no una secuencia |
 | Banda empresas | **M1** en el botón | Nada más |
