@@ -117,9 +117,16 @@ concede con una lista en vez de con una promesa.
 - **La hoja pinta 8 px por debajo del pliegue durante los primeros 220 ms de cada ciclo**, en los
   dos anchos medidos. La entrega declaraba 0. Es papel claro sobre papel claro, así que no se ve,
   pero el número real es 8.
-- **La máscara de la tinta no está verificada en Safari.** Cowork lo declaró —sólo tiene Chromium—
-  y este entorno tampoco tiene WebKit. El modo de fallo es benigno: sin máscara la letra sale
-  entera, que para contraste es mejor. **Queda como pendiente de comprobar en un Safari real.**
+- ~~**La máscara de la tinta no está verificada en Safari.** Cowork lo declaró —sólo tiene
+  Chromium— y este entorno tampoco tiene WebKit. El modo de fallo es benigno: sin máscara la letra
+  sale entera, que para contraste es mejor. **Queda como pendiente de comprobar en un Safari
+  real.**~~
+  **Comprobado el 2026-10-02 y cerrado.** Sebastián revisó la pieza sobre el build en **Safari de
+  escritorio y en un iPhone**, página por página, y se ve bien. Las dos hacían falta: en iOS todos
+  los navegadores son WebKit por obligación de Apple, y es una versión distinta de la del Mac, con
+  otro rasterizado y otra gestión de memoria para los filtros. *Se tacha en vez de borrarse porque
+  el defecto se declaró al aceptar la ADR y el registro tiene que seguir mostrando con qué hueco se
+  aceptó.*
 - **Peso:** el CSS de la página pasa de 9.786 a ~14.000 bytes. 0 JS, 0 archivos, 0 `--elev-card`.
 - **Depende de `img-src data:` en el CSP del host.** Ya está en
   `docs/arquitectura-produccion.md` §5.1; si al cerrar D1b alguien lo endurece, la textura

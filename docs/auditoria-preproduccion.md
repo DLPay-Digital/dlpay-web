@@ -570,9 +570,11 @@ publicado:**
 2. **El contraste de las orejas era una distribución con mínimo 4,12**, por debajo del 4,5 de AA
    allí donde el grano oscurece el papel. **Corregido al integrar**: `#525B68`, que deja el peor
    punto en 4,72.
-3. **La máscara de la tinta no está verificada en Safari.** Ni Cowork ni este entorno tienen
+3. ~~**La máscara de la tinta no está verificada en Safari.** Ni Cowork ni este entorno tienen
    WebKit. El fallo sería benigno —la letra saldría entera— pero **está sin comprobar**, y conviene
-   hacerlo en un Safari real antes de Fase 6.
+   hacerlo en un Safari real antes de Fase 6.~~ **Cerrado el 2026-10-02**: Sebastián lo revisó en
+   Safari de escritorio y en un iPhone, sobre el build. Ya no hay nada de WebKit pendiente en esta
+   pieza.
 
 ### Copy aprobado por Compliance — 2026-10-01  ·  **el índice del blog**
 

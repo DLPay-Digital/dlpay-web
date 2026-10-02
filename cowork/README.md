@@ -3507,23 +3507,30 @@ Diario con su `-webkit-mask`, el abanico con el `drop-shadow` encadenado y la `m
 ahora las `cqw` de las figuras más la tabla de móvil con sus `role` puestos a mano—, porque ni este
 entorno ni Cowork tienen WebKit.
 
-**Safari en Mac: comprobado por Sebastián el 2026-10-02 sobre el build, y se ve bien.** Las tres
-piezas, en las tres páginas. Con eso el riesgo que importaba —que la `mask` no se aplicara y el
-abanico saliera sin su agujero, o el papel del Diario sin grano— **queda descartado en WebKit de
-escritorio**.
+**WebKit queda CERRADO el mismo día, en las dos mitades.** Sebastián revisó las tres piezas sobre
+el build, página por página, primero en **Safari de escritorio** y después en un **iPhone**. Todo se
+ve bien. Con eso cae el riesgo que de verdad preocupaba —que la `mask` no se aplicara y el abanico
+saliera sin su agujero, o el papel del Diario sin grano— y **el pendiente desaparece del registro
+después de tres entregas acumulándolo**.
 
-**Queda el iPhone, y no es la misma comprobación.** No porque falten usuarios de Safari, sino porque
-**en iOS todos los navegadores son WebKit por obligación de Apple**: Chrome en iPhone es Safari con
-otra carátula. Así que ese hueco no cubre a una minoría, cubre a todo el que entre desde un teléfono
-Apple — en un sitio diseñado móvil primero. Y es un WebKit de otra versión que el del Mac, con otro
-rasterizado de fuentes y otra gestión de memoria para los filtros encadenados.
+**Las dos mitades hacían falta, y conviene que quede escrito por qué.** No porque falten usuarios de
+Safari, sino porque **en iOS todos los navegadores son WebKit por obligación de Apple**: Chrome en
+iPhone es Safari con otra carátula. Ese hueco no cubría a una minoría, cubría a todo el que entre
+desde un teléfono Apple, en un sitio diseñado móvil primero. Y es otra versión de WebKit que la del
+Mac, con otro rasterizado de fuentes y otra gestión de memoria para los filtros encadenados.
+
+**Y el teléfono no era «la misma prueba en otra pantalla»:** bajo 760 px la comparación deja de ser
+una tabla y pasa a una ficha por aspecto, el relevo se pone de pie con el corte en un chaflán, y el
+abanico se acorta. **Esas tres maquetas no las había visto ningún WebKit** — el Mac nunca las
+muestra.
 
 *Cómo se hace, para no volver a inventarlo:* `npx astro preview --host 0.0.0.0 --port 4380` sobre el
-build, y el teléfono en la misma Wi-Fi contra la IP de la máquina. El `--host` es lo que falta por
-omisión: sin él el servidor sólo escucha en `localhost` y el teléfono no lo ve.
+build, y el teléfono en la misma Wi-Fi contra la IP de la máquina. **El `--host` es lo que falta por
+omisión**: sin él el servidor sólo escucha en `localhost` y el teléfono no lo ve. Y la primera vez
+macOS pide permiso de firewall para Node.
 
-**Firefox sigue sin mirarse**, y es el pendiente menor de los dos: tiene motor propio, pero no es el
-único navegador de ninguna plataforma.
+**Firefox sigue sin mirarse**, y es el pendiente menor: tiene motor propio, pero no es el único
+navegador de ninguna plataforma, así que nadie queda sin salida si algo se ve distinto.
 
 **Un lector de pantalla real.** El árbol está medido y es correcto; nadie lo ha oído en VoiceOver ni
 en NVDA. Importa más que de costumbre porque la tabla de móvil **depende de `role` puestos a mano**:
