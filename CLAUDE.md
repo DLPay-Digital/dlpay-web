@@ -501,6 +501,41 @@ es el que estos avisos describen. Ver «Dos modos de operar» en §1.
 - **`Phase` y `phases` se retiraron de `trust.ts`.** La entrega decía que quedaban sin uso; tenían
   un segundo consumidor, que era ese puente.
 
+**`/empresas` rehízo sus cuatro secciones de contenido el 2026-10-02**, y **no cambió ni una
+palabra**: todo sigue saliendo de `business.ts` y `scope.ts`. Lo que cambió es el dibujo.
+
+- **«Para qué lo usan»**: los cuatro emblemas eran el mismo trapecio con un canal dentro —se
+  distinguían por el canal, no por el objeto— y pasan a ser **cuatro objetos**: el cruce, la
+  cajonera, el calendario y las dos pilas. **Ninguno estrena marca**: todas están ya en el §6.2 del
+  Design System, comprobado una por una. **El pago al proveedor va en gris y no en verde**, porque lo
+  hace la empresa desde su billetera y verde diría que ese tramo es nuestro (§1). Y la cajonera lleva
+  **«Tu empresa»** debajo, porque DLPay no guarda saldos en el modo asistido.
+- **«Qué cambia respecto de una persona»**: la tabla iba a 14 px contra los 16 del cuerpo y a 390 px
+  **escondía la columna «Empresa» detrás de un desplazamiento lateral** — la columna de la que trata
+  la página. Pasa a dos carriles, con los valores a 16, y bajo 760 px a una ficha por aspecto. **Sigue
+  siendo una `<table>`** con los `role` puestos a mano: al cambiar el `display`, el navegador le
+  quita la semántica. Medido en el árbol a 390: tabla, 5 filas, 3 encabezados de columna, 4 de fila y
+  8 celdas.
+- **«Cómo empezamos»**: eran dos listas sin relación, lado a lado, con los números en cajas de 26 px
+  que se leían como casillas de verificación. Pasa a una carpeta («Ten esto a mano») y un recorrido
+  de cuatro nodos con un chevron entre uno y el siguiente.
+- **«Hasta dónde llega nuestra parte»**: el eje de 1 px pasa a ser **un relevo** —un bloque en tinta
+  que termina en el corte de la marca, con la bisagra como última frase y la cuña en el corte—.
+
+**Y con eso el eje de alcance tiene dos dibujos, que es una excepción firmada por Sebastián.**
+`EjeDeAlcance` se queda en `/como-funciona`; `/empresas` usa `AlcanceEmpresa`. **La ventaja es la que
+la justifica**: `/empresas` es la página cuyo lector más supone una transferencia bancaria, así que es
+donde el límite tiene que verse más. **Lo que no se negocia es que los datos siguen en un solo sitio**
+(`scope.ts`): dos dibujos pueden diferir en la forma, nunca en qué afirman sobre dónde termina el
+servicio.
+
+**`BusinessEmblem.astro` se borró**, sin consumidor y por tanto código muerto; queda en el historial.
+
+**Lo que la entrega arregló sin proponérselo**: `/empresas` tenía dos fallos de accesibilidad que no
+eran de esta reforma —una región desplazable sin foco a 390 (WCAG) y un encabezado de tabla vacío
+(buena práctica)—, y los dos desaparecen. Lo único que `axe` sigue marcando en la página es el
+contraste dentro del portátil dibujado del encabezado, **idéntico a antes** y ajeno a esto.
+
 **`/blog` se añadió el 2026-09-11.** Colección tipada de Astro (`src/content.config.ts`) con
 esquema cerrado: `title`, `description`, `pubDate`, `category` —sólo `DLPay` o `Mercado`, un valor
 fuera de esa lista rompe el build—, `estado` y `portada`. Sin paquetes nuevos: `package.json` sigue

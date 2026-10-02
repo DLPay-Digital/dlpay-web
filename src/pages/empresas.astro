@@ -10,8 +10,10 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
 import MacbookMockup from '../components/MacbookMockup.astro';
-import BusinessEmblem from '../components/BusinessEmblem.astro';
-import EjeDeAlcance from '../components/EjeDeAlcance.astro';
+import FiguraCaso from '../components/FiguraCaso.astro';
+import AlcanceEmpresa from '../components/AlcanceEmpresa.astro';
+import ComparaEmpresa from '../components/ComparaEmpresa.astro';
+import ComoEmpezamos from '../components/ComoEmpezamos.astro';
 import { hingeBusiness, optionsBusiness, ourLegBusiness } from '../content/scope.ts';
 import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
@@ -91,8 +93,8 @@ const waPlain = contact.whatsappUrl(
           </p>
         </header>
         {/*
-          Zigzag: texto y emblema alternan de lado en escritorio. El orden del
-          DOM es siempre texto → emblema, que es el orden de lectura; el lado lo
+          Zigzag: texto y figura alternan de lado en escritorio. El orden del
+          DOM es siempre texto → figura, que es el orden de lectura; el lado lo
           decide `grid-column`, no el orden de los elementos, para que un lector
           de pantalla nunca oiga la página en zigzag.
 
@@ -108,7 +110,7 @@ const waPlain = contact.whatsappUrl(
                 <p>{item.body}</p>
               </div>
               <div class="case-visual">
-                <BusinessEmblem kind={item.emblem} />
+                <FiguraCaso kind={item.emblem} />
               </div>
             </li>
           ))}
@@ -123,66 +125,20 @@ const waPlain = contact.whatsappUrl(
           <p>El producto es el mismo. Lo que cambia es el acompañamiento y la verificación.</p>
         </header>
 
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th scope="col">&nbsp;</th>
-                <th scope="col">Persona</th>
-                <th scope="col">Empresa</th>
-              </tr>
-            </thead>
-            <tbody>
-              {differences.map((row) => (
-                <tr>
-                  <th scope="row">{row.aspect}</th>
-                  <td>{row.person}</td>
-                  <td class="hi">{row.company}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ComparaEmpresa rows={differences} />
       </div>
     </section>
 
     <section class="steps-band" aria-labelledby="onboarding-title">
       <div class="inner">
-        <div class="split">
-          <div>
+        <ComoEmpezamos checklist={checklist} steps={onboarding}>
+          <Fragment slot="cabecera">
             <h2 id="onboarding-title" data-enter>Cómo empezamos</h2>
-            <p class="lead">
+            <p>
               No hay formulario que llenar a ciegas. Se parte conversando y seguimos desde ahí.
             </p>
-
-            {/*
-              La columna que faltaba. `/como-funciona` tiene su «Ten esto a mano»
-              para una persona y esta página no tenía equivalente: una empresa
-              que llega acá no necesita que le dibujen los cuatro pasos —la lista
-              numerada ya los dice—, necesita saber qué juntar antes de escribir.
-            */}
-            <h3 class="sub">Ten esto a mano</h3>
-            <ul class="check" role="list">
-              {/* El icono sale del dato, no de la posición. Ver la nota gemela
-                  en `/como-funciona`: los tres ticks idénticos no eran
-                  checkboxes, sólo decían «esto es un ítem». */}
-              {checklist.map((item) => (
-                <li>
-                  <Icon name={item.icon} size={20} class="tick" />
-                  <span>{item.text}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <ol class="onboarding" role="list">
-            {onboarding.map((step, i) => (
-              <li>
-                <span class="n num">{i + 1}</span>
-                <span>{step}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
+          </Fragment>
+        </ComoEmpezamos>
       </div>
     </section>
 
@@ -200,13 +156,13 @@ const waPlain = contact.whatsappUrl(
     <section class="scope" aria-labelledby="scope-title">
       <div class="inner">
         <h2 id="scope-title">Hasta dónde llega nuestra parte</h2>
-        <EjeDeAlcance milestones={ourLegBusiness} hinge={hingeBusiness} options={optionsBusiness}>
+        <AlcanceEmpresa milestones={ourLegBusiness} hinge={hingeBusiness} options={optionsBusiness}>
           <Fragment slot="caveat">
             Convertir el dólar digital a moneda local en destino es un proceso distinto, con
             otros servicios, y <strong>no lo realiza DLPay</strong>. Si tu proveedor sólo
             recibe por banco, conversémoslo antes.
           </Fragment>
-        </EjeDeAlcance>
+        </AlcanceEmpresa>
       </div>
     </section>
 
@@ -287,11 +243,11 @@ const waPlain = contact.whatsappUrl(
   }
 
   /* Una fila por caso, no una rejilla de tarjetas: cada operación pesa lo
-     mismo que su emblema. La regla de acento verde que llevaban los titulares
-     se retiró — el emblema ya cumple esa función y con más sentido. */
+     mismo que su figura. La regla de acento verde que llevaban los titulares
+     se retiró — la figura ya cumple esa función y con más sentido. */
   .cases-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-8); }
   .case-row { display: grid; gap: var(--s-5); }
-  /* En móvil el emblema va SIEMPRE arriba, aunque en el DOM vaya después:
+  /* En móvil la figura va SIEMPRE arriba, aunque en el DOM vaya después:
      la figura presenta el caso y el texto lo explica. */
   .case-visual { order: -1; display: flex; justify-content: center; }
   .case-text h3 {
@@ -303,75 +259,8 @@ const waPlain = contact.whatsappUrl(
   .case-text p { color: var(--ink-mute); max-width: 46ch; }
 
   .diff { background: var(--papel-2); padding: var(--s-9) 0; }
-  .table-wrap { overflow-x: auto; }
-  table {
-    width: 100%;
-    min-width: 520px;
-    border-collapse: collapse;
-    text-align: left;
-  }
-  thead th {
-    font-size: var(--t-label);
-    font-weight: 600;
-    letter-spacing: var(--ls-label);
-    color: var(--ink-mute);
-    padding: 0 var(--s-4) var(--s-3) 0;
-    border-bottom: 1px solid var(--line);
-  }
-  tbody th {
-    font-size: var(--t-body-sm);
-    font-weight: 600;
-    color: var(--ink);
-    padding: var(--s-4) var(--s-4) var(--s-4) 0;
-    border-bottom: 1px solid var(--line);
-    white-space: nowrap;
-  }
-  tbody td {
-    font-size: var(--t-body-sm);
-    color: var(--ink-mute);
-    padding: var(--s-4) var(--s-4) var(--s-4) 0;
-    border-bottom: 1px solid var(--line);
-    vertical-align: top;
-  }
-  tbody td.hi { color: var(--ink); }
 
   .steps-band { background: var(--papel); padding: var(--s-9) 0; }
-  .split { display: grid; gap: var(--s-6); }
-  .lead { color: var(--ink-mute); max-width: 40ch; }
-  /* `align-content: start` no es cosmético: ahora que la columna izquierda es
-     más alta, sin él la rejilla reparte el sobrante entre las cuatro filas y los
-     pasos se separan más de 100 px unos de otros. */
-  .onboarding {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--s-4);
-    align-content: start;
-  }
-  .onboarding li {
-    display: flex;
-    gap: var(--s-3);
-    align-items: flex-start;
-    color: var(--ink-mute);
-    padding-bottom: var(--s-4);
-    border-bottom: 1px solid var(--line);
-  }
-  .onboarding li:last-child { border-bottom: 0; padding-bottom: 0; }
-  .n {
-    flex: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    border: 1px solid var(--line);
-    border-radius: var(--r-2);
-    font-size: var(--t-dato-sm);
-    font-weight: 600;
-    color: var(--ink);
-  }
-
   /* Hereda `--papel` para que la alternancia de fondos siga entera y la
      sección de alcance no parezca una caja pegada al final. */
   .scope { background: var(--papel-2); padding: var(--s-9) 0; }
@@ -383,28 +272,6 @@ const waPlain = contact.whatsappUrl(
     margin-bottom: var(--s-7);
     max-width: 24ch;
   }
-
-  /* «Ten esto a mano»: la columna izquierda gana su propia lista. */
-  .sub {
-    font-size: var(--t-h3-m);
-    font-weight: 600;
-    line-height: var(--lh-h3);
-    margin-top: var(--s-6);
-    margin-bottom: var(--s-4);
-  }
-  .check { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
-  .check li { display: flex; gap: var(--s-3); align-items: flex-start; color: var(--ink-mute); }
-  /*
-    20px y no los 19 de la maqueta: **19 está fuera de la grilla 16/20/24** del
-    Design System §7, que pide una razón anotada para salirse de ella, y acá no
-    la hay — 20 es el escalón de al lado y la diferencia no se ve. El tick que
-    sustituye medía 17px, pero era una marca sin caja interior: un icono con
-    caja necesita el escalón siguiente para pesar lo mismo.
-
-    `margin-top: 2px` alinea la caja del icono con la altura de x de la primera
-    línea; con los 3px del tick viejo quedaba bajo.
-  */
-  .tick { width: 20px; height: 20px; color: var(--verde-deep); flex: none; margin-top: 2px; }
 
   /*
     La banda de contacto va sobre papel (Design System §6.3, revisado el
@@ -494,18 +361,12 @@ const waPlain = contact.whatsappUrl(
   .ghost.sobre-tinta:hover { border-color: var(--on-tinta); }
   .wa-icon { width: 16px; height: 16px; }
 
-  @media (min-width: 760px) {
-    .split { grid-template-columns: 1fr 1.2fr; gap: var(--s-8); }
-  }
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
     h2 { font-size: var(--t-h2); }
     /* Explícito: `.scope h2` gana a la regla de arriba por especificidad y se
        quedaba en la escala móvil en escritorio. */
     .scope h2 { font-size: var(--t-h2); }
-    /* «Ten esto a mano» es un H3 como los cuatro casos de uso, y se quedaba en
-       la escala móvil mientras aquéllos iban a 20. */
-    .sub { font-size: var(--t-h3); }
     .case-text h3 { font-size: var(--t-h3); }
 
     /* Zigzag. `--s-8` son exactamente los 4rem pedidos y sale de la escala.

@@ -1,0 +1,260 @@
+---
+/**
+ * «Qué cambia respecto de una persona», en `/empresas`: **dos carriles.**
+ *
+ * Pedido por Sebastián el 2026-10-02: la tabla tenía «las letras muy chicas en
+ * relación a las demás y es todo muy plano sin decoración». Medido: 14 px los
+ * valores y 13 los encabezados, contra 16 del cuerpo de la página; la columna
+ * «Empresa» —el asunto de la página— pesaba lo mismo que la otra, y a 390 px
+ * quedaba fuera de pantalla, detrás de un desplazamiento lateral.
+ *
+ * ── Qué cambia ─────────────────────────────────────────────────────────────
+ *
+ * · **Los valores van a 16 px**, el cuerpo, y los nombres de columna a 20, con
+ *   su icono del set (§7): «people» y «empresa».
+ * · **Cada columna es un carril.** Persona, en papel claro. Empresa, en tinta y
+ *   un poco más alto por arriba y por abajo: es la columna de la que trata la
+ *   página, y se ve antes de leerla. Su icono va en el mismo aro verde que las
+ *   estaciones del relevo de «Hasta dónde llega nuestra parte», así que las dos
+ *   piezas de la página son de la misma familia.
+ * · **Los carriles son capas detrás de la tabla**, no fondos de celda: así el
+ *   de Empresa puede asomar sobre el de Persona sin que la tabla deje de ser
+ *   una tabla. Las columnas son fijas (`table-layout: fixed` y `<colgroup>`), y
+ *   las capas usan los mismos porcentajes.
+ *
+ * Ningún dato nuevo: las cuatro filas salen de `differences` (business.ts).
+ *
+ * ── Bajo 760 px, una ficha por aspecto ─────────────────────────────────────
+ *
+ * Tres columnas no caben a 390 sin un desplazamiento lateral que escondía
+ * justo la de Empresa. Abajo, cada fila es una ficha: el aspecto como título,
+ * lo de una persona y, debajo, lo de una empresa en su franja de tinta.
+ *
+ * Al cambiar el `display` de una tabla, Chrome y Safari le quitan la semántica
+ * de tabla. Por eso lleva los `role` puestos a mano (`table`, `row`,
+ * `columnheader`, `rowheader`, `cell`): con ellos, un lector de pantalla sigue
+ * oyendo «Empresa» como encabezado de cada valor en las dos formas. El nombre
+ * de columna que se ve dentro de cada ficha va `aria-hidden`, para que no se
+ * oiga dos veces.
+ */
+import Icon from './Icon.astro';
+import type { Difference } from '../content/business.ts';
+
+interface Props {
+  rows: readonly Difference[];
+}
+const { rows } = Astro.props;
+---
+<div class="cmp">
+  <span class="cmp-carril cmp-carril-persona" aria-hidden="true"></span>
+  <span class="cmp-carril cmp-carril-empresa" aria-hidden="true"></span>
+  <table role="table">
+    <colgroup>
+      <col class="cmp-col-aspecto" />
+      <col class="cmp-col-persona" />
+      <col class="cmp-col-empresa" />
+    </colgroup>
+    <thead role="rowgroup">
+      <tr role="row">
+        <th scope="col" role="columnheader"><span class="sr-only">Aspecto</span></th>
+        <th scope="col" role="columnheader" class="cmp-h-persona">
+          <span class="cmp-sello" aria-hidden="true"><Icon name="people" size={20} /></span>
+          Persona
+        </th>
+        <th scope="col" role="columnheader" class="cmp-h-empresa">
+          <span class="cmp-sello" aria-hidden="true"><Icon name="empresa" size={20} /></span>
+          Empresa
+        </th>
+      </tr>
+    </thead>
+    <tbody role="rowgroup">
+      {rows.map((row) => (
+        <tr role="row">
+          <th scope="row" role="rowheader">{row.aspect}</th>
+          <td role="cell" class="cmp-persona">
+            <span class="cmp-quien" aria-hidden="true"><Icon name="people" size={16} />Persona</span>
+            {row.person}
+          </td>
+          <td role="cell" class="cmp-empresa">
+            <span class="cmp-quien" aria-hidden="true"><Icon name="empresa" size={16} />Empresa</span>
+            {row.company}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  /*
+    ── Escritorio ──────────────────────────────────────────────────────────
+    Tres columnas fijas: 22 / 34 / 44 %. Las capas de los carriles usan los
+    mismos números, con `--cmp-sep` de aire entre las dos.
+  */
+  .cmp {
+    --cmp-a: 22%;
+    --cmp-p: 34%;
+    --cmp-sep: 6px;
+    /* Lo que el carril de Empresa asoma sobre el de Persona, arriba y abajo. */
+    --cmp-asoma: var(--s-4);
+    --cmp-pad: var(--s-6);
+    position: relative;
+    padding: var(--cmp-asoma) 0;
+  }
+  .cmp-carril {
+    position: absolute;
+    /* En colores forzados el fondo desaparece; el borde transparente pasa a
+       `CanvasText` y el carril se sigue viendo. */
+    border: 1px solid transparent;
+  }
+  .cmp-carril-persona {
+    top: var(--cmp-asoma);
+    bottom: var(--cmp-asoma);
+    left: var(--cmp-a);
+    width: calc(var(--cmp-p) - var(--cmp-sep));
+    background: var(--papel);
+    border-radius: var(--r-3);
+  }
+  .cmp-carril-empresa {
+    top: 0;
+    bottom: 0;
+    left: calc(var(--cmp-a) + var(--cmp-p));
+    right: 0;
+    background: var(--tinta);
+    border-radius: var(--r-block);
+  }
+
+  table {
+    position: relative;
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: left;
+  }
+  .cmp-col-aspecto { width: var(--cmp-a); }
+  .cmp-col-persona { width: var(--cmp-p); }
+
+  th, td { vertical-align: top; }
+
+  /* Los nombres de columna: 20 px, con su sello. */
+  thead th {
+    padding: var(--s-6) var(--cmp-pad) var(--s-5);
+    font-size: var(--t-h3);
+    line-height: var(--lh-h3);
+    font-weight: 700;
+    color: var(--ink);
+  }
+  thead th:first-child { padding: 0; }
+  /* Con `thead th` delante: el selector de arriba pesa más que una clase sola
+     y el nombre salía en `--ink` sobre la tinta. */
+  thead th.cmp-h-persona { padding-right: calc(var(--cmp-pad) + var(--cmp-sep)); }
+  thead th.cmp-h-empresa { color: var(--on-tinta); }
+  .cmp-sello {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: var(--s-3);
+    border-radius: 50%;
+    border: 1.5px solid var(--ink-mute);
+    color: var(--ink);
+  }
+  .cmp-sello :global(svg) { width: 20px; height: 20px; }
+  .cmp-h-empresa .cmp-sello {
+    border: 2px solid var(--verde);
+    color: var(--on-tinta);
+  }
+
+  /* El aspecto, a la izquierda y fuera de los carriles. */
+  tbody th {
+    padding: var(--s-5) var(--s-5) var(--s-5) 0;
+    font-size: var(--t-body);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  tbody td {
+    padding: var(--s-5) var(--cmp-pad);
+    font-size: var(--t-body);
+    line-height: var(--lh-body);
+  }
+  .cmp-persona { color: var(--ink-mute); padding-right: calc(var(--cmp-pad) + var(--cmp-sep)); }
+  .cmp-empresa { color: var(--on-tinta); font-weight: 500; }
+  tbody tr:last-child > * { padding-bottom: var(--s-6); }
+
+  /* Filetes entre filas, sin significado (`--line`, Design System §6.2), dentro
+     de cada carril y bajo cada aspecto. Van en un pseudoelemento para dejar el
+     relleno de la celda fuera del trazo. */
+  tbody tr:not(:last-child) > * { position: relative; }
+  tbody tr:not(:last-child) > *::after {
+    content: '';
+    position: absolute;
+    left: var(--cmp-pad);
+    right: var(--cmp-pad);
+    bottom: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  tbody tr:not(:last-child) > th::after { left: 0; right: var(--s-5); }
+  tbody tr:not(:last-child) > .cmp-persona::after { right: calc(var(--cmp-pad) + var(--cmp-sep)); }
+  tbody tr:not(:last-child) > .cmp-empresa::after { border-color: var(--line-on-tinta); }
+
+  /* El nombre de columna dentro de la fila sólo se ve en la ficha de móvil. */
+  .cmp-quien { display: none; }
+
+  /*
+    ── Bajo 760 px: una ficha por aspecto ──────────────────────────────────
+  */
+  @media (max-width: 759px) {
+    .cmp { padding: 0; }
+    .cmp-carril { display: none; }
+    table, thead, tbody, tr, th, td { display: block; }
+    /* La fila de nombres de columna se queda para el lector de pantalla y sale
+       de la vista: cada ficha ya dice de quién es cada valor. */
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    tbody { display: grid; gap: var(--s-6); }
+    tbody tr { padding: 0; }
+    tbody th {
+      padding: 0 0 var(--s-3);
+      font-size: var(--t-h3-m);
+      line-height: var(--lh-h3);
+      font-weight: 700;
+    }
+    tbody td { padding: var(--s-4) var(--s-5); }
+    .cmp-persona {
+      background: var(--papel);
+      border-radius: var(--r-3) var(--r-3) 0 0;
+      padding-right: var(--s-5);
+    }
+    .cmp-empresa {
+      background: var(--tinta);
+      border-radius: 0 0 var(--r-3) var(--r-3);
+    }
+    tbody tr:last-child > * { padding-bottom: var(--s-4); }
+    tbody tr:last-child > th { padding-bottom: var(--s-3); }
+    tbody tr:not(:last-child) > *::after { display: none; }
+    .cmp-quien {
+      display: flex;
+      align-items: center;
+      gap: var(--s-2);
+      margin-bottom: var(--s-1);
+      font-family: var(--f-num);
+      font-size: var(--t-label);
+      font-weight: 400;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+    }
+    .cmp-empresa .cmp-quien { color: var(--on-tinta-mute); }
+    .cmp-empresa .cmp-quien :global(svg) { color: var(--verde); }
+    /* En colores forzados el fondo desaparece: un borde visible separa las dos
+       franjas. */
+    .cmp-persona, .cmp-empresa { border: 1px solid transparent; }
+  }
+</style>

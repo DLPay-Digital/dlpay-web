@@ -71,7 +71,10 @@ src/
 │   ├── Process.astro      # los 4 pasos en zig-zag, con un teléfono cada uno
 │   ├── WhatsAppMockup.astro # el teléfono en CSS. Dos variantes: proof y bare
 │   ├── MacbookMockup.astro  # el portátil en CSS del encabezado de /empresas
-│   ├── BusinessEmblem.astro # los cuatro widgets de los casos de uso B2B
+│   ├── FiguraCaso.astro     # los cuatro objetos de «Para qué lo usan» en /empresas
+│   ├── ComparaEmpresa.astro # persona y empresa: la tabla en dos carriles
+│   ├── ComoEmpezamos.astro  # la carpeta «Ten esto a mano» y los cuatro pasos
+│   ├── AlcanceEmpresa.astro # el relevo: hasta dónde llega nuestra parte, en /empresas
 │   ├── hero/GloboRotativo.astro # el globo de la Home (SVG + datos en línea)
 │   ├── Header · Footer · Hero · PageHero · Trust · UseCases
 │   ├── Business · Faq · Alliances · AnnouncementBar · PortadaDato

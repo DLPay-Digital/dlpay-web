@@ -1,0 +1,398 @@
+---
+/**
+ * «Hasta dónde llega nuestra parte», en `/empresas`: **el relevo.**
+ *
+ * Sustituye en esta página al eje de alcance (`EjeDeAlcance.astro`, que se
+ * queda para `/como-funciona`). Pedido por Sebastián el 2026-10-02: aquella
+ * figura —una línea de 1 px con tres puntos de 9— «es como una figura hecha sin
+ * ganas y esfuerzo».
+ *
+ * ── Qué dice ───────────────────────────────────────────────────────────────
+ *
+ * Lo mismo que el eje y con los mismos datos de `content/scope.ts`, sin una
+ * palabra nueva: hasta dónde llega lo nuestro, dónde lo entregamos y qué hace
+ * después la empresa. Lo que cambia es que ahora se VE:
+ *
+ * · **Nuestra parte es un bloque en tinta**, con sus tres estaciones sobre un
+ *   tramo verde —«el tramo que es nuestro», Design System §6.2—: los pesos de la
+ *   empresa, nosotros cambiando y verificando, y el dólar digital en la
+ *   billetera que indique.
+ * · **El bloque termina en el corte de la marca**, a 34°, como los puentes y las
+ *   cuñas del héroe. Justo antes del corte, la frase de la bisagra: «Ahí termina
+ *   nuestra parte: desde ese punto decide tu empresa». Ya no es una nota de
+ *   13 px al pie de una línea: es lo último que dice el bloque.
+ * · **En el corte, la cuña**: el único punto de la figura donde el valor cambia
+ *   de manos, igual que en el eje.
+ * · **Fuera, la línea sigue en `--ink-mute`** —«existe, es real, no es
+ *   nuestro»— y se abre en las tres salidas de la empresa. La tercera lleva su
+ *   aviso pegado, «no lo realiza DLPay», que es un trozo de la salvedad.
+ *
+ * Los iconos son los del set (§7): banco, la marca, billetera; y empresa,
+ * billetera, banco. La billetera sale dos veces porque es la misma: donde la
+ * dejamos y desde donde la empresa decide.
+ *
+ * ── Por qué un componente nuevo y no rehacer el eje ────────────────────────
+ *
+ * El eje lo usa también `/como-funciona` en su forma corta —sin el tramo
+ * nuestro, porque esa página ya contó los seis pasos justo encima— y allí
+ * funciona. Lo que no funcionaba era esta forma larga. Los DATOS siguen siendo
+ * los mismos y en un solo sitio (`scope.ts`), que es lo que de verdad importa:
+ * que las páginas no puedan decir cosas distintas sobre dónde termina el
+ * servicio.
+ *
+ * ── Accesibilidad ──────────────────────────────────────────────────────────
+ *
+ * Dos listas reales —las estaciones, ordenada; las salidas, no— con
+ * `role="list"`. Iconos, tramo, cuña y líneas van `aria-hidden`: nada se dice
+ * sólo con la posición o el color, todo está en el texto, en orden de lectura.
+ */
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+import type { IconName } from './Icon.astro';
+import type { Hinge, Milestone } from '../content/scope.ts';
+
+interface Props {
+  milestones: readonly Milestone[];
+  hinge: Hinge;
+  options: readonly string[];
+}
+const { milestones, hinge, options } = Astro.props;
+
+/*
+  El icono de cada estación y de cada salida va por posición, así que si el
+  dato cambia de largo el build para en vez de dibujar una billetera junto a
+  otra cosa.
+*/
+const ICONOS_HITOS: readonly (IconName | 'marca')[] = ['bank', 'marca', 'wallet'];
+const ICONOS_SALIDAS: readonly IconName[] = ['empresa', 'wallet', 'bank'];
+if (milestones.length !== ICONOS_HITOS.length || options.length !== ICONOS_SALIDAS.length) {
+  throw new Error('AlcanceEmpresa: los hitos o las salidas de scope.ts cambiaron de número; revisa sus iconos.');
+}
+/* La salida que no es ni nuestra ni sólo de la empresa: la hacen otros servicios. */
+const FUERA = 2;
+---
+<div class="al">
+  <div class="al-tramo">
+    <div class="al-banda">
+      {/* El rótulo nombra la lista: «Nuestra parte, lista, 3 elementos». */}
+      <p class="al-rot" id="alcance-nuestra-parte">Nuestra parte</p>
+      <ol class="al-hitos" role="list" aria-labelledby="alcance-nuestra-parte">
+        {milestones.map((m, i) => (
+          <li class="al-hito">
+            <span class="al-nodo" aria-hidden="true">
+              {ICONOS_HITOS[i] === 'marca' ? <Logo class="al-marca" /> : <Icon name={ICONOS_HITOS[i] as IconName} size={24} />}
+            </span>
+            <span class="al-que">{m.what}</span>
+            {/* La coma, sólo para el lector de pantalla: sin ella oía
+                «Los pesos de tu empresa CLP» de corrido. */}
+            {m.data && <span class="al-dato"><span class="sr-only">, </span>{m.data}</span>}
+          </li>
+        ))}
+      </ol>
+      <p class="al-bisagra">
+        <span class="al-hasta">{hinge.until}</span>
+        <span class="al-desde">{hinge.from}</span>
+      </p>
+      {/* El tramo nuestro, de la primera estación al corte. */}
+      <span class="al-pista" aria-hidden="true"></span>
+      {/* La cuña: donde el valor cambia de manos. Único punto de la figura. */}
+      <svg class="al-cuna" viewBox="0 0 56 20" fill="none" aria-hidden="true">
+        {/* `data-draw`: se dibuja al entrar, como la costura del eje al que
+            sustituye (Motion.astro). Con movimiento reducido, quieta. */}
+        <path d="M0 10h17l8-8 8 16 8-8h15" stroke="currentColor" stroke-width="3" stroke-linejoin="round" data-draw />
+      </svg>
+    </div>
+    {/* Fuera del corte la línea sigue, en el gris de lo que no es nuestro. */}
+    <span class="al-salida" aria-hidden="true"></span>
+  </div>
+
+  <ul class="al-salidas" role="list">
+    {options.map((o, i) => (
+      <li class:list={['al-opcion', { fuera: i === FUERA }]}>
+        <span class="al-nodo2" aria-hidden="true"><Icon name={ICONOS_SALIDAS[i]!} size={20} /></span>
+        <span class="al-texto">
+          {o}
+          {i === FUERA && <span class="al-aviso"><span class="sr-only">, </span>no lo realiza DLPay</span>}
+        </span>
+      </li>
+    ))}
+  </ul>
+  <p class="al-salvedad"><slot name="caveat" /></p>
+</div>
+
+<style>
+  /*
+    ── Escritorio ──────────────────────────────────────────────────────────
+    La banda mide `--al-h` y el corte se lleva `--al-d` de ancho: 0,674 por el
+    alto, que es la tangente de los 34° de la marca. Si el texto crece (WCAG
+    1.4.12), la banda crece con él y el corte se empina un poco; no se recorta
+    nada.
+  */
+  .al {
+    --al-h: 232px;
+    --al-d: 156px;
+    /* Dónde cae la pista: el centro de los nodos, en proporción del alto. */
+    --al-y: 80px;
+    --al-r: .345;
+    --al-nodo: 48px;
+    --al-gap: var(--s-7);
+    position: relative;
+  }
+  .al-tramo { position: relative; }
+  .al-banda {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1.2fr);
+    grid-template-rows: auto 1fr;
+    column-gap: var(--s-5);
+    min-height: var(--al-h);
+    padding: var(--s-5) calc(var(--al-d) + var(--s-6)) var(--s-6) var(--s-6);
+    background: var(--tinta);
+    color: var(--on-tinta);
+    border-radius: var(--r-block) 0 0 var(--r-block);
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--al-d)) 100%, 0 100%);
+  }
+  .al-rot {
+    grid-column: 1 / -1;
+    margin: 0 0 var(--s-3);
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--on-tinta-mute);
+  }
+  .al-hitos {
+    grid-column: 1;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--s-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .al-hito {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+    position: relative;
+    z-index: 1;
+  }
+  .al-nodo {
+    display: grid;
+    place-items: center;
+    width: var(--al-nodo);
+    height: var(--al-nodo);
+    margin-bottom: var(--s-3);
+    border-radius: 50%;
+    background: var(--tinta);
+    border: 2px solid var(--verde);
+    color: var(--on-tinta);
+  }
+  .al-nodo :global(svg) { width: 24px; height: 24px; }
+  .al-nodo :global(.al-marca) { width: 26px; height: auto; color: var(--verde); }
+  .al-que { font-weight: 600; font-size: var(--t-body); line-height: 1.35; max-width: 16ch; }
+  .al-dato {
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--on-tinta-mute);
+  }
+  .al-bisagra {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    margin: calc(var(--al-nodo) + var(--s-3)) 0 0;
+    font-size: var(--t-h3);
+    line-height: var(--lh-h3);
+    max-width: 18ch;
+  }
+  .al-hasta { display: block; font-weight: 700; color: var(--on-tinta); }
+  .al-desde { display: block; color: var(--on-tinta-mute); }
+
+  /* El tramo verde, por el centro de los nodos y hasta el corte. */
+  .al-pista {
+    position: absolute;
+    top: calc(var(--al-y) - 1.5px);
+    left: calc(var(--s-6) + var(--al-nodo) / 2);
+    right: calc(var(--al-d) * var(--al-r) + 56px + 14px);
+    height: 3px;
+    background: var(--verde);
+  }
+  /* Entera dentro de la tinta, a 14 px del corte: lo que la recorta es el
+     cambio de manos, no el borde. */
+  .al-cuna {
+    position: absolute;
+    top: calc(var(--al-y) - 10px);
+    right: calc(var(--al-d) * var(--al-r) + 14px);
+    width: 56px;
+    height: 20px;
+    color: var(--verde);
+  }
+
+  /*
+    La salida: del corte hacia la derecha y hacia abajo, hasta la línea de la
+    que cuelgan las tres opciones. Va en `.al-tramo` y no en la banda porque la
+    banda recorta todo lo que sale de su forma. Llega al fondo del tramo más
+    `--al-gap`, así que la encuentra aunque la banda crezca.
+  */
+  .al-salida {
+    position: absolute;
+    top: calc(var(--al-y) - .75px);
+    right: 0;
+    bottom: calc(-1 * var(--al-gap));
+    width: calc(var(--al-d) * var(--al-r) + 14px);
+    border-top: 1.5px solid var(--ink-mute);
+    border-right: 1.5px solid var(--ink-mute);
+    border-top-right-radius: var(--r-3);
+  }
+
+  .al-salidas {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-6);
+    margin: var(--al-gap) 0 0;
+    padding: var(--s-6) 0 0;
+    list-style: none;
+  }
+  /* La línea de la que cuelgan: del primer nodo al borde derecho. */
+  .al-salidas::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 22px;
+    right: 0;
+    border-top: 1.5px solid var(--ink-mute);
+  }
+  .al-opcion { position: relative; display: flex; gap: var(--s-3); align-items: flex-start; }
+  .al-opcion::before {
+    content: '';
+    position: absolute;
+    top: calc(-1 * var(--s-6));
+    left: 21.25px;
+    height: var(--s-6);
+    border-left: 1.5px solid var(--ink-mute);
+  }
+  .al-nodo2 {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--papel);
+    border: 1.5px solid var(--ink-mute);
+    color: var(--ink);
+  }
+  .al-nodo2 :global(svg) { width: 20px; height: 20px; }
+  .al-texto { padding-top: 10px; font-size: var(--t-body); color: var(--ink); max-width: 26ch; }
+  .al-aviso {
+    display: block;
+    margin-top: var(--s-2);
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+  }
+  .al-salvedad {
+    margin: var(--s-6) 0 0;
+    color: var(--ink-mute);
+    max-width: 62ch;
+  }
+  .al-salvedad :global(strong) { color: var(--ink); font-weight: 600; }
+
+  /*
+    ── Bajo 900 px el relevo se pone de pie ────────────────────────────────
+    Las estaciones se apilan sobre un tramo vertical, la bisagra cierra el
+    bloque, y el corte pasa a la esquina de abajo a la derecha —el mismo ángulo
+    en un chaflán de 64 px de alto—. La línea gris sale por abajo y baja por la
+    izquierda, de la que cuelgan las tres salidas.
+  */
+  @media (max-width: 899px) {
+    .al { --al-nodo: 44px; --al-gap: 0px; }
+    .al-banda {
+      display: block;
+      min-height: 0;
+      /* Abajo, los 64 px del chaflán y 8 más: el texto termina antes de que
+         empiece el corte, y la cuña vive en ese hueco. */
+      padding: var(--s-5) var(--s-5) calc(64px + var(--s-2));
+      border-radius: var(--r-block) var(--r-block) 0 var(--r-block);
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 64px), calc(100% - 43px) 100%, 0 100%);
+    }
+    .al-hitos { grid-template-columns: 1fr; row-gap: var(--s-5); }
+    .al-hito {
+      display: grid;
+      grid-template-columns: var(--al-nodo) minmax(0, 1fr);
+      column-gap: var(--s-4);
+      align-items: start;
+    }
+    .al-nodo { grid-row: 1 / 3; margin: 0; }
+    .al-que { grid-column: 2; padding-top: 2px; max-width: none; }
+    .al-dato { grid-column: 2; }
+    .al-bisagra {
+      /* 16 px más de margen a la derecha: con los 24 del bloque, la frase queda
+         a 40 px de la esquina donde empieza el corte. */
+      margin: var(--s-6) var(--s-4) 0 calc(var(--al-nodo) + var(--s-4));
+      font-size: var(--t-h3-m);
+      max-width: none;
+    }
+    .al-pista {
+      top: calc(var(--s-5) + 13px * 1.55 + var(--s-3) + var(--al-nodo) / 2);
+      bottom: 64px;
+      left: calc(var(--s-5) + var(--al-nodo) / 2 - 1.5px);
+      right: auto;
+      width: 3px;
+      height: auto;
+    }
+    .al-cuna {
+      top: auto;
+      bottom: 26px;
+      right: auto;
+      left: calc(var(--s-5) + var(--al-nodo) / 2 - 28px);
+      transform: rotate(90deg);
+    }
+    .al-salida { display: none; }
+    .al-salidas {
+      grid-template-columns: 1fr;
+      gap: var(--s-5);
+      margin: 0;
+      padding: var(--s-6) 0 0 calc(var(--s-5) + var(--al-nodo) / 2 + var(--s-4));
+    }
+    /* La línea gris baja por tramos y termina en la última salida: así no
+       sigue de largo junto al aviso. El primero sube hasta donde termina la
+       cuña, dentro de la tinta, como en escritorio: la línea no se interrumpe
+       al salir del bloque. Cada salida, menos la última, la lleva hasta la
+       siguiente, mida lo que mida su texto. */
+    .al-salidas::before {
+      top: -8px;
+      left: calc(var(--s-5) + var(--al-nodo) / 2 - .75px);
+      right: auto;
+      height: calc(var(--s-6) + 8px + 22px);
+      border-top: 0;
+      border-left: 1.5px solid var(--ink-mute);
+    }
+    .al-opcion::before {
+      top: 21.25px;
+      left: calc(-1 * var(--s-4));
+      width: var(--s-4);
+      height: 0;
+      border-left: 0;
+      border-top: 1.5px solid var(--ink-mute);
+    }
+    .al-opcion:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 21.25px;
+      bottom: calc(-1 * var(--s-5) - 22px);
+      left: calc(-1 * var(--s-4) - .75px);
+      border-left: 1.5px solid var(--ink-mute);
+    }
+  }
+  /* Colores forzados: el tramo y la cuña son fondo y trazo verdes, que el
+     navegador quitaría o dejaría sin contraste; pasan al color de texto de
+     quien mira. Los nodos ya llevan borde. */
+  @media (forced-colors: active) {
+    .al-pista { forced-color-adjust: none; background: CanvasText; }
+    .al-cuna { forced-color-adjust: none; color: CanvasText; }
+    .al-banda { border: 1px solid CanvasText; }
+  }
+</style>

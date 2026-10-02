@@ -360,8 +360,11 @@ tarjeta vive *dentro* del bloque, y dos radios iguales anidados se leen como un 
 el exterior tiene que abrir más que el interior. Se pidió "24 px o `--radius-lg`"; se cerró en 20
 para no romper el registro y para continuar la progresión existente (0 · 3 · 6 · 10 · 14 · **20**).
 
-Hoy lo usa una sola pieza, el bloque oscuro de `Steps.astro` en la Home. Si aparece un segundo
-caso, conviene revisar si sigue siendo "bloque contenido" o si se está usando como radio genérico.
+**Lo usan tres piezas desde el 2026-10-02.** Son el bloque oscuro de `Steps.astro` en la Home
+y, en `/empresas`, el bloque del relevo (`AlcanceEmpresa`) y el carril de Empresa de la
+comparación (`ComparaEmpresa`). Se revisaron al entrar: las tres son una banda en tinta dentro
+de una sección clara, que es la definición de "bloque contenido". Las franjas de móvil de la
+comparación van en `--r-3`. Si aparece un cuarto caso, la revisión es la misma.
 
 ### 4.5 Elevación (mínima, por rol) — **reescrita el 2026-09-25**
 
@@ -815,7 +818,12 @@ que este contenido necesita.
 
 Con cinco familias de figura vivas —los cuatro casos de `/empresas`, la línea de tenencia de
 `/confianza`, el carril de `/como-funciona`, el eje de alcance y las portadas de dato del blog— el
-vocabulario geométrico ya no cabe en la regla dura de §6. Ésta es la semántica que las figuras
+vocabulario geométrico ya no cabe en la regla dura de §6.
+
+> *Esa enumeración es la del 2026-09-17 y ya no describe el build: la línea de tenencia de
+> `/confianza` se retiró el 2026-09-30 —su portada son ahora tres avisos en un teléfono— y los cuatro
+> casos de `/empresas` son otros desde el 2026-10-02. **Se conserva porque explica por qué existe
+> esta sección, no qué hay hoy.** Lo que hay hoy es la tabla, y esa sí se mide.* Ésta es la semántica que las figuras
 **usan hoy**, medida sobre el build y no recordada. **Una marca que se queda sin consumidor sale de
 la tabla y baja a la nota de abajo**, para que la tabla siga respondiendo a «qué significa lo que
 estoy viendo» y no a «qué se ha significado alguna vez».
@@ -863,14 +871,27 @@ superficie clara, porque sobre claro `--verde` da 2,02:1 y no alcanza ni el 3:1 
 (§2.4). Por eso un punto verde y una línea verde en la misma página no se contradicen: **son dos
 palabras distintas**, no dos usos del mismo color.
 
-Sin esta regla, quien compare los emblemas de `/empresas` —donde los nodos verdes rotulan CLP y
-USD, los dos extremos de la operación— con el eje de alcance —donde el tramo verde es el nuestro—
-concluirá, razonablemente, que el verde se usa de dos maneras incompatibles, y «arreglará» una.
+Sin esta regla, quien compare la figura del cruce de `/empresas` —donde el punto verde es la
+unidad de valor que viaja— con el relevo de la misma página —donde el tramo verde es el
+nuestro— concluirá, razonablemente, que el verde se usa de dos maneras incompatibles, y
+«arreglará» una.
+
+**Las figuras de caso del 2026-10-02 no estrenan ninguna marca, y se comprobó una por una.** El
+cruce usa punto lleno verde (la unidad de valor que viaja), cuña, filete `--ink-mute` —el pago al
+proveedor, que **no es nuestro**— y trazo punteado; la cajonera, tramo verde y cuña, con la frontera
+y nada al otro lado; el calendario, un punto lleno verde por mes —una operación, repetida—; y las dos
+pilas, el canto dividido en unidades con el tramo verde y la cuña del cambio. Todas están en la tabla
+de arriba con el significado que allí tienen.
+
+**Lo que NO cuenta como marca, y conviene decirlo porque esta familia lo estrena:** el tirador de un
+cajón y las anillas de un calendario son **partes del objeto**, como el altavoz del teléfono o la
+bisagra del portátil. Un filete `--ink-mute` significa «existe, es real, no es nuestro» cuando está
+**sobre un recorrido**; un tirador no está sobre ninguno.
 
 **Sobre la frontera punteada, añadida el 2026-09-22.** Estaba en producción desde que existe
 `UseCaseFigure` y no estaba escrita, y eso resultó ser lo que hacía ambiguo todo un par de figuras.
 
-**Recontado el 2026-09-30 barriendo las quince rutas del build: son OCHO.**
+**Recontado el 2026-10-02 barriendo las quince rutas del build: son NUEVE.**
 
 | dónde | clase | qué límite marca |
 |---|---|---|
@@ -879,16 +900,32 @@ concluirá, razonablemente, que el verde se usa de dos maneras incompatibles, y 
 | `/precio`, la banda | `.caduca` | el instante en que se cumplen los 12 minutos |
 | `/tarifas` ×3 | `.limite`, `.sw sw-linea`, `.corte` | dónde acaba el precio · el spread · dónde se conversa |
 | Home y `/precio`, los puentes | `.limite` y `.corte` | los mismos dos, copiados a sus figuras |
+| `/empresas` ×2 | `.fc-frontera` de `FiguraCaso` | la frontera de Chile, en el cruce y en la cajonera |
 
-**Las otras once rutas no tienen ninguna**, y eso también se midió: `/como-funciona`, `/confianza`,
-`/empresas`, `/preguntas`, `/blog` y sus tres artículos, las tres legales sin `/tarifas` y la 404.
+**Las otras diez rutas no tienen ninguna**, y eso también se midió: `/como-funciona`, `/confianza`,
+`/preguntas`, `/blog` y sus tres artículos, las tres legales sin `/tarifas` y la 404.
 
-**Esta frase ha envejecido tres veces, y la tercera es la que más enseña.** Dijo «dos» y era cierta
-el 2026-09-24; la invalidaron el rediseño de `/tarifas` del día siguiente, que estrenó tres, y los
-puentes del 28, que copiaron dos. Dijo «siete» y **nació ya desfasada el mismo día en que se
+**El barrido devuelve DIEZ, y la décima no es una marca.** Es `.et-torsion`, el
+`stroke-dasharray: 1.4 2` con el que el abanico de etiquetas de `/precio` dibuja la torsión del
+cordón. Entró el 2026-10-01 con `a3d3bf6` y es **materia, no vocabulario**: no marca ningún límite,
+dice «esto es un cordón trenzado», y la trae una de las dos piezas a las que ADR-0011 concede
+textura. La tabla de arriba cuenta marcas que significan algo; el método de abajo cuenta píxeles
+punteados, y desde que existe una pieza con materia los dos números dejan de coincidir.
+
+> **El método necesita una exclusión más, y es de clase y no de lista:** un `stroke-dasharray` puede
+> ser **textura de un material** y no una marca. Antes sólo había que descontar el de `[data-draw]`,
+> que es un mecanismo; ahora también el de las piezas de ADR-0011. Quien recuente y obtenga diez no
+> ha encontrado una marca nueva: ha encontrado esta frase.
+
+**Esta frase ha envejecido cuatro veces, y las dos últimas son la misma lección.** Dijo «dos» y era
+cierta el 2026-09-24; la invalidaron el rediseño de `/tarifas` del día siguiente, que estrenó tres, y
+los puentes del 28, que copiaron dos. Dijo «siete» y **nació ya desfasada el mismo día en que se
 escribió**: el 2026-09-29 se rehízo la banda de `/precio` para los 12 minutos y ahí entró `.caduca`,
-una octava marca, en el mismo commit y por la misma mano que corregía el recuento. Nadie volvió a
-contar después de añadirla.
+una octava marca, en el mismo commit y por la misma mano que corregía el recuento. Y dijo «ocho»
+hasta hoy, aunque **ya era falsa desde el 2026-10-01**: el abanico trajo `.et-torsion` y, otra vez,
+nadie volvió a contar después de añadirlo — y esa vez el recuento y el añadido los firmó la misma
+mano, con el aviso de arriba ya escrito delante. **Escribir la lección no la aplica.** Lo que la
+aplica es rehacer el barrido en el commit que toca una figura, que es lo que se hizo hoy.
 
 > **Un recuento es una foto, y quien la cite tiene que rehacerla.** Incluso —sobre todo— quien la
 > acaba de tomar: añadir una marca y corregir el recuento en la misma sesión no garantiza que el
@@ -1145,10 +1182,10 @@ cada una, no qué significa.
 | **Héroe con cotizador** | El primer viewport de la Home | El cotizador **no entra** animado: es el instrumento y tiene que estar encendido al llegar. Lo que entra es el texto (M6) |
 | **Encabezado de página** | Las ocho rutas que no son la Home | `PageHero`. Dos composiciones: a dos columnas y **apilada y centrada**, ésta con la pieza del `aside` montada sobre la costura con la sección siguiente |
 | **Dispositivos en CSS: teléfono, portátil, tableta y teléfono de avisos** | Enseñar el producto sin imágenes. El teléfono de chat (`/como-funciona`, Home) una **operación negociándose**; el portátil (`/empresas`) la plataforma; la tableta (`/preguntas`) **una duda resolviéndose**; el teléfono bloqueado con avisos (`/confianza`, desde el 2026-09-30) **una operación comprobándose desde fuera** | Cero archivos. **El texto nunca se teclea**: las cifras salen de `lib/pricing` y la pregunta de la tableta se busca en `general.ts` por su texto. Los cuatro van `aria-hidden` y **el chasis va claro**, que es lo único que recorta un objeto contra la tinta. **Dos teléfonos y no uno, a propósito:** aquél tiene la app abierta y una conversación; éste está bloqueado y enseña tres avisos de tres remitentes, de los que **sólo uno es nuestro**. Si el hilo de la tableta empieza a hablar de montos, deja de ser tableta y pasa a ser teléfono |
-| **Emblema de caso** | Las cuatro operaciones de `/empresas` | El canto del isotipo como frontera; el dinero es un canal hueco dentro del plano y macizo fuera |
+| **Figura de caso** | Las cuatro operaciones de `/empresas` | `FiguraCaso`. Un objeto por caso —el cruce, la cajonera, el calendario y las dos pilas— sobre una lámina en `--papel-2`, con las marcas del §6.2 y ninguna cifra. HTML y no SVG: los rótulos son texto a 13 px en todos los anchos. **El pago al proveedor va en `--ink-mute`, no en verde**: lo hace la empresa, no DLPay. *Sustituye al emblema de caso el 2026-10-02.* |
 | **Línea de tenencia** | `/confianza`: de quién es la cuenta donde está el dinero | HTML, no SVG. Un solo tramo es nuestro |
 | **Carril de dos columnas** | `/como-funciona`: qué hace cada parte y dónde cambia de manos | La colocación en rejilla va **explícita**: el flujo automático deshace el carril |
-| **Eje de alcance** | Hasta dónde llega el servicio | `EjeDeAlcance`, en **tres** páginas: `/como-funciona`, `/empresas` y el artículo del blog. *Salió de la Home el 2026-09-25.* Es la regla dura de `CLAUDE.md` §1 dibujada, y por eso es un componente y no CSS repetido |
+| **Eje de alcance** | Hasta dónde llega el servicio | La regla dura de `CLAUDE.md` §1 dibujada. Los datos viven en un solo sitio, `scope.ts`, para que dos páginas no puedan decir cosas distintas. **Dos dibujos desde el 2026-10-02:** `EjeDeAlcance` en `/como-funciona`, en su forma corta, y `AlcanceEmpresa` —el relevo— en `/empresas`. **Excepción firmada por Sebastián el 2026-10-02.** La ventaja: `/empresas` es la página cuyo lector más supone una transferencia bancaria, y ahí el límite tiene que verse más. *La fila decía «tres páginas», pero el artículo del blog no lo usa: sólo lo nombra en un comentario (comprobado con `grep` el 2026-10-02). Salió de la Home el 2026-09-25.* |
 | **Portada de dato** | La cifra de la que habla un artículo | Dos tipos: `cifra` y `rango`. **La cuña no entra** (§6.1). `fuente` es obligatoria |
 | **Diario DLPay** | `/blog`: una hoja por artículo, que pasan solas cada 3 s | `DiarioDLPay`. **Cuarto movimiento infinito del sitio y única pieza fuera del registro de ADR-0001**: grano, mancha, relieve, luz y perspectiva 3D. Ver **ADR-0011**, que es de lectura obligada antes de tocarla. CSS puro, 0 JS; los `@keyframes` se generan en el build desde `posts.length`. Casilla de pausa nativa **fuera** del objeto (WCAG 2.2.2) y una hoja quieta con `prefers-reduced-motion`. **Dos reglas que ya rompieron algo:** `perspective` va en `.diario`, el padre directo, y `steps(1, end)` en el fotograma `p`. **El arranque de columnas es texto simulado** y es la única marca del sistema que no representa nada: excepción autorizada, no marca nueva |
 | **Pila de artículos** | *Sin consumidores desde el 2026-10-01.* El último artículo completo y los dos anteriores por su lomo | `UltimoArticulo`. **Misma materia que el panel de `/precio`** —cabecera, pozo hundido y cuerpo sobre papel— para que los dos objetos de papel se lean como parientes. Se deriva entera de `publishedPosts()`, así que **cambia sola al publicar**. Reusa `PortadaFigura` en su variante `marca` y los formateadores de `lib/pricing`: **no reescribe ni el dibujo ni el dato**. No trae la banda de tinta del artículo —oscuro dentro de claro dentro de oscuro se lee como un agujero—. **Los cantos llevan su titular y son enlaces**, hasta dos, así que son **hermanos** del enlace de la hoja y nunca sus hijos: un enlace dentro de otro es HTML inválido y el teclado no llega al de dentro. El titular del canto se corta con elipsis, y **es el único sitio del sitio donde un titular se corta**: un canto que crece con el texto deja de ser un canto |

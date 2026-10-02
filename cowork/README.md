@@ -3399,3 +3399,127 @@ El sitio sigue teniendo cuatro movimientos infinitos.
 *Un aviso de instrumento, por si alguien repite la comprobación:* `getAnimations()` devolvió **cero**
 y no era un fallo — con relleno `backwards` la animación desaparece de la lista en cuanto termina, y
 600 ms después de cargar ya no está. Se verifica por el estilo calculado y reproduciéndola a mano.
+
+---
+
+### Notas de la integración de `2026-10-02 · empresas: las cuatro secciones de después de la portada`
+
+**Veredicto: integrada entera**, los cinco archivos sin tocar una línea, más el borrado de
+`BusinessEmblem.astro` y los dos comentarios que lo nombraban. `npm run check` en 0 errores, 80
+pruebas en verde, build en 446 ms.
+
+**Base verificada antes de nada:** los quince md5 del prompt —diez del repositorio y cinco de la
+entrega— coinciden exactamente, y la cabeza seguía en `9f66880`.
+
+#### El diff, que es lo que se revisa
+
+**La mejor entrega de la fase en este punto, y conviene decirlo porque las anteriores no lo fueron.**
+`empresas.astro` llega como archivo entero, igual que las otras, pero su diff contra el de hoy es
+**quirúrgico**: cambia los cuatro imports, sustituye los tres bloques de marcado por sus componentes,
+retira exactamente el CSS que se queda sin dueño y reescribe «emblema» por «figura» en tres
+comentarios. **No se perdió ni una regla ajena.** En `/preguntas` desapareció `.inner`, y en
+`/confianza` se retiraron dos símbolos que sí tenían consumidor; acá no hay nada de eso, y lo
+comprobé línea por línea antes de copiar.
+
+**La corrección que trae el propio prompt vale lo mismo.** La ficha afirmaba que el artículo del
+blog usa `EjeDeAlcance`, y Cowork lo desmintió antes de que yo lo mirara: lo había tomado de la fila
+del Design System §8.1, que estaba desactualizada. `grep` lo confirma — el artículo sólo lo nombra en
+un comentario, y `/confianza` también. **La fila decía «tres páginas» y eran dos.** Es la segunda vez
+en la fase que una afirmación de «quién usa esto» resulta falsa, y la segunda que la caza un `grep`
+de diez segundos.
+
+#### Lo que verifiqué sobre el build, no sobre el dev
+
+| Qué | Declarado | Medido acá |
+|---|---|---|
+| Contraste, peor píxel (7 casos, 1×/2×/3×) | 4,93 · 4,98 · 8,18 · 14,5–16,4 | **4,93 · 4,98 · 8,18 · 14,50 · 16,44** ✔ |
+| Barrido 320→1300 cada 20, con y sin 1.4.12 | nada recortado ni pisado | **0 incidencias** ✔ |
+| Fuente mínima | 13 px | **13 px** (`.cmp-quien`) ✔ |
+| Desplazamiento lateral | 0, salvo 13 px a 320 con espaciado | **0, salvo 5 px a 320 con espaciado** — ver abajo |
+| `axe-core` 4.13 a 1280 y 390 | sólo el contraste del portátil (10 y 9) | **10 y 9, idénticos al build de ayer** ✔ |
+| Árbol a 390 | tabla, 5 filas, 3 col., 4 fila, 8 celdas | **exacto** ✔ |
+| Lista «Nuestra parte» | 3 | **3** ✔ |
+| Enfocables en `main` | 8 | **8** ✔ |
+| Alto a 1280 | 6.369 (+517) | **6.344 (+489)** |
+| Alto a 390 | 8.300 (+1.045) | **8.280 (+1.066)** |
+| Peso transferido | +3,6 KB gzip | **+3,59 KB gzip** (15.779 → 19.369) ✔ |
+| JavaScript nuevo | 0 | **0**: cuatro scripts en línea antes y después, ninguno externo ✔ |
+
+Los altos difieren en 20–25 px sobre seis mil: es rasterización de fuentes entre dos equipos, no una
+discrepancia. La historia que cuentan es la misma, y es la buena: **casi todo el crecimiento de 390
+es la comparación**, porque hoy una columna entera está escondida detrás de un desplazamiento y
+después se ve entera, a 16 px.
+
+**El desplazamiento de 320 con espaciado es previo, y lo comprobé como se debe:** no mirando el
+número, sino midiendo **`/como-funciona`, que no he tocado**. Da los mismos 5 px y señala los mismos
+elementos de la cabecera. Que a ellos les saliera 13 y a mí 5 es la hoja de espaciado, que cada uno
+escribe a su manera; lo que importa es que no sale de esta reforma.
+
+#### Donde la entrega se equivoca
+
+**La holgura al corte del relevo no es la que dice.** Declara «≥ 55 px en escritorio y ≥ 51 en
+móvil». Barriendo de 320 a 1300 cada 20 px, el peor caso es **44,81 px a 920** y **40,48 px a 420**.
+
+**No hay nada roto**: el piso del Design System §4.7 son 40 px, los dos lo pasan, y mi medida es
+conservadora porque parte de la caja del renglón y no del trazo. Pero **la diferencia entre creer que
+sobran 11 px y saber que sobran 0,48 es toda la diferencia** el día que alguien quiera mover el
+chaflán.
+
+Y lo que cierra el caso: **el componente lo decía**. Su comentario de móvil anuncia «la frase queda a
+40 px de la esquina donde empieza el corte». El comentario tenía razón; la tabla de medidas, no.
+*Registrado en `phase-4-construccion.md` §4.12.*
+
+#### Lo que la entrega no vio, y toca al Design System
+
+**`FiguraCaso` estrena marca punteada en `/empresas`**, dos veces —la frontera del cruce y la de la
+cajonera—, y el §6.2 publicaba una tabla que dice **«`/empresas` no tiene ninguna»**. Rehice el
+barrido con el método que esa misma sección documenta, sobre las quince rutas del build.
+
+**Y al rehacerlo apareció algo peor: el recuento ya estaba desfasado desde ayer.** `.et-torsion`, el
+punteado con el que el abanico de etiquetas dibuja la torsión del cordón, entró el 2026-10-01 con
+`a3d3bf6` y nadie volvió a contar. **Lo firmé yo, con el aviso de «un recuento es una foto y quien la
+cite tiene que rehacerla» escrito tres párrafos más arriba.** Escribir la lección no la aplica.
+
+El §6.2 queda ahora con **nueve marcas**, y con una distinción que antes no hacía falta: el barrido
+devuelve diez porque `.et-torsion` es **materia y no vocabulario** —dice «esto es un cordón
+trenzado», no marca ningún límite— y la trae una de las dos piezas a las que ADR-0011 concede
+textura. Desde que existe una pieza con materia, el número de píxeles punteados y el número de marcas
+dejan de ser el mismo.
+
+**Comprobado aparte, porque era la otra pregunta:** las figuras nuevas **no estrenan ninguna marca**.
+Cruce, cajonera, calendario y pilas usan punto lleno verde, cuña, tramo verde, filete `--ink-mute`,
+canto dividido en unidades y trazo punteado, todas ya en la tabla. Lo único nuevo es la distinción
+entre una marca y **una parte del objeto**: el tirador de un cajón y las anillas del calendario no
+significan nada, igual que el altavoz del teléfono.
+
+#### Lo que arregla sin proponérselo
+
+Dos fallos que `/empresas` tenía hoy y que no son de esta reforma: `scrollable-region-focusable` a
+390 —la tabla necesitaba desplazarse y no era enfocable, que es WCAG— y `empty-table-header`, el
+`<th>&nbsp;</th>` de la primera columna, que es buena práctica y no WCAG. Los dos medidos en el build
+de ayer y ausentes en el de hoy. *La entrega los anunciaba juntos; son de categorías distintas y
+conviene no venderlos como dos fallos de accesibilidad.*
+
+#### Sin verificar
+
+**WebKit y Firefox. Van tres piezas seguidas.** El Diario (`-webkit-mask`), el abanico (`drop-shadow`
+encadenado y `mask` del ojal) y ahora las `cqw` de las figuras más la tabla de móvil con sus `role`
+puestos a mano. Este entorno sólo tiene Chromium y Cowork tampoco tiene WebKit. **Tres entregas
+acumulando el mismo pendiente ya no es una nota al pie**: conviene resolverlo antes de Fase 6, y son
+unos minutos en un Safari de verdad.
+
+**Un lector de pantalla real.** El árbol está medido y es correcto; nadie lo ha oído en VoiceOver ni
+en NVDA. Importa más que de costumbre porque la tabla de móvil **depende de `role` puestos a mano**:
+si un lector los ignorara, los valores se quedarían sin encabezado.
+
+#### Compliance
+
+**Ninguna cadena nueva de producto**: las cuatro secciones leen `business.ts` y `scope.ts` sin tocar
+una palabra. Lo que sí entra son **rótulos de figura** —«Chile», «Exterior», «USD», «CLP», los doce
+meses, «Tu empresa», «Tu proveedor», «Nuestra parte»— y los nombres de columna repetidos en las
+fichas de móvil. Son rótulos, no afirmaciones, pero quedan listados acá por si Compliance quiere
+verlos.
+
+**Y un rótulo que sí carga una regla dura:** «Tu empresa» bajo la cajonera. Está ahí porque la figura
+dibuja una caja con saldos dentro, y `CLAUDE.md` §1 dice que **DLPay no guarda saldos** en el modo
+asistido. Sin ese rótulo la caja se lee como nuestra. **No se quita.**

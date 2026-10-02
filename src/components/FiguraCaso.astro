@@ -1,0 +1,422 @@
+---
+/**
+ * Las cuatro figuras de «Para qué lo usan», en `/empresas`: **cuatro objetos.**
+ *
+ * Sustituyen a `BusinessEmblem.astro`, que se retiró con ellas. Pedido por
+ * Sebastián el 2026-10-02: aquellas figuras «no dicen nada y están ahí pegadas
+ * sin más».
+ * Medido sobre el render: eran cuatro veces el mismo trapecio de tinta de
+ * 460×300 con un canal dentro —se distinguían por el canal, no por el objeto—,
+ * pesaban más que el texto que acompañan, y sus etiquetas, en texto SVG,
+ * bajaban a 9,9 px a 390 porque el dibujo se escala entero.
+ *
+ * ── Un objeto por caso, que se reconoce antes de leer ──────────────────────
+ *
+ * · **Proveedores: el cruce.** Tu empresa a un lado de la frontera —el trazo
+ *   punteado, la única marca punteada del sistema, que significa un límite— y
+ *   tu proveedor al otro. Entre los dos, una línea directa: nada en medio. Lo
+ *   que viaja es una unidad de valor —el punto lleno— rotulada USD, y la cuña
+ *   cae justo en la frontera, donde el valor cambia de manos.
+ *   La línea es `--ink-mute` y NO verde, a propósito: ese pago lo hace la
+ *   empresa desde su billetera, no DLPay (CLAUDE.md §1). Verde sería decir que
+ *   el tramo es nuestro.
+ * · **Tesorería: la cajonera.** La caja de la empresa —rotulada «Tu empresa»,
+ *   porque DLPay no guarda saldos (CLAUDE.md §1)— con dos cajones: CLP,
+ *   con el icono del banco, y USD, con el de la billetera, medio abierto
+ *   porque está en uso. Entre los dos, el tramo verde con su cuña: ése sí es
+ *   nuestro, es el cambio, en los dos sentidos. Y la frontera a la derecha,
+ *   con nada al otro lado: «sin abrir una cuenta en el extranjero» dicho sin
+ *   palabras, como en el emblema de antes.
+ * · **Recurrentes: el calendario.** Doce meses y, en cada uno, el mismo punto en
+ *   el mismo sitio: lo que se repite.
+ * · **Volumen: las dos pilas.** Dos pilas iguales hechas de unidades —el canto
+ *   dividido en unidades: «la cosa está hecha de unidades transferibles»—, CLP y
+ *   USD, con el tramo verde y la cuña del cambio entre ellas. Mismo alto: el
+ *   valor no cambia, cambia la unidad. El alto es el argumento del volumen.
+ *
+ * Todas las marcas son las del Design System §6.2, con su significado, y
+ * ninguna cifra. El texto de las figuras son rótulos: CHILE, EXTERIOR, USD,
+ * CLP, los doce meses, «Tu empresa» y «Tu proveedor».
+ *
+ * ── Cómo está hecho ────────────────────────────────────────────────────────
+ *
+ * HTML y CSS, no SVG: así los rótulos son texto de verdad a 13 px en todos los
+ * anchos, y el dibujo se escala con el ancho de la lámina (`cqw`, unidades de
+ * contenedor) sin arrastrar el texto con él. Los iconos son los del set (§7).
+ *
+ * Lámina en `--papel-2` y radio `--r-3` (un contenedor): ni sombra, ni
+ * textura, ni `--elev-card`. Va `aria-hidden`: el `h3` y el párrafo de al lado
+ * ya lo dicen con palabras.
+ */
+import Icon from './Icon.astro';
+import type { EmblemKind } from '../content/business.ts';
+
+interface Props {
+  kind: EmblemKind;
+}
+const { kind } = Astro.props;
+
+const MESES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+const LOSAS = 8;
+
+/* La cuña del sistema (la de `EjeDeAlcance`), en su caja de 56×20. */
+const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
+---
+<div class:list={['fc', `fc-${kind}`]} aria-hidden="true">
+  {kind === 'proveedores' && (
+    <>
+      <span class="fc-frontera"></span>
+      <span class="fc-rot fc-aca">Chile</span>
+      <span class="fc-rot fc-alla">Exterior</span>
+      <span class="fc-linea fc-linea-a"></span>
+      <span class="fc-linea fc-linea-b"></span>
+      <svg class="fc-cuna" viewBox="0 0 56 20" fill="none">
+        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+      </svg>
+      <span class="fc-unidad"></span>
+      <span class="fc-rot fc-usd">USD</span>
+      <span class="fc-pieza fc-tuya"><Icon name="empresa" size={24} /></span>
+      <span class="fc-pieza fc-suya"><Icon name="empresa" size={24} /></span>
+      <span class="fc-pie fc-pie-tuya">Tu empresa</span>
+      <span class="fc-pie fc-pie-suya">Tu proveedor</span>
+    </>
+  )}
+
+  {kind === 'tesoreria' && (
+    <>
+      <span class="fc-frontera"></span>
+      <span class="fc-rot fc-aca">Chile</span>
+      <span class="fc-rot fc-alla">Exterior</span>
+      <span class="fc-mueble">
+        <span class="fc-cajon fc-cajon-usd">
+          <Icon name="wallet" size={20} />
+          <span class="fc-cajon-rot">USD</span>
+          <span class="fc-tirador"></span>
+        </span>
+        <span class="fc-cajon fc-cajon-clp">
+          <Icon name="bank" size={20} />
+          <span class="fc-cajon-rot">CLP</span>
+          <span class="fc-tirador"></span>
+        </span>
+      </span>
+      <span class="fc-pie fc-pie-caja">Tu empresa</span>
+      <span class="fc-puente"></span>
+      <svg class="fc-cuna fc-cuna-v" viewBox="0 0 56 20" fill="none">
+        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+      </svg>
+    </>
+  )}
+
+  {kind === 'recurrentes' && (
+    <span class="fc-calendario">
+      <span class="fc-tapa"><span class="fc-anilla"></span><span class="fc-anilla"></span></span>
+      <span class="fc-meses">
+        {MESES.map((m) => (
+          <span class="fc-mes"><span class="fc-mes-rot">{m}</span><span class="fc-mes-punto"></span></span>
+        ))}
+      </span>
+    </span>
+  )}
+
+  {kind === 'divisas' && (
+    <>
+      <span class="fc-pila fc-pila-clp">
+        {Array.from({ length: LOSAS }, () => <span class="fc-losa"></span>)}
+      </span>
+      <span class="fc-pila fc-pila-usd">
+        {Array.from({ length: LOSAS }, () => <span class="fc-losa"></span>)}
+      </span>
+      <span class="fc-linea fc-cambio"></span>
+      <svg class="fc-cuna fc-cuna-pilas" viewBox="0 0 56 20" fill="none">
+        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+      </svg>
+      <span class="fc-rot fc-bajo fc-bajo-clp">CLP</span>
+      <span class="fc-rot fc-bajo fc-bajo-usd">USD</span>
+    </>
+  )}
+</div>
+
+<style>
+  /*
+    La lámina: 460×280 y nunca más ancha. Todo lo que es dibujo se mide en
+    `cqw` (1 cqw = 1 % del ancho de la lámina); todo lo que es texto, en px.
+  */
+  .fc {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    aspect-ratio: 460 / 280;
+    container-type: inline-size;
+    background: var(--papel-2);
+    border-radius: var(--r-3);
+    overflow: hidden;
+    /* En colores forzados el fondo desaparece; el borde, no. */
+    border: 1px solid transparent;
+  }
+  .fc > * { position: absolute; }
+
+  .fc-rot, .fc-pie {
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .fc-rot { text-transform: uppercase; letter-spacing: .06em; color: var(--ink-mute); }
+  .fc-pie { color: var(--ink); }
+
+  /* La frontera: el límite. Punteada, que es su marca y la de nadie más. */
+  .fc-frontera {
+    top: var(--s-4);
+    bottom: var(--s-4);
+    left: var(--fc-x);
+    border-left: 1.5px dashed var(--ink-mute);
+  }
+  .fc-aca { top: var(--s-4); right: calc(100% - var(--fc-x) + var(--s-3)); }
+  .fc-alla { top: var(--s-4); left: calc(var(--fc-x) + var(--s-3)); }
+
+  /* 15 cqw: a 460 son 69 px y el trazo, 3,7; a 350, 52 y 2,8. */
+  .fc-cuna { width: 15cqw; height: 5.36cqw; }
+
+  /* ── Proveedores: el cruce ─────────────────────────────────────────────── */
+  .fc-proveedores { --fc-x: 50%; --fc-y: 50%; --fc-pieza: 19cqw; }
+  .fc-pieza {
+    top: var(--fc-y);
+    width: var(--fc-pieza);
+    height: var(--fc-pieza);
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-3);
+    transform: translate(-50%, -50%);
+  }
+  /* 24 px, el escalón más alto de la grilla del Design System §7. */
+  .fc-pieza :global(svg) { width: 24px; height: 24px; }
+  .fc-tuya { left: 20%; background: var(--tinta); color: var(--on-tinta); }
+  .fc-suya {
+    left: 80%;
+    background: var(--papel);
+    border: 1.5px solid var(--ink-mute);
+    color: var(--ink);
+  }
+  /* Centrado bajo su pieza, y con permiso para partirse en dos renglones si
+     el espaciado de WCAG 1.4.12 lo ensancha: a 320 px, «Tu proveedor» no cabe
+     en uno entre la pieza y el borde. */
+  .fc-pie {
+    top: calc(var(--fc-y) + var(--fc-pieza) / 2 + var(--s-2));
+    width: max-content;
+    max-width: calc(40% - 8px);
+    white-space: normal;
+    text-align: center;
+    transform: translateX(-50%);
+  }
+  .fc-pie-tuya { left: 20%; }
+  .fc-pie-suya { left: 80%; }
+  /* La línea, partida donde va la cuña para que la cuña no quede tachada. */
+  .fc-linea { height: 3px; margin-top: -1.5px; background: var(--ink-mute); top: var(--fc-y); }
+  .fc-linea-a { left: calc(20% + var(--fc-pieza) / 2); right: calc(50% + 7.5cqw); }
+  .fc-linea-b { left: calc(50% + 7.5cqw); right: calc(20% + var(--fc-pieza) / 2); }
+  .fc-proveedores .fc-cuna {
+    left: 50%;
+    top: var(--fc-y);
+    transform: translate(-50%, -50%);
+    color: var(--ink-mute);
+  }
+  /* La unidad de valor que cruza, con su rótulo encima. */
+  .fc-unidad {
+    left: 37%;
+    top: var(--fc-y);
+    width: 3.6cqw;
+    height: 3.6cqw;
+    border-radius: 50%;
+    background: var(--verde-deep);
+    transform: translate(-50%, -50%);
+  }
+  .fc-usd {
+    left: 37%;
+    bottom: calc(100% - var(--fc-y) + 1.8cqw + var(--s-1));
+    transform: translateX(-50%);
+    color: var(--verde-deep);
+  }
+
+  /* ── Tesorería: la cajonera ────────────────────────────────────────────── */
+  /* El mueble arranca bajo el renglón de CHILE / EXTERIOR: a 320 px, el 18 %
+     del alto lo dejaba rozando el rótulo. */
+  .fc-tesoreria { --fc-x: 65%; --fc-arriba: max(18%, 44px); }
+  .fc-mueble {
+    left: 6%;
+    width: 40%;
+    top: var(--fc-arriba);
+    bottom: 20%;
+    display: flex;
+    flex-direction: column;
+    gap: 2.4cqw;
+    padding: 2.6cqw;
+    background: var(--tinta);
+    border-radius: var(--r-3);
+  }
+  .fc-cajon {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: 0 2.6cqw;
+    background: var(--papel);
+    border-radius: var(--r-2);
+    color: var(--ink);
+  }
+  .fc-cajon :global(svg) { flex: none; width: 20px; height: 20px; }
+  .fc-cajon-rot {
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    letter-spacing: .06em;
+    color: var(--ink);
+  }
+  .fc-tirador {
+    margin-left: auto;
+    width: 5cqw;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--ink-mute);
+  }
+  /* De quién es la caja, dicho como en el cruce: es de la empresa, no nuestra
+     (CLAUDE.md §1 — DLPay no guarda saldos). */
+  .fc-pie-caja { left: 26%; top: calc(80% + var(--s-2)); }
+  /* El de USD, medio abierto: está en uso. */
+  .fc-cajon-usd { transform: translateX(4cqw); }
+  /*
+    El cambio, entre los dos cajones y fuera del mueble: un tramo verde en
+    forma de corchete —sale del cajón de USD, baja y entra al de CLP— con la
+    cuña de pie en el lado vertical.
+  */
+  .fc-puente {
+    --fc-c: calc((100% - var(--fc-arriba) - 20% - 2.6cqw * 2 - 2.4cqw) / 2);
+    left: 46%;
+    width: 10cqw;
+    top: calc(var(--fc-arriba) + 2.6cqw + var(--fc-c) / 2);
+    bottom: calc(20% + 2.6cqw + var(--fc-c) / 2);
+    border: 3px solid var(--verde-deep);
+    border-left: 0;
+    border-radius: 0 var(--r-2) var(--r-2) 0;
+  }
+  /* De pie en el lado vertical del corchete, a media altura del mueble. Lleva
+     el fondo de la lámina para que el tramo no la atraviese. */
+  .fc-cuna-v {
+    /* Más corta que las otras: de pie tiene que caber entre las dos esquinas
+       del corchete, que a 320 px están a 38 px una de otra. */
+    width: 11cqw;
+    height: 3.93cqw;
+    left: calc(56% - 1.5px);
+    top: calc((var(--fc-arriba) + 80%) / 2);
+    color: var(--verde-deep);
+    transform: translate(-50%, -50%) rotate(90deg);
+    background: var(--papel-2);
+  }
+
+  /* ── Recurrentes: el calendario ────────────────────────────────────────── */
+  .fc-calendario {
+    left: 9%;
+    right: 9%;
+    top: 11%;
+    bottom: 11%;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--r-3);
+    overflow: hidden;
+    background: var(--papel);
+    border: 1.5px solid var(--ink);
+  }
+  .fc-tapa {
+    flex: none;
+    height: 9cqw;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: var(--tinta);
+  }
+  .fc-anilla {
+    width: 2.8cqw;
+    height: 2.8cqw;
+    border-radius: 50%;
+    background: var(--papel-2);
+  }
+  .fc-meses {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+  .fc-mes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.4cqw;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .fc-mes:nth-child(6n) { border-right: 0; }
+  .fc-mes:nth-child(n + 7) { border-bottom: 0; }
+  .fc-mes-rot {
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    line-height: 1;
+    letter-spacing: .06em;
+    color: var(--ink-mute);
+  }
+  .fc-mes-punto {
+    width: 2.6cqw;
+    height: 2.6cqw;
+    border-radius: 50%;
+    background: var(--verde-deep);
+  }
+
+  /* ── Volumen: las dos pilas ────────────────────────────────────────────── */
+  .fc-divisas { --fc-base: 76%; --fc-ancho: 22cqw; }
+  .fc-pila {
+    bottom: calc(100% - var(--fc-base));
+    width: var(--fc-ancho);
+    display: flex;
+    flex-direction: column;
+    gap: 1cqw;
+    transform: translateX(-50%);
+  }
+  .fc-pila-clp { left: 29%; }
+  .fc-pila-usd { left: 71%; }
+  .fc-losa { height: 3cqw; border-radius: var(--r-1); }
+  .fc-pila-clp .fc-losa { background: var(--papel); border: 1.5px solid var(--ink); }
+  .fc-pila-usd .fc-losa { background: var(--tinta); }
+  /* La mitad de la pila: 8 losas de 3 y 7 huecos de 1, sobre 2. */
+  .fc-cambio {
+    --fc-mitad: calc(100% - var(--fc-base) + 15.5cqw);
+    top: auto;
+    bottom: var(--fc-mitad);
+    margin: 0 0 -1.5px;
+    left: calc(29% + var(--fc-ancho) / 2);
+    right: calc(29% + var(--fc-ancho) / 2);
+    background: var(--verde-deep);
+  }
+  .fc-cuna-pilas {
+    left: 50%;
+    bottom: calc(100% - var(--fc-base) + 15.5cqw);
+    color: var(--verde-deep);
+    background: var(--papel-2);
+    transform: translate(-50%, 50%);
+  }
+  .fc-bajo { top: calc(var(--fc-base) + var(--s-3)); transform: translateX(-50%); }
+  .fc-bajo-clp { left: 29%; }
+  .fc-bajo-usd { left: 71%; }
+  /*
+    ── Colores forzados ────────────────────────────────────────────────────
+    El navegador quita los fondos, y aquí casi todo el dibujo es fondo: la
+    línea, la unidad, los puntos del calendario, las losas. Esas marcas pasan a
+    `CanvasText`, el color de texto que eligió quien mira, y las piezas
+    sólidas ganan un borde transparente, que en este modo se vuelve visible.
+  */
+  @media (forced-colors: active) {
+    .fc-linea, .fc-unidad, .fc-mes-punto, .fc-tirador, .fc-pila-usd .fc-losa {
+      forced-color-adjust: none;
+      background: CanvasText;
+    }
+    .fc-cuna { forced-color-adjust: none; color: CanvasText; background: Canvas; }
+    .fc-tuya, .fc-mueble, .fc-cajon { border: 1px solid CanvasText; }
+  }
+</style>

@@ -8,7 +8,7 @@
 import type { ChecklistItem } from './process.ts';
 import type { FaqItem } from './home.ts';
 
-/** Emblema geométrico que acompaña a cada caso. Ver BusinessEmblem.astro. */
+/** La figura que acompaña a cada caso. Ver FiguraCaso.astro. */
 export type EmblemKind = 'proveedores' | 'tesoreria' | 'recurrentes' | 'divisas';
 
 export interface UseCase {

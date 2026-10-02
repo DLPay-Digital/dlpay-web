@@ -313,6 +313,53 @@ found `class`».
 El arreglo también es siempre el mismo: lo que el comentario quería explicar sale a una **constante
 del frontmatter**, que es donde un comentario sí cabe, y de paso el atributo queda más corto.
 
+### 4.11 Una máscara de tinta se puede romper de tres maneras, y las tres devuelven un número  ·  *2026-10-02*
+
+Verificando el contraste de las cuatro piezas de `/empresas` monté la medición del proyecto —el
+texto pintado de un color testigo para sacar su máscara, y el fondo limpio debajo— y la hice mal
+**tres veces seguidas**. Cada versión devolvió una tabla de aspecto impecable:
+
+1. **Umbral de «píxel puro».** Conté como tinta sólo el núcleo del glifo. A 13 px casi no hay
+   núcleo, así que **un grupo de color entero desapareció de la tabla sin que nada avisara**: la
+   salida tenía cuatro filas donde había cinco colores. Un grupo que falta no se ve; una fila que
+   sobra, sí.
+2. **Cobertura, con las entradas a medio camino.** Al pasar a medir cobertura —qué fracción del
+   píxel cubre el glifo— las dos tomas empezaron a diferir **en toda la caja**, porque entre una y
+   otra las entradas M5 seguían animándose. Contrastes de **1,00, 1,04 y 1,07**.
+3. **Varios grupos a la vez.** Con un testigo por color en la misma toma, la tinta de un grupo caía
+   dentro de la máscara de otro. Más 1,00.
+
+La versión correcta mide **un grupo por vez**, con todo lo demás intacto entre las dos tomas, y con
+el movimiento congelado. Entonces dio 4,93 · 4,98 · 8,18 · 14,50 · 16,44, que es exactamente lo que
+la entrega declaraba.
+
+> **Un contraste de 1,00 nunca es un hallazgo; es una medición rota.** Eso ya estaba escrito, y hoy
+> lo que faltó fue el reverso: **un grupo que no aparece tampoco es un hallazgo.** Un instrumento
+> que puede perder una fila entera tiene que decir cuántos píxeles encontró, y el que no encuentra
+> ninguno tiene que gritar, no callarse.
+
+**Y una cuarta, del mismo día y de otra clase.** Para contar los enfocables de `main` usé el
+selector de siempre —enlaces, botones, campos, `tabindex`— y me dieron **cuatro** donde la entrega
+decía ocho. Los otros cuatro son los `<summary>` de la FAQ, que son enfocables y no están en esa
+lista. **El número que no cuadra era el mío.**
+
+### 4.12 Una holgura declarada con el peor de nueve anchos no es la peor  ·  *2026-10-02*
+
+La entrega del relevo de `/empresas` declaraba que el texto queda **a 55 px o más del corte en
+escritorio y a 51 o más en móvil**. Midiendo los mismos anchos que ellos, me salía parecido. Barriendo
+de 320 a 1300 cada 20 px salió otra cosa: **44,81 px a 920** y **40,48 px a 420**.
+
+Nada está roto —el piso del §4.7 son 40 px y los dos lo pasan, y mi medida es conservadora porque
+parte de la caja del renglón y no del trazo— pero **la diferencia entre «41 px de margen» y «0,48 px
+de margen» es toda la diferencia**. Con el primer número, mover el chaflán un poco parece gratis.
+
+Lo que cierra el caso es que **el componente lo decía**: su comentario de móvil anuncia «la frase
+queda a 40 px de la esquina donde empieza el corte». El comentario tenía razón y la tabla de medidas,
+no.
+
+> **Un mínimo se barre; no se toma de una lista de anchos bonitos.** Los anchos redondos son los que
+> alguien eligió mirar, y un mínimo suele vivir justo entre dos de ellos.
+
 ---
 
 ## 5. Errores propios, registrados
@@ -327,6 +374,7 @@ Se anotan porque un registro que sólo cuenta aciertos no sirve para nada.
 | `.sr-only` definido cuatro veces con **tres** implementaciones, una sin `white-space` | Cowork lo reportó como dos; al abrirlo eran tres |
 | La alternancia de superficies de `/empresas` rota al integrar el eje | Cowork, verificando mi integración |
 | El bloque `PENDIENTE DE ASSET` del artículo de la Fed revivió en una actualización | Detectado al ir a ejecutarlo |
+| El recuento de marcas punteadas del DS §6.2 llevaba un día desfasado: `.et-torsion` entró con el abanico el 2026-10-01 | Al rehacer el barrido para integrar `/empresas` |
 
 El último es el más instructivo: pedía producir un asset que una regla del Design System prohíbe
 —escrita a raíz de ese mismo asset— y rellenar un campo que se había eliminado. **Decidir sobre un
