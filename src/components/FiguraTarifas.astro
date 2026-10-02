@@ -53,11 +53,24 @@
  * precio que ves», «acá termina» y «y no se suma nada». Más «Recibes», que es
  * la del cotizador.
  *
- * ── Los verdes ──────────────────────────────────────────────────────────────
+ * ── Los colores, y el verde que YA NO está ──────────────────────────────────
  *
- * Esta figura vive en la mitad de tinta del puente, así que el fondo elige
- * `--verde` (§6.2). La fila es papel, como la tarjeta de `/tarifas`: la cifra
- * va en `--ink`, igual que en la fila «Das» de allá.
+ * **Esta figura no tiene nada verde**, y conviene decirlo porque hasta el
+ * 2026-10-02 lo tuvo: la barra era `--verde` —el vivo y no `--verde-deep`,
+ * porque el §6.2 dice que el fondo elige el verde y esta figura vive en la
+ * mitad de tinta—. La barra se retiró al entrar el número, así que el único
+ * verde del puente es el botón, que es de la carcasa.
+ *
+ * Lo que hay: la **fila es papel**, como la tarjeta de `/tarifas`, con la cifra
+ * en `--ink` igual que la fila «Das» de allá; la **llave** y el aviso del vacío
+ * van en `--on-tinta-mute` (8,18:1 sobre tinta) y el **límite** en `--on-tinta`
+ * (16,44:1). Medido sobre el build.
+ *
+ * **La fila necesita su fondo de papel para ser legible**, y no es decorativo:
+ * sin él, «Recibes» y la cifra quedan en `--ink` sobre `--tinta` y no se ven.
+ * Es exactamente lo que se ve si el servidor de desarrollo sirve esta hoja
+ * rancia — pasó el 2026-10-02 y se diagnosticó como un fallo de color que no
+ * era. Si alguien «simplifica» ese fondo, rompe la pieza.
  */
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { convert, formatAmount } from '../lib/pricing/quote.ts';

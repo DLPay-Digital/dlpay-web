@@ -48,8 +48,37 @@ módulos asíncronos, así que llegan **después del primer pintado**: cualquier
 exige `PUBLIC_SITE_URL`, ni pasa la guarda de despliegue.
 
 Y **reinícialo a menudo**: un `astro dev` de días acaba sirviendo el HTML nuevo con el CSS viejo,
-sin un solo error en consola. Ha costado cuatro diagnósticos en esta fase; el último, cinco rondas
+sin un solo error en consola. Ha costado cinco diagnósticos en esta fase; uno de ellos, cinco rondas
 y un commit que no arreglaba nada porque no había nada roto.
+
+#### Si «no se actualiza», esto es lo que pasa y cómo se arregla
+
+**El síntoma no parece un problema de caché.** La página se ve, pero **a medias**: un dibujo nuevo
+sale sin forma, o un texto oscuro aparece sobre un fondo oscuro. Es porque el servidor manda el
+**HTML de hoy con el CSS de ayer**, y un elemento sin sus reglas no desaparece: se queda crudo.
+Refrescar el navegador no sirve — lo viejo es lo que el servidor entrega.
+
+**Se comprueba en un comando**, pidiéndole al servidor la hoja de un componente que cambiaste:
+
+```bash
+# ¿cuántas veces aparece una clase nueva en el archivo, y cuántas en lo que sirve el dev?
+grep -c "mi-clase-nueva" src/components/MiComponente.astro
+curl -s "http://localhost:4321/src/components/MiComponente.astro?astro&type=style&index=0&lang.css"   | grep -c "mi-clase-nueva"
+```
+
+**Si el segundo número es 0 y el primero no, es esto.**
+
+**Y reiniciar el proceso NO siempre basta.** El módulo rancio vive en `node_modules/.vite`, que
+sobrevive al reinicio. Hay que borrarlo:
+
+```bash
+lsof -nP -iTCP:4321 -sTCP:LISTEN -t | xargs kill
+rm -rf node_modules/.vite
+npm run dev
+```
+
+*Esto último se aprendió el 2026-10-02, y explica por qué en un diagnóstico anterior el servidor se
+reinició y «seguía igual»: se mató el proceso y se dejó la caché.*
 
 ---
 
