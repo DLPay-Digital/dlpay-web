@@ -501,6 +501,28 @@ es el que estos avisos describen. Ver «Dos modos de operar» en §1.
 - **`Phase` y `phases` se retiraron de `trust.ts`.** La entrega decía que quedaban sin uso; tenían
   un segundo consumidor, que era ese puente.
 
+**`/como-funciona` cerró la tanda el 2026-10-02**, y es la cuarta página en el mismo registro. Sin
+cambiar una palabra: todo sigue saliendo de `process.ts` y `scope.ts`.
+
+- **«Ten esto a mano»** era una lista con tres iconos sueltos de 20 px y pasa a ser **la carpeta de
+  `/empresas`**, la misma pieza. Era el mismo contenido —lo que traes tú— y tenía que ser el mismo
+  objeto. **La pestaña va vacía**, como en `/confianza`: el titular está justo encima.
+- **«Dónde termina nuestra operación»** era una línea de 1 px, la bisagra en mono de 13 px y tres
+  frases. Pasa a dibujar **la billetera y sus tres salidas**: el tramo verde llega hasta ella, la
+  cuña cae en la entrada, y desde ahí la línea sigue en gris con una **frontera punteada antes de la
+  tercera opción**.
+
+**Esto importa más que un cambio de dibujo, y por eso se escribe acá.** `CLAUDE.md` §1 pide que el
+límite del servicio se declare **de frente** en esta página, antes de que el usuario opere — y hasta
+hoy el límite era lo más tenue de la página. Ahora se ve. **Nada del otro lado de la frontera es
+verde y no hay ningún banco dibujado**: el límite se dice con el vacío y con la frase, nunca
+dibujando lo que no hacemos.
+
+**Y se extrajo `Carpeta.astro`, en su tercer uso.** `ComoEmpezamos` y `CarpetaRequisitos` pasan a
+usarla y **`/empresas` y `/confianza` no cambian un píxel** — comprobado por hash, 88 capturas y 44
+altos de página. Las dos llevaban escrita la misma nota desde que nacieron: «dos usos no justifican
+extraer una pieza; si aparece un tercero, se extrae». Apareció.
+
 **La Home pasó a objetos el 2026-10-02**, la última de las tres y con el mismo criterio. Tampoco
 cambia una palabra: todo sigue saliendo de `home.ts`.
 

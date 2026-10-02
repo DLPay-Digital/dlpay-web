@@ -437,6 +437,32 @@ movido dentro daría el mismo número; un hash, no.
 solapan y **no existe un valor cómodo**. Separarlos de verdad pide un parámetro explícito en vez de
 una consulta de contenedor, y eso es rediseñar una pieza ya aprobada. Queda anotado, no hecho.
 
+### 4.15 Una lista de consumidores es un recuento con otro nombre  ·  *2026-10-02*
+
+El Motion System declara dónde vive cada movimiento. Su fila de M3 decía que la costura de
+`EjeDeAlcance` vive en «`/como-funciona`, `/empresas` y el artículo del blog». Medido sobre el build
+de hoy: **`/empresas` tiene M3 pero desde otro componente**, y **el artículo del blog no tiene
+ninguno** — sus dos `data-draw` son el selector dentro del script de `Motion.astro`, que va en las
+quince rutas.
+
+**Lo que hace que valga la pena escribirlo es que esa fila ya se había corregido.** Llevaba una nota
+de septiembre que decía, literalmente, «esta fila llegó a listar tres consumidores y dos no lo
+eran». Se midió, se corrigió, se explicó — y **se volvió a desfasar siete días después**, porque el
+eje perdió dos de sus tres páginas sin que nadie volviera a mirar esa fila.
+
+Es el mismo accidente que el Design System §8.1 tuvo con el mismo componente —«tres páginas» cuando
+eran dos, que cazó Cowork— y el mismo que el recuento de marcas punteadas del §6.2 lleva cuatro
+veces.
+
+> **Una lista de «quién usa esto» es un recuento, y envejece igual.** Lo que la distingue de una
+> definición es que **la puede invalidar un commit que no la toque**: basta con que una página deje
+> de importar algo. Por eso una corrección no la protege — la corrección es una foto más.
+
+*Lo que sí protege, y es lo que se añadió:* junto al número, **cómo se vuelve a obtener**. La fila
+de M3 lleva ahora su receta —contar `data-draw` en el HTML del build, ruta por ruta, descontando dos
+por ruta, que son los del script— igual que §6.2 lleva la suya. Un número sin su método se vuelve a
+copiar; un número con su método se vuelve a medir.
+
 ---
 
 ## 5. Errores propios, registrados
@@ -454,6 +480,7 @@ Se anotan porque un registro que sólo cuenta aciertos no sirve para nada.
 | El recuento de marcas punteadas del DS §6.2 llevaba un día desfasado: `.et-torsion` entró con el abanico el 2026-10-01 | Al rehacer el barrido para integrar `/empresas` |
 | «Nada está roto» en el relevo de `/empresas`: el piso de 40 px SÍ se rompía, a 37,99 entre 417 y 419 px | Cowork, barriendo cada 1 px donde yo barrí cada 20 |
 | «Las otras diez rutas» del recuento del §6.2, cuando eran once — y la lista de al lado enumeraba once | Al rehacer el recuento al día siguiente |
+| El inventario de M3 del Motion System listaba `/empresas` y el artículo del blog, y ninguno de los dos lo era. **Ya se había corregido en septiembre por lo mismo** | Al medir `data-draw` sobre el build para integrar `/como-funciona` |
 
 El último es el más instructivo: pedía producir un asset que una regla del Design System prohíbe
 —escrita a raíz de ese mismo asset— y rellenar un campo que se había eliminado. **Decidir sobre un

@@ -17,7 +17,9 @@
  *
  * · **«Ten esto a mano» es una carpeta**: la pestaña lleva el titular y su
  *   canto baja en la diagonal de la marca (0,673 de ancho por alto, los 34° del
- *   isotipo). Dentro, los tres iconos del dato en una placa de 48 px.
+ *   isotipo). Dentro, los tres iconos del dato en una placa de 48 px. Desde el
+ *   2026-10-02 la dibuja `Carpeta.astro`, extraída en su tercer uso
+ *   (`/como-funciona`); aquí no cambió ni un píxel.
  * · **Los pasos son un recorrido**: cada número en su nodo redondo —ya no en
  *   una caja— y, entre uno y otro, un filete con un chevron que apunta al
  *   siguiente: el «marcador de paso» del Design System §6. El filete es
@@ -31,6 +33,7 @@
  * ordenada, así que el nodo visible también va `aria-hidden`.
  */
 import Icon from './Icon.astro';
+import Carpeta from './Carpeta.astro';
 import type { ChecklistItem } from '../content/process.ts';
 
 interface Props {
@@ -45,15 +48,7 @@ const { checklist, steps } = Astro.props;
   </div>
 
   <div class="ce-carpeta">
-    <h3 class="ce-pestana">Ten esto a mano</h3>
-    <ul class="ce-kit" role="list">
-      {checklist.map((item) => (
-        <li>
-          <span class="ce-placa" aria-hidden="true"><Icon name={item.icon} size={24} /></span>
-          <span>{item.text}</span>
-        </li>
-      ))}
-    </ul>
+    <Carpeta fondo="papel-2" titulo="Ten esto a mano" nivel="h3" items={checklist} />
   </div>
 
   <ol class="ce-pasos" role="list">
@@ -78,56 +73,8 @@ const { checklist, steps } = Astro.props;
   }
   .ce-cabecera :global(p) { color: var(--ink-mute); max-width: 40ch; }
 
-  /*
-    ── La carpeta ──────────────────────────────────────────────────────────
-    La pestaña es el h3, con su propio fondo. El canto derecho baja en la
-    diagonal de la marca: 30 px de ancho para los 44 de alto. Va con 40 px de
-    aire entre la tinta del texto y el corte (Design System §4.7), por eso el
-    relleno derecho es 30 + 40.
-  */
+  /* La carpeta la dibuja `Carpeta.astro`; aquí sólo se coloca. */
   .ce-carpeta { min-width: 0; }
-  .ce-pestana {
-    display: inline-block;
-    margin: 0;
-    padding: var(--s-3) calc(30px + 40px) var(--s-3) var(--s-5);
-    min-height: 44px;
-    background: var(--papel-2);
-    border-radius: var(--r-3) 0 0 0;
-    clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 100%, 0 100%);
-    font-size: var(--t-h3-m);
-    line-height: var(--lh-h3);
-    font-weight: 700;
-    color: var(--ink);
-    /* Un píxel por debajo, para que pestaña y cuerpo no dejen una costura. */
-    margin-bottom: -1px;
-    position: relative;
-  }
-  .ce-kit {
-    display: grid;
-    gap: var(--s-4);
-    margin: 0;
-    padding: var(--s-6) var(--s-6) var(--s-6);
-    list-style: none;
-    background: var(--papel-2);
-    border-radius: 0 var(--r-3) var(--r-3) var(--r-3);
-  }
-  .ce-kit li {
-    display: flex;
-    gap: var(--s-4);
-    align-items: center;
-    color: var(--ink);
-  }
-  .ce-placa {
-    flex: none;
-    display: grid;
-    place-items: center;
-    width: 48px;
-    height: 48px;
-    border-radius: var(--r-3);
-    background: var(--papel);
-    color: var(--verde-deep);
-  }
-  .ce-placa :global(svg) { width: 24px; height: 24px; }
 
   /*
     ── El recorrido ────────────────────────────────────────────────────────
@@ -229,10 +176,5 @@ const { checklist, steps } = Astro.props;
       bottom: auto;
       transform: none;
     }
-  }
-  /* Colores forzados: la carpeta pierde su fondo; un borde la mantiene. */
-  @media (forced-colors: active) {
-    .ce-pestana, .ce-kit { border: 1px solid CanvasText; }
-    .ce-pestana { border-bottom: 0; }
   }
 </style>

@@ -22,11 +22,13 @@
  * NO entra en la carpeta: la importa la página, sin reescribirla, y va debajo,
  * discreta, como estaba (`alliances.ts`).
  *
- * La pestaña repite la de `ComoEmpezamos` en vez de importarla, por lo mismo
- * que la lámina de `FiguraMecanismo`: dos usos no justifican extraer una pieza
- * ni tocar una integrada. Si aparece un tercero, se extrae.
+ * La pestaña repetía la de `ComoEmpezamos` en vez de importarla: dos usos no
+ * justificaban extraer una pieza. **El tercero llegó el 2026-10-02**, «Ten esto
+ * a mano» en `/como-funciona`, y la carpeta se extrajo a `Carpeta.astro`. Aquí
+ * no cambió ni un píxel; lo que queda en este archivo es la lista de dentro.
  */
 import Icon from './Icon.astro';
+import Carpeta from './Carpeta.astro';
 import type { IconName } from './Icon.astro';
 
 interface Props {
@@ -35,7 +37,7 @@ interface Props {
 const { items } = Astro.props;
 ---
 <div class="cr">
-  <span class="cr-pestana" aria-hidden="true"></span>
+<Carpeta fondo="papel">
   <ul class="cr-lista" role="list">
     {items.map((item) => (
       <li>
@@ -45,27 +47,20 @@ const { items } = Astro.props;
       </li>
     ))}
   </ul>
+</Carpeta>
 </div>
 
 <style>
+  /* La pestaña, el fondo y las esquinas los pone `Carpeta.astro`. El
+     `position: relative` de la raíz se queda: sin él Chromium rasteriza los
+     bordes con otro suavizado (medido: ±10 en 40–180 píxeles por captura). */
   .cr { position: relative; }
-  .cr-pestana {
-    display: block;
-    width: calc(var(--s-9) + 30px);
-    height: 44px;
-    margin-bottom: -1px;
-    background: var(--papel);
-    border-radius: var(--r-3) 0 0 0;
-    clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 100%, 0 100%);
-  }
   .cr-lista {
     display: grid;
     gap: var(--s-6);
     margin: 0;
     padding: var(--s-6);
     list-style: none;
-    background: var(--papel);
-    border-radius: 0 var(--r-3) var(--r-3) var(--r-3);
   }
   .cr-placa {
     display: grid;
@@ -91,11 +86,5 @@ const { items } = Astro.props;
   }
   @media (min-width: 900px) {
     h3 { font-size: var(--t-h3); }
-  }
-
-  /* Colores forzados: la carpeta pierde su fondo; un borde la mantiene. */
-  @media (forced-colors: active) {
-    .cr-pestana, .cr-lista { border: 1px solid CanvasText; }
-    .cr-pestana { border-bottom: 0; }
   }
 </style>

@@ -13,6 +13,7 @@ import PageHero from '../components/PageHero.astro';
 import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
 import EjeDeAlcance from '../components/EjeDeAlcance.astro';
+import Carpeta from '../components/Carpeta.astro';
 import { hinge, options } from '../content/scope.ts';
 import Puente from '../components/Puente.astro';
 import FiguraRiel from '../components/FiguraRiel.astro';
@@ -139,24 +140,18 @@ const hilo = [
         <div class="prep-grid">
           <div>
             <h2 id="prep-title" data-enter>Ten esto a mano</h2>
-            <ul class="check" role="list">
-              {/*
-                Cada ítem lleva su icono, y sale del dato (`process.ts`), no de
-                la posición: reordenar la lista no desparejaba nada porque el
-                icono viaja con su frase.
+            {/*
+              **La carpeta de `/empresas`**, la misma pieza (`Carpeta.astro`) y
+              con su kit: cada cosa en su placa de 48 px. Es el mismo contenido
+              —«Ten esto a mano», lo que traes tú— y tenía que ser el mismo
+              objeto. Hasta el 2026-10-02 era una lista con iconos sueltos de
+              20 px.
 
-                Antes eran tres ticks IDÉNTICOS. No eran checkboxes —no se marca
-                nada, no hay estado—, así que sólo decían «esto es un ítem», que
-                es el trazo que no dice nada del Design System §6. El sentido de
-                checklist lo lleva el titular, con palabras.
-              */}
-              {checklist.map((item) => (
-                <li>
-                  <Icon name={item.icon} size={20} class="tick" />
-                  {item.text}
-                </li>
-              ))}
-            </ul>
+              **La pestaña va vacía**, como en `/confianza`: el titular está
+              justo encima y repetirlo sería decirlo dos veces. Los iconos
+              siguen saliendo del dato (`process.ts`) y no de la posición.
+            */}
+            <Carpeta fondo="papel-2" items={checklist} />
           </div>
 
           <div class="kyc">
@@ -186,15 +181,18 @@ const hilo = [
       <div class="inner">
         <h2 id="scope-title">Dónde termina nuestra operación</h2>
         {/*
-          El cierre deja de ser una caja con borde y pasa a ser la MITAD DERECHA
-          del mismo eje que abre la Home: línea gris, cuña en su arranque,
-          bisagra y las tres opciones. No es figura nueva — es la misma
-          gramática, para que el carril de los seis pasos y este cierre se lean
-          como un solo recorrido.
+          El eje de alcance en su forma corta. **Desde el 2026-10-02 dibuja la
+          billetera y sus tres salidas**: el tramo verde con el dólar digital
+          llega a tu billetera, la cuña cae en la entrada, y desde ahí la línea
+          sigue en `--ink-mute` y se abre en las tres opciones, con una frontera
+          punteada antes de la tercera y la salvedad debajo de ella. Hasta hoy
+          era una línea de 1 px y tres frases: el límite que `CLAUDE.md` pide
+          declarar «de frente» era lo más tenue de la página. Ver la cabecera
+          de `EjeDeAlcance`.
 
           Sin `milestones` a propósito: la página acaba de contar los seis pasos
-          justo encima, así que repetir la mitad izquierda sería decir dos veces
-          lo mismo.
+          justo encima, así que repetirlos sería decir dos veces lo mismo. El
+          tramo verde es sólo el final del último.
 
           La bisagra REPITE literalmente la frase del paso 06. Es deliberado:
           mismo texto, una vez dentro del recorrido y otra como conclusión. No
@@ -379,24 +377,9 @@ const hilo = [
 
   .prep { background: var(--papel); padding: var(--s-9) 0; }
   .prep-grid { display: grid; gap: var(--s-8); }
-  .check { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
-  .check li {
-    display: flex;
-    gap: var(--s-3);
-    align-items: flex-start;
-    color: var(--ink-mute);
-  }
-  /*
-    20px y no los 19 de la maqueta: **19 está fuera de la grilla 16/20/24** del
-    Design System §7, que pide una razón anotada para salirse de ella, y acá no
-    la hay — 20 es el escalón de al lado y la diferencia no se ve. El tick que
-    sustituye medía 17px, pero era una marca sin caja interior: un icono con
-    caja necesita el escalón siguiente para pesar lo mismo.
-
-    `margin-top: 2px` alinea la caja del icono con la altura de x de la primera
-    línea; con los 3px del tick viejo quedaba bajo.
-  */
-  .tick { width: 20px; height: 20px; color: var(--verde-deep); flex: none; margin-top: 2px; }
+  /* 24 px entre el titular y la pestaña: los 12 del margen del h2 se funden
+     con éstos. */
+  .prep h2 + :global(.carpeta) { margin-top: var(--s-5); }
 
   .kyc p { color: var(--ink-mute); max-width: 47ch; margin-bottom: var(--s-3); }
   .kyc .note { font-size: var(--t-body-sm); }

@@ -78,6 +78,7 @@ src/
 │   ├── FiguraMecanismo.astro # los tres objetos de «Qué pasa con tu plata» en /confianza
 │   ├── CarpetaRequisitos.astro # la carpeta de «Qué te pedimos, y por qué»
 │   ├── FiguraUso.astro      # los tres objetos de «Tres formas de usarlo» en la Home
+│   ├── Carpeta.astro        # la carpeta: pestaña, cuerpo y el kit de «Ten esto a mano» (tres páginas)
 │   ├── hero/GloboRotativo.astro # el globo de la Home (SVG + datos en línea)
 │   ├── Header · Footer · Hero · PageHero · Trust · UseCases
 │   ├── Business · Faq · Alliances · AnnouncementBar · PortadaDato

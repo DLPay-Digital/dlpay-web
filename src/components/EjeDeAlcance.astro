@@ -27,14 +27,43 @@
  * de la alternativa —tres copias de una figura que afirma algo— es mayor que el
  * de un componente.
  *
+ * ── La forma corta, desde el 2026-10-02: la billetera y sus tres salidas ──
+ *
+ * Es la que usa `/como-funciona` (sin `milestones`), y hasta hoy era una línea
+ * de 1 px con la cuña en su arranque, la bisagra en mono y las tres opciones
+ * en texto con un guion de 9 px: el límite del servicio, que `CLAUDE.md` pide
+ * declarar «de frente» en esa página, era lo más tenue de la página. Y en
+ * móvil la cuña girada pisaba el titular de la sección 9,7 px.
+ *
+ * Ahora dibuja **dónde termina lo nuestro**, con las marcas del §6.2 y
+ * ninguna nueva:
+ *
+ * · el **tramo verde** con la **unidad de valor** —el dólar digital que te
+ *   enviamos— llega a **tu billetera** (pieza en tinta, tuya, como en
+ *   `FiguraUso`), y la **cuña** cae justo en la entrada: ahí cambia de manos.
+ *   No repite los seis pasos: es sólo el final del último.
+ * · desde la billetera sale el **filete `--ink-mute`** —real, y ya no
+ *   nuestro— y se abre en las tres opciones, cada una colgada de él.
+ * · antes de la tercera hay una **frontera punteada**, y la salvedad va debajo
+ *   de ella: «Ese último paso es un proceso distinto, con otros servicios, y no
+ *   lo realiza DLPay». **Nada del otro lado es verde**, y no hay ningún banco
+ *   dibujado: la regla dura de §1 se dice con el vacío y con la frase, no con
+ *   un dibujo de lo que no hacemos.
+ *
+ * Los textos son los mismos de siempre, de `scope.ts` y de la página: ni una
+ * palabra nueva. La forma con `milestones` no cambia.
+ *
  * ── Accesibilidad ──────────────────────────────────────────────────────────
  *
  * **Nada se transmite sólo con la posición.** A diferencia del carril de
  * `/como-funciona`, acá izquierda y derecha refuerzan lo que la bisagra ya dice
  * con palabras, así que no hace falta ninguna etiqueta oculta. Las dos listas
  * llevan `role="list"`, porque con `list-style: none` WebKit deja de anunciarlas
- * y acá el número de opciones es parte del contenido. La cuña va `aria-hidden`.
+ * y acá el número de opciones es parte del contenido. La cuña va `aria-hidden`,
+ * y en la forma corta también la billetera, la línea y la frontera: el orden de
+ * lectura es bisagra, opciones y salvedad, el mismo de antes.
  */
+import Icon from './Icon.astro';
 import type { Hinge, Milestone } from '../content/scope.ts';
 
 interface Props {
@@ -64,20 +93,57 @@ const alone = milestones === undefined;
     </div>
   )}
 
-  <div class:list={['theirs', { alone }]}>
-    {/* La costura. Es el único punto de la figura donde algo cambia de manos. */}
-    <svg class="seam" viewBox="0 0 40 12" fill="none" aria-hidden="true" preserveAspectRatio="none">
-      <path d="M0 6h12l6-5 6 10 6-5h10" stroke="currentColor" stroke-width="1.5" data-draw />
-    </svg>
-    <p class="hinge">
-      <span class="until">{hinge.until}</span>
-      <span class="from">{hinge.from}</span>
-    </p>
-    <ul class="options" role="list">
-      {options.map((o) => <li>{o}</li>)}
-    </ul>
-    <p class="caveat"><slot name="caveat" /></p>
-  </div>
+  {alone ? (
+    <div class="corto">
+      {/* Lo nuestro, hasta tu billetera. La cuña, en la entrada: ahí cambia de manos. */}
+      <div class="ea-nuestro" aria-hidden="true">
+        <span class="ea-unidad"></span>
+        {/* El tramo es un SVG y no una caja con fondo: así lo rasteriza lo
+            mismo que la cuña y no queda un escalón de medio píxel donde se
+            juntan (medido a 4×). Un trazo por orientación. */}
+        <svg class="ea-tramo" viewBox="0 0 20 20" preserveAspectRatio="none" fill="none">
+          <path class="ea-tramo-v" d="M10 0V20" stroke="currentColor" stroke-width="3" vector-effect="non-scaling-stroke" />
+          <path class="ea-tramo-h" d="M0 10H20" stroke="currentColor" stroke-width="3" vector-effect="non-scaling-stroke" />
+        </svg>
+        {/* La cuña del sistema, la de `AlcanceEmpresa`, y con su `data-draw`:
+            la costura de este eje es M3 (motion-system §M3) y lo sigue siendo. */}
+        <span class="ea-cuna">
+          <svg viewBox="0 0 56 20" fill="none">
+            <path d="M0 10h17l8-8 8 16 8-8h15" stroke="currentColor" stroke-width="3" stroke-linejoin="round" data-draw />
+          </svg>
+        </span>
+        <span class="ea-billetera"><Icon name="wallet" size={24} /></span>
+      </div>
+      {/* Lo tuyo: la línea sigue, ya no verde, y antes de la tercera salida, el límite. */}
+      <span class="ea-linea" aria-hidden="true"></span>
+      <span class="ea-limite" aria-hidden="true"></span>
+      <p class="hinge">
+        <span class="until">{hinge.until}</span>
+        <span class="from">{hinge.from}</span>
+      </p>
+      {/* La última opción es la que cruza el límite: lo dice `scope.ts` («El
+          tercero es el límite»). En móvil la frontera es su borde de arriba. */}
+      <ul class="options" role="list">
+        {options.map((o, i) => <li class:list={{ 'ea-tras-limite': i === options.length - 1 }}>{o}</li>)}
+      </ul>
+      <p class="caveat"><slot name="caveat" /></p>
+    </div>
+  ) : (
+    <div class="theirs">
+      {/* La costura. Es el único punto de la figura donde algo cambia de manos. */}
+      <svg class="seam" viewBox="0 0 40 12" fill="none" aria-hidden="true" preserveAspectRatio="none">
+        <path d="M0 6h12l6-5 6 10 6-5h10" stroke="currentColor" stroke-width="1.5" data-draw />
+      </svg>
+      <p class="hinge">
+        <span class="until">{hinge.until}</span>
+        <span class="from">{hinge.from}</span>
+      </p>
+      <ul class="options" role="list">
+        {options.map((o) => <li>{o}</li>)}
+      </ul>
+      <p class="caveat"><slot name="caveat" /></p>
+    </div>
+  )}
 </div>
 
 <style>
@@ -165,11 +231,219 @@ const alone = milestones === undefined;
        le hace una punta justo donde deja de ser nuestra. */
     .seam { left: -20px; top: -6px; transform: none; }
     .hinge { max-width: 34ch; }
+  }
 
-    /* Sin mitad izquierda la costura cae en el arranque del tramo del cliente. */
-    .theirs.alone { padding-left: 0; }
-    .theirs.alone .seam { left: 0; }
-    .theirs.alone .hinge { max-width: none; }
-    .theirs.alone .options { grid-template-columns: repeat(3, 1fr); gap: var(--s-6); }
+  /*
+    ── La forma corta: la billetera y sus tres salidas ──────────────────────
+    Ver la cabecera. En móvil, de pie: un carril de 48 px a la izquierda —lo
+    nuestro bajando hasta la billetera y, debajo, la línea de lo tuyo— y el
+    texto a la derecha. Cada opción cuelga del carril; antes de la tercera, la
+    frontera cruza todo el ancho.
+  */
+  .eje.alone { margin-bottom: 0; }
+  .corto {
+    --ea-pieza: 48px;
+    --ea-paso: var(--s-4);
+    display: grid;
+    grid-template-columns: var(--ea-pieza) minmax(0, 1fr);
+    column-gap: var(--s-4);
+    margin-top: var(--s-6);
+  }
+  .ea-nuestro {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .ea-unidad {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--verde-deep);
+  }
+  .ea-tramo { width: 20px; height: var(--s-4); color: var(--verde-deep); overflow: visible; }
+  .ea-tramo-h { display: none; }
+  /* La cuña del sistema en su caja de 56×20; de pie, girada 90°. */
+  .ea-cuna { position: relative; width: 20px; height: 56px; color: var(--verde-deep); }
+  .ea-cuna svg {
+    position: absolute;
+    left: -18px;
+    top: 18px;
+    width: 56px;
+    height: 20px;
+    transform: rotate(90deg);
+  }
+  .ea-billetera {
+    display: grid;
+    place-items: center;
+    width: var(--ea-pieza);
+    height: var(--ea-pieza);
+    border-radius: var(--r-3);
+    background: var(--tinta);
+    color: var(--on-tinta);
+  }
+  .ea-billetera :global(svg) { width: 24px; height: 24px; }
+
+  /* En móvil la línea y la frontera las dibujan las propias opciones. */
+  .ea-linea, .ea-limite { display: none; }
+
+  .corto .hinge {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+    min-height: var(--ea-pieza);
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    column-gap: .55em;
+    margin: 0;
+  }
+  .corto .options {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    gap: 0;
+    padding: var(--ea-paso) 0 0 calc(var(--ea-pieza) + var(--s-4));
+  }
+  .corto .options li {
+    position: relative;
+    padding: 0 0 var(--ea-paso);
+    color: var(--ink-mute);
+  }
+  /* El carril, de una opción a la siguiente, y el ramal hasta cada texto. */
+  .corto .options li::after {
+    content: '';
+    position: absolute;
+    left: calc(-1 * (var(--ea-pieza) / 2 + var(--s-4)) - 1.5px);
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--ink-mute);
+  }
+  .corto .options li:first-child::after { top: calc(-1 * var(--ea-paso)); }
+  .corto .options .ea-tras-limite::after { bottom: auto; height: calc(.775em + 1.5px); }
+  .corto .options li::before {
+    content: '';
+    position: absolute;
+    left: calc(-1 * (var(--ea-pieza) / 2 + var(--s-4)));
+    top: .775em;
+    width: calc(var(--ea-pieza) / 2 + var(--s-4) - var(--s-2));
+    height: 1.5px;
+    background: var(--ink-mute);
+  }
+  /* La frontera, de borde a borde, antes de la tercera. */
+  .corto .options .ea-tras-limite {
+    margin-left: calc(-1 * (var(--ea-pieza) + var(--s-4)));
+    padding-left: calc(var(--ea-pieza) + var(--s-4));
+    padding-top: var(--ea-paso);
+    border-top: 1.5px dashed var(--ink-mute);
+  }
+  .corto .options .ea-tras-limite::before {
+    left: calc(var(--ea-pieza) / 2);
+    top: calc(var(--ea-paso) + .775em);
+  }
+  .corto .options .ea-tras-limite::after {
+    left: calc(var(--ea-pieza) / 2 - 1.5px);
+    top: calc(-1 * var(--ea-paso) - 1.5px);
+    height: calc(2 * var(--ea-paso) + .775em + 3px);
+  }
+  .corto .caveat {
+    grid-column: 2;
+    grid-row: 3;
+    margin-top: 0;
+  }
+
+  @media (min-width: 900px) {
+    /*
+      De lado: lo nuestro y la billetera en la primera columna; la línea sigue
+      por las otras tres, y de ella cuelgan las opciones. La frontera baja
+      entre la segunda y la tercera hasta el final de la salvedad, que va bajo
+      la opción a la que se refiere.
+    */
+    .corto {
+      --ea-gap: var(--s-7);
+      /* La última, más ancha: lleva la salvedad, que es lo que más importa
+         de la sección, y así baja en cinco renglones y no en ocho. */
+      grid-template-columns: minmax(0, .8fr) minmax(0, .8fr) minmax(0, .9fr) minmax(0, 1.5fr);
+      column-gap: var(--ea-gap);
+      row-gap: var(--ea-paso);
+      margin-top: var(--s-7);
+    }
+    .ea-nuestro { flex-direction: row; height: var(--ea-pieza); }
+    .ea-tramo { flex: 1; width: auto; height: 20px; margin-left: -1px; }
+    .ea-tramo-v { display: none; }
+    .ea-tramo-h { display: inline; }
+    .ea-cuna { width: 56px; height: 20px; }
+    .ea-cuna svg { left: 0; top: 0; transform: none; }
+
+    .ea-linea {
+      display: block;
+      grid-column: 2 / -1;
+      grid-row: 1;
+      align-self: center;
+      height: 3px;
+      margin-left: calc(-1 * var(--ea-gap));
+      background: var(--ink-mute);
+    }
+    .ea-limite {
+      display: block;
+      grid-column: 4;
+      grid-row: 1 / 4;
+      justify-self: start;
+      width: 0;
+      margin-left: calc(var(--ea-gap) / -2);
+      border-left: 1.5px dashed var(--ink-mute);
+    }
+
+    /* La bisagra baja por las dos filas de abajo: así la salvedad queda
+       pegada a su opción y no espera a que termine la bisagra. */
+    .corto .hinge {
+      grid-column: 1;
+      grid-row: 2 / 4;
+      align-self: start;
+      min-height: 0;
+      display: block;
+    }
+    .corto .options {
+      grid-column: 2 / -1;
+      grid-row: 2;
+      display: grid;
+      /* Las columnas de la rejilla de arriba, para que cada ramal caiga donde
+         empieza su columna. La primera línea es para un navegador sin
+         `subgrid`: las mismas proporciones, casi alineadas. */
+      grid-template-columns: minmax(0, .8fr) minmax(0, .9fr) minmax(0, 1.5fr);
+      grid-template-columns: subgrid;
+      column-gap: var(--ea-gap);
+      padding: 0;
+    }
+    .corto .options li,
+    .corto .options .ea-tras-limite {
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+    /* Cada opción cuelga de la línea: el ramal baja desde ella hasta 6 px
+       antes del texto. */
+    .corto .options li::before,
+    .corto .options .ea-tras-limite::before {
+      left: 0;
+      top: calc(-1 * (var(--ea-paso) + var(--ea-pieza) / 2 - 1.5px));
+      width: 1.5px;
+      height: calc(var(--ea-paso) + var(--ea-pieza) / 2 - 1.5px - 6px);
+      margin: 0;
+    }
+    .corto .options li::after { content: none; }
+    .corto .caveat { grid-column: 4; grid-row: 3; }
+  }
+
+  /* Colores forzados: lo que es fondo pasa a `CanvasText`. */
+  @media (forced-colors: active) {
+    .ea-unidad, .ea-linea,
+    .corto .options li::before, .corto .options li::after {
+      forced-color-adjust: none;
+      background: CanvasText;
+    }
+    .ea-billetera { forced-color-adjust: none; background: CanvasText; color: Canvas; }
+    .ea-tramo, .ea-cuna { forced-color-adjust: none; color: CanvasText; }
   }
 </style>

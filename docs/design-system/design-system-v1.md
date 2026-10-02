@@ -882,6 +882,18 @@ tuya y no nuestra), tramo verde (lo nuestro, y sólo **después** de la frontera
 mesa, la persona, la placa, el riel y los hilos son **partes del objeto**, igual que el tirador de la
 cajonera.
 
+**El eje de alcance corto (2026-10-02) tampoco estrena ninguna.**
+
+- **Punto lleno verde:** el dólar digital que te enviamos.
+- **Tramo verde:** lo nuestro, y sólo hasta tu billetera.
+- **Cuña:** en la entrada de la billetera, donde cambia de manos.
+- **Filete `--ink-mute`:** lo que haces tú desde ahí.
+- **Trazo punteado:** antes de la tercera opción.
+
+La billetera es **parte del objeto**. **Nada del otro lado de la frontera es verde, y no hay
+ningún banco dibujado**: la regla dura de `CLAUDE.md` §1 se dice con el vacío y con la frase, no
+dibujando lo que no hacemos.
+
 **Las figuras de uso de la Home del 2026-10-02 tampoco estrenan ninguna.**
 
 - **Cruza:** punto lleno verde (la unidad de valor, USD, del lado de Chile), filete `--ink-mute`
@@ -907,7 +919,7 @@ bisagra del portátil. Un filete `--ink-mute` significa «existe, es real, no es
 **Sobre la frontera punteada, añadida el 2026-09-22.** Estaba en producción desde que existe
 `UseCaseFigure` y no estaba escrita, y eso resultó ser lo que hacía ambiguo todo un par de figuras.
 
-**Recontado el 2026-10-02 barriendo las quince rutas del build: son DIEZ.**
+**Recontado el 2026-10-02 barriendo las quince rutas del build: son ONCE.**
 
 > *Rehecho a última hora del 2026-10-02, al pasar la Home a objetos:* **las marcas distintas
 > siguen siendo diez** y las rutas con alguna, cinco. Lo que cambia es la Home, que pasa de **2 a
@@ -925,9 +937,16 @@ bisagra del portátil. Un filete `--ink-mute` significa «existe, es real, no es
 | Home y `/precio`, los puentes | `.limite` y `.corte` | los mismos dos, copiados a sus figuras |
 | `/empresas` ×2 | `.fc-frontera` de `FiguraCaso` | la frontera de Chile, en el cruce y en la cajonera |
 | `/confianza` y la Home, «Confianza que se comprueba» | `.fm-frontera` de `FiguraMecanismo` | cuándo la transferencia está **acreditada** — antes no movemos nada |
+| `/como-funciona`, «Dónde termina nuestra operación» | `.ea-limite` de `EjeDeAlcance` (en móvil, el borde superior de `.ea-tras-limite`) | antes de la tercera opción: lo que sigue es otro proceso, con otros servicios, y **no lo realiza DLPay** |
 
-**Las otras diez rutas no tienen ninguna**, y eso también se midió: `/como-funciona`, `/preguntas`,
-`/blog` y sus tres artículos, las tres legales sin `/tarifas` y la 404.
+**Las otras nueve rutas no tienen ninguna**, y eso también se midió: `/preguntas`, `/blog` y sus
+tres artículos, las tres legales sin `/tarifas` y la 404.
+
+> *Y una tercera pasada el 2026-10-02, al rehacer `/como-funciona`:* **once marcas y seis rutas.**
+> El eje de alcance corto estrena `.ea-limite`, y ésta **sí es una fila nueva y no una ruta más en
+> una fila**: es un límite distinto, con su propio significado —dónde deja de ser nuestro el
+> proceso—, no la misma marca en otro sitio. La distinción entre las dos cosas es la que mantiene
+> esta tabla contando marcas y no apariciones.
 
 > *Y una corrección de aritmética, no de medición:* la versión del 2026-10-02 por la mañana decía
 > también «las otras diez» cuando sólo cuatro rutas tenían marcas, así que eran **once** — y la
@@ -1217,11 +1236,12 @@ cada una, no qué significa.
 | **Encabezado de página** | Las ocho rutas que no son la Home | `PageHero`. Dos composiciones: a dos columnas y **apilada y centrada**, ésta con la pieza del `aside` montada sobre la costura con la sección siguiente |
 | **Dispositivos en CSS: teléfono, portátil, tableta y teléfono de avisos** | Enseñar el producto sin imágenes. El teléfono de chat (`/como-funciona`, Home) una **operación negociándose**; el portátil (`/empresas`) la plataforma; la tableta (`/preguntas`) **una duda resolviéndose**; el teléfono bloqueado con avisos (`/confianza`, desde el 2026-09-30) **una operación comprobándose desde fuera** | Cero archivos. **El texto nunca se teclea**: las cifras salen de `lib/pricing` y la pregunta de la tableta se busca en `general.ts` por su texto. Los cuatro van `aria-hidden` y **el chasis va claro**, que es lo único que recorta un objeto contra la tinta. **Dos teléfonos y no uno, a propósito:** aquél tiene la app abierta y una conversación; éste está bloqueado y enseña tres avisos de tres remitentes, de los que **sólo uno es nuestro**. Si el hilo de la tableta empieza a hablar de montos, deja de ser tableta y pasa a ser teléfono |
 | **Figura de mecanismo** | Los tres mecanismos de `/confianza` | `FiguraMecanismo`. El edificio de por medio, la placa del escritorio y las dos etiquetas, en el lado que el zigzag dejaba vacío. La misma lámina que `FiguraCaso`, repetida y no importada: dos usos no justifican extraer una pieza. **El banco no lleva nombre** —BCI es un claim con marcador— y **lo nuestro empieza después de la frontera «acreditada»**. Y, desde el 2026-10-02, los tres bloques de «Confianza que se comprueba» en la Home, con un cuarto objeto, `precio` —una sola etiqueta y un gancho vacío—; bajo 280 px de lámina, que sólo se da en la Home, los rótulos secundarios se retiran. *2026-10-02.* |
+| **Carpeta** | Lo que traes tú: «Ten esto a mano» en `/empresas` y `/como-funciona`, y «Qué te pedimos» en `/confianza` | `Carpeta.astro`. Pestaña en la diagonal de la marca, con rótulo o vacía; cuerpo con fondo; con `items`, el kit de placas de 48 px. **Placa cuadrada = lo que traes tú.** Extraída en su tercer uso el 2026-10-02, con las dos páginas anteriores idénticas píxel a píxel. |
 | **Figura de uso** | Los tres usos de la Home | `FiguraUso`. Cruza, convierte y reparte como objetos sobre la lámina de `FiguraCaso`: la topología es el dato y se conserva. Rótulos a 13 px; bajo 262 px de lámina se retiran los pies de pieza. *2026-10-02.* |
 | **Figura de caso** | Las cuatro operaciones de `/empresas` | `FiguraCaso`. Un objeto por caso —el cruce, la cajonera, el calendario y las dos pilas— sobre una lámina en `--papel-2`, con las marcas del §6.2 y ninguna cifra. HTML y no SVG: los rótulos son texto a 13 px en todos los anchos. **El pago al proveedor va en `--ink-mute`, no en verde**: lo hace la empresa, no DLPay. *Sustituye al emblema de caso el 2026-10-02.* |
 | **Línea de tenencia** | `/confianza`: de quién es la cuenta donde está el dinero | HTML, no SVG. Un solo tramo es nuestro |
 | **Carril de dos columnas** | `/como-funciona`: qué hace cada parte y dónde cambia de manos | La colocación en rejilla va **explícita**: el flujo automático deshace el carril |
-| **Eje de alcance** | Hasta dónde llega el servicio | La regla dura de `CLAUDE.md` §1 dibujada. Los datos viven en un solo sitio, `scope.ts`, para que dos páginas no puedan decir cosas distintas. **Dos dibujos desde el 2026-10-02:** `EjeDeAlcance` en `/como-funciona`, en su forma corta, y `AlcanceEmpresa` —el relevo— en `/empresas`. **Excepción firmada por Sebastián el 2026-10-02.** La ventaja: `/empresas` es la página cuyo lector más supone una transferencia bancaria, y ahí el límite tiene que verse más. *La fila decía «tres páginas», pero el artículo del blog no lo usa: sólo lo nombra en un comentario (comprobado con `grep` el 2026-10-02). Salió de la Home el 2026-09-25.* |
+| **Eje de alcance** | Hasta dónde llega el servicio | La regla dura de `CLAUDE.md` §1 dibujada. Los datos viven en un solo sitio, `scope.ts`, para que dos páginas no puedan decir cosas distintas. **Dos dibujos desde el 2026-10-02:** `EjeDeAlcance` en `/como-funciona`, en su forma corta, y `AlcanceEmpresa` —el relevo— en `/empresas`. **La forma corta dibuja desde el 2026-10-02 la billetera y sus tres salidas**, con la frontera punteada antes de la tercera: el mismo componente y los mismos datos de `scope.ts`, y hasta ese día era una línea de 1 px. **Excepción firmada por Sebastián el 2026-10-02.** La ventaja: `/empresas` es la página cuyo lector más supone una transferencia bancaria, y ahí el límite tiene que verse más. *La fila decía «tres páginas», pero el artículo del blog no lo usa: sólo lo nombra en un comentario (comprobado con `grep` el 2026-10-02). Salió de la Home el 2026-09-25.* |
 | **Portada de dato** | La cifra de la que habla un artículo | Dos tipos: `cifra` y `rango`. **La cuña no entra** (§6.1). `fuente` es obligatoria |
 | **Diario DLPay** | `/blog`: una hoja por artículo, que pasan solas cada 3 s | `DiarioDLPay`. **Cuarto movimiento infinito del sitio y única pieza fuera del registro de ADR-0001**: grano, mancha, relieve, luz y perspectiva 3D. Ver **ADR-0011**, que es de lectura obligada antes de tocarla. CSS puro, 0 JS; los `@keyframes` se generan en el build desde `posts.length`. Casilla de pausa nativa **fuera** del objeto (WCAG 2.2.2) y una hoja quieta con `prefers-reduced-motion`. **Dos reglas que ya rompieron algo:** `perspective` va en `.diario`, el padre directo, y `steps(1, end)` en el fotograma `p`. **El arranque de columnas es texto simulado** y es la única marca del sistema que no representa nada: excepción autorizada, no marca nueva |
 | **Pila de artículos** | *Sin consumidores desde el 2026-10-01.* El último artículo completo y los dos anteriores por su lomo | `UltimoArticulo`. **Misma materia que el panel de `/precio`** —cabecera, pozo hundido y cuerpo sobre papel— para que los dos objetos de papel se lean como parientes. Se deriva entera de `publishedPosts()`, así que **cambia sola al publicar**. Reusa `PortadaFigura` en su variante `marca` y los formateadores de `lib/pricing`: **no reescribe ni el dibujo ni el dato**. No trae la banda de tinta del artículo —oscuro dentro de claro dentro de oscuro se lee como un agujero—. **Los cantos llevan su titular y son enlaces**, hasta dos, así que son **hermanos** del enlace de la hoja y nunca sus hijos: un enlace dentro de otro es HTML inválido y el teclado no llega al de dentro. El titular del canto se corta con elipsis, y **es el único sitio del sitio donde un titular se corta**: un canto que crece con el texto deja de ser un canto |

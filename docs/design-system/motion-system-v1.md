@@ -272,14 +272,21 @@ Seis, numerados y contables. Si algo no está acá, no se mueve.
 |---|---|---|---|---|
 | **M1** | `press` | Respuesta de un control al puntero o al foco: color, borde, fondo | `--m-fast` | Botones, enlaces, opciones del cotizador, marcador de FAQ |
 | **M2** | `settle` | Una cifra que **cambió**: opacidad + 2 px, sólo sobre el valor nuevo | 160 ms | Precio referencial y "recibes" del cotizador |
-| **M3** | `draw` | La geometría se dibuja **en la dirección que apunta** (`stroke-dashoffset`) | `--m-slow` | **Sólo trazos con `stroke`:** las tres cuñas de traspaso de `/como-funciona` y la costura de `EjeDeAlcance`. Ver la nota de abajo |
+| **M3** | `draw` | La geometría se dibuja **en la dirección que apunta** (`stroke-dashoffset`) | `--m-slow` | **Sólo trazos con `stroke`:** las tres cuñas de traspaso de `/como-funciona`, la costura de `EjeDeAlcance` y la cuña del relevo de `/empresas`. Ver la nota de abajo |
 | **M4** | `enter` | Entrada sobre el eje diagonal: opacidad + `translate(-6px, 9px)` | `--m-base` | Ver §5. **Requiere enmienda del DS §9.** |
 | **M5** | `stagger` | Desfase de 60 ms entre hermanos, **máximo 4** | — | Ver §5. **Requiere enmienda.** |
 | **M6** | `sequence` | Secuencia de carga del héroe, una sola vez | 320 ms total | Home y `/empresas`. Incluye **las cuñas del héroe**, que entran con un fundido de opacidad y no con un trazo — recatalogadas desde M3 el 2026-09-17. **Ya permitido por DS §9.** |
 
-> **El inventario real de M3, medido y cerrado el 2026-09-17.** `data-draw` aparece en `src/` sólo
-> en las cuñas de traspaso de `/como-funciona` y en la costura de `EjeDeAlcance`, que vive en la
-> Home, `/como-funciona` y `/empresas`. Esta fila llegó a listar tres consumidores y dos no lo eran.
+> **El inventario real de M3, medido el 2026-09-17 y rehecho el 2026-10-02.** `data-draw` aparece
+> en `src/` sólo en las cuñas de traspaso de `/como-funciona`, en la costura de `EjeDeAlcance` —que
+> hoy vive **sólo** en `/como-funciona`— y en la cuña del relevo de `/empresas` (`AlcanceEmpresa`).
+> Esta fila llegó a listar tres consumidores y dos no lo eran; la versión de septiembre corrigió
+> eso y **se quedó desfasada igual**, porque en octubre el eje perdió dos de sus tres páginas.
+>
+> *Cómo se rehace, que es lo que evita el tercer desfase:* se cuenta `data-draw` **en el HTML del
+> build, ruta por ruta**, y se descuentan **dos por ruta**, que son los del selector dentro del
+> script de `Motion.astro`. Hoy da 4 en `/como-funciona` y 1 en `/empresas`, y 0 en las trece
+> restantes.
 >
 > Los conectores del diagrama salieron con `FlowDiagram.astro`. Y **las cuñas del héroe nunca fueron
 > M3**: son un `<div>` con `clip-path` y `background`, animado con un fundido de opacidad de 0 a
@@ -490,7 +497,7 @@ El riesgo de un sistema de movimiento es que crezca por acumulación. Tres compr
 |---|---|
 | **M1** `press` | Cabecera, pie, cotizador, FAQ, botones de todas las páginas |
 | **M2** `settle` | Precio del cotizador, sólo cuando el valor **cambia** |
-| **M3** `draw` | Cuñas de traspaso de `/como-funciona` y costura de `EjeDeAlcance` (`/como-funciona`, `/empresas`, artículo del blog). *Ya no en la Home: el eje salió de la banda del globo el 2026-09-25.* Las cuñas del héroe **no** son M3: son M6 — ver la nota de la fila M3 |
+| **M3** `draw` | **Dos rutas, medido sobre el build el 2026-10-02:** `/como-funciona` —las tres cuñas de traspaso y la costura del eje corto— y `/empresas` —la cuña del relevo (`AlcanceEmpresa`)—. *La fila decía «`/como-funciona`, `/empresas`, artículo del blog» y las dos últimas estaban mal: `/empresas` sí tiene M3, pero desde `AlcanceEmpresa` y no desde `EjeDeAlcance`, que allí no se usa desde el 2026-10-02; y el artículo del blog no tiene ninguno — sus dos `data-draw` son el selector del script de `Motion.astro`, que va en las quince rutas.* Las cuñas del héroe **no** son M3: son M6 — ver la nota de la fila M3 |
 | **M4** `enter` | 3 titulares en Home, 3 en `/empresas`, 2 en `/confianza`, 1 en `/como-funciona` |
 | **M5** `stagger` | 3 tarjetas de usos (Home) y 4 casos (`/empresas`). Nada más |
 | **M6** `sequence` | Héroe de la Home: la tarjeta ya está, entra el texto. Encabezado de `/empresas`: titular, bajada, botones y el portátil. En los dos, el titular entra **palabra por palabra** (enmienda del 2026-09-10) y **las cuñas del fondo con un fundido de opacidad** |

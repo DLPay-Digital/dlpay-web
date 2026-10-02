@@ -3720,3 +3720,104 @@ en ese artículo.
 **Firefox** y **un lector de pantalla real**, como siempre. **WebKit no queda pendiente aquí**:
 `cqw` y `@container` ya los cerró Sebastián en `/empresas` y `/confianza`, y esta entrega no estrena
 ninguna otra declaración de ese grupo.
+
+---
+
+### Notas de la integración de `2026-10-02 · como-funciona: la carpeta y el eje corto`
+
+**Veredicto: integrada entera**, los cinco archivos sin tocar una línea. `astro check` en **0
+errores, 0 avisos y 27 sugerencias**, 80 pruebas, build en 437 ms. Los nueve md5 coinciden,
+`Carpeta.astro` no existía y la cabeza seguía en `2fa8f86`.
+
+Con ésta son **cuatro páginas en el mismo registro** en un día: `/empresas`, `/confianza`, la Home y
+`/como-funciona`.
+
+#### La extracción, que es lo que había que vigilar
+
+`Carpeta.astro` se extrae en su tercer uso y **dos páginas publicadas pasan a depender de ella**. Lo
+comprobé por **hash de captura, no por tamaño de caja**: un `position: relative` de más cambia el
+suavizado de los bordes sin mover nada, y eso es justo lo que hay que detectar.
+
+**88 piezas idénticas, 0 distintas**, y **44 altos de página iguales, 0 distintos** — once anchos de
+320 a 1440, con y sin el espaciado de 1.4.12, sobre `.ce`/`.ce-carpeta` en `/empresas` y `.req`/`.cr`
+en `/confianza`. Es más de lo que la entrega declaraba (68 capturas) y da lo mismo.
+
+**Los dos «descuidos» del prompt son correctos y están comentados donde toca**: `Carpeta` sin
+`position: relative` en la raíz —porque `ComoEmpezamos` no lo tenía— y `CarpetaRequisitos`
+conservándolo en su `.cr` —porque sí lo tenía—. Las dos páginas heredan exactamente el contexto de
+apilamiento que tenían. *Es el tipo de detalle que parece sobrante hasta que alguien lo «limpia».*
+
+**Y la extracción llegó cuando tenía que llegar.** Las dos piezas llevaban escrita desde que
+nacieron la misma nota —«dos usos no justifican extraer una pieza; si aparece un tercero, se
+extrae»—. Apareció el tercero y se extrajo. **Una regla que se cumple sola cuando se cumple su
+condición es la única clase de regla que sirve** en un repositorio que escribe tanto.
+
+#### Lo demás, sobre el build
+
+| Qué | Declarado | Medido acá |
+|---|---|---|
+| `astro check` | 0 / 0 / 27 | **0 / 0 / 27** ✔ |
+| `/empresas` y `/confianza` | idénticas | **88 piezas y 44 altos, 0 diferencias** ✔ |
+| Carril de los seis pasos | idéntico | **idéntico** en 5 anchos ✔ |
+| Barrido 320→1300 **de 1 en 1**, con y sin 1.4.12 | 0 problemas | **0 nuevos**: las incidencias son dos `<h2>` cuyo `scrollHeight` excede 2 px al `clientHeight`, **idénticas en el build anterior** ✔ |
+| Solape de la cuña con el titular en móvil | desaparece (antes 9,7 px) | **antes 8 px a 320, ahora 0**, con y sin espaciado ✔ |
+| Desplazamiento lateral a 320 con 1.4.12 | el de la cabecera, previo | **5 px, idéntico antes y después** ✔ |
+| `axe` `/como-funciona` | 0 violaciones, incompletos iguales | **0 y 0**; incompletos 14 y 1, iguales ✔ |
+| `axe` `/empresas` | la del `MacbookMockup`, idéntica | **10 y 9, idénticas** ✔ |
+| `axe` `/confianza` | 0 | **0** ✔ |
+| Árbol y tabulación, tres páginas | idénticos | **idénticos los tres** ✔ |
+| Cuña sin JS | dibujada | `dasharray: none`, visible ✔ |
+| Cuña con `reduce` | dibujada, sin animación | `dasharray: none`, 0 animaciones ✔ |
+| Cuña con movimiento | se dibuja al entrar | `dasharray: 73px`, `offset: 0` tras entrar ✔ |
+| `.js` del build | idénticos | **mismo hash** ✔ |
+| Marcas punteadas | diez → once, rutas 5 → 6 | **once y seis**, recontado con mi barrido ✔ |
+
+**El fallo previo, confirmado y resuelto.** Medido sobre el build anterior: en móvil la cuña pisaba
+el titular de la sección **8 px a 320** (la entrega decía 9,7; la diferencia es rasterización). En
+el build de hoy no hay solape.
+
+#### Lo que la entrega no pide, y había que corregir
+
+**El inventario de M3 del Motion System estaba desfasado, y por partida doble.** Decía que la
+costura de `EjeDeAlcance` vive en «`/como-funciona`, `/empresas` y el artículo del blog». Medido
+sobre el build: `/empresas` sí tiene M3, pero desde `AlcanceEmpresa` y no desde `EjeDeAlcance`, que
+allí no se usa desde esta mañana; y **el artículo del blog no tiene ninguno** — sus dos `data-draw`
+son el selector dentro del script de `Motion.astro`, que va en las quince rutas.
+
+**Es el mismo error que Cowork cazó ayer en el Design System §8.1**, en otro documento y sobre el
+mismo componente: una lista de consumidores escrita una vez y nunca vuelta a medir. Esa nota ya
+había sido corregida en septiembre —«esta fila llegó a listar tres consumidores y dos no lo eran»— y
+**se volvió a desfasar**, porque en octubre el eje perdió dos de sus tres páginas.
+
+Queda escrito **cómo se rehace**, que es lo que evita el tercer desfase: se cuenta `data-draw` en el
+HTML del build, ruta por ruta, **descontando dos por ruta**, que son los del script. Hoy da 4 en
+`/como-funciona`, 1 en `/empresas` y 0 en las trece restantes.
+
+#### Sobre el recuento de punteados
+
+Sube a **once**, y aquí sí es **una fila nueva y no una ruta más en una fila**: `.ea-limite` es un
+límite distinto —dónde deja de ser nuestro el proceso— y no la misma marca en otro sitio. Es la
+distinción que mantiene esa tabla contando **marcas y no apariciones**, y conviene que esté dicha,
+porque el mes pasado la misma tabla contaba las dos cosas a la vez.
+
+#### Lo que vale más que el dibujo
+
+`CLAUDE.md` §1 pide que el límite del servicio se declare **de frente** en esta página, antes de que
+el usuario opere. Hasta hoy ese límite era **lo más tenue de la página**: una línea de 1 px y tres
+frases, con la salvedad en letra pequeña. Ahora se ve.
+
+**Y se dice con el vacío.** Nada del otro lado de la frontera es verde y no hay ningún banco
+dibujado: la regla dura no se ilustra dibujando lo que no hacemos, que sería ponerlo en pantalla.
+
+#### Un aviso de instrumento, por si alguien repite el barrido
+
+El barrido de 1 en 1 son **3.924 cargas de página** y tarda. Al medir el desplazamiento aparte, sin
+esperar a que el navegador reacomode después de inyectar la hoja de 1.4.12, el build anterior daba
+**0 px y el nuevo 5** — una diferencia que no existe. Con la espera, los dos dan 5. **La hoja de
+espaciado se inyecta después de cargar, así que medir sin esperar el reacomodo compara una página
+con espaciado contra otra sin él.**
+
+#### Sin verificar
+
+**Firefox** y **un lector de pantalla real**. WebKit no queda pendiente: esta entrega no estrena
+ninguna declaración de las que Sebastián ya cerró en el iPhone.

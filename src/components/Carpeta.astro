@@ -1,0 +1,137 @@
+---
+/**
+ * **La carpeta**: lo que traes tú, dentro de un objeto con pestaña.
+ *
+ * Extraída el 2026-10-02, en su tercer uso. La estrenó «Ten esto a mano» en
+ * `/empresas` (`ComoEmpezamos`) y la repitió «Qué te pedimos, y por qué» en
+ * `/confianza` (`CarpetaRequisitos`), con una nota en las dos: «dos usos no
+ * justifican extraer una pieza; si aparece un tercero, se extrae». El tercero
+ * es «Ten esto a mano» en `/como-funciona`, así que se extrae aquí y no se
+ * copia una tercera vez. Las dos páginas de antes salen **idénticas píxel a
+ * píxel** (ver la ficha de la entrega).
+ *
+ * ── La pieza ───────────────────────────────────────────────────────────────
+ *
+ * · **La pestaña baja en la diagonal de la marca**: 30 px de ancho por 44 de
+ *   alto, los 34° del isotipo. Con `titulo` lleva rótulo, y entonces tiene 40
+ *   px de aire entre la tinta del texto y el corte (Design System §4.7): el
+ *   relleno derecho es 30 + 40. **Sin `titulo` va vacía**, porque el titular de
+ *   la sección está justo encima y repetirlo sería decir dos veces lo mismo.
+ *   Una carpeta tiene pestaña aunque no tenga rótulo: es parte del objeto.
+ * · **El cuerpo** lleva el fondo y las esquinas; lo de dentro lo pone quien la
+ *   usa. Con `items`, la carpeta trae su contenido de siempre —el kit de «Ten
+ *   esto a mano»: cada cosa con su icono en una placa de 48 px—; sin `items`,
+ *   el contenido llega por la ranura.
+ * · **`fondo` es el del objeto, no el de la sección**: el contrario del de la
+ *   banda en que se apoya. Las placas del kit llevan el otro.
+ *
+ * **Placa cuadrada = lo que traes tú**; insignia redonda = lo que hacemos
+ * nosotros. Es la distinción que `/confianza` hace explícita y que esta pieza
+ * conserva en las tres páginas.
+ *
+ * Accesibilidad: el kit es una lista real con `role="list"`; las placas, la
+ * pestaña vacía y sus iconos van `aria-hidden`.
+ */
+import Icon from './Icon.astro';
+import type { ChecklistItem } from '../content/process.ts';
+
+interface Props {
+  /** El fondo del objeto: el contrario al de la banda donde se apoya. */
+  fondo: 'papel' | 'papel-2';
+  /** Rótulo de la pestaña. Sin él, la pestaña va vacía. */
+  titulo?: string | undefined;
+  /** Nivel del rótulo, cuando lo hay. */
+  nivel?: 'h2' | 'h3';
+  /** El kit de «Ten esto a mano». Sin él, el contenido llega por la ranura. */
+  items?: readonly ChecklistItem[] | undefined;
+}
+const { fondo, titulo, nivel = 'h3', items } = Astro.props;
+const Rotulo = nivel;
+---
+<div class:list={['carpeta', `carpeta-${fondo}`]}>
+  {titulo
+    ? <Rotulo class="carpeta-pestana carpeta-rotulada">{titulo}</Rotulo>
+    : <span class="carpeta-pestana carpeta-vacia" aria-hidden="true"></span>}
+  <div class="carpeta-cuerpo">
+    {items ? (
+      <ul class="carpeta-kit" role="list">
+        {items.map((item) => (
+          <li>
+            <span class="carpeta-placa" aria-hidden="true"><Icon name={item.icon} size={24} /></span>
+            <span>{item.text}</span>
+          </li>
+        ))}
+      </ul>
+    ) : <slot />}
+  </div>
+</div>
+
+<style>
+  /* Sin `position: relative` en la raíz, a propósito: `ComoEmpezamos` no lo
+     tenía y con él Chromium suaviza los bordes de otra manera (medido: 50–60
+     píxeles distintos por captura). Quien lo necesite lo pone fuera, como
+     `CarpetaRequisitos`. Así las dos páginas de antes salen idénticas. */
+  .carpeta { min-width: 0; }
+  .carpeta-papel { --carpeta-fondo: var(--papel); --carpeta-placa: var(--papel-2); }
+  .carpeta-papel-2 { --carpeta-fondo: var(--papel-2); --carpeta-placa: var(--papel); }
+
+  .carpeta-pestana {
+    margin: 0 0 -1px;
+    background: var(--carpeta-fondo);
+    border-radius: var(--r-3) 0 0 0;
+    clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 100%, 0 100%);
+  }
+  /* Con rótulo: crece con el texto, con 40 px de aire hasta el corte. */
+  .carpeta-rotulada {
+    display: inline-block;
+    padding: var(--s-3) calc(30px + 40px) var(--s-3) var(--s-5);
+    min-height: 44px;
+    font-size: var(--t-h3-m);
+    line-height: var(--lh-h3);
+    font-weight: 700;
+    color: var(--ink);
+    position: relative;
+  }
+  /* Sin rótulo: del ancho de la placa del primer elemento, más el corte. */
+  .carpeta-vacia {
+    display: block;
+    width: calc(var(--s-9) + 30px);
+    height: 44px;
+  }
+  .carpeta-cuerpo {
+    background: var(--carpeta-fondo);
+    border-radius: 0 var(--r-3) var(--r-3) var(--r-3);
+  }
+
+  /* ── El kit ─────────────────────────────────────────────────────────── */
+  .carpeta-kit {
+    display: grid;
+    gap: var(--s-4);
+    margin: 0;
+    padding: var(--s-6);
+    list-style: none;
+  }
+  .carpeta-kit li {
+    display: flex;
+    gap: var(--s-4);
+    align-items: center;
+    color: var(--ink);
+  }
+  .carpeta-placa {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--r-3);
+    background: var(--carpeta-placa);
+    color: var(--verde-deep);
+  }
+  .carpeta-placa :global(svg) { width: 24px; height: 24px; }
+
+  /* Colores forzados: la carpeta pierde su fondo; un borde la mantiene. */
+  @media (forced-colors: active) {
+    .carpeta-pestana, .carpeta-cuerpo { border: 1px solid CanvasText; }
+    .carpeta-pestana { border-bottom: 0; }
+  }
+</style>
