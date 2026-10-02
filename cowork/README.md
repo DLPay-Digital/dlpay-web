@@ -3502,11 +3502,28 @@ conviene no venderlos como dos fallos de accesibilidad.*
 
 #### Sin verificar
 
-**WebKit y Firefox. Van tres piezas seguidas.** El Diario (`-webkit-mask`), el abanico (`drop-shadow`
-encadenado y `mask` del ojal) y ahora las `cqw` de las figuras más la tabla de móvil con sus `role`
-puestos a mano. Este entorno sólo tiene Chromium y Cowork tampoco tiene WebKit. **Tres entregas
-acumulando el mismo pendiente ya no es una nota al pie**: conviene resolverlo antes de Fase 6, y son
-unos minutos en un Safari de verdad.
+**WebKit: medio cerrado el mismo día.** El pendiente se había acumulado tres entregas seguidas —el
+Diario con su `-webkit-mask`, el abanico con el `drop-shadow` encadenado y la `mask` del ojal, y
+ahora las `cqw` de las figuras más la tabla de móvil con sus `role` puestos a mano—, porque ni este
+entorno ni Cowork tienen WebKit.
+
+**Safari en Mac: comprobado por Sebastián el 2026-10-02 sobre el build, y se ve bien.** Las tres
+piezas, en las tres páginas. Con eso el riesgo que importaba —que la `mask` no se aplicara y el
+abanico saliera sin su agujero, o el papel del Diario sin grano— **queda descartado en WebKit de
+escritorio**.
+
+**Queda el iPhone, y no es la misma comprobación.** No porque falten usuarios de Safari, sino porque
+**en iOS todos los navegadores son WebKit por obligación de Apple**: Chrome en iPhone es Safari con
+otra carátula. Así que ese hueco no cubre a una minoría, cubre a todo el que entre desde un teléfono
+Apple — en un sitio diseñado móvil primero. Y es un WebKit de otra versión que el del Mac, con otro
+rasterizado de fuentes y otra gestión de memoria para los filtros encadenados.
+
+*Cómo se hace, para no volver a inventarlo:* `npx astro preview --host 0.0.0.0 --port 4380` sobre el
+build, y el teléfono en la misma Wi-Fi contra la IP de la máquina. El `--host` es lo que falta por
+omisión: sin él el servidor sólo escucha en `localhost` y el teléfono no lo ve.
+
+**Firefox sigue sin mirarse**, y es el pendiente menor de los dos: tiene motor propio, pero no es el
+único navegador de ninguna plataforma.
 
 **Un lector de pantalla real.** El árbol está medido y es correcto; nadie lo ha oído en VoiceOver ni
 en NVDA. Importa más que de costumbre porque la tabla de móvil **depende de `role` puestos a mano**:
