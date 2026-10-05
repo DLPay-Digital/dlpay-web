@@ -62,11 +62,17 @@ Refrescar el navegador no sirve — lo viejo es lo que el servidor entrega.
 
 ```bash
 # ¿cuántas veces aparece una clase nueva en el archivo, y cuántas en lo que sirve el dev?
-grep -c "mi-clase-nueva" src/components/MiComponente.astro
-curl -s "http://localhost:4321/src/components/MiComponente.astro?astro&type=style&index=0&lang.css"   | grep -c "mi-clase-nueva"
+grep -ci "mi-clase-nueva" src/components/MiComponente.astro
+curl -s "http://localhost:4321/src/components/MiComponente.astro?astro&type=style&index=0&lang.css"   | grep -ci "mi-clase-nueva"
 ```
 
 **Si el segundo número es 0 y el primero no, es esto.**
+
+> **El `-i` no es opcional.** Lo que el servidor entrega ha pasado por el procesador de CSS, y ése
+> **pasa las palabras clave a minúsculas**: `CanvasText` sale como `canvastext`, `Canvas` como
+> `canvas`. Sin `-i`, buscar una de ellas devuelve 0 y el comando declara rancio un servidor que
+> está al día. Pasó el 2026-10-05 con dos componentes. *Los nombres de clase sí se respetan; el
+> riesgo está en los valores.*
 
 **Y reiniciar el proceso NO siempre basta.** El módulo rancio vive en `node_modules/.vite`, que
 sobrevive al reinicio. Hay que borrarlo:
