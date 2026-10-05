@@ -39,15 +39,15 @@
  *
  * Igual que `FiguraCaso`: HTML y CSS sobre una lámina en `--papel-2` de
  * 460×280, con el dibujo en `cqw` y el texto en px, para que los rótulos sean
- * texto de verdad a 13 px en todos los anchos. La lámina repite las ocho
- * reglas de base de `FiguraCaso` en vez de importarlas: dos usos no justifican
- * extraer una pieza, y tocar la de `/empresas` para esto sería cambiar algo
- * integrado sin necesidad. Si aparece un tercero, se extrae.
+ * texto de verdad a 13 px en todos los anchos. La lámina es `Lamina.astro`:
+ * hasta el 2026-10-05 repetía aquí las ocho reglas de base de `FiguraCaso`,
+ * con la nota «si aparece un tercero, se extrae». El tercero fue `FiguraUso`.
  *
  * Va `aria-hidden`: el `h3` y el párrafo de al lado ya lo dicen con palabras.
  */
 import Icon from './Icon.astro';
 import Logo from './Logo.astro';
+import Lamina from './Lamina.astro';
 import type { Mechanism } from '../content/trust.ts';
 
 interface Props {
@@ -67,10 +67,17 @@ interface Props {
    * ejecutivo. `/tarifas` usa también `clock`, tal cual, para «El mercado».
    */
   kind: Mechanism['icon'] | 'precio' | 'monto';
+  /**
+   * Sólo la Home (`Trust.astro`): bajo 278 px de lámina, la figura retira sus
+   * rótulos y se queda con el objeto. Ver «Bajo 280 px de lámina», abajo.
+   * `/confianza` y `/tarifas` no la pasan: allí la figura no se compacta
+   * nunca, mida lo que mida la lámina.
+   */
+  compacta?: boolean;
 }
-const { kind } = Astro.props;
+const { kind, compacta = false } = Astro.props;
 ---
-<div class:list={['fm', `fm-${kind}`]} aria-hidden="true">
+<Lamina class:list={['fm', `fm-${kind}`, { 'fm-compacta': compacta }]} aria-hidden="true">
   {kind === 'bank' && (
     <>
       <span class="fm-pieza"><Icon name="bank" size={24} /></span>
@@ -157,22 +164,10 @@ const { kind } = Astro.props;
       </span>
     </>
   )}
-</div>
+</Lamina>
 
 <style>
-  /* La lámina, la misma de `FiguraCaso`. */
-  .fm {
-    position: relative;
-    width: 100%;
-    max-width: 460px;
-    aspect-ratio: 460 / 280;
-    container-type: inline-size;
-    background: var(--papel-2);
-    border-radius: var(--r-3);
-    overflow: hidden;
-    border: 1px solid transparent;
-  }
-  .fm > * { position: absolute; }
+  /* La lámina es `Lamina.astro`, la misma de `FiguraCaso`. */
   .fm-rot, .fm-pie {
     font-family: var(--f-num);
     font-size: var(--t-label);
@@ -495,8 +490,13 @@ const { kind } = Astro.props;
 
   /*
     ── Bajo 280 px de lámina: sólo en la Home ─────────────────────────────
-    En `/confianza` y en `/tarifas` la lámina más chica mide 280 (la pantalla
-    de 320), así que allí este bloque no se aplica nunca. En la Home sí: «Confianza que se
+    Sólo con `compacta`, que pasa la Home y nadie más: todas las reglas de
+    abajo empiezan por `.fm-compacta`. Hasta el 2026-10-05 el bloque valía para
+    todas y lo que dejaba fuera a `/confianza` y a `/tarifas` era un margen de
+    0,02 px: allí la lámina más chica mide 280 (la pantalla de 320), y la
+    consulta corta en 277,98. Ahora no depende de ningún margen.
+
+    En la Home sí se aplica: «Confianza que se
     comprueba» pone tres láminas en fila desde 760 px, y entre 760 y 1100
     miden 208–290; en el carril del móvil, 216 a 320 px de pantalla. Ahí los
     rótulos de 13 px no caben junto al dibujo —«Cuenta de DLPay» se salía por
@@ -507,23 +507,23 @@ const { kind } = Astro.props;
     objeto: la placa «Tu ejecutivo» y la etiqueta «un solo número».
 
     La consulta dice 278 y no 280 porque mide la caja de contenido, dentro del
-    borde transparente de 1 px: con 279,98 se aplicaba también a la lámina de
-    280 de `/confianza` (medido: cambiaban dos figuras a 320 px de pantalla).
+    borde transparente de 1 px. Se queda en 277,98 para que la Home no cambie:
+    su lámina de 280 (la fila de tres, hacia 1100 px) sigue sin compactarse.
   */
   @container (max-width: 277.98px) {
-    .fm-pie, .fm-rot { display: none; }
+    .fm-compacta .fm-pie, .fm-compacta .fm-rot { display: none; }
     /* El precio: la etiqueta sola, al centro y más ancha; sin el gancho vacío,
        que sin su rótulo no se explica. Va en las piezas y no en las variables
        de `.fm-precio`: una consulta de contenedor no alcanza al propio
        contenedor, sólo a lo que lleva dentro. */
-    .fm-una { left: 18%; width: 64cqw; }
-    .fm-hilo-uno { left: 50%; }
-    .fm-una .fm-et-rot, .fm-hilo-vacio, .fm-gancho { display: none; }
+    .fm-compacta .fm-una { left: 18%; width: 64cqw; }
+    .fm-compacta .fm-hilo-uno { left: 50%; }
+    .fm-compacta .fm-una .fm-et-rot, .fm-compacta .fm-hilo-vacio, .fm-compacta .fm-gancho { display: none; }
     /* La placa, en un renglón, para que no tape la cabeza. Con `left: 50%`
        su ancho disponible es la mitad de la lámina, y ahí el isotipo bajaba a
        un renglón propio: `max-content` la deja medir lo que mide su texto,
        hasta el 80 %. */
-    .fm-placa { width: max-content; max-width: 80%; padding-inline: var(--s-2); }
+    .fm-compacta .fm-placa { width: max-content; max-width: 80%; padding-inline: var(--s-2); }
   }
 
   /*

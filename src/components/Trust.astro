@@ -20,6 +20,12 @@ import { trust } from '../content/home.ts';
   no hay comisiones que aparezcan después». Mismo icono, otra afirmación, así
   que va otro objeto: una sola etiqueta y un gancho vacío (`precio`). Por eso
   el objeto se pide por nombre y no por el icono.
+
+  **Y van con `compacta` (desde el 2026-10-05).** Ésta es la única sección
+  donde la lámina baja de 278 px —la fila de tres entre 760 y 1100, y el
+  carril del móvil—, y ahí cada objeto retira sus rótulos. Hasta ese día el
+  recorte valía para todas las páginas y lo que dejaba fuera a `/confianza` y
+  a `/tarifas` era un margen de 0,02 px.
 */
 const OBJETO = { bank: 'bank', clock: 'precio', people: 'people' } as const;
 ---
@@ -44,7 +50,7 @@ const OBJETO = { bank: 'bank', clock: 'precio', people: 'people' } as const;
       <ul class="grid" role="list">
         {trust.map((block) => (
           <li class="block">
-            <div class="block-fig"><FiguraMecanismo kind={OBJETO[block.icon]} /></div>
+            <div class="block-fig"><FiguraMecanismo kind={OBJETO[block.icon]} compacta /></div>
             {/* La insignia se queda —insignia = lo que hacemos nosotros— y pasa
                 al lado del titular, a 36 px, como en `/confianza`: arriba
                 ya está el objeto. */}

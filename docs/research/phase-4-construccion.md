@@ -458,6 +458,20 @@ movido dentro daría el mismo número; un hash, no.
 solapan y **no existe un valor cómodo**. Separarlos de verdad pide un parámetro explícito en vez de
 una consulta de contenedor, y eso es rediseñar una pieza ya aprobada. Queda anotado, no hecho.
 
+**Hecho el 2026-10-05.** `FiguraMecanismo` gana la propiedad `compacta`, que sólo pasa la Home
+(`Trust.astro`), y todas las reglas del bloque empiezan por `.fm-compacta`. `/confianza` y
+`/tarifas` ya no dependen de ningún margen: **con la lámina forzada a 250 px, antes se compactaban
+y ahora no** —comprobado en el navegador, no deducido del CSS—. El umbral se queda en 277,98 para
+que la Home no cambie. Las tres páginas salen idénticas: `/confianza` y `/tarifas` píxel a píxel y
+la Home en su geometría relativa.
+
+> **El parámetro explícito era la salida, y costó tres días en aparecer.** Esta sección decía que
+> separar los dos rangos «pide un parámetro explícito en vez de una consulta de contenedor» y lo
+> dejaba fuera por no rediseñar una pieza recién aprobada. No hizo falta rediseñarla: la consulta se
+> queda donde estaba y lo único que se añade es **quién la autoriza**. Cuando un umbral protege a
+> dos consumidores con necesidades distintas, lo que falta casi nunca es otro número — es saber a
+> cuál de los dos se le aplica.
+
 ### 4.15 Una lista de consumidores es un recuento con otro nombre  ·  *2026-10-02*
 
 El Motion System declara dónde vive cada movimiento. Su fila de M3 decía que la costura de

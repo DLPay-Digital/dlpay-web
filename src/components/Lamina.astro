@@ -1,0 +1,55 @@
+---
+/**
+ * **La lámina**: la superficie sobre la que se dibujan las figuras de objeto.
+ *
+ * Extraída el 2026-10-05, en su tercer uso. La estrenó `FiguraCaso` (las
+ * cuatro figuras de `/empresas`), la repitió `FiguraMecanismo` (`/confianza`,
+ * la Home y `/tarifas`) con una nota: «dos usos no justifican extraer una
+ * pieza; si aparece un tercero, se extrae». El tercero fue `FiguraUso` (la
+ * Home), que la copió una vez más y dejó la extracción propuesta como limpieza
+ * aparte. Es ésta. Las láminas de las cuatro páginas que la usan —`/empresas`,
+ * `/confianza`, `/tarifas` y la Home— salen **idénticas píxel a píxel** (ver
+ * la ficha de la entrega).
+ *
+ * ── La pieza ───────────────────────────────────────────────────────────────
+ *
+ * · **460×280 y nunca más ancha**, en `--papel-2` y con el radio `--r-3` de un
+ *   contenedor: ni sombra, ni textura, ni `--elev-card`.
+ * · **Es un contenedor de consulta** (`container-type: inline-size`): lo que
+ *   es dibujo se mide en `cqw` —1 cqw es el 1 % del ancho de la lámina— y lo
+ *   que es texto, en px, así que los rótulos son texto de verdad a 13 px en
+ *   todos los anchos. Las consultas `@container` de cada figura miden **la caja
+ *   de contenido**, dentro del borde de 1 px: una lámina de 280 tiene 278.
+ * · **Todo lo que va dentro se coloca en absoluto**, respecto de la lámina. Por
+ *   eso esa regla es `:global`: lo que llega por la ranura lleva el ámbito de
+ *   la figura que lo escribe, no el de la lámina, y sin `:global` la regla no
+ *   lo alcanzaría. Alcanza sólo a los hijos directos.
+ * · **El borde transparente no es un descuido**: en colores forzados el fondo
+ *   desaparece y el borde se vuelve visible, así que la lámina sigue teniendo
+ *   contorno.
+ *
+ * Quien la usa le pasa sus clases (la raíz de cada figura: `fc`, `fm`, `fu`)
+ * y sus atributos: las tres de ahora la marcan `aria-hidden`, porque el `h3` y
+ * el párrafo de al lado ya lo dicen con palabras.
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'div'>;
+const { class: clase, ...resto } = Astro.props;
+---
+<div class:list={['lamina', clase]} {...resto}><slot /></div>
+
+<style>
+  .lamina {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    aspect-ratio: 460 / 280;
+    container-type: inline-size;
+    background: var(--papel-2);
+    border-radius: var(--r-3);
+    overflow: hidden;
+    border: 1px solid transparent;
+  }
+  .lamina > :global(*) { position: absolute; }
+</style>

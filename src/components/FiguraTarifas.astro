@@ -84,7 +84,7 @@ const recibes = formatAmount(convert('to_usd', quoteLimits.samplePayClp, price.r
   <div class="tramo" data-enter>
     <div class="fila">
       <span class="rot">Recibes</span>
-      <span class="num">{recibes} <span class="div">USD</span></span>
+      <span class="num"><span class="cifra">{recibes} </span><span class="div">USD</span></span>
     </div>
     <div class="limite"></div>
     <p class="pie">el precio que ves</p>
@@ -158,15 +158,29 @@ const recibes = formatAmount(convert('to_usd', quoteLimits.samplePayClp, price.r
     color: var(--ink);
   }
   .rot { font-size: var(--t-label); color: var(--ink-mute); }
+  /*
+    Con el espaciado de 1.4.12 la divisa puede bajar de renglón; la cifra, no.
+    **Cuando baja, ocupa el renglón de la divisa y no el de la cifra.** En
+    texto corrido, el segundo renglón medía lo que mide uno de 24 px (36 con
+    ese espaciado) aunque sólo llevara «USD», a 13; la fila crecía 36 px y la
+    esquina de la figura se acercaba al corte: 49,2 px en el Mac de Sebastián,
+    donde la divisa baja por 1,5 px (2026-10-05). Por eso la cifra y la divisa
+    son dos piezas de una rejilla flexible: si la divisa baja, el renglón es el
+    suyo (19,5). Si no baja, todo queda donde estaba, al píxel.
+    El espacio entre las dos va DENTRO de la cifra, y `pre` lo conserva: así
+    sigue siendo un espacio de texto, al que el espaciado de quien lee se
+    aplica igual que antes. Un `gap` no lo haría.
+  */
   .num {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
     font-family: var(--f-num);
     font-variant-numeric: tabular-nums;
     font-size: var(--t-h3);
     letter-spacing: var(--ls-dato);
-    /* Con el espaciado de 1.4.12 la divisa puede bajar de renglón; la cifra,
-       no. */
-    overflow-wrap: normal;
   }
+  .cifra { white-space: pre; }
   .div { font-size: var(--t-label); color: var(--ink-mute); }
   @media (min-width: 960px) {
     .num { font-size: 24px; }

@@ -38,19 +38,17 @@
  * empresa», CHILE, EXTERIOR, USD y CLP. Salen del texto de al lado o ya están
  * publicados. Ninguna cifra.
  *
- * ── La lámina, por tercera vez ─────────────────────────────────────────────
+ * ── La lámina ──────────────────────────────────────────────────────────────
  *
- * Es la de `FiguraCaso` y `FiguraMecanismo`: ocho reglas de base repetidas.
- * Las dos anteriores decían «si aparece un tercero, se extrae», y aquí está el
- * tercero. **No se extrae en esta entrega a propósito**: hacerlo obliga a tocar
- * dos piezas recién integradas, y el ámbito de estilos de Astro no deja que
- * una carcasa estilice lo que llega por su ranura sin `:global`, que es justo
- * lo que hay que medir con calma. Queda propuesto como limpieza aparte en la
- * ficha de esta entrega, con las tres piezas medidas antes y después.
+ * Es `Lamina.astro`, la misma de `FiguraCaso` y `FiguraMecanismo`. Esta figura
+ * fue su tercer uso y la copió una vez más, con la extracción propuesta como
+ * limpieza aparte: se hizo el 2026-10-05, con las tres piezas medidas antes y
+ * después.
  *
  * Va `aria-hidden`: el `h3` y el párrafo de al lado ya lo dicen con palabras.
  */
 import Icon from './Icon.astro';
+import Lamina from './Lamina.astro';
 import type { UseCase } from '../content/home.ts';
 
 interface Props {
@@ -61,7 +59,7 @@ const { kind } = Astro.props;
 /* La cuña del sistema (la de `EjeDeAlcance`), en su caja de 56×20. */
 const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
 ---
-<div class:list={['fu', `fu-${kind}`]} aria-hidden="true">
+<Lamina class:list={['fu', `fu-${kind}`]} aria-hidden="true">
   {kind === 'cruza' && (
     <>
       <span class="fu-frontera"></span>
@@ -116,22 +114,10 @@ const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
       <span class="fu-destino fu-d3"><Icon name="empresa" size={20} /></span>
     </>
   )}
-</div>
+</Lamina>
 
 <style>
-  /* La lámina, la misma de `FiguraCaso` y `FiguraMecanismo`. */
-  .fu {
-    position: relative;
-    width: 100%;
-    max-width: 460px;
-    aspect-ratio: 460 / 280;
-    container-type: inline-size;
-    background: var(--papel-2);
-    border-radius: var(--r-3);
-    overflow: hidden;
-    border: 1px solid transparent;
-  }
-  .fu > * { position: absolute; }
+  /* La lámina es `Lamina.astro`, la misma de `FiguraCaso` y `FiguraMecanismo`. */
   .fu-rot, .fu-pie {
     font-family: var(--f-num);
     font-size: var(--t-label);

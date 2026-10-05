@@ -44,11 +44,13 @@
  * anchos, y el dibujo se escala con el ancho de la lámina (`cqw`, unidades de
  * contenedor) sin arrastrar el texto con él. Los iconos son los del set (§7).
  *
- * Lámina en `--papel-2` y radio `--r-3` (un contenedor): ni sombra, ni
- * textura, ni `--elev-card`. Va `aria-hidden`: el `h3` y el párrafo de al lado
- * ya lo dicen con palabras.
+ * La lámina es `Lamina.astro` (desde el 2026-10-05; antes, ocho reglas
+ * copiadas aquí): `--papel-2`, radio `--r-3`, ni sombra, ni textura, ni
+ * `--elev-card`. Va `aria-hidden`: el `h3` y el párrafo de al lado ya lo dicen
+ * con palabras.
  */
 import Icon from './Icon.astro';
+import Lamina from './Lamina.astro';
 import type { EmblemKind } from '../content/business.ts';
 
 interface Props {
@@ -62,7 +64,7 @@ const LOSAS = 8;
 /* La cuña del sistema (la de `EjeDeAlcance`), en su caja de 56×20. */
 const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
 ---
-<div class:list={['fc', `fc-${kind}`]} aria-hidden="true">
+<Lamina class:list={['fc', `fc-${kind}`]} aria-hidden="true">
   {kind === 'proveedores' && (
     <>
       <span class="fc-frontera"></span>
@@ -134,27 +136,14 @@ const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
       <span class="fc-rot fc-bajo fc-bajo-usd">USD</span>
     </>
   )}
-</div>
+</Lamina>
 
 <style>
   /*
-    La lámina: 460×280 y nunca más ancha. Todo lo que es dibujo se mide en
-    `cqw` (1 cqw = 1 % del ancho de la lámina); todo lo que es texto, en px.
+    La lámina es `Lamina.astro`: 460×280 y nunca más ancha, y todo lo de
+    dentro, en absoluto. Lo que es dibujo se mide en `cqw` (1 cqw = 1 % del
+    ancho de la lámina); lo que es texto, en px.
   */
-  .fc {
-    position: relative;
-    width: 100%;
-    max-width: 460px;
-    aspect-ratio: 460 / 280;
-    container-type: inline-size;
-    background: var(--papel-2);
-    border-radius: var(--r-3);
-    overflow: hidden;
-    /* En colores forzados el fondo desaparece; el borde, no. */
-    border: 1px solid transparent;
-  }
-  .fc > * { position: absolute; }
-
   .fc-rot, .fc-pie {
     font-family: var(--f-num);
     font-size: var(--t-label);
