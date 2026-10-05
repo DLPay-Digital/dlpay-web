@@ -167,9 +167,16 @@ const recibes = formatAmount(convert('to_usd', quoteLimits.samplePayClp, price.r
     donde la divisa baja por 1,5 px (2026-10-05). Por eso la cifra y la divisa
     son dos piezas de una rejilla flexible: si la divisa baja, el renglón es el
     suyo (19,5). Si no baja, todo queda donde estaba, al píxel.
-    El espacio entre las dos va DENTRO de la cifra, y `pre` lo conserva: así
-    sigue siendo un espacio de texto, al que el espaciado de quien lee se
+    El espacio entre las dos va DENTRO de la cifra, y `pre-wrap` lo conserva:
+    así sigue siendo un espacio de texto, al que el espaciado de quien lee se
     aplica igual que antes. Un `gap` no lo haría.
+    **`pre-wrap` y no `pre`** (2026-10-05, segunda vuelta). Con `pre` el
+    espacio cuenta en el ancho mínimo de la cifra aunque quede al final del
+    renglón: aquí la caja de la cifra se metía 8 px en el relleno de la fila
+    a 320 con el espaciado de 1.4.12 (sin tinta fuera: era el espacio), y en
+    la tarjeta de `/tarifas`, que lleva la misma regla, la fila entera salía
+    9 px de la pantalla. Con `pre-wrap` el espacio del final cuelga y no
+    cuenta. Donde la divisa no baja, idéntico al píxel.
   */
   .num {
     display: flex;
@@ -180,7 +187,7 @@ const recibes = formatAmount(convert('to_usd', quoteLimits.samplePayClp, price.r
     font-size: var(--t-h3);
     letter-spacing: var(--ls-dato);
   }
-  .cifra { white-space: pre; }
+  .cifra { white-space: pre-wrap; }
   .div { font-size: var(--t-label); color: var(--ink-mute); }
   @media (min-width: 960px) {
     .num { font-size: 24px; }

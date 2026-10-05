@@ -4049,3 +4049,87 @@ justo donde este equipo no puede mirar.
 del menú del móvil no se ve en ese modo en ninguna página** —se enfoca y se anuncia, pero sus tres
 rayas son fondos—. Es más grave que cualquiera de las nueve piezas de arriba, porque es un control
 y está en las dieciséis rutas. Va primero cuando se retome.
+
+---
+
+### Notas de la integración de `2026-10-05 · el menú del móvil y la divisa de la tarjeta` (tres commits)
+
+**Veredicto: integrada entera**, los cuatro archivos sin tocar una línea. Los siete md5 coinciden.
+`astro check` en **0 / 0 / 27** en los tres pasos, 80 pruebas, `.js` del build con el mismo hash, y
+axe, tabulación y encabezados **idénticos en las dieciséis rutas**.
+
+#### Commit 1 · el menú en colores forzados
+
+Medido por tinta, en los cuatro estados que importan:
+
+| | antes | ahora |
+|---|---|---|
+| oscuro, cerrado | **0 %** | 28,6 % |
+| oscuro, abierto | **0 %** | 28,6 % |
+| claro, cerrado | **0 %** | 28,6 % |
+| claro, abierto | **0 %** | 28,6 % |
+
+El botón estaba **completamente vacío** en ese modo, en las dieciséis rutas. La cabecera sale
+idéntica al píxel en las dieciséis, a 390 y 1280, con y sin espaciado.
+
+#### Commit 2 · y acá tengo que hablar de mí
+
+**El defecto es real y lo confirmé antes de integrar:** `.actions` de la cabecera salía de la
+pantalla con el espaciado de 1.4.12, **112 casos** en las dieciséis rutas entre 318 y 324 px, hasta
+**6,7 px** fuera. Después: **0**, en esos anchos y en 267 más de 400 a 1300.
+
+| | con 1.4.12 | sin espaciado |
+|---|---|---|
+| cabecera en dos filas | **318–344** (77 → 129 px) | **ningún ancho** |
+| capturas idénticas, 318–420 | 76 de 103 (las 27 que se parten) | **103 de 103** |
+| escritorio, margen más justo | 49,4 px de los 64, una sola fila | 64 px |
+
+**Lo que no puedo decir es que ningún barrido lo había visto.** Está en `cowork/README.md` **cinco
+veces**, en cinco integraciones distintas, siempre bien medido y siempre despachado igual: «0, salvo
+5 px a 320 con espaciado», «el de la cabecera, previo», «idéntico antes y después». Una de esas
+veces incluso anoté «y se apaga a 324», o sea que tenía la ventana caracterizada.
+
+> **La medición fue correcta las cinco veces. Lo que falló fue qué hice con ella.** Un
+> desbordamiento heredado sigue siendo un desbordamiento, y «idéntico antes y después» responde a
+> «¿lo rompí yo?», no a «¿está roto?». Son dos preguntas distintas y sólo contesté la primera.
+
+Y hay una causa estructural que sí vale arreglar: **mis barridos eran por sección** —`.fc`, `.cmp`,
+`.al`, `.fm`— y la cabecera no es de ninguna. Aparecía sólo como un `scrollWidth` suelto al margen
+de la pieza que estaba midiendo. Queda escrito en el Design System §10: **se barre por ruta, no por
+sección.**
+
+#### Commit 3 · la divisa de la tarjeta
+
+| Fila | baja sin espaciado | con 1.4.12 | la fila mide |
+|---|---|---|---|
+| «Das» | 318–336 | 318–385 | **8 px menos** (14 con espaciado) |
+| «Recibes» | 318–345 | 318–397 | **8 px menos** (14 con espaciado) |
+
+Nada sale de la pantalla en `/tarifas`, y los anchos donde la base desbordaba (318–320) quedan en 0.
+
+**El puente no se mueve, y lo comprobé por posiciones y no por hash** —la Home no es determinista
+contra sí misma—: **99 de 99 anchos idénticos** sin espaciado. Con espaciado, 97 de 99: a 320 y 330
+cambia **sólo el ancho de la caja** de la cifra, 132,81 → 124,80, que son **8,01 px** — exactamente
+el espacio final que `pre-wrap` deja de contar. Mismo `left`, mismo `top`, misma altura, misma
+tinta. Y la holgura al corte, intacta: 67,9 → 67,9 y 58,4 → 58,4.
+
+#### Mis dos detectores mal, los dos por la misma razón
+
+- **«La divisa baja de renglón» me salía en todos los anchos.** Con `align-items: baseline` una
+  pieza más pequeña tiene otro `top` **en el mismo renglón**, así que comparar `top` contra `top` da
+  siempre «abajo». Comparando contra el **pie** de la cifra salen las ventanas de arriba.
+- **«Qué sale de la pantalla» me señalaba un ítem del carrusel de la Home**, 388 px fuera. Está
+  fuera a propósito, dentro de su propio `overflow`. Hay que subir por los antepasados y descartar
+  lo que esté dentro de algo que recorta.
+
+Las dos veces el número era plausible y la pregunta estaba mal planteada. **Una distancia sólo
+significa algo cuando las dos cosas que mide son comparables**, y eso no lo dice el número.
+
+#### Sin verificar
+
+**Firefox**, y **colores forzados de verdad**: lo que hay es medición de tinta en Chromium. Ese modo
+vive sobre todo en el alto contraste de Windows.
+
+**Y queda anotado en `phase-4` §6** lo que esto no arregla: el botón del menú mide **28×44 px** donde
+el §10 pide 44. Pasa el mínimo de WCAG 2.2 (24), y ensancharlo movería la cabecera en el modo normal,
+así que no entra aquí.

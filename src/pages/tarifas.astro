@@ -207,11 +207,11 @@ const wa = contact.whatsappUrl(
         <div class="cotiza">
           <div class="fila">
             <span class="rot">Das</span>
-            <span class="num">{formatCLP(samplePay)} <span class="div">CLP</span></span>
+            <span class="num"><span class="cifra">{formatCLP(samplePay)} </span><span class="div">CLP</span></span>
           </div>
           <div class="fila destacada">
             <span class="rot">Recibes</span>
-            <span class="num">{formatAmount(sampleGet, 'USD').replace('US$ ', '')} <span class="div">USD</span></span>
+            <span class="num"><span class="cifra">{formatAmount(sampleGet, 'USD').replace('US$ ', '')} </span><span class="div">USD</span></span>
           </div>
         </div>
 
@@ -523,8 +523,26 @@ const wa = contact.whatsappUrl(
   }
   .fila .rot { font-size: var(--t-body-sm); color: var(--ink-mute); }
   /* `.num` es una utilidad global del sitio y ya trae la familia, las cifras
-     tabulares y el interletraje. No se vuelve a declarar acá. */
-  .fila .num { font-size: var(--t-dato-m); line-height: var(--lh-dato); }
+     tabulares y el interletraje. No se vuelve a declarar acá.
+
+     **Si la divisa baja de renglón, ocupa el suyo y no el de la cifra**
+     (2026-10-05). Bajo unos 350 px de pantalla «CLP» y «USD» bajan bajo su
+     cifra, y en texto corrido ese renglón medía lo que uno de la cifra: 26 px,
+     39 con el espaciado de 1.4.12, para una palabra de 14. Es la regla que ya
+     lleva el puente de la Home (`FiguraTarifas`), que copia esta tarjeta: la
+     cifra y la divisa son dos piezas de una rejilla flexible, y el espacio va
+     DENTRO de la cifra, con `pre-wrap`, para que siga siendo un espacio de
+     texto al que se le aplica el espaciado de quien lee. Un `gap` no lo haría.
+     **`pre-wrap` y no `pre`:** con `pre` el espacio del final cuenta en el
+     ancho mínimo de la cifra, y aquí, donde la fila comparte renglón con su
+     rótulo, la fila salía 9 px de la pantalla a 320 con el espaciado de
+     1.4.12 (medido). Con `pre-wrap` cuelga y no cuenta. Si la divisa no baja,
+     todo queda donde estaba, al píxel.
+     **Y 4 px entre los dos renglones**, que el puente no necesita: aquí la
+     cifra va a interlineado 1 y, sin ellos, «CLP» quedaba a 2 px del pie de
+     los dígitos. Sólo existen cuando la divisa baja. */
+  .fila .num { font-size: var(--t-dato-m); line-height: var(--lh-dato); display: flex; flex-wrap: wrap; align-items: baseline; row-gap: var(--s-1); }
+  .fila .cifra { white-space: pre-wrap; }
   .fila .div { font-size: var(--t-body-sm); color: var(--ink-mute); }
   .destacada { background: var(--tinta); color: var(--on-tinta); }
   .destacada .rot { color: var(--on-tinta-mute); }
