@@ -690,4 +690,18 @@ const wa = contact.whatsappUrl(
     .mini dt { font-size: var(--t-h3); }
     .dato .n { font-size: var(--t-dato); }
   }
+
+  /*
+    ── Colores forzados ────────────────────────────────────────────────────
+    El navegador quita los fondos, y la barra ES un fondo: hasta el 2026-10-05
+    desaparecía, y con ella su muestra en la leyenda, que seguía diciendo «la
+    barra no está partida» de una barra que no se veía. Pasan a `CanvasText`,
+    como las marcas de las láminas. Y la punta de la llave conserva su forma:
+    es un borde con los dos lados transparentes, que en este modo también se
+    pintan, y salía como un rectángulo de 12×6.
+  */
+  @media (forced-colors: active) {
+    .barra, .sw-barra { forced-color-adjust: none; background: CanvasText; }
+    .llave::after { forced-color-adjust: none; border-top-color: CanvasText; }
+  }
 </style>

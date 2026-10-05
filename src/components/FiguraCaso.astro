@@ -405,7 +405,15 @@ const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
       forced-color-adjust: none;
       background: CanvasText;
     }
-    .fc-cuna { forced-color-adjust: none; color: CanvasText; background: Canvas; }
+    /* La del cruce lleva su color con más especificidad (`.fc-proveedores
+       .fc-cuna`), y hasta el 2026-10-05 se quedaba en `--ink-mute` también
+       aquí: se nombra para que pase a `CanvasText` como las otras. */
+    .fc-cuna, .fc-proveedores .fc-cuna { forced-color-adjust: none; color: CanvasText; background: Canvas; }
     .fc-tuya, .fc-mueble, .fc-cajon { border: 1px solid CanvasText; }
+    /* La tapa del calendario y sus anillas también eran fondos, y el
+       calendario salía sin tapa: una raya la separa de los meses y cada anilla
+       es un aro. */
+    .fc-tapa { border-bottom: 1px solid CanvasText; }
+    .fc-anilla { border: 1px solid CanvasText; }
   }
 </style>

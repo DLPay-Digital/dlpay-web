@@ -3934,3 +3934,118 @@ el árbol, no lo que se oye. El árbol dice que los dos términos se anuncian; n
 
 **WebKit no queda pendiente:** no entra ninguna declaración nueva de ese grupo. Las `@container` de
 las etiquetas y las `cqw` ya las cerró Sebastián en el iPhone.
+
+---
+
+### Notas de la integración de `2026-10-05 · la limpieza de las láminas` (dos commits)
+
+**Veredicto: integrada entera**, los doce archivos sin tocar una línea. Los veinte md5 coinciden.
+`astro check` en **0 / 0 / 27** en los dos pasos, 80 pruebas, `/tarifas` en cero bytes ejecutables,
+y los `.js` del build con el mismo hash.
+
+#### Paso 1 · la extracción, y lo que había que vigilar
+
+**La extracción baja la especificidad de «todo hijo directo va en absoluto» de (0,3,0) a (0,2,0)**,
+porque `:global` le quita al hijo la clase de ámbito. La entrega dice que lo comprobó con `grep`.
+**Yo no lo comprobé con `grep`:** le pedí al navegador el `position` **calculado** de cada hijo
+directo de cada lámina, en cuatro páginas. **112 hijos, 0 que no calculen `absolute`**, y la lista
+y el orden idénticos antes y después. En este repositorio «queda sin uso» y «ningún hijo declara X»
+han sido falsos cada vez que se afirmaron sin medir; esta vez era verdad, y ahora está medido.
+
+```
+MAIN de /empresas, /confianza, /como-funciona, /tarifas y /precio
+   80 capturas (8 anchos × con y sin 1.4.12)   ·   80 idénticas, 0 distintas
+LÁMINAS de la Home                              ·   96 idénticas, 0 distintas
+```
+
+**El recorte compacto, medido por lo que hace y no por lo que dice el CSS.** Forzando la lámina a
+250 px —muy por debajo del umbral— en las páginas que no pasan `compacta`:
+
+| | antes | ahora |
+|---|---|---|
+| `/confianza` | se compactaba | **no** |
+| `/tarifas` («El monto») | se compactaba | **no** |
+| Home | se compactaba | **sí**, como debe |
+
+Eso es la prueba de que el margen de 0,02 px ya no sostiene nada. El umbral se queda en 277,98 y la
+Home no cambia.
+
+**La Home cambia sólo donde la divisa del puente baja de renglón**, y lo verifiqué de 1 en 1 px:
+**318–327** normal y **318–384** con espaciado, con la fila **10,9 y 10,5 px** más corta y la página
+subiendo 11. **En todos esos anchos la divisa está abajo**: no hay un solo ancho que cambie sin esa
+causa, que es lo que había que descartar.
+
+**Y la holgura del puente cae justo donde se declaró:**
+
+```
+@960 sin espaciado   67,9 → 67,9      (sin cambio)
+@960 con 1.4.12      49,2 → 58,4
+```
+
+Ese **49,2 lo medí yo el 2026-10-02** y lo reporté como «sobran 9 px y no 29». Ahora sobran 18.
+
+#### Paso 2 · colores forzados
+
+**Lo primero era que el modo normal no cambiara un píxel**, y no cambia: **80 de 80 y 96 de 96**
+contra el paso 1. Todo lo que añade está dentro de su `@media`.
+
+**Y en ese modo sí cambia, medido por TINTA** —se captura la pieza y se cuenta qué fracción de sus
+píxeles difiere del `Canvas` de la página, en oscuro y en claro—:
+
+| pieza | antes | ahora |
+|---|---|---|
+| barra del precio de `/tarifas` | **0 %** | 94,1 % |
+| su muestra en la leyenda | **0 px de tinta** | 272 |
+| línea del monto de `/precio` | **0 %** | 75 % |
+| ojal de la etiqueta | **0 %** | 40 % |
+| anilla del calendario | **0 %** | 29,6 % |
+| tapa del calendario | 2,5 % | 5,5 % |
+| pestaña de la carpeta | 2,6 % | 3,5 % |
+| gancho vacío de la Home | 20,3 % | **15,4 %** |
+| punta de la llave (Home) | 596 px | **554 px** |
+
+**Las dos últimas bajan de tinta, y eso es el arreglo.** El modo pinta los lados transparentes de
+un borde, así que un gancho abierto salía cerrado y una punta triangular salía rectángulo: **menos
+tinta es la forma correcta.** Es el tipo de arreglo que un «más es mejor» habría leído al revés.
+
+**La cuña del cruce de `/empresas` merece su línea**, porque es la que no se ve venir: se quedaba en
+`rgb(90, 100, 114)` —`--ink-mute`, un gris que ignora los colores que eligió quien mira— mientras
+las otras cuñas sí tomaban `CanvasText`. La causa era especificidad, no un olvido.
+
+```
+cuña del CRUCE   paso1 rgb(90,100,114)  →  paso2 rgb(255,255,255) en oscuro, rgb(0,0,0) en claro
+cuña de pilas    paso1 ya correcta       →  igual
+```
+
+#### Donde mi recuento estaba incompleto, no la entrega
+
+El crecimiento de CSS me salía bien en tres páginas y mal en tres, **y las tres por exactamente 254
+bytes**. No era la entrega: son los 254 bytes del bloque de `Carpeta`, que **Astro mete en línea en
+el HTML** de las tres páginas que la usan en vez de en un archivo `.css`. Contando HTML + CSS las
+seis coinciden al byte: +553, +422, +726, +254, +678 y +122.
+
+> **El peso de una página en este proyecto no se mide sumando sus `.css`.** Astro inlina los
+> estilos de componente pequeños, así que un bloque puede crecer sin que ningún archivo crezca.
+> Queda dicho porque el próximo que mida bytes por página va a tropezar en lo mismo.
+
+#### Mis dos falsos hallazgos, y por qué esta vez eran el arnés
+
+La primera pasada de identidad dio una diferencia en `/como-funciona` a 900 px, y la segunda **otra
+distinta** en una lámina de la Home a 640. Capturadas seis veces desde cada servidor: **el mismo
+hash siempre**. La causa es que comparaba los dos lados con `Promise.all`, o sea **dos contextos
+rasterizando a la vez**. En secuencia: 80 de 80 y 96 de 96.
+
+Es la tercera vez en la fase que mi instrumento inventa un hallazgo, y la primera por concurrencia y
+no por no esperar el reacomodo. La entrega anterior ya avisaba que la captura de la Home «no es
+determinista ni contra sí misma»; ahora sé por qué lo era en mi arnés, y no es de la página.
+
+#### Sin verificar
+
+**Firefox**, y **nadie ha usado el sitio en colores forzados de verdad**: lo que hay es la medición
+de tinta y las capturas, en Chromium. El modo existe sobre todo en Windows de alto contraste, que es
+justo donde este equipo no puede mirar.
+
+**Y queda el hallazgo que la entrega deja fuera a propósito**, anotado en `phase-4` §6: **el botón
+del menú del móvil no se ve en ese modo en ninguna página** —se enfoca y se anuncia, pero sus tres
+rayas son fondos—. Es más grave que cualquiera de las nueve piezas de arriba, porque es un control
+y está en las dieciséis rutas. Va primero cuando se retome.

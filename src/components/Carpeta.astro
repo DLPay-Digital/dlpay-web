@@ -132,6 +132,21 @@ const Rotulo = nivel;
   /* Colores forzados: la carpeta pierde su fondo; un borde la mantiene. */
   @media (forced-colors: active) {
     .carpeta-pestana, .carpeta-cuerpo { border: 1px solid CanvasText; }
-    .carpeta-pestana { border-bottom: 0; }
+    .carpeta-pestana { border-bottom: 0; position: relative; }
+    /* El corte de la pestaña: el `clip-path` se come el borde de la derecha,
+       y hasta el 2026-10-05 la diagonal quedaba sin trazo y el borde de
+       arriba se cortaba en seco. Se dibuja con un degradado, en una caja de
+       30 px que va de punta a punta del corte, y del lado de dentro, para que
+       el recorte no lo parta. */
+    .carpeta-pestana::after {
+      content: '';
+      position: absolute;
+      top: -1px;
+      right: -1px;
+      bottom: 0;
+      width: 30px;
+      forced-color-adjust: none;
+      background: linear-gradient(to top right, transparent calc(50% - 1px), CanvasText calc(50% - 1px), CanvasText 50%, transparent 50%);
+    }
   }
 </style>

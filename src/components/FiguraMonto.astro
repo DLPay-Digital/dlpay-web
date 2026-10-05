@@ -82,4 +82,10 @@
     color: var(--verde);
     flex: none;
   }
+  /* Colores forzados: la línea es un fondo y desaparecía (medido el
+     2026-10-05); pasa a `CanvasText`, como la de `/tarifas`. El corte es un
+     borde y las palabras son texto: ésos ya se veían. */
+  @media (forced-colors: active) {
+    .monto .linea { forced-color-adjust: none; background: CanvasText; }
+  }
 </style>

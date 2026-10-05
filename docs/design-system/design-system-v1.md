@@ -1320,6 +1320,22 @@ cada una, no qué significa.
   que es lo que hacía que «Personas» y «Empresas» ni siquiera coincidieran entre sí.
 - HTML semántico, jerarquía de headings correcta, labels en formularios, `alt` en imágenes.
 - `prefers-reduced-motion` respetado.
+- **Colores forzados** *(2026-10-05)*. En ese modo el navegador **quita los fondos** y **pinta los
+  lados transparentes de los bordes**. Por eso:
+  - todo lo que está dibujado con `background` desaparece, como la barra de `/tarifas`, que salía
+    con **0 px de tinta** (medido);
+  - todo triángulo o gancho hecho con bordes transparentes se rellena, como la punta de la llave,
+    que salía como un rectángulo.
+
+  Cada figura lleva su bloque `@media (forced-colors: active)`, que hace dos cosas:
+  - pasa a `CanvasText`, con `forced-color-adjust: none`, lo que es dibujo;
+  - les da borde a las piezas macizas.
+
+  Y **se mira en ese modo, oscuro y claro**, antes de entregarse. Un `clip-path` se come el borde:
+  el contorno se hace con dos capas. *Y el color de una marca puede quedarse fuera por
+  especificidad sin que nada avise: la cuña del cruce de `/empresas` seguía en `--ink-mute` —un
+  gris que ignora los colores que eligió quien mira— porque su regla de color tenía más
+  especificidad que la del modo.*
 - El cotizador operable por teclado; mensajes de error comprensibles y accionables.
 
 ---

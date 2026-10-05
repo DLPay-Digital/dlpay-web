@@ -207,8 +207,15 @@ const recibes = formatAmount(convert('to_usd', quoteLimits.samplePayClp, price.r
   .fin b { display: block; color: var(--on-tinta); font-weight: 400; }
   .fin span { color: var(--on-tinta-mute); }
 
-  /* Colores forzados: la fila pierde su fondo; un borde la mantiene. */
+  /*
+    Colores forzados: la fila pierde su fondo; un borde la mantiene. Y la punta
+    de la llave conserva su forma: es un borde con los dos lados
+    transparentes, y en este modo el navegador los pinta también, así que la
+    punta salía como un rectángulo de 14×7 (medido el 2026-10-05). Fuera del
+    ajuste, los lados siguen transparentes y la punta va en `CanvasText`.
+  */
   @media (forced-colors: active) {
     .fila { border: 1px solid CanvasText; }
+    .llave::after { forced-color-adjust: none; border-top-color: CanvasText; }
   }
 </style>

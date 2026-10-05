@@ -537,6 +537,28 @@ const { kind, compacta = false } = Astro.props;
       forced-color-adjust: none;
       background: CanvasText;
     }
-    .fm-etiqueta { border: 1px solid CanvasText; }
+    /*
+      Las etiquetas tienen las esquinas cortadas con `clip-path`, y el recorte
+      se come el borde: hasta el 2026-10-05 salían sin trazo en los dos cortes,
+      y el ojal, que es un fondo, desaparecía. Ahora el contorno se hace como
+      el de la etiqueta de la web, en las dos: la etiqueta entera en
+      `CanvasText` y, 1,5 px más adentro, una capa en `Canvas` con la misma
+      forma. Lo de dentro vuelve al ajuste del navegador, y el ojal gana un aro.
+    */
+    .fm-etiqueta { forced-color-adjust: none; background: CanvasText; }
+    .fm-etiqueta::before {
+      content: '';
+      position: absolute;
+      inset: 1.5px;
+      background: Canvas;
+      clip-path: polygon(22% 0, 78% 0, 100% 16%, 100% 100%, 0 100%, 0 16%);
+    }
+    .fm-etiqueta > * { forced-color-adjust: auto; }
+    .fm-etiqueta > :not(.fm-ojal):not(.fm-et-fondo) { position: relative; }
+    .fm-ojal { border: 1.5px solid CanvasText; }
+    /* El gancho vacío es un aro con un lado transparente, y este modo pinta
+       también ése: salía cerrado, un ojal sin etiqueta. Fuera del ajuste el
+       lado sigue abierto. */
+    .fm-gancho { forced-color-adjust: none; border-color: CanvasText; border-top-color: transparent; }
   }
 </style>

@@ -535,6 +535,7 @@ mapa viejo** es el modo de fallo que este documento existe para reducir.
 | D10, D11 | Cifras, testimonios, equipo con foto | DLPay |
 | D1b, D27 | Proveedor de hosting y cabeceras del host | Al elegir proveedor |
 | — | Seis claims publicados con marcador de Compliance sin firmar | Compliance |
+| — | **Colores forzados, fuera de las figuras.** El menú del móvil: sus tres rayas son fondos y, a 390 px, el botón no se ve en ninguna página (se enfoca y se anuncia, pero no se ve). Además, el `nodo` de la portada de `/precio` y detalles de los dispositivos en CSS (isla, bisagra, botones), que son decoración | Ingeniería. **El menú, primero** |
 | — | **84 listas** con `list-style: none` y sin `role` en las diez páginas —**dos de ellas `<ol>`**, donde el orden es el dato. Casi todas vienen de la cabecera y el pie, que están en las diez | Ingeniería, sin urgencia |
 
 **Del artículo de la Fed:** publicado el 2026-09-17, primer contenido real del blog.
