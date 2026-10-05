@@ -1318,6 +1318,21 @@ cada una, no qué significa.
   Corolario para cualquier marcador de «página actual»: va **absoluto**, no en flujo. En flujo
   le suma su alto a la caja del enlace y desplaza el texto respecto de los enlaces sin marcar,
   que es lo que hacía que «Personas» y «Empresas» ni siquiera coincidieran entre sí.
+- **Espaciado de texto (WCAG 1.4.12) en todas las rutas, no por sección** *(2026-10-05)*.
+  - Con el espaciado ampliado, a 320 px la marca, «Crear cuenta» y el menú pedían más de lo que
+    había: el botón del menú salía de la pantalla, con desplazamiento lateral, **en las dieciséis
+    rutas** —112 casos medidos acá, entre 318 y 324 px, hasta 6,7 px fuera—.
+  - Ahora la fila de la cabecera **se parte si no cabe**, y sólo en móvil: en escritorio la fila más
+    justa con ese espaciado deja 49,4 px del margen lateral de 64, así que no se toca.
+  - **Por qué ningún barrido lo había abierto, que es la parte útil.** Sí se había medido: aparece
+    cinco veces en `cowork/README.md`, siempre como «5 px a 320 con espaciado, de la cabecera,
+    previo», y una de esas veces con la ventana ya caracterizada («se apaga a 324»). El defecto
+    estaba medido y descrito; lo que faltaba era tratarlo como un hallazgo en vez de como el decorado
+    de otra medición. **Un desbordamiento heredado sigue siendo un desbordamiento.**
+  - La regla: **se barre de 320 a 1300, de 1 en 1, en todas las rutas, mirando que nada salga de la
+    pantalla**, con y sin ese espaciado. Por ruta, no por sección: la cabecera y el pie no son de
+    ninguna sección y por eso se caían del instrumento.
+
 - HTML semántico, jerarquía de headings correcta, labels en formularios, `alt` en imágenes.
 - `prefers-reduced-motion` respetado.
 - **Colores forzados** *(2026-10-05)*. En ese modo el navegador **quita los fondos** y **pinta los

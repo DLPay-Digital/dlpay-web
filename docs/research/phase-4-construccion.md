@@ -536,6 +536,7 @@ mapa viejo** es el modo de fallo que este documento existe para reducir.
 | D1b, D27 | Proveedor de hosting y cabeceras del host | Al elegir proveedor |
 | — | Seis claims publicados con marcador de Compliance sin firmar | Compliance |
 | — | **Colores forzados, fuera de las figuras.** El `nodo` de la portada de `/precio` y detalles de los dispositivos en CSS (isla, bisagra, botones), que son decoración. *El menú del móvil se arregló el 2026-10-05.* | Ingeniería, sin urgencia |
+| — | **El botón del menú del móvil mide 28×44 px**, y el §10 pide 44. Pasa el mínimo de WCAG 2.2 (24). Ensancharlo mueve la cabecera en el modo normal | Ingeniería, sin urgencia |
 | — | **84 listas** con `list-style: none` y sin `role` en las diez páginas —**dos de ellas `<ol>`**, donde el orden es el dato. Casi todas vienen de la cabecera y el pie, que están en las diez | Ingeniería, sin urgencia |
 
 **Del artículo de la Fed:** publicado el 2026-09-17, primer contenido real del blog.

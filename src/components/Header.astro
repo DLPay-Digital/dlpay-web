@@ -223,6 +223,18 @@ const infoIsCurrent = navInfo.some((item) => isCurrent(item.href));
     align-items: center;
     gap: var(--s-6);
     border-bottom: 1px solid rgba(237, 242, 239, 0.1);
+    /*
+      **Si la fila no cabe, las acciones bajan a una segunda fila** en vez de
+      salirse de la pantalla (2026-10-05). Con el espaciado de WCAG 1.4.12, a
+      320 px la marca, «Crear cuenta» y el menú piden 281,4 px donde hay 280,
+      y el botón del menú quedaba hasta 13,4 px fuera de la pantalla, con
+      desplazamiento lateral, entre 320 y 332 (medido). Sin ese espaciado la
+      fila sobra en 34 px a 320 y nunca baja: la cabecera de siempre, al
+      píxel. Sólo en móvil: en escritorio la fila más justa entra en el
+      margen lateral, de 64 px, y no sale de la pantalla.
+    */
+    flex-wrap: wrap;
+    row-gap: var(--s-2);
   }
 
   .brand {
@@ -558,7 +570,7 @@ const infoIsCurrent = navInfo.some((item) => isCurrent(item.href));
   .drawer a.drawer-sub { padding-left: var(--s-6); }
 
   @media (min-width: 900px) {
-    .bar { padding-inline: var(--pad-section); gap: var(--s-8); }
+    .bar { padding-inline: var(--pad-section); gap: var(--s-8); flex-wrap: nowrap; }
     /* La nav ocupa el espacio libre para que su ÚLTIMA entrada —el
        desplegable— quede pegada al bloque de autenticación, sin sacarla del
        landmark de navegación. */
