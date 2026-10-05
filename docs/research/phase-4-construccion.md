@@ -406,6 +406,23 @@ titular da 14,82.
 > instrumento que va más rápido tiene que demostrar que mide lo mismo; si no, lo barato sale caro en
 > la ronda siguiente.
 
+**Addendum del 2026-10-05, y es el que más enseña de los tres.** Integrando `/tarifas` volví a
+barrer sin esperar el reacomodo, **tres días después de escribir esta sección**. El barrido devolvió
+dos hallazgos: una etiqueta fuera de su lámina en dos anchos concretos, y un chevron pegado al texto
+con 0 px. Medidos con la página asentada: **49 px de margen** la primera y **23 a 28 px** el
+segundo. Ninguno existía.
+
+> **Una lección escrita no se aplica sola.** Esta sección estaba redactada, fechada y con sus dos
+> ejemplos, y aun así el script nuevo nació sin la espera, porque la espera vive en el instrumento y
+> no en el documento. Lo que cierra el agujero no es el párrafo: es que **el `requestAnimationFrame`
+> esté en el script con el comentario que dice por qué**, para que quien lo copie se lo lleve puesto.
+
+*Y el mismo día, la otra mitad del aviso:* la métrica del rótulo al corte devolvió `Infinity` porque
+medía en horizontal un rótulo que va **centrado sobre** el trazo, no a un lado; y la del chevron
+comparaba distancias horizontales entre cosas que están una sobre otra. **Una distancia entre dos
+cajas que no comparten renglón no significa nada**, y un instrumento que la calcula igual devuelve un
+número que parece una medición.
+
 *Las dos se detectaron igual: contra una página que no había tocado.* El desplazamiento fantasma
 aparecía también en el build anterior; el 1,01 era de un titular que esta entrega no toca. **Cuando
 un hallazgo cae en algo que no tocaste, el primer sospechoso es el instrumento.**
@@ -415,6 +432,10 @@ un hallazgo cae en algo que no tocaste, el primer sospechoso es el instrumento.*
 `FiguraMecanismo` pasó a usarse en dos sitios con láminas de tamaños distintos, y ganó un
 `@container (max-width: 277.98px)` que retira los rótulos secundarios. En la Home tiene que
 aplicarse; en `/confianza`, **nunca**, y `/confianza` está publicada y revisada.
+
+**Y desde el 2026-10-05 son DOS las páginas que dependen de ese margen:** `/tarifas` estrenó el
+quinto objeto del mismo componente, y sus láminas bajan también a 280 px en una pantalla de 320. El
+umbral que protege a una protege a las dos, y lo que lo rompa las romperá juntas.
 
 La lámina más estrecha de `/confianza` mide **280 px de borde a borde** y, como lleva un borde
 transparente de 1 px, **278 px de caja de contenido** — que es lo que mide una consulta de

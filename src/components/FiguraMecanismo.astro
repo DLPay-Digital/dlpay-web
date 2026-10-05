@@ -60,8 +60,13 @@ interface Props {
    * pero dice otra cosa que el de `/confianza` —no «referencial», sino «ya
    * incluye el spread, no se suma nada»—, así que el objeto se pide por su
    * nombre y no por el icono.
+   *
+   * `monto` es el quinto, y lo usa `/tarifas` (desde el 2026-10-05) para «El
+   * monto» de «Qué mueve el precio»: la línea del monto llega a un límite sin
+   * marcar dónde cae, «acá se conversa», y al otro lado el escritorio de tu
+   * ejecutivo. `/tarifas` usa también `clock`, tal cual, para «El mercado».
    */
-  kind: Mechanism['icon'] | 'precio';
+  kind: Mechanism['icon'] | 'precio' | 'monto';
 }
 const { kind } = Astro.props;
 ---
@@ -88,6 +93,24 @@ const { kind } = Astro.props;
 
   {kind === 'people' && (
     <>
+      <span class="fm-persona"><span class="fm-cabeza"></span><span class="fm-hombros"></span></span>
+      <span class="fm-mesa"></span>
+      <span class="fm-pata fm-pata-a"></span>
+      <span class="fm-pata fm-pata-b"></span>
+      <span class="fm-placa">
+        <Logo class="fm-marca" />
+        <span>Tu ejecutivo</span>
+      </span>
+    </>
+  )}
+
+  {kind === 'monto' && (
+    <>
+      {/* El monto: real, y tuyo. Llega a un límite que no dice dónde cae. */}
+      <span class="fm-linea fm-monto-linea"></span>
+      <span class="fm-rot fm-rot-conversa">acá se conversa</span>
+      <span class="fm-corte"></span>
+      {/* Y al otro lado, con quién se conversa: el escritorio de `people`. */}
       <span class="fm-persona"><span class="fm-cabeza"></span><span class="fm-hombros"></span></span>
       <span class="fm-mesa"></span>
       <span class="fm-pata fm-pata-a"></span>
@@ -431,9 +454,49 @@ const { kind } = Astro.props;
   }
 
   /*
+    ── El monto (`monto`, en `/tarifas`) ────────────────────────────────────
+    La figura que «El monto» ya tenía —una línea, un límite sin marcar dónde
+    cae y, al otro lado, «acá se conversa»— sobre la lámina, y donde antes sólo
+    había dos palabras, el escritorio de `people`: con quién se conversa. **Sin
+    escalones ni barras ascendentes**, que afirmarían tramos, y los tramos son
+    D5 (regla 3 de la cabecera de `pages/tarifas.astro`). La línea, el corte y
+    el rótulo siguen siendo lo que copia el puente de `/precio`
+    (`FiguraMonto.astro`), así que ese puente sigue anticipando su destino.
+    El rótulo va en `--verde-deep`, como iba en `/tarifas`: es lo que el puente
+    pinta en `--verde`.
+  */
+  .fm-monto { --fm-mesa: 66%; --fm-y: 66%; --fm-x: 36%; --fm-cx: 70%; }
+  .fm-monto-linea { left: 6%; right: calc(100% - var(--fm-x) + var(--s-3)); background: var(--ink-mute); }
+  .fm-rot-conversa { left: var(--fm-x); top: var(--s-4); transform: translateX(-50%); color: var(--verde-deep); }
+  /* El corte: el mismo trazo que la frontera, con otra clase porque marca otro
+     límite —dónde se conversa, no cuándo está acreditada— y el recuento del
+     Design System §6.2 cuenta por clase. */
+  .fm-corte {
+    left: var(--fm-x);
+    top: calc(var(--s-4) + 16px + var(--s-2));
+    bottom: var(--s-4);
+    border-left: 1.5px dashed var(--ink-mute);
+  }
+  .fm-monto .fm-persona { left: var(--fm-cx); }
+  /* La mesa, del ancho de la placa más larga que cabe: así la placa no queda
+     más ancha que el escritorio en la lámina de 280 (con el espaciado de
+     1.4.12 quedan a ras: 0,1 px, medido). */
+  .fm-monto .fm-mesa { left: calc(var(--fm-cx) - 26%); right: calc(100% - var(--fm-cx) - 26%); }
+  .fm-monto .fm-pata-a { left: calc(var(--fm-cx) - 21%); }
+  .fm-monto .fm-pata-b { right: calc(100% - var(--fm-cx) - 21%); }
+  /* Con `left: 70%` su ancho disponible sería el 30 % de la lámina: se le da
+     el suyo, simétrico respecto de su centro. */
+  .fm-monto .fm-placa {
+    left: var(--fm-cx);
+    width: max-content;
+    max-width: calc(2 * (100% - var(--fm-cx)) - 8px);
+    padding-inline: var(--s-2);
+  }
+
+  /*
     ── Bajo 280 px de lámina: sólo en la Home ─────────────────────────────
-    En `/confianza` la lámina más chica mide 280 (la pantalla de 320), así que
-    allí este bloque no se aplica nunca. En la Home sí: «Confianza que se
+    En `/confianza` y en `/tarifas` la lámina más chica mide 280 (la pantalla
+    de 320), así que allí este bloque no se aplica nunca. En la Home sí: «Confianza que se
     comprueba» pone tres láminas en fila desde 760 px, y entre 760 y 1100
     miden 208–290; en el carril del móvil, 216 a 320 px de pantalla. Ahí los
     rótulos de 13 px no caben junto al dibujo —«Cuenta de DLPay» se salía por

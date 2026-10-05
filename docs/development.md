@@ -75,7 +75,7 @@ src/
 │   ├── ComparaEmpresa.astro # persona y empresa: la tabla en dos carriles
 │   ├── ComoEmpezamos.astro  # la carpeta «Ten esto a mano» y los cuatro pasos
 │   ├── AlcanceEmpresa.astro # el relevo: hasta dónde llega nuestra parte, en /empresas
-│   ├── FiguraMecanismo.astro # los tres objetos de «Qué pasa con tu plata» en /confianza
+│   ├── FiguraMecanismo.astro # los objetos de mecanismo: /confianza, la Home y /tarifas (5 tipos)
 │   ├── CarpetaRequisitos.astro # la carpeta de «Qué te pedimos, y por qué»
 │   ├── FiguraUso.astro      # los tres objetos de «Tres formas de usarlo» en la Home
 │   ├── Carpeta.astro        # la carpeta: pestaña, cuerpo y el kit de «Ten esto a mano» (tres páginas)

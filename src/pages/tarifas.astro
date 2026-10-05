@@ -20,6 +20,30 @@
  * y dos figuras. Todo el cuerpo es texto ya publicado, movido de sitio pero no
  * reescrito.
  *
+ * ── El interior, el 2026-10-05 · entrega `tarifas-contenido` ───────────────
+ *
+ * Pedido por Sebastián con el criterio de `/empresas`, `/confianza`, la Home y
+ * `/como-funciona`. **Cambia una sección y un detalle; el orden y el texto, no.**
+ *
+ * · **«Qué mueve el precio» lleva los objetos de `/confianza`**, que es a donde
+ *   lleva el puente de esta página: **las dos etiquetas** para «El mercado» —la
+ *   de la web, ladeada, «referencial»; la de tu ejecutivo, quieta, «final»— y
+ *   **el escritorio con la placa «Tu ejecutivo»** para «El monto». Son
+ *   `FiguraMecanismo` sin tocar una línea: el texto de cada uno ya decía
+ *   exactamente eso. Antes eran una onda de 1,5 px y una línea con un corte,
+ *   de 56 px de alto en tarjetas de 480. Y las tarjetas dejan su superficie: la
+ *   lámina es ahora el objeto, como en «Tres formas de usarlo» de la Home.
+ * · **El mínimo vuelve a la medida de la página**: su párrafo corría a 82
+ *   caracteres por renglón en una tarjeta de 984, y el resto de la página va a
+ *   47ch.
+ *
+ * Lo que NO cambia, con su motivo: «El spread ya está adentro del número»
+ * explica la figura de la portada, que tiene justo encima, y una segunda
+ * figura de lo mismo sería decirlo dos veces; el aviso de la tabla es un
+ * compromiso de los T&C y no se disfraza; y «Qué no está incluido acá» ya
+ * lleva su marca, el filete `--ink-mute` —dibujarle la billetera sería un
+ * tercer dibujo del eje de alcance, y la excepción firmada permite dos.
+ *
  * ── Por qué ya no usa `Legal.astro` ────────────────────────────────────────
  *
  * Porque `Legal.astro` es una columna de prosa de 760 px y nada más, y acá hace
@@ -48,10 +72,11 @@
  * **Design System §4.5, reescrita el 2026-09-25.** La tarjeta que monta sobre
  * la portada es «el objeto del que trata la página cruzando una banda en
  * tinta»: `--elev-card`, **una sola en la página**, que es el límite duro. Las
- * dos tarjetas de «qué mueve el precio» son tarjetas levantadas del papel:
- * `--elev-pop`. Y entre medias el texto va sobre papel sin superficie, que es
- * el segundo límite: **lo elevado es lo que el cliente mira, lo plano es lo que
- * lee.**
+ * dos tarjetas de «qué mueve el precio» eran tarjetas levantadas del papel,
+ * `--elev-pop`; desde el 2026-10-05 son láminas, sin sombra, y la del mínimo es
+ * la única `--elev-pop` que queda. Y entre medias el texto va sobre papel sin
+ * superficie, que es el segundo límite: **lo elevado es lo que el cliente mira,
+ * lo plano es lo que lee.**
  *
  * ── Tres cosas del dibujo que no se pueden relajar ─────────────────────────
  *
@@ -64,8 +89,11 @@
  *    final»— no se ilustra: se demuestra dejando el espacio vacío. No se mete
  *    nada ahí ni se recorta para ganar altura.
  * 3. **«El monto» no lleva barras ascendentes.** Escalones afirman tramos, y
- *    los tramos son el dato bloqueado **D5** («ninguna por ahora»). Va una
- *    línea, un límite sin marcar dónde cae, y al otro lado dos palabras.
+ *    los tramos son el dato bloqueado **D5** («ninguna por ahora»). Hasta el
+ *    2026-10-05 iba una línea, un límite sin marcar dónde caía y al otro lado
+ *    «acá se conversa»; desde entonces va el escritorio de tu ejecutivo, que
+ *    dice con quién se conversa y no afirma ningún tramo. **La regla sigue:**
+ *    ningún dibujo de esta sección puede sugerir dónde cambia el precio.
  *
  * Las marcas son las del Design System §6.2 en su significado publicado: barra
  * llena = una magnitud · punteado = un límite, cruzarlo cambia algo · filete
@@ -123,6 +151,7 @@ import PageHero from '../components/PageHero.astro';
 import PendingNotice from '../components/PendingNotice.astro';
 import Puente from '../components/Puente.astro';
 import TelefonoAvisos from '../components/TelefonoAvisos.astro';
+import FiguraMecanismo from '../components/FiguraMecanismo.astro';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { convert, formatAmount } from '../lib/pricing/quote.ts';
 import { formatCLP } from '../lib/pricing/format.ts';
@@ -241,17 +270,23 @@ const wa = contact.whatsappUrl(
             más vivo, lo escribe Compliance.
           */}
           <h2 id="mueve-t">Qué mueve el precio</h2>
-          {/* `<dl>` de verdad, como en la versión publicada: son dos términos
-              con su definición y un lector de pantalla lo anuncia como tal. La
-              tarjeta es presentación, no estructura. */}
+          {/*
+            `<dl>` de verdad, como en la versión publicada: son dos términos con
+            su definición y un lector de pantalla lo anuncia como tal.
+
+            **El objeto va DENTRO del `<dt>`**, y no suelto en el `<div>` del
+            par. Suelto era HTML inválido —un `<div>` de `<dl>` sólo admite `dt`
+            y `dd`— y axe lo marcaba como violación grave («definition-list»)
+            desde el 2026-09-25, por el `svg` con `role="img"` de la onda. Dentro
+            del término es válido, va `aria-hidden` y el término se sigue
+            anunciando igual: «El mercado», «El monto».
+
+            Los dos objetos son los de `/confianza` («Qué pasa con tu plata»),
+            sin cambios: el texto de cada uno ya decía eso. Ver la cabecera.
+          */}
           <dl class="par">
             <div class="mini">
-              <svg class="fig-mini" viewBox="0 0 300 56" role="img"
-                   aria-label="Una línea que sube y baja: el precio se mueve durante el día.">
-                <path d="M0 40 C18 40 22 22 40 22 S62 34 80 31 100 16 120 19 142 37 160 33 180 14 200 18 222 33 240 27 262 12 280 16 296 22 300 24"
-                      fill="none" stroke="currentColor" stroke-width="1.5" />
-              </svg>
-              <dt>El mercado</dt>
+              <dt><div class="mini-fig"><FiguraMecanismo kind="clock" /></div>El mercado</dt>
               <dd>
                 El valor del dólar cambia durante el día. Por eso el precio de la web es
                 <strong>referencial</strong> y el precio final te lo confirma tu ejecutivo en el
@@ -259,17 +294,11 @@ const wa = contact.whatsappUrl(
               </dd>
             </div>
             <div class="mini">
-              {/*
-                Ni escalones ni barras ascendentes: afirmarían tramos, y los
-                tramos son D5. Una línea, un límite SIN marcar dónde cae, y al
-                otro lado dos palabras — que van en HTML, no en un `<text>`.
-              */}
-              <div class="fig-monto" aria-hidden="true">
-                <span class="linea"></span>
-                <span class="corte"></span>
-                <span class="nota">acá se<br />conversa</span>
-              </div>
-              <dt>El monto</dt>
+              {/* Ni escalones ni barras ascendentes: afirmarían tramos, y los
+                  tramos son D5. La línea y el corte de siempre, y al otro lado
+                  el escritorio: con quién se conversa, no dónde cambia el
+                  precio. Ver la regla 3 de la cabecera. */}
+              <dt><div class="mini-fig"><FiguraMecanismo kind="monto" /></div>El monto</dt>
               <dd>
                 Las operaciones de mayor volumen se conversan con el ejecutivo. Si operas montos
                 grandes o de forma recurrente, las condiciones se acuerdan contigo.
@@ -590,57 +619,45 @@ const wa = contact.whatsappUrl(
   .mute strong { color: var(--ink); }
 
   /* ── Qué mueve el precio ───────────────────────────────────────────────── */
-  .par { display: grid; gap: var(--s-4); margin: 0; }
-  .mini {
-    background: var(--papel);
-    border: 1px solid var(--line);
-    border-radius: var(--r-card);
-    box-shadow: var(--elev-pop);
-    padding: var(--s-5);
-  }
+  /*
+    Sin tarjeta: la lámina de `FiguraMecanismo` es la superficie, en papel-2
+    sobre el papel de la página, y debajo van el término y su definición. Es
+    la disposición de «Tres formas de usarlo» en la Home.
+  */
+  .par { display: grid; gap: var(--s-7); margin: 0; }
   .mini dt {
     font-size: var(--t-h3-m);
     line-height: var(--lh-h3);
     font-weight: 600;
-    margin: var(--s-4) 0 var(--s-2);
+    margin: 0 0 var(--s-2);
   }
-  .mini dd { margin: 0; font-size: var(--t-body-sm); color: var(--ink-mute); }
+  .mini dd { margin: 0; font-size: var(--t-body-sm); color: var(--ink-mute); max-width: 47ch; }
   .mini dd strong { color: var(--ink); }
-  .fig-mini { display: block; width: 100%; height: 56px; color: var(--ink-mute); }
-
-  /* «El monto»: una línea, un corte y dos palabras. Sin escalones — ver la
-     nota 3 de la cabecera. Todo en CSS para que la nota sea texto real. */
-  .fig-monto {
-    position: relative;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    gap: var(--s-3);
-  }
-  .fig-monto .linea { flex: 1; height: 3px; background: var(--ink-mute); }
-  .fig-monto .corte {
-    width: 0;
-    height: 36px;
-    border-left: 1.5px dashed var(--ink);
-    flex: none;
-  }
-  .fig-monto .nota {
-    font-family: var(--f-num);
-    font-size: var(--t-dato-sm);
-    line-height: 1.3;
-    color: var(--verde-deep);
-    flex: none;
+  /*
+    El objeto vive dentro del `<dt>`, así que hereda su tipografía: 20 px y
+    peso 600. Se devuelve a la del cuerpo, que es la que tiene en `/confianza`,
+    para que el objeto sea **el mismo** —misma geometría y mismos estilos
+    calculados, medido contra `/confianza`— y no una variante en negrita.
+  */
+  .mini-fig {
+    margin-bottom: var(--s-5);
+    font-size: var(--t-body);
+    line-height: var(--lh-body);
+    font-weight: 400;
   }
 
   /* ── El dato solo ──────────────────────────────────────────────────────── */
-  .dato { display: flex; align-items: baseline; gap: var(--s-3); flex-wrap: wrap; }
+  .dato { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-3); }
   .dato .n {
     font-family: var(--f-num);
     font-size: var(--t-dato-m);
     letter-spacing: var(--ls-dato);
     line-height: var(--lh-dato);
   }
-  .dato .u { color: var(--ink-mute); font-size: var(--t-body-sm); }
+  /* A la medida del resto de la página —sin ella corría a 82 caracteres por
+     renglón en una tarjeta de 984 px— y en su propio renglón, bajo la cifra:
+     al lado, alineada a la base del número, quedaba colgando. */
+  .dato .u { color: var(--ink-mute); font-size: var(--t-body-sm); max-width: 47ch; }
 
   /* ── Lo que no es nuestro ──────────────────────────────────────────────── */
   .ajeno { border-left: 3px solid var(--ink-mute); padding-left: var(--s-5); }
@@ -659,7 +676,11 @@ const wa = contact.whatsappUrl(
     /* La llave y su rótulo miden lo que mide la barra, no lo que mide la
        rejilla: si llegaran hasta el borde, nombrarían también el vacío. */
     .llave, .fig-rot { margin-right: 184px; }
-    .par { grid-template-columns: 1fr 1fr; gap: var(--s-5); }
+    /* Dos columnas de hasta 460 px, lo que mide la lámina como mucho, y el
+       sobrante al centro: así el borde derecho de la segunda cae con el de la
+       tarjeta del mínimo, que va justo debajo. Con `1fr 1fr` quedaba 20 px
+       antes. */
+    .par { grid-template-columns: repeat(2, minmax(0, 460px)); justify-content: space-between; gap: var(--s-6); }
   }
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }

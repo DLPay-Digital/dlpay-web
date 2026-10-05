@@ -3821,3 +3821,116 @@ con espaciado contra otra sin él.**
 
 **Firefox** y **un lector de pantalla real**. WebKit no queda pendiente: esta entrega no estrena
 ninguna declaración de las que Sebastián ya cerró en el iPhone.
+
+---
+
+### Notas de la integración de `2026-10-05 · tarifas: «Qué mueve el precio» y el mínimo`
+
+**Veredicto: integrada entera**, los tres archivos sin tocar una línea de código, más seis fechas
+corregidas en comentarios. `astro check` en **0 errores, 0 avisos y 27 sugerencias**, 80 pruebas, y
+`/tarifas` sigue en **cero bytes ejecutables**. Los seis md5 coinciden.
+
+Es la quinta página del mismo criterio, y cierra la tanda: `/empresas`, `/confianza`, la Home,
+`/como-funciona` y ahora `/tarifas`.
+
+#### Lo que más valía de esta entrega no es el dibujo
+
+**`/tarifas` arrastraba una violación grave de accesibilidad desde el 2026-09-25**, y esta entrega
+la retira. Lo confirmé **sobre el build anterior antes de integrar**, que es el orden que importa:
+`definition-list [serious] ×1`, a 1280 y a 390. Un `<div>` dentro de un `<dl>` sólo admite `dt` y
+`dd`, y la onda iba suelta ahí con su `role="img"`.
+
+El arreglo es mover el objeto **dentro del `<dt>`**. Después: **0 violaciones a los dos anchos**, y
+el árbol accesible idéntico salvo el nodo que sobraba.
+
+```
+ÁRBOL /tarifas   56 nodos → 55
+   −  img "Una línea que sube y baja: el precio se mueve durante el día."
+```
+
+**Los dos términos se siguen anunciando igual.** Eso era lo que había que comprobar y está medido:
+el único nodo que desaparece es el de la onda.
+
+#### La identidad, que es lo que vigilo cuando se toca un componente compartido
+
+`FiguraMecanismo` lo usan ya tres páginas y pasa a cuatro. Por hash de captura, no por tamaño de
+caja:
+
+```
+PÍXEL  56 idénticas · 0 distintas     (/confianza .mech y .req, /empresas .ce, el puente de /precio)
+ALTOS  42 iguales   · 0 distintos      7 anchos × con y sin el espaciado de 1.4.12
+HOME «Confianza»   geometría idéntica en 7 de 7 anchos
+```
+
+**El reloj de `/tarifas` es el mismo objeto que el de `/confianza`, y lo verifiqué con más cuidado
+que «se parece».** A 1280 y a 390, donde las dos láminas miden lo mismo, **cero diferencias** en
+geometría relativa y en estilos calculados, pieza por pieza. A 900 y 760 las láminas miden distinto
+—400 contra 384, y 344 contra 460— y ahí sí difieren: **la consulta `@container` de las etiquetas se
+dispara en una y no en la otra**, que es precisamente lo que se construyó para hacer. El objeto es
+el mismo; lo que cambia es el contenedor.
+
+| | lámina `/confianza` | lámina `/tarifas` | `fm-et-grande` |
+|---|---|---|---|
+| 1280 | 460 | 460 | 16 px en las dos |
+| 760 | 460 | 344 | 16 px · **13 px** (bajo 380 de lámina) |
+
+#### Lo demás
+
+| Qué | Declarado | Medido acá |
+|---|---|---|
+| `astro check` | 0 / 0 / 27 | **0 / 0 / 27** ✔ |
+| `npm test` · zero-JS en `/tarifas` | 80 de 80, 0 bytes | **80 de 80**, «/tarifas/ no ejecuta nada» ✔ |
+| `axe` `/tarifas` | 1 → 0 a 1280 y 390 | **1 → 0**, confirmado antes y después ✔ |
+| `axe` `/precio` y `/confianza` | sin cambio | **0 y 0**, antes y después ✔ |
+| Árbol de `/tarifas` | idéntico salvo el nodo de la onda | **56 → 55, sólo ése** ✔ |
+| Identidad de las piezas compartidas | idénticas | **56 de 56** ✔ |
+| `.js` del build | idénticos | **mismo hash** ✔ |
+| Marcas punteadas | siguen siendo once | **once, en 6 de 16 rutas** ✔ |
+| Barrido de los dos objetos, 320→1300 **de 1 en 1**, con y sin 1.4.12 | 0 problemas, láminas 280–460 | **0 incidencias** sin espaciado y **0 de contenido** con él; láminas **280–460**; fuente mínima 13 px ✔ |
+| Desplazamiento lateral a 320 con 1.4.12 | el de la cabecera, previo | **5 px, idéntico antes y después**, y se apaga a 324 ✔ |
+
+**El recuento merece una línea**, porque es el tipo de cambio que desorienta a quien recuente: el
+corte de «El monto» pasa de `.corte` a **`.fm-corte`**. Mismo trazo, mismo significado, otra clase
+—y la tabla del §6.2 cuenta por clase—. Sin esa nota, el próximo barrido parecerá decir que una
+marca se fue y otra llegó. Queda escrita.
+
+**Las holguras me salen más generosas que las declaradas, y digo con qué las medí** para que se
+puedan comparar: **rótulo al corte 9 px** sin espaciado y 7 con él, medido en vertical, de la base
+del rótulo al arranque del trazo —va centrado SOBRE el corte, no a un lado—; **chevron al texto
+11,5 px** sin espaciado y 7 con él, contando sólo lo que comparte renglón. Los dos pasan con
+holgura y en los dos casos el peor ancho es 320. La entrega declara 4,5 y 2,5; no son los mismos
+puntos de medida, así que **mi número no desmiente el suyo: mide otra cosa**, y lo dejo dicho en vez
+de presentarlo como una coincidencia.
+
+#### Mis dos falsos hallazgos, y los dos por la misma causa
+
+El barrido de 1 en 1 me devolvió **dos problemas que no existen**:
+
+- **«Tu ejecutivo» fuera de su lámina a 363 y 406 px.** Medido con la página asentada, su tinta
+  queda a **49 px** del canto derecho.
+- **Chevron pegado al texto de la etiqueta, 0 px, a 966.** Con una métrica que sólo compara lo que
+  comparte renglón: **23 a 28 px** en `/tarifas` y 19 a 24 en `/confianza`. Cero solapes.
+
+**La causa de los dos fue la misma, y es mía: el barrido medía sin esperar el reacomodo del
+navegador.** Es exactamente el fallo que escribí en `phase-4-construccion.md` §4.13 hace tres días,
+con sus dos ejemplos. **Escribir la lección no la aplica**: lo que la aplica es que el instrumento
+la lleve dentro, y por eso el `requestAnimationFrame` quedó ahora con su comentario en el script.
+
+#### Las fechas de la entrega, corregidas
+
+Seis comentarios de los tres archivos se fechan **2026-10-02** para cosas que entran **hoy, el
+2026-10-05**. La ficha de la propia entrega se fecha 10-05, así que es un arrastre del borrador.
+Corregidas las seis; **las dos del 10-02 que sí son correctas se quedan** —la creación del componente
+y el `kind="precio"` de la Home, que entraron ese día de verdad—.
+
+No es cosmético en este repositorio: la mitad de los desfases que he corregido esta semana empezaron
+siendo una fecha que nadie volvió a mirar.
+
+#### Sin verificar
+
+**Firefox** y **un lector de pantalla real.** Lo segundo pesa más que de costumbre: el arreglo de
+`definition-list` es una corrección de **semántica**, y lo que mide `axe` y el árbol de Playwright es
+el árbol, no lo que se oye. El árbol dice que los dos términos se anuncian; nadie lo ha escuchado.
+
+**WebKit no queda pendiente:** no entra ninguna declaración nueva de ese grupo. Las `@container` de
+las etiquetas y las `cqw` ya las cerró Sebastián en el iPhone.

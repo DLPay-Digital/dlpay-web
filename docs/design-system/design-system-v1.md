@@ -876,6 +876,10 @@ unidad de valor que viaja— con el relevo de la misma página —donde el tramo
 nuestro— concluirá, razonablemente, que el verde se usa de dos maneras incompatibles, y
 «arreglará» una.
 
+**El quinto, `monto` (en `/tarifas`, 2026-10-05), tampoco.** Filete `--ink-mute` (el monto, que es
+tuyo) y trazo punteado (un límite **sin marcar dónde cae**). El escritorio, la persona y la placa son
+partes del objeto. **Sin escalones ni barras**: los tramos son D5.
+
 **Las figuras de mecanismo del 2026-10-02 tampoco estrenan ninguna**, y se comprobó igual: punto
 lleno verde (la unidad de valor, dentro del edificio), filete `--ink-mute` (la transferencia, que es
 tuya y no nuestra), tramo verde (lo nuestro, y sólo **después** de la frontera) y trazo punteado. La
@@ -933,15 +937,22 @@ bisagra del portátil. Un filete `--ink-mute` significa «existe, es real, no es
 | Home, «Tres formas de usarlo» ×2 | `.fu-frontera` de `FiguraUso` | la frontera de Chile, en `cruza` y en `reparte` |
 | `/precio`, la banda | `.frontera` | el instante en que el cliente acepta |
 | `/precio`, la banda | `.caduca` | el instante en que se cumplen los 12 minutos |
-| `/tarifas` ×3 | `.limite`, `.sw sw-linea`, `.corte` | dónde acaba el precio · el spread · dónde se conversa |
+| `/tarifas` ×3 | `.limite`, `.sw sw-linea`, `.fm-corte` (de `FiguraMecanismo`, «El monto») | dónde acaba el precio · el spread · dónde se conversa |
 | Home y `/precio`, los puentes | `.limite` y `.corte` | los mismos dos, copiados a sus figuras |
 | `/empresas` ×2 | `.fc-frontera` de `FiguraCaso` | la frontera de Chile, en el cruce y en la cajonera |
 | `/confianza` y la Home, «Confianza que se comprueba» | `.fm-frontera` de `FiguraMecanismo` | cuándo la transferencia está **acreditada** — antes no movemos nada |
 | `/como-funciona`, «Dónde termina nuestra operación» | `.ea-limite` de `EjeDeAlcance` (en móvil, el borde superior de `.ea-tras-limite`) | antes de la tercera opción: lo que sigue es otro proceso, con otros servicios, y **no lo realiza DLPay** |
 
-**Las otras nueve rutas no tienen ninguna**, y eso también se midió: `/preguntas`, `/blog` y sus
-tres artículos, las tres legales sin `/tarifas` y la 404.
+**Las otras diez rutas no tienen ninguna**, y eso también se midió: `/preguntas`, `/blog` y sus
+**cuatro** artículos, las tres legales sin `/tarifas` y la 404.
 
+> *Y una cuarta pasada el 2026-10-05, al pasar «Qué mueve el precio» de `/tarifas` a objetos:*
+> **siguen siendo once, en seis de DIECISÉIS rutas** —la decimosexta es el artículo de empleo, que no
+> tiene ninguna—. Lo único que cambia es un nombre: el corte de «El monto» pasa de `.corte` a
+> `.fm-corte`, porque lo dibuja ahora `FiguraMecanismo`. **Mismo trazo y mismo significado, otra
+> clase**, y esta tabla cuenta por clase: quien recuente sin leer esto creerá que una marca se fue y
+> otra llegó.
+>
 > *Y una tercera pasada el 2026-10-02, al rehacer `/como-funciona`:* **once marcas y seis rutas.**
 > El eje de alcance corto estrena `.ea-limite`, y ésta **sí es una fila nueva y no una ruta más en
 > una fila**: es un límite distinto, con su propio significado —dónde deja de ser nuestro el
@@ -1235,7 +1246,7 @@ cada una, no qué significa.
 | **Héroe con cotizador** | El primer viewport de la Home | El cotizador **no entra** animado: es el instrumento y tiene que estar encendido al llegar. Lo que entra es el texto (M6) |
 | **Encabezado de página** | Las ocho rutas que no son la Home | `PageHero`. Dos composiciones: a dos columnas y **apilada y centrada**, ésta con la pieza del `aside` montada sobre la costura con la sección siguiente |
 | **Dispositivos en CSS: teléfono, portátil, tableta y teléfono de avisos** | Enseñar el producto sin imágenes. El teléfono de chat (`/como-funciona`, Home) una **operación negociándose**; el portátil (`/empresas`) la plataforma; la tableta (`/preguntas`) **una duda resolviéndose**; el teléfono bloqueado con avisos (`/confianza`, desde el 2026-09-30) **una operación comprobándose desde fuera** | Cero archivos. **El texto nunca se teclea**: las cifras salen de `lib/pricing` y la pregunta de la tableta se busca en `general.ts` por su texto. Los cuatro van `aria-hidden` y **el chasis va claro**, que es lo único que recorta un objeto contra la tinta. **Dos teléfonos y no uno, a propósito:** aquél tiene la app abierta y una conversación; éste está bloqueado y enseña tres avisos de tres remitentes, de los que **sólo uno es nuestro**. Si el hilo de la tableta empieza a hablar de montos, deja de ser tableta y pasa a ser teléfono |
-| **Figura de mecanismo** | Los tres mecanismos de `/confianza` | `FiguraMecanismo`. El edificio de por medio, la placa del escritorio y las dos etiquetas, en el lado que el zigzag dejaba vacío. La misma lámina que `FiguraCaso`, repetida y no importada: dos usos no justifican extraer una pieza. **El banco no lleva nombre** —BCI es un claim con marcador— y **lo nuestro empieza después de la frontera «acreditada»**. Y, desde el 2026-10-02, los tres bloques de «Confianza que se comprueba» en la Home, con un cuarto objeto, `precio` —una sola etiqueta y un gancho vacío—; bajo 280 px de lámina, que sólo se da en la Home, los rótulos secundarios se retiran. *2026-10-02.* |
+| **Figura de mecanismo** | Los tres mecanismos de `/confianza` | `FiguraMecanismo`. El edificio de por medio, la placa del escritorio y las dos etiquetas, en el lado que el zigzag dejaba vacío. La misma lámina que `FiguraCaso`, repetida y no importada: dos usos no justifican extraer una pieza. **El banco no lleva nombre** —BCI es un claim con marcador— y **lo nuestro empieza después de la frontera «acreditada»**. Y, desde el 2026-10-02, los tres bloques de «Confianza que se comprueba» en la Home, con un cuarto objeto, `precio` —una sola etiqueta y un gancho vacío—; bajo 280 px de lámina, que sólo se da en la Home, los rótulos secundarios se retiran. **Y desde el 2026-10-05, las dos piezas de «Qué mueve el precio» en `/tarifas`:** `clock` tal cual para «El mercado» y un quinto objeto, `monto`, para «El monto» —la línea, el corte y «acá se conversa» de siempre, y al otro lado el escritorio de tu ejecutivo—. El puente de `/precio` (`FiguraMonto`) **copia de él la línea, el corte y esas dos palabras**, así que sigue anticipando su destino. *2026-10-02 y 2026-10-05.* |
 | **Carpeta** | Lo que traes tú: «Ten esto a mano» en `/empresas` y `/como-funciona`, y «Qué te pedimos» en `/confianza` | `Carpeta.astro`. Pestaña en la diagonal de la marca, con rótulo o vacía; cuerpo con fondo; con `items`, el kit de placas de 48 px. **Placa cuadrada = lo que traes tú.** Extraída en su tercer uso el 2026-10-02, con las dos páginas anteriores idénticas píxel a píxel. |
 | **Figura de uso** | Los tres usos de la Home | `FiguraUso`. Cruza, convierte y reparte como objetos sobre la lámina de `FiguraCaso`: la topología es el dato y se conserva. Rótulos a 13 px; bajo 262 px de lámina se retiran los pies de pieza. *2026-10-02.* |
 | **Figura de caso** | Las cuatro operaciones de `/empresas` | `FiguraCaso`. Un objeto por caso —el cruce, la cajonera, el calendario y las dos pilas— sobre una lámina en `--papel-2`, con las marcas del §6.2 y ninguna cifra. HTML y no SVG: los rótulos son texto a 13 px en todos los anchos. **El pago al proveedor va en `--ink-mute`, no en verde**: lo hace la empresa, no DLPay. *Sustituye al emblema de caso el 2026-10-02.* |
