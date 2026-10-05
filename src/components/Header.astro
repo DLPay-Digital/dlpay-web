@@ -490,6 +490,17 @@ const infoIsCurrent = navInfo.some((item) => isCurrent(item.href));
   .burger { display: flex; flex-direction: column; gap: var(--s-1); }
   .burger i { display: block; width: 20px; height: 1.5px; background: var(--on-tinta-mute); transition: background-color var(--m-fast) var(--m-ease); }
   .menu[open] .burger i { background: var(--on-tinta); }
+  /*
+    Colores forzados: las tres rayas son FONDOS, y ese modo quita los fondos.
+    Hasta el 2026-10-05 el botón del menú quedaba vacío bajo 900 px en las
+    dieciséis rutas: se enfocaba y se anunciaba, pero no se veía (medido).
+    Pasan a `CanvasText`, el color de texto que eligió quien mira, abierto o
+    cerrado: con el ajuste apagado, el `--on-tinta` del estado abierto se
+    quedaría tal cual, y en un tema claro no se vería.
+  */
+  @media (forced-colors: active) {
+    .burger i, .menu[open] .burger i { forced-color-adjust: none; background: CanvasText; }
+  }
 
   /*
     `z-index` EXPLÍCITO, y no es decorativo: sin él el enlace de la franja de
