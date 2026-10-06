@@ -1,0 +1,62 @@
+// ---------------------------------------------------------------------------
+// DLPay Web — despliegue en Cloudflare Workers (D1b, 2026-10-06)
+//
+// ── Qué es y por qué existe ────────────────────────────────────────────────
+//
+// El sitio es ESTÁTICO (`output: 'static'`) y aquí no hay ningún Worker: este
+// archivo sólo le dice a Cloudflare qué carpeta servir. Es un despliegue de
+// «assets» puro, sin código en el servidor, sin rutas dinámicas y sin estado.
+//
+// Se eligió Workers y no Pages el 2026-10-06, decisión de Sebastián: el panel
+// de Cloudflare lleva los proyectos nuevos por ahí y es hacia donde se está
+// moviendo el producto. El coste es este archivo, que es específico de un
+// proveedor.
+//
+// **No rompe ADR-0005.** La regla vinculante es que el sitio pueda publicarse
+// copiando la carpeta de build a cualquier servidor estático, y eso sigue
+// siendo cierto: `dist/` son 43 archivos y 1,1 MB de HTML, CSS, fuentes e
+// imágenes. Este archivo no entra en el build ni lo condiciona; si mañana el
+// proveedor cambia, se borra y no queda rastro.
+//
+// **No añade dependencias.** `wrangler` lo ejecuta Cloudflare con `npx` en su
+// propio entorno de build: `package.json` sigue declarando cuatro paquetes y
+// el análisis del §8 de CLAUDE.md no se activa.
+//
+// ── Las dos opciones que NO son por omisión ────────────────────────────────
+//
+// · `not_found_handling: "404-page"` sirve nuestro `dist/404.html` con estado
+//   404. Por omisión Cloudflare devuelve un 404 sin cuerpo, así que la página
+//   de error que el proyecto construyó no se vería nunca. Es una de las cinco
+//   rutas en cero bytes ejecutables.
+//
+// · `html_handling: "auto-trailing-slash"` es el valor por omisión, y se
+//   escribe explícito porque aquí significa algo: `astro.config.mjs` declara
+//   `trailingSlash: 'always'` y el build genera directorios
+//   (`/tarifas/index.html`). Todas las URL canónicas, el sitemap y los enlaces
+//   internos llevan la barra final. Con esta opción, quien llegue a `/tarifas`
+//   acaba en `/tarifas/`, que es la URL que el sitio publica de sí mismo.
+//   Cambiarla a `drop-trailing-slash` dejaría el canonical apuntando a una URL
+//   distinta de la servida.
+//
+// ── Lo que este archivo NO hace ────────────────────────────────────────────
+//
+// **Las variables de entorno no van aquí.** `PUBLIC_SITE_URL` se consume en el
+// BUILD —de ella salen el canonical, el Open Graph, el JSON-LD, el sitemap y
+// el robots.txt— así que vive en la configuración de build del panel, no en
+// este archivo ni en las variables de runtime del Worker. Un sitio estático no
+// lee variables al servir.
+//
+// **Las cabeceras de seguridad tampoco, todavía.** Son D27 y están pendientes:
+// el conjunto recomendado está en `docs/arquitectura-produccion.md` §5.1, e
+// incluye el `X-Robots-Tag: noindex` que es la defensa robusta mientras esto
+// sea Staging.
+// ---------------------------------------------------------------------------
+{
+  "name": "dlpay-web",
+  "compatibility_date": "2026-10-06",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}
