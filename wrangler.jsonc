@@ -50,10 +50,28 @@
 // el conjunto recomendado está en `docs/arquitectura-produccion.md` §5.1, e
 // incluye el `X-Robots-Tag: noindex` que es la defensa robusta mientras esto
 // sea Staging.
+//
+// ── Las dos direcciones, escritas a propósito ──────────────────────────────
+//
+// El primer despliegue (2026-10-06) avisó de las dos: sin declararlas, wrangler
+// las enciende por omisión. Se escriben para que la decisión sea visible y no
+// un efecto de la omisión.
+//
+// · `workers_dev: true` — SÍ. `dlpay-web.<subdominio>.workers.dev` es la
+//   dirección de Staging de hoy; es la única que existe hasta que D1b decida un
+//   dominio propio. Apagarla dejaría el sitio sin forma de verse.
+//
+// · `preview_urls: false` — NO. Cloudflare da una URL extra a cada versión
+//   desplegada. No hacen falta —las builds de preview están apagadas y sólo hay
+//   rama `main`— y cada una sería otra dirección pública sirviendo `/terminos/`
+//   y `/privacidad/`, que siguen siendo borradores pendientes de D9, D19 y D20.
+//   Menos superficie publicada es el Principio 8.
 // ---------------------------------------------------------------------------
 {
   "name": "dlpay-web",
   "compatibility_date": "2026-10-06",
+  "workers_dev": true,
+  "preview_urls": false,
   "assets": {
     "directory": "./dist",
     "html_handling": "auto-trailing-slash",
