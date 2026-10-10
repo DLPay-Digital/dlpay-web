@@ -229,8 +229,38 @@ antes de que la decisión exista (ADR-0005).
 
 ### 5.1 Cabeceras de seguridad
 
-ADR-0005 las exige y hoy **no hay ninguna**. Un sitio estático no puede fijarlas: las pone el host.
-Conjunto recomendado, a aplicar al elegir proveedor:
+**IMPLEMENTADAS el 2026-10-10 (D27 cerrada).** Las escribe `dlpay:security-headers`, una
+integración de `astro.config.mjs`, en `dist/_headers` al terminar cada build. En Cloudflare Workers
+ese archivo se consume como configuración: **no se sirve** (una petición a `/_headers` devuelve 404,
+comprobado).
+
+**La condicional es una sola y está atada a la llave de siempre.** `X-Robots-Tag` lo escribe
+`allowsIndexing(env)`, la misma función que decide el `noindex` del HTML y el `Disallow` del
+`robots.txt`. Comprobado en los dos sentidos: con `PUBLIC_ALLOW_INDEXING=true` la cabecera
+**desaparece del archivo**. No hay forma de publicar el sitio real con ella puesta.
+
+**Verificado sobre el runtime de Cloudflare, no sólo sobre el archivo:** las siete cabeceras llegan
+en la raíz y en las rutas interiores, y las siete rutas con JavaScript cargan con **cero violaciones
+de CSP, cero errores de consola y cero peticiones fallidas**. El cotizador rinde su cifra, las
+fuentes cargan y las texturas `data:` del Diario y del abanico se ven.
+
+Lo que se comprobó contra el build antes de fijar el conjunto, y conviene rehacer si cambia:
+
+- **`connect-src 'none'` es literalmente cierto.** Se barrió `dist/` buscando `fetch`,
+  `XMLHttpRequest`, `WebSocket`, `EventSource` y `sendBeacon`: la única coincidencia es la palabra
+  «fetch» dentro de un comentario del globo.
+- **`img-src` necesita `data:`**: ocho SVG en línea en `url("data:image/svg+xml...")`, las texturas
+  de las dos piezas de ADR-0011. Sin eso pierden su materia.
+- **`form-action 'none'`**: no hay un solo `<form>` en las diecisiete rutas.
+- **Ningún recurso externo se carga.** Los `https://` del build son enlaces `<a>` y el `canonical`,
+  que no son recursos.
+
+**`_headers` es una convención de Cloudflare y de Netlify, no un estándar**, y ahí ADR-0005 sigue
+cumpliéndose: en otro servidor estático el archivo no hace nada y el sitio funciona igual, sin
+cabeceras. Por eso el conjunto se conserva escrito abajo: quien cambie de proveedor tiene que
+volver a declararlas en el suyo.
+
+Conjunto aplicado:
 
 | Cabecera | Valor | Por qué |
 |---|---|---|
