@@ -252,6 +252,16 @@ Lo que se comprobó contra el build antes de fijar el conjunto, y conviene rehac
 - **`img-src` necesita `data:`**: ocho SVG en línea en `url("data:image/svg+xml...")`, las texturas
   de las dos piezas de ADR-0011. Sin eso pierden su materia.
 - **`form-action 'none'`**: no hay un solo `<form>` en las diecisiete rutas.
+- **`script-src` va por HASH desde el 2026-10-10, sin `'unsafe-inline'`.** Los seis scripts en línea
+  del build se leen del HTML ya escrito, en el mismo hook, y su `sha256` entra en la cabecera. Por
+  construcción no pueden desincronizarse: si entra un script nuevo entra su hash, y si uno cambia
+  cambia su hash. La línea mide 542 de los 2.000 caracteres que `_headers` admite, y el build
+  **para** si alguna vez se pasara, porque un CSP truncado se rompe en silencio.
+- **`style-src` CONSERVA `'unsafe-inline'`, y no es pereza.** El build emite **124 atributos
+  `style="..."`**, y un hash de CSP sólo alcanza a un bloque `<style>`: para un atributo haría falta
+  `'unsafe-hashes'` más el hash de cada uno de los 124 valores. Lo que lo hace tolerable es el
+  resto del conjunto: una exfiltración por CSS necesita una URL externa, y `img-src 'self' data:`
+  con `connect-src 'none'` no la deja salir.
 - **Ningún recurso externo se carga.** Los `https://` del build son enlaces `<a>` y el `canonical`,
   que no son recursos.
 

@@ -1,5 +1,6 @@
 // @ts-check
-import { writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 
 import { defineConfig } from 'astro/config';
 import { loadEnv } from 'vite';
@@ -130,9 +131,34 @@ function cabecerasDeSeguridad() {
     name: 'dlpay:security-headers',
     hooks: {
       'astro:build:done': ({ dir, logger }) => {
+        /*
+          Los scripts en línea, por su HASH y no por `'unsafe-inline'`.
+
+          Se leen del HTML YA ESCRITO, en este hook, que es el último del
+          build. Por construcción el hash es el del byte exacto que el
+          navegador va a ver: no hay forma de que se desincronicen, que es lo
+          que haría una lista escrita a mano. Si mañana entra un script nuevo,
+          entra su hash solo; si uno cambia, cambia su hash.
+
+          **No incluye los estilos, y no es un olvido.** El build emite 124
+          atributos `style="..."`, y un hash de CSP sólo alcanza a un bloque
+          `<style>`, nunca a un atributo: para esos haría falta
+          `'unsafe-hashes'` MÁS el hash de cada uno de los 124 valores, que es
+          peor remedio que la enfermedad. `style-src` conserva
+          `'unsafe-inline'` y queda anotado abajo.
+        */
+        const hashes = new Set();
+        for (const e of readdirSync(dir, { recursive: true, withFileTypes: true })) {
+          if (!e.isFile() || !e.name.endsWith('.html')) continue;
+          const html = readFileSync(new URL(`${e.parentPath.slice(dir.pathname.length)}/${e.name}`.replace(/^\/+/, ''), dir), 'utf-8');
+          for (const m of html.matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+            hashes.add(`'sha256-${createHash('sha256').update(m[1], 'utf-8').digest('base64')}'`);
+          }
+        }
+
         const csp = [
           "default-src 'self'",
-          "script-src 'self' 'unsafe-inline'",
+          `script-src 'self' ${[...hashes].sort().join(' ')}`,
           "style-src 'self' 'unsafe-inline'",
           "img-src 'self' data:",
           "font-src 'self'",
@@ -163,11 +189,30 @@ function cabecerasDeSeguridad() {
         */
         if (!indexa) lineas.push('  X-Robots-Tag: noindex, nofollow');
 
+        /*
+          `_headers` corta a los 2.000 caracteres por línea, y la del CSP es la
+          que crece: cada script en línea nuevo le suma unos 55. Hoy son seis y
+          la línea anda por la mitad del límite. Si alguna vez se pasa, el
+          navegador recibiría un CSP truncado —o sea, roto— sin que nada
+          avisara, así que el build para aquí.
+        */
+        const lineaCsp = `  Content-Security-Policy: ${csp}`;
+        if (lineaCsp.length > 2000) {
+          throw new Error(
+            `La línea del CSP mide ${lineaCsp.length} caracteres y el límite de _headers es 2.000. ` +
+              `Hay ${hashes.size} scripts en línea. Hay que repartir el CSP por rutas o reducirlos.`
+          );
+        }
+
         writeFileSync(new URL('_headers', dir), lineas.join('\n') + '\n', 'utf-8');
         logger.info(
+          `Cabeceras escritas en dist/_headers · ${hashes.size} scripts en línea por hash, ` +
+            `sin unsafe-inline · línea del CSP: ${lineaCsp.length}/2000 caracteres`
+        );
+        logger.info(
           indexa
-            ? 'Cabeceras escritas en dist/_headers (sin X-Robots-Tag: este build es público).'
-            : 'Cabeceras escritas en dist/_headers, con X-Robots-Tag: noindex.'
+            ? 'Este build es PÚBLICO: sin X-Robots-Tag.'
+            : 'Este build es STAGING: con X-Robots-Tag: noindex.'
         );
       },
     },
