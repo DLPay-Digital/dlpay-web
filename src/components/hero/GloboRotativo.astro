@@ -44,9 +44,39 @@
      var(--f-num), que resuelve a esa misma fuente sin una petición externa. */
   .dlpay-globe-only { position: relative; }
   .dlpay-map-svg { display: block; width: 100%; height: auto; }
-  .globe-halo { fill: none; stroke: #22e88f; stroke-width: 1; stroke-opacity: 0.15; }
   .globe-ocean { fill: url(#ocean); }
-  .globe-rim { fill: none; stroke: #8a7f68; stroke-width: 0.7; stroke-opacity: 0.6; }
+  /*
+    EL SOMBREADO DE LA ESFERA — 2026-10-12, aprobado por Sebastián.
+
+    Antes de esto el globo no leía como una esfera: leía como un disco con un
+    mapa dentro. La geometría SIEMPRE fue esférica —hay trigonometría, hay
+    terminador, los continentes se escorzan al girar— pero no caía luz sobre
+    ella: el océano era plano del centro al borde, la tierra también, y el canto
+    era un trazo de 0,7 px al 60 % que se disolvía contra el papel crema.
+
+    **Esto roza una alternativa que ADR-0007 rechazó**, y conviene decirlo de
+    frente en vez de que alguien lo descubra leyendo el ADR. Su alternativa 3
+    descarta «gradientes decorativos PARA DIFERENCIAR OCÉANO/TIERRA»: eso era
+    usar un degradado EN LUGAR de color para distinguir mar de tierra, y sigue
+    rechazado — el mar es `#0a1830` y la tierra `#c8bea8`, planos, como estaban.
+    Esto es otra cosa: sombrear una esfera para que se lea como esfera. Es
+    función, no adorno. Sebastián lo aprobó sabiendo que rozaba esa línea; ver
+    la nota del 2026-10-12 en ADR-0007.
+
+    **No amplía la paleta.** La luz es `#7fa8c8` (`map-ocean-dot`, ya
+    autorizado) y la sombra es negro a baja alfa, que es un tinte y no un token
+    nuevo. Ningún hex que no estuviera ya en la tabla del ADR.
+  */
+  .globe-atm { pointer-events: none; }
+  .globe-rim { fill: none; stroke: url(#canto); stroke-width: 1.6; }
+  /*
+    La retícula es la segunda cosa que dice «esfera», y la que la dice sin
+    iluminar nada: meridianos y paralelos cada 30°, que al girar se curvan.
+    Encaja con el registro de «mesa de operaciones» de ADR-0001 — es un
+    instrumento, no un papel tapiz—, y por eso va a 0,16 de opacidad: tiene que
+    notarse al mirarla y desaparecer al leer los rótulos.
+  */
+  #graticula { fill: none; stroke: #7fa8c8; stroke-opacity: 0.16; stroke-width: 0.45; }
   #land-base { fill: #c8bea8; stroke: #8a7f68; stroke-width: 0.5; stroke-opacity: 0.9; stroke-linejoin: round; }
   #land-texture { fill: url(#stipple); stroke: none; }
   #borders { fill: none; stroke: #8a7f68; stroke-width: 0.35; stroke-opacity: 0.5; stroke-linejoin: round; }
@@ -86,7 +116,9 @@
   #chile-label text {
     paint-order: stroke fill;
     stroke: #0d1a30;
-    stroke-width: 2.5px;
+    /* Era 2,5 px. Con el sombreado, el fondo bajo los rótulos del limbo es más
+       oscuro y el halo no necesita tanto cuerpo; a 2,5 px engordaba la letra. */
+    stroke-width: 2px;
     stroke-linejoin: round;
   }
   .dlpay-globe-only :global(.dest-label) { font-family: var(--f-num); font-size: 10px; letter-spacing: 1.2px; fill: #22e88f; }
@@ -106,16 +138,50 @@
       <pattern id="ocean" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="#0a1830"/><circle cx="6" cy="6" r="0.6" fill="#7fa8c8" fill-opacity="0.2"/></pattern>
       <pattern id="stipple" width="3.5" height="3.5" patternUnits="userSpaceOnUse"><circle cx="1.75" cy="1.75" r="0.42" fill="#6a5f45" fill-opacity="0.42"/></pattern>
       <clipPath id="globeClip"><circle cx="350" cy="250" r="210"/></clipPath>
+      <!-- La luz entra arriba a la izquierda. Los cuatro degradados comparten
+           ese foco: si se mueve uno, se mueven los cuatro o la bola se parte. -->
+      <radialGradient id="sombra" cx="0.36" cy="0.30" r="0.80">
+        <stop offset="0" stop-color="#000" stop-opacity="0"/>
+        <stop offset="0.42" stop-color="#000" stop-opacity="0.04"/>
+        <stop offset="0.70" stop-color="#000" stop-opacity="0.20"/>
+        <stop offset="0.88" stop-color="#000" stop-opacity="0.40"/>
+        <stop offset="1" stop-color="#000" stop-opacity="0.56"/>
+      </radialGradient>
+      <radialGradient id="luz" cx="0.33" cy="0.26" r="0.45">
+        <stop offset="0" stop-color="#7fa8c8" stop-opacity="0.17"/>
+        <stop offset="0.6" stop-color="#7fa8c8" stop-opacity="0.05"/>
+        <stop offset="1" stop-color="#7fa8c8" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="atmosfera" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0.80" stop-color="#7fa8c8" stop-opacity="0"/>
+        <stop offset="0.855" stop-color="#7fa8c8" stop-opacity="0.15"/>
+        <stop offset="0.885" stop-color="#7fa8c8" stop-opacity="0.05"/>
+        <stop offset="1" stop-color="#7fa8c8" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="canto" x1="0.2" y1="0.05" x2="0.8" y2="0.95">
+        <stop offset="0" stop-color="#c8bea8" stop-opacity="0.85"/>
+        <stop offset="0.5" stop-color="#8a7f68" stop-opacity="0.55"/>
+        <stop offset="1" stop-color="#8a7f68" stop-opacity="0.25"/>
+      </linearGradient>
     </defs>
-    <circle class="globe-halo" cx="350" cy="250" r="215"/>
+    <!-- La atmósfera sustituye al halo verde de 1 px: estaba al 15 % de
+         opacidad y era invisible, así que el globo no se despegaba del papel. -->
+    <circle class="globe-atm" cx="350" cy="250" r="262" fill="url(#atmosfera)"/>
     <circle class="globe-ocean" cx="350" cy="250" r="210"/>
     <g clip-path="url(#globeClip)">
+      <path id="graticula"/>
       <path id="land-base"/>
       <path id="land-texture"/>
       <path id="borders"/>
       <path id="chile-glow"/>
       <path id="chile-fill"/>
       <path id="chile-stroke"/>
+      <!-- El orden importa y no es arbitrario: la sombra va SOBRE el mapa —es
+           la superficie de la bola— y BAJO los arcos, que vuelan por encima de
+           ella. Meterla más arriba apagaría los arcos; más abajo, la tierra no
+           se curvaría. -->
+      <circle cx="350" cy="250" r="210" fill="url(#luz)"/>
+      <circle cx="350" cy="250" r="210" fill="url(#sombra)"/>
       <g id="arcs">
         <path class="arc-halo" data-idx="0"/><path class="arc-halo" data-idx="1"/><path class="arc-halo" data-idx="2"/><path class="arc-halo" data-idx="3"/>
         <path class="arc-halo" data-idx="4"/><path class="arc-halo" data-idx="5"/><path class="arc-halo" data-idx="6"/><path class="arc-halo" data-idx="7"/>
@@ -161,15 +227,71 @@
   ];
   const CHILE_ANCHOR={lat:-33.4,lon:-70.6};
 
-  const sin=Math.sin,cos=Math.cos,atan2=Math.atan2,PI=Math.PI,hypot=Math.hypot,abs=Math.abs,ceil=Math.ceil,max=Math.max;
+  const sin=Math.sin,cos=Math.cos,atan2=Math.atan2,PI=Math.PI,hypot=Math.hypot,abs=Math.abs,ceil=Math.ceil,max=Math.max,min=Math.min;
   const p0=LAT0*PI/180,sinp0=sin(p0),cosp0=cos(p0);
 
+  /*
+    Devuelve SIEMPRE un punto, con `c` dentro. Antes devolvía `null` cuando el
+    punto caía en la cara oculta, y eso bastaba para encenderlo o apagarlo —que
+    era todo lo que hacía falta—. Ahora los rótulos se desvanecen con el
+    escorzo, y para eso no basta visible/invisible: hace falta CUÁNTO.
+
+    `c` es el coseno de la distancia angular al centro del disco: 1 justo en el
+    centro, 0 exacto en el limbo, negativo en la cara oculta. Quien llame tiene
+    que comprobar `c >= 0`; no comprobarlo dibuja el otro lado del mundo.
+  */
   function proj(lon,lat){
     const lam=(lon-lon0)*PI/180,phi=lat*PI/180;
     const sinp=sin(phi),cosp=cos(phi),coslam=cos(lam);
-    const c=sinp0*sinp+cosp0*cosp*coslam;
-    if(c<0)return null;
-    return{x:CX+R*cosp*sin(lam),y:CY-R*(cosp0*sinp-sinp0*cosp*coslam)};
+    return{
+      x:CX+R*cosp*sin(lam),
+      y:CY-R*(cosp0*sinp-sinp0*cosp*coslam),
+      c:sinp0*sinp+cosp0*cosp*coslam
+    };
+  }
+
+  /*
+    Opacidad de un rótulo según su escorzo. Cero hasta `c=0,05` y plena desde
+    `c=0,27`: la franja de desvanecido ocupa los ~27° más rasantes del disco.
+
+    No es cosmética, resuelve un defecto medido. Hasta hoy los ocho destinos se
+    dibujaban a opacidad plena hasta desaparecer DE GOLPE al cruzar el limbo, y
+    como ahí el escorzo los amontona, el lado que entra acumulaba rótulos
+    pisándose —USA, MÉXICO y VENEZUELA a la vez— para luego parpadear.
+  */
+  function nitidez(c){ return min(1, max(0, (c - 0.05) / 0.22)); }
+
+  /*
+    La retícula: 12 meridianos y 5 paralelos, cada 30°.
+
+    Se dibuja con una polilínea que se CORTA al pasar a la cara oculta, y no con
+    el recorte por arcos de `ringPath`: aquello cierra anillos contra el borde
+    del globo —una costa es un polígono— y un meridiano es una línea abierta que
+    simplemente deja de verse. Cerrarla contra el canto dibujaría una tajada.
+
+    Los polos se dejan en ±88° a propósito: en ±90° los doce meridianos caen en
+    el mismo píxel y el remate se empasta.
+  */
+  function linea(pts){
+    let d='',trazando=false;
+    for(let i=0;i<pts.length;i+=2){
+      const p=proj(pts[i],pts[i+1]);
+      if(p.c>=0){ d+=(trazando?'L':'M')+p.x.toFixed(1)+','+p.y.toFixed(1); trazando=true; }
+      else trazando=false;
+    }
+    return d;
+  }
+  function graticulaPath(){
+    let d='';
+    for(let lon=-180;lon<180;lon+=30){
+      const pts=[];for(let lat=-88;lat<=88;lat+=4)pts.push(lon,lat);
+      d+=linea(pts);
+    }
+    for(let lat=-60;lat<=60;lat+=30){
+      const pts=[];for(let lon=-180;lon<=180;lon+=4)pts.push(lon,lat);
+      d+=linea(pts);
+    }
+    return d;
   }
 
   // Terminator clipping con cierre por arcos sobre el borde del globo (estilo d3-geo)
@@ -222,6 +344,7 @@
   function polyPath(m){let d='';for(let i=0;i<m.length;i++){const p=m[i];for(let j=0;j<p.length;j++)d+=ringPath(p[j]);}return d;}
   function arcPath(a,b){const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;const dcx=mx-CX,dcy=my-CY,dcL=hypot(dcx,dcy);if(dcL<1)return null;const chord=hypot(a.x-b.x,a.y-b.y);const off=chord*0.25;const cx=mx+(dcx/dcL)*off,cy=my+(dcy/dcL)*off;return'M'+a.x.toFixed(1)+','+a.y.toFixed(1)+' Q'+cx.toFixed(1)+','+cy.toFixed(1)+' '+b.x.toFixed(1)+','+b.y.toFixed(1);}
 
+  const graticulaEl=document.getElementById('graticula');
   const landEl=document.getElementById('land-base'),landTex=document.getElementById('land-texture'),bordersEl=document.getElementById('borders');
   const chileGlow=document.getElementById('chile-glow'),chileFill=document.getElementById('chile-fill'),chileStroke=document.getElementById('chile-stroke');
   const chileAnchorEl=document.getElementById('chile-anchor'),chileLabelEl=document.getElementById('chile-label');
@@ -238,14 +361,16 @@
   });
 
   function update(){
+    graticulaEl.setAttribute('d',graticulaPath());
     const landD=polyPath(LAND);landEl.setAttribute('d',landD);landTex.setAttribute('d',landD);
     bordersEl.setAttribute('d',polyPath(BORDERS));
     const chileD=polyPath(CHILE);chileGlow.setAttribute('d',chileD);chileFill.setAttribute('d',chileD);chileStroke.setAttribute('d',chileD);
     const s=proj(CHILE_ANCHOR.lon,CHILE_ANCHOR.lat);
-    if(s){
+    const sVisible=s.c>=0;
+    if(sVisible){
       chileAnchorEl.style.opacity='1';
       chileAnchorEl.setAttribute('transform','translate('+s.x+','+s.y+')');
-      chileLabelEl.style.opacity='1';
+      chileLabelEl.style.opacity=String(nitidez(s.c));
       const dx=s.x-CX,dy=s.y-CY,len=hypot(dx,dy);
       const lx=s.x+(dx/len)*22,ly=s.y+(dy/len)*22;
       const anchor=(s.x>CX)?'start':'end',xOff=(s.x>CX)?6:-6;
@@ -259,13 +384,14 @@
     DESTS.forEach((dest,i)=>{
       const d=proj(dest.lon,dest.lat);
       const arcEl=arcs[i],arcHaloEl=arcHalos[i];
-      if(d){
-        destEls[i].style.opacity='1';
+      if(d.c>=0){
+        const o=String(nitidez(d.c));
+        destEls[i].style.opacity=o;
         destEls[i].setAttribute('transform','translate('+d.x+','+d.y+')');
         const lbl=destEls[i].querySelector('.dest-label'),inf=destEls[i].querySelector('.dest-info');
         if(d.x>CX){lbl.setAttribute('x','12');lbl.setAttribute('text-anchor','start');inf.setAttribute('x','12');inf.setAttribute('text-anchor','start');}
         else{lbl.setAttribute('x','-12');lbl.setAttribute('text-anchor','end');inf.setAttribute('x','-12');inf.setAttribute('text-anchor','end');}
-        if(s){const arcD=arcPath(s,d);if(arcD){arcEl.setAttribute('d',arcD);arcHaloEl.setAttribute('d',arcD);arcEl.style.opacity='1';arcHaloEl.style.opacity='1';}}
+        if(sVisible){const arcD=arcPath(s,d);if(arcD){arcEl.setAttribute('d',arcD);arcHaloEl.setAttribute('d',arcD);arcEl.style.opacity=o;arcHaloEl.style.opacity=o;}}
         else{arcEl.style.opacity='0';arcHaloEl.style.opacity='0';}
       }else{
         destEls[i].style.opacity='0';

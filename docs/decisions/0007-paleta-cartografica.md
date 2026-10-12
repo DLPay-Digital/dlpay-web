@@ -1,6 +1,6 @@
 # ADR-0007 — Paleta cartográfica acotada a la sección del globo
 
-- **Estado:** Aceptada — 2026-09-15
+- **Estado:** Aceptada — 2026-09-15 · **enmendada el 2026-10-12** (el sombreado de la esfera; ver abajo)
 - **Decide:** Sebastián Villanueva (con análisis de Claude Code, Fase 4)
 - **Ámbito:** `src/components/hero/GloboRotativo.astro`. Coexiste con ADR-0001, que sigue
   congelando la paleta del resto del sitio.
@@ -44,6 +44,62 @@ Se autoriza una **paleta cartográfica secundaria acotada exclusivamente al comp
 ### Ámbito operativo
 
 Los siete tokens SOLO pueden usarse **dentro** del archivo `src/components/hero/GloboRotativo.astro`. Se declaran como valores hardcodeados en el `<style>` scoped del componente, no como CSS custom properties globales. Cualquier otro componente del sitio (cotizador, hero-copy, footer, formularios, sección de features, testimonials, etc.) sigue usando la paleta de ADR-0001 sin excepción.
+
+## Enmienda del 2026-10-12 — el sombreado de la esfera
+
+**Decide:** Sebastián Villanueva. **Ámbito:** el mismo archivo, `GloboRotativo.astro`.
+
+El globo no leía como una esfera: leía como un disco con un mapa dentro. La geometría SIEMPRE fue
+esférica —hay trigonometría, hay terminador, los continentes se escorzan al girar— pero no caía
+luz sobre ella. El océano era plano del centro al borde, la tierra también, y el canto era un trazo
+de 0,7 px al 60 % de opacidad que se disolvía contra el papel crema del resto de la página.
+
+Se autoriza **iluminar la esfera**: un sombreado radial con el foco arriba a la izquierda, una
+atmósfera exterior, un canto con el lado iluminado más claro que el oscuro, y una retícula de
+meridianos y paralelos cada 30°.
+
+### Por qué esto NO es la alternativa 3, que sigue rechazada
+
+Hay que decirlo de frente, porque quien lea la lista de alternativas de arriba va a tropezar con
+ello: la alternativa 3 descarta «gradientes decorativos **para diferenciar océano/tierra**». Eso
+era usar un degradado **en lugar de** color para distinguir mar de tierra, y **sigue rechazado** —
+el mar es `#0a1830` y la tierra `#c8bea8`, planos, exactamente como estaban—.
+
+Lo que entra es otra cosa: sombrear una esfera para que se lea como esfera. Es función, no adorno,
+igual que el halo bajo los rótulos es legibilidad y no decoración. **Sebastián lo aprobó sabiendo
+que rozaba esa línea**, y queda escrito aquí para que nadie tenga que deducirlo.
+
+### No amplía la tabla de tokens
+
+Ni un hex nuevo. La luz y la atmósfera son `#7fa8c8` (`map-ocean-dot`, ya autorizado), el canto
+combina `#c8bea8` y `#8a7f68` (`map-land-cream` y `map-border-ochre`, ya autorizados) y la sombra
+es **negro a baja alfa**, que es un tinte y no un token. La tabla sigue teniendo siete filas.
+
+### Lo que costó, medido
+
+| qué | cuánto |
+|---|---|
+| Dependencias nuevas | **cero** — son cuatro `<radialGradient>` en el propio SVG |
+| Retícula, por fotograma | **0,067 ms**, el 0,4 % del presupuesto de 60 fps; 2,4 % en un móvil 6× más lento |
+| Home, comprimida | 28.888 → **30.522 bytes** (+1.634, +5,7 %) |
+| `npm run check` · `npm test` | 0 errores · 80/80 |
+
+**Una advertencia sobre cómo se midió, porque el primer intento mintió dos veces.** Medir el
+intervalo entre fotogramas no sirve: lo fija la pantalla, y daba 13,3 ms idénticos con y sin
+retícula. Medir el hueco entre el sello del fotograma y el comienzo del callback tampoco: daba
+1,00 / 1,20 / 1,30 ms **idénticos hasta el segundo decimal en 240 fotogramas**, que es la firma de
+un instrumento que no está midiendo lo que uno cree. Y el contador de saturación del hilo principal
+tiene un suelo de ruido por el que **el globo entero** —tierra, fronteras, Chile, arcos y retícula—
+se cuela sin asomar: dio −0,5 %. El 0,067 ms sale de cronometrar el algoritmo en aislamiento, 2.000
+llamadas con el JIT caliente. *Tres instrumentos que devuelven un número plausible y sólo el
+tercero mide algo.*
+
+### Qué reabre esto
+
+Nada que no estuviera ya abierto. Pero conviene dejar dicho el límite siguiente, porque la
+conversación que lo motivó era «y quizás algo en 3D más adelante»: **esto no es una concesión de
+materia.** La lista cerrada de ADR-0011 sigue teniendo dos piezas, y una tercera con textura,
+relieve o volumen propio sigue necesitando esa conversación.
 
 ## Consecuencias
 

@@ -500,6 +500,52 @@ copiar; un número con su método se vuelve a medir.
 
 ---
 
+### 4.16 Tres instrumentos que devuelven un número y sólo el tercero mide algo  ·  *2026-10-12*
+
+El globo del héroe pasó a estar iluminado, y con el sombreado entró una **retícula** de meridianos
+y paralelos que añade ~1.000 puntos proyectados por fotograma a un bucle que ya proyectaba ~1.500.
+La pregunta era obvia y la respuesta costó tres intentos.
+
+**Primer instrumento: el intervalo entre fotogramas.** Medir `t - tPrevio` en 240 fotogramas, con y
+sin retícula. Resultado: mediana 13,3 ms, peor 14,4, **cero fotogramas lentos** en las dos
+versiones. Es cierto y es inútil: **ese intervalo lo fija la pantalla**, no el trabajo. Mientras
+quepa en el fotograma, el número es el mismo haga lo que haga el bucle. Mide si se cae, no cuánto
+cuesta.
+
+**Segundo instrumento: el hueco desde el sello del fotograma.** La idea era registrarse a `rAF`
+*después* del globo y medir `performance.now() - t` al entrar, que incluiría su `update()`.
+Resultado: **1,00 / 1,20 / 1,30 ms, idénticos hasta el segundo decimal en las dos versiones**, sobre
+240 fotogramas cada una.
+
+*Y ahí está la lección, porque ese empate es la pista.* Dos ramas de código distintas no dan tres
+cuantiles iguales a la centésima; lo que eso describe es una constante del navegador —la latencia
+fija de despacho del callback— y no el trabajo de nadie. La hipótesis del orden de registro era
+falsa. **Un empate perfecto no es un resultado tranquilizador: es un instrumento que no está
+conectado.** Es la otra cara de §4.11 y §4.13 —allá el número plausible era distinto del real, acá
+es idéntico— y el síntoma es el mismo: *el número no responde a lo que estoy cambiando.*
+
+**Tercer instrumento: saturación del hilo principal.** Contar cuánto trabajo cabe en 3 s con el
+globo en pantalla y fuera de ella, apoyándose en el `IntersectionObserver` que ya lo pausa. El
+control funcionó —se verificó que giraba dentro y estaba quieto fuera—, y el resultado fue
+**−0,5 %**: el globo **entero**, tierra y fronteras y arcos y retícula, cae por debajo del ruido de
+ese instrumento en una máquina de escritorio. Un suelo de medición no es un cero.
+
+**Lo que acabó midiendo** fue cronometrar el algoritmo en aislamiento: réplica exacta, 2.000
+llamadas con el JIT caliente. **0,067 ms por fotograma**, el 0,4 % del presupuesto de 60 fps, 2,4 %
+suponiendo un móvil seis veces más lento.
+
+**La lección, que es de método y no del globo:** antes de creerse una medida, hay que saber qué la
+haría cambiar. El primer instrumento estaba topado por el hardware, el segundo no estaba conectado
+a nada y el tercero tenía un suelo por encima del objeto medido. **Los tres devolvieron un número
+con decimales, y los tres eran presentables.** La defensa no es desconfiar del número: es exigirle
+al instrumento que demuestre que se mueve cuando el objeto se mueve.
+
+*Corolario barato y que se olvida:* el tercer instrumento llevaba un control —girando dentro,
+quieto fuera— y por eso su resultado se pudo descartar con confianza en vez de creerlo. Los dos
+primeros no lo llevaban.
+
+---
+
 ## 5. Errores propios, registrados
 
 Se anotan porque un registro que sólo cuenta aciertos no sirve para nada.
@@ -516,10 +562,20 @@ Se anotan porque un registro que sólo cuenta aciertos no sirve para nada.
 | «Nada está roto» en el relevo de `/empresas`: el piso de 40 px SÍ se rompía, a 37,99 entre 417 y 419 px | Cowork, barriendo cada 1 px donde yo barrí cada 20 |
 | «Las otras diez rutas» del recuento del §6.2, cuando eran once — y la lista de al lado enumeraba once | Al rehacer el recuento al día siguiente |
 | El inventario de M3 del Motion System listaba `/empresas` y el artículo del blog, y ninguno de los dos lo era. **Ya se había corregido en septiembre por lo mismo** | Al medir `data-draw` sobre el build para integrar `/como-funciona` |
+| **Dejé `npm run check` en rojo el 2026-10-10 y no lo vi**: el CSP por hash usaba `m[1]` de un `matchAll`, que TypeScript tipa `string \| undefined`. Un error, dos días en `main` | Al correr la puerta antes de tocar el globo, el 2026-10-12 |
 
 El último es el más instructivo: pedía producir un asset que una regla del Design System prohíbe
 —escrita a raíz de ese mismo asset— y rellenar un campo que se había eliminado. **Decidir sobre un
 mapa viejo** es el modo de fallo que este documento existe para reducir.
+
+**Y el de `npm run check` tiene su propia moraleja, distinta.** No es un mapa viejo: es que
+**verifiqué el efecto y no la puerta.** El 2026-10-10 comprobé lo que importaba del CSP —seis
+hashes, cero violaciones en trece rutas, la cabecera en el runtime real— y de ahí concluí que
+estaba terminado. `npm run build` pasa en verde con ese error porque Astro no corre el type-check
+en el build; sólo lo ve `astro check`, que es justo el comando que no volví a correr. **El §0.1 de
+`CLAUDE.md` declara esa puerta en verde como un hecho del proyecto, así que estuvo dos días
+diciendo algo falso.** La lección es barata: *la verificación a medida del cambio no sustituye a
+la puerta, porque la puerta cubre lo que a uno no se le ocurrió mirar.*
 
 ---
 

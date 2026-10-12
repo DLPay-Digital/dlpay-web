@@ -399,6 +399,21 @@ copiar layout, componentes, textos, colores, iconografía, estructura, animacion
 
 Ver ADR-0007: única excepción de paleta, una gama cartográfica acotada al componente del globo.
 
+**Enmendado el 2026-10-12, a petición de Sebastián: el globo pasa a estar iluminado.** Tenía
+geometría esférica de verdad —trigonometría, terminador, continentes que se escorzan al girar— y
+ninguna luz encima, así que leía como un disco con un mapa dentro. Entran un sombreado radial, una
+atmósfera, un canto con lado iluminado y una retícula de meridianos y paralelos.
+
+**Roza una alternativa que el propio ADR-0007 rechazó** —«gradientes decorativos»— y por eso se
+decidió de frente y no de tapadillo: aquello era usar un degradado *en lugar de* color para
+distinguir mar de tierra, y sigue rechazado; esto es sombrear una esfera para que se lea como
+esfera. **No añade ni un hex a la tabla de siete tokens, ni una dependencia, ni una línea de
+movimiento nuevo**, y la retícula cuesta 0,067 ms por fotograma. La enmienda, con lo que costó
+medirla, está en ADR-0007 y en `phase-4-construccion.md` §4.16.
+
+**Lo que NO concede:** no es materia. La lista cerrada de ADR-0011 sigue teniendo dos piezas, y
+una tercera con textura, relieve o volumen propio sigue pidiendo esa conversación.
+
 ---
 
 ## 6. UX  ·  *cerrada en Fase 2.5*
