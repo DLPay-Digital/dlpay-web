@@ -546,6 +546,32 @@ primeros no lo llevaban.
 
 ---
 
+### 4.17 Cuando el valor por omisión es peligroso, el CSS no es sitio para declararlo  ·  *2026-10-12*
+
+La retícula del globo entró con su `fill: none` sólo en el `<style>`. Horas después, en
+`localhost:4321`, el héroe de la Home era **una mancha negra**: el océano tapado y unos polígonos
+sueltos donde las líneas se cruzaban.
+
+La causa inmediata es vieja y está en el README y en §4.2 —el servidor de desarrollo sirviendo el
+HTML nuevo con el CSS viejo— y **el build siempre estuvo bien**, comprobado sobre `dist/`. Pero
+quedarse ahí es perder lo que el episodio enseña.
+
+**Lo que enseña es que el coste de perder una regla no es igual para todas.** Si a la tierra o al
+océano les falta la suya, se quedan crudos: feo y legible. La retícula es la única pieza del SVG
+cuyo valor correcto es *ninguno*, y **el relleno por omisión de SVG es negro**, así que para ella
+«sin estilo» no significa crudo: significa *tapado*, y encima de todo lo demás. Diecisiete
+polilíneas abiertas rellenas de negro son una mancha del tamaño del globo.
+
+Por eso `fill="none"` pasa a ser **atributo de presentación** y no sólo CSS. Trece caracteres en el
+marcado que el CSS no puede perder, y que siguen cediendo ante cualquier regla posterior.
+
+**La regla general, que es lo reutilizable:** cuando una propiedad tiene un valor por omisión
+destructivo, declararla únicamente en la hoja de estilos convierte cualquier fallo de carga en un
+fallo catastrófico. *Esa declaración pertenece al marcado, donde no puede llegar tarde.* No aplica
+a lo que sólo se vería distinto; aplica a lo que taparía el resto.
+
+---
+
 ## 5. Errores propios, registrados
 
 Se anotan porque un registro que sólo cuenta aciertos no sirve para nada.

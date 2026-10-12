@@ -169,7 +169,22 @@
     <circle class="globe-atm" cx="350" cy="250" r="262" fill="url(#atmosfera)"/>
     <circle class="globe-ocean" cx="350" cy="250" r="210"/>
     <g clip-path="url(#globeClip)">
-      <path id="graticula"/>
+      <!--
+        `fill="none"` va como ATRIBUTO y no sólo en el CSS, y no es redundante.
+
+        El relleno por omisión de SVG es NEGRO. Esta ruta son 17 polilíneas
+        abiertas que, rellenas, tapan el globo entero: océano negro y unos
+        polígonos sueltos donde las líneas se cruzan. Si por lo que sea su
+        regla de CSS no llega —y el servidor de desarrollo sirve el HTML nuevo
+        con el CSS viejo cada pocos días, que es el §4.2 de phase-4—, el héroe
+        de la Home se convierte en una mancha.
+
+        Ningún otro elemento de este SVG tiene esa asimetría: si al océano o a
+        la tierra les falta su regla se quedan crudos, que es feo pero legible.
+        Sólo aquí «sin estilo» significa «tapado». El atributo cuesta trece
+        caracteres y lo vuelve imposible; el CSS sigue mandando sobre el trazo.
+      -->
+      <path id="graticula" fill="none"/>
       <path id="land-base"/>
       <path id="land-texture"/>
       <path id="borders"/>
