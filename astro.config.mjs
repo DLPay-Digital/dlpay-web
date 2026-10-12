@@ -152,7 +152,13 @@ function cabecerasDeSeguridad() {
           if (!e.isFile() || !e.name.endsWith('.html')) continue;
           const html = readFileSync(new URL(`${e.parentPath.slice(dir.pathname.length)}/${e.name}`.replace(/^\/+/, ''), dir), 'utf-8');
           for (const m of html.matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
-            hashes.add(`'sha256-${createHash('sha256').update(m[1], 'utf-8').digest('base64')}'`);
+            // El grupo 1 es `string | undefined` para TypeScript, porque un grupo
+            // de captura puede no participar en la coincidencia. Éste siempre lo
+            // hace —no es opcional en el patrón—, pero el tipo no lo sabe y sin
+            // esto `npm run check` queda en rojo. `?? ''` es el cierre honesto:
+            // un script vacío tiene hash, y es el mismo que el de la cadena vacía.
+            const cuerpo = m[1] ?? '';
+            hashes.add(`'sha256-${createHash('sha256').update(cuerpo, 'utf-8').digest('base64')}'`);
           }
         }
 
