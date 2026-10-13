@@ -82,16 +82,40 @@ import Icon from './Icon.astro';
     pointer-events: none;
     display: none;
   }
+  /*
+    **Neutra desde el 2026-10-13** (Cowork, entrega `marcas-`; C3 del
+    diagnóstico `coherencia-marcas-ficha.md`). Era verde, y verde es «lo
+    nuestro» (DS §6.2): dibujaba en verde a una tesorería pagando a sus
+    contrapartes, que es justo el tramo que DLPay NO hace (CLAUDE.md §1). En la
+    misma Home, «Reparte» (`FiguraUso`) dibuja esa topología en gris por ese
+    motivo. Ahora las dos dicen lo mismo: `--on-tinta-mute`, a las mismas
+    opacidades que tenía, así que pesa lo que pesaba.
+
+    **La cuña se queda**: el valor sí cambia de manos, sólo que no en las
+    nuestras. Y desde el mismo día lleva la punta en ángulo del dibujo del
+    §6.2 (`miter` en el tronco); los ramales conservan la junta redonda en sus
+    codos, que no son cuñas.
+  */
   .trunk, .branch {
-    stroke: var(--verde);
+    stroke: var(--on-tinta-mute);
     stroke-width: 1.25;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
-  .trunk { stroke-opacity: .30; }
+  .trunk { stroke-opacity: .30; stroke-linejoin: miter; }
   .branch { stroke-opacity: .16; }
-  .src { fill: var(--verde); fill-opacity: .38; }
-  .dst { fill: var(--verde); fill-opacity: .22; }
+  .src { fill: var(--on-tinta-mute); fill-opacity: .38; }
+  .dst { fill: var(--on-tinta-mute); fill-opacity: .22; }
+  /* En colores forzados la banda pierde la tinta y el SVG conserva su color de
+     autor: en el esquema claro quedaba gris claro sobre blanco y casi no se
+     veía (ya pasaba con el verde de antes). Va a CanvasText con las mismas
+     opacidades, así que sigue de fondo, igual en los dos esquemas.
+     Cowork, 2026-10-13. */
+  @media (forced-colors: active) {
+    .mesh { forced-color-adjust: none; }
+    .trunk, .branch { stroke: CanvasText; }
+    .src, .dst { fill: CanvasText; }
+  }
 
   .inner { position: relative; max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
   .copy { max-width: 47ch; }

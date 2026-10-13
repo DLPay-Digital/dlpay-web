@@ -19,9 +19,11 @@
  * de validación, así que no necesita `buildQuote`, y añadir un tercer lector de
  * esa variable con su propio valor por defecto empeoraría D24.
  *
- * La composición es geometría con función (ADR-0001 §5): la cuña entre los dos
- * montos ES la conversión, y las burbujas superpuestas SON el momento en que
- * una persona cierra la operación. Nada decorativo.
+ * La composición es geometría con función (ADR-0001 §5): el chevron entre los
+ * dos montos ES la conversión, y las burbujas superpuestas SON el momento en
+ * que una persona cierra la operación. Nada decorativo. (Hasta el 2026-10-13
+ * este comentario lo llamaba «la cuña»; es un chevron girado, el marcador de
+ * paso del DS §6, y no la cuña del §6.2. C4 del diagnóstico de marcas.)
  */
 import Icon from './Icon.astro';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
@@ -265,8 +267,8 @@ const received = convert('to_usd', SAMPLE_PAY, price.rate);
   /* El monto recibido es la cifra protagonista de la composición. */
   .lead-amount { font-weight: 600; }
 
-  /* La cuña ES la conversión: un giro entre los dos tramos, en la dirección en
-     que el valor se mueve. Geometría con función (ADR-0001 §5). */
+  /* El chevron ES la conversión: un giro entre los dos tramos, en la dirección
+     en que el valor se mueve. Geometría con función (ADR-0001 §5). */
   .turn {
     display: flex;
     align-items: center;

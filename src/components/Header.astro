@@ -409,8 +409,12 @@ const infoIsCurrent = navInfo.some((item) => isCurrent(item.href));
   .dropdown a:hover,
   .dropdown a:focus-visible { background: rgba(237, 242, 239, .06); }
 
-  /* La cuña del sistema geométrico apuntando a la entrada: señala cuál está
-     activa, que es función y no adorno (ADR-0001 §3). */
+  /* El MARCADOR de la entrada activa: un triángulo que apunta a ella y
+     señala cuál está abierta, que es función y no adorno (ADR-0001 §3).
+     Hasta el 2026-10-13 este comentario lo llamaba «la cuña del sistema»; no
+     lo es —la cuña del §6.2 es valor cambiando de manos— y el nombre se
+     cambió para que nadie copie de acá el dibujo equivocado (C4 del
+     diagnóstico `coherencia-marcas-ficha.md`). El dibujo no cambia. */
   .dropdown a::before {
     content: '';
     position: absolute;
