@@ -222,7 +222,7 @@ const wa = contact.whatsappUrl(
           <div class="fig-cuerpo">
             <div class="tramo">
               <div class="barra" aria-hidden="true"></div>
-              <div class="limite" aria-hidden="true"></div>
+              <div class="limite punteado-v" aria-hidden="true"></div>
               <p class="fig-pie">el precio que ves</p>
             </div>
             {/* Y a la derecha del punteado no hay nada. Ver la nota 2. */}
@@ -236,7 +236,7 @@ const wa = contact.whatsappUrl(
             <span><b>La barra no está partida</b> porque el número tampoco lo está: no se ven por separado.</span>
           </p>
           <p>
-            <span class="sw sw-linea" aria-hidden="true"></span>
+            <span class="sw sw-linea punteado-v" aria-hidden="true"></span>
             <span><b>El punteado es un límite.</b> Cruzarlo cambiaría el precio, y no lo cruza nada.</span>
           </p>
         </div>
@@ -587,7 +587,10 @@ const wa = contact.whatsappUrl(
     right: 0;
     top: -14px;
     bottom: -14px;
-    border-left: 1.5px dashed var(--ink);
+    /* El trazo, de `.punteado-v` (tokens.css): 3 · 4 · 1,25. En `--ink` y
+       no en `--ink-mute`: es la excepción de color del §6.2, «acá termina». */
+    width: 1.25px;
+    --punteado-color: var(--ink);
   }
   .fig-pie { margin: var(--s-2) 0 0; color: var(--ink); }
   .fin {
@@ -614,11 +617,17 @@ const wa = contact.whatsappUrl(
   .sw { width: 34px; flex: none; }
   .sw-barra { height: 8px; border-radius: 2px; background: var(--verde-deep); }
   .sw-linea {
-    height: 12px;
-    border-left: 1.5px dashed var(--ink);
-    /* Centrada en sus 34 px, como el trazo que representa. */
-    margin: 0 16px;
-    width: 0;
+    /* 17 px = trazo, hueco, trazo, hueco, trazo (3 + 4 + 3 + 4 + 3): empieza y
+       termina en tinta. Con los 12 px de antes el ritmo 3/4 dejaba dos trazos,
+       y la muestra se leía como dos puntos («:»). Cowork, 2026-10-13. */
+    height: 17px;
+    --punteado-color: var(--ink);
+    /* Centrada en los 34 px de .sw, como la barra de arriba: así los dos
+       textos de la leyenda arrancan en la misma columna. Antes, 0 de ancho +
+       1 px de borde + 32 de margen daban 33, y el segundo texto iba 1 px
+       corrido. */
+    margin: 0 16.375px;
+    width: 1.25px;
   }
 
   /* ── El cuerpo, sobre papel y sin superficie ───────────────────────────── */

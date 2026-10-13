@@ -61,19 +61,33 @@ const { kind } = Astro.props;
 const MESES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
 const LOSAS = 8;
 
-/* La cuña del sistema (la de `EjeDeAlcance`), en su caja de 56×20. */
-const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
+/*
+  La cuña del sistema, la del Design System §6.2 desde el 2026-10-13: el
+  zigzag de 6:5 (unos 40°, el más cercano a la diagonal de la marca) con la
+  punta en ángulo, en su caja de 56×20. Hasta ese día esta lámina usaba la de
+  45° con la punta redonda, que entró el 2026-10-02 llamándose «la del
+  sistema» sin serlo: el sistema ya tenía una, la del carril de
+  `/como-funciona` (diagnóstico `coherencia-marcas-ficha.md`, C1).
+
+  **El trazo no escala con la lámina** (`vector-effect: non-scaling-stroke`,
+  C2): mide 3 px a cualquier ancho, que es lo que mide la línea que la cuña
+  interrumpe. Antes escalaba y, a lámina pequeña, la cuña salía más fina que
+  su propia línea. Es como ya se dibujaba el tramo verde de `EjeDeAlcance`.
+  `overflow: visible` en el SVG, porque la punta en ángulo asoma 2,3 px del
+  vértice y a escala menor que 1 roza el borde de la caja.
+*/
+const CUNA = 'M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4';
 ---
 <Lamina class:list={['fc', `fc-${kind}`]} aria-hidden="true">
   {kind === 'proveedores' && (
     <>
-      <span class="fc-frontera"></span>
+      <span class="fc-frontera punteado-v"></span>
       <span class="fc-rot fc-aca">Chile</span>
       <span class="fc-rot fc-alla">Exterior</span>
       <span class="fc-linea fc-linea-a"></span>
       <span class="fc-linea fc-linea-b"></span>
       <svg class="fc-cuna" viewBox="0 0 56 20" fill="none">
-        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
       </svg>
       <span class="fc-unidad"></span>
       <span class="fc-rot fc-usd">USD</span>
@@ -86,7 +100,7 @@ const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
 
   {kind === 'tesoreria' && (
     <>
-      <span class="fc-frontera"></span>
+      <span class="fc-frontera punteado-v"></span>
       <span class="fc-rot fc-aca">Chile</span>
       <span class="fc-rot fc-alla">Exterior</span>
       <span class="fc-mueble">
@@ -104,7 +118,7 @@ const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
       <span class="fc-pie fc-pie-caja">Tu empresa</span>
       <span class="fc-puente"></span>
       <svg class="fc-cuna fc-cuna-v" viewBox="0 0 56 20" fill="none">
-        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
       </svg>
     </>
   )}
@@ -130,7 +144,7 @@ const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
       </span>
       <span class="fc-linea fc-cambio"></span>
       <svg class="fc-cuna fc-cuna-pilas" viewBox="0 0 56 20" fill="none">
-        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
       </svg>
       <span class="fc-rot fc-bajo fc-bajo-clp">CLP</span>
       <span class="fc-rot fc-bajo fc-bajo-usd">USD</span>
@@ -158,13 +172,15 @@ const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
     top: var(--s-4);
     bottom: var(--s-4);
     left: var(--fc-x);
-    border-left: 1.5px dashed var(--ink-mute);
+    /* El trazo, de `.punteado-v` (tokens.css): 3 · 4 · 1,25. */
+    width: 1.25px;
+    --punteado-color: var(--ink-mute);
   }
   .fc-aca { top: var(--s-4); right: calc(100% - var(--fc-x) + var(--s-3)); }
   .fc-alla { top: var(--s-4); left: calc(var(--fc-x) + var(--s-3)); }
 
   /* 15 cqw: a 460 son 69 px y el trazo, 3,7; a 350, 52 y 2,8. */
-  .fc-cuna { width: 15cqw; height: 5.36cqw; }
+  .fc-cuna { width: 15cqw; height: 5.36cqw; overflow: visible; }
 
   /* ── Proveedores: el cruce ─────────────────────────────────────────────── */
   .fc-proveedores { --fc-x: 50%; --fc-y: 50%; --fc-pieza: 19cqw; }

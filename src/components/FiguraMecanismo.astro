@@ -93,7 +93,7 @@ const { kind, compacta = false } = Astro.props;
       <span class="fm-unidad"></span>
       <span class="fm-pie fm-pie-cuenta">Cuenta de DLPay</span>
       <span class="fm-rot fm-rot-acreditada">acreditada</span>
-      <span class="fm-frontera"></span>
+      <span class="fm-frontera punteado-v"></span>
       <span class="fm-linea fm-nuestro"></span>
     </>
   )}
@@ -116,7 +116,7 @@ const { kind, compacta = false } = Astro.props;
       {/* El monto: real, y tuyo. Llega a un límite que no dice dónde cae. */}
       <span class="fm-linea fm-monto-linea"></span>
       <span class="fm-rot fm-rot-conversa">acá se conversa</span>
-      <span class="fm-corte"></span>
+      <span class="fm-corte punteado-v"></span>
       {/* Y al otro lado, con quién se conversa: el escritorio de `people`. */}
       <span class="fm-persona"><span class="fm-cabeza"></span><span class="fm-hombros"></span></span>
       <span class="fm-mesa"></span>
@@ -253,7 +253,9 @@ const { kind, compacta = false } = Astro.props;
     left: var(--fm-x);
     top: calc(var(--s-4) + 16px + var(--s-2));
     bottom: var(--s-4);
-    border-left: 1.5px dashed var(--ink-mute);
+    /* El trazo, de `.punteado-v` (tokens.css): 3 · 4 · 1,25. */
+    width: 1.25px;
+    --punteado-color: var(--ink-mute);
   }
   /* Lo nuestro empieza al otro lado, y sigue fuera de la lámina. */
   .fm-nuestro { left: calc(var(--fm-x) + 1.5px); right: 0; background: var(--verde-deep); }
@@ -470,7 +472,8 @@ const { kind, compacta = false } = Astro.props;
     left: var(--fm-x);
     top: calc(var(--s-4) + 16px + var(--s-2));
     bottom: var(--s-4);
-    border-left: 1.5px dashed var(--ink-mute);
+    width: 1.25px;
+    --punteado-color: var(--ink-mute);
   }
   .fm-monto .fm-persona { left: var(--fm-cx); }
   /* La mesa, del ancho de la placa más larga que cabe: así la placa no queda

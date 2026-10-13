@@ -143,6 +143,45 @@
   border:0;
 }
 
+/*
+  ── El punteado del §6.2, definido una vez ─────────────────────────────────
+  Cowork, 2026-10-13, entrega `marcas-` (P1 y P2 del diagnóstico
+  `coherencia-marcas-ficha.md`).
+
+  **Guion 3, hueco 4, trazo 1,25, medidos en pantalla**, como lo escribe el
+  Design System §6.2. Hasta hoy sólo lo cumplían las dos marcas de la banda de
+  `/precio`; las otras ocho eran `border: 1.5px dashed`, que Chromium dibuja a
+  1 px con guion 3 y hueco 2, y Safari y Firefox de otra manera, porque **el
+  ritmo de un borde punteado lo elige cada navegador**. Un degradado repetido
+  se dibuja igual en todos.
+
+  La marca pone su geometría —dónde va, cuánto mide; `width: 1.25px` si es
+  vertical— y el color en `--punteado-color`. La utilidad sólo pinta.
+
+  **En colores forzados un degradado desaparece**: es una imagen de fondo, y
+  ese modo las quita. Es lo que dejaba a la banda de `/precio` sin sus dos
+  límites. Por eso la utilidad trae su propia regla para ese modo: un borde
+  punteado de 1 px en `CanvasText`, que el navegador sí pinta. Ahí el ritmo lo
+  elige el navegador y da igual: lo que importa es que el límite siga ahí. El
+  `!important` está acotado a ese bloque, para ganarle al borde transparente
+  que alguna marca necesita para conservar su caja.
+
+  Un pseudo-elemento no puede llevar una clase, así que si una marca se dibuja
+  en uno copia esta receta tal cual, con su regla de colores forzados. Es el
+  caso del corte de las 16:00 de la guía del dólar observado
+  (`styles/guias.css`, de la entrega `aprende-`).
+*/
+.punteado-v{
+  background:repeating-linear-gradient(to bottom,var(--punteado-color,var(--ink-mute)) 0 3px,transparent 3px 7px);
+}
+.punteado-h{
+  background:repeating-linear-gradient(to right,var(--punteado-color,var(--ink-mute)) 0 3px,transparent 3px 7px) left top/100% 1.25px no-repeat;
+}
+@media (forced-colors:active){
+  .punteado-v{background:none!important;border-left:1px dashed CanvasText!important}
+  .punteado-h{background:none!important;border-top:1px dashed CanvasText!important}
+}
+
 /* ── Base ────────────────────────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box}
 

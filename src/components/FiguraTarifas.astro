@@ -86,7 +86,7 @@ const recibes = formatAmount(convert('to_usd', quoteLimits.samplePayClp, price.r
       <span class="rot">Recibes</span>
       <span class="num"><span class="cifra">{recibes} </span><span class="div">USD</span></span>
     </div>
-    <div class="limite"></div>
+    <div class="limite punteado-v"></div>
     <p class="pie">el precio que ves</p>
   </div>
   <p class="fin" data-enter><b>acá termina</b><span>y no se suma nada</span></p>
@@ -198,7 +198,9 @@ const recibes = formatAmount(convert('to_usd', quoteLimits.samplePayClp, price.r
     right: 0;
     top: -15px;
     bottom: -15px;
-    border-left: 1.5px dashed var(--on-tinta);
+    /* El trazo, de `.punteado-v` (tokens.css): 3 · 4 · 1,25. */
+    width: 1.25px;
+    --punteado-color: var(--on-tinta);
   }
   /* Este rótulo va en la tipografía de TEXTO y a plena intensidad, y el de la
      derecha en la de cifras: en `/tarifas` no son la misma voz. */

@@ -106,17 +106,19 @@ const alone = milestones === undefined;
           <path class="ea-tramo-h" d="M0 10H20" stroke="currentColor" stroke-width="3" vector-effect="non-scaling-stroke" />
         </svg>
         {/* La cuña del sistema, la de `AlcanceEmpresa`, y con su `data-draw`:
-            la costura de este eje es M3 (motion-system §M3) y lo sigue siendo. */}
+            la costura de este eje es M3 (motion-system §M3) y lo sigue siendo.
+            Desde el 2026-10-13, la del DS §6.2: 6:5 con la punta en ángulo
+            (era la de 45° con punta redonda; ver `FiguraCaso.astro`). */}
         <span class="ea-cuna">
           <svg viewBox="0 0 56 20" fill="none">
-            <path d="M0 10h17l8-8 8 16 8-8h15" stroke="currentColor" stroke-width="3" stroke-linejoin="round" data-draw />
+            <path d="M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4" stroke="currentColor" stroke-width="3" stroke-linejoin="miter" data-draw />
           </svg>
         </span>
         <span class="ea-billetera"><Icon name="wallet" size={24} /></span>
       </div>
       {/* Lo tuyo: la línea sigue, ya no verde, y antes de la tercera salida, el límite. */}
       <span class="ea-linea" aria-hidden="true"></span>
-      <span class="ea-limite" aria-hidden="true"></span>
+      <span class="ea-limite punteado-v" aria-hidden="true"></span>
       <p class="hinge">
         <span class="until">{hinge.until}</span>
         <span class="from">{hinge.from}</span>
@@ -124,7 +126,7 @@ const alone = milestones === undefined;
       {/* La última opción es la que cruza el límite: lo dice `scope.ts` («El
           tercero es el límite»). En móvil la frontera es su borde de arriba. */}
       <ul class="options" role="list">
-        {options.map((o, i) => <li class:list={{ 'ea-tras-limite': i === options.length - 1 }}>{o}</li>)}
+        {options.map((o, i) => <li class:list={{ 'ea-tras-limite': i === options.length - 1, 'punteado-h': i === options.length - 1 }}>{o}</li>)}
       </ul>
       <p class="caveat"><slot name="caveat" /></p>
     </div>
@@ -336,7 +338,10 @@ const alone = milestones === undefined;
     margin-left: calc(-1 * (var(--ea-pieza) + var(--s-4)));
     padding-left: calc(var(--ea-pieza) + var(--s-4));
     padding-top: var(--ea-paso);
-    border-top: 1.5px dashed var(--ink-mute);
+    /* El borde se queda, transparente, para que la caja no se mueva; el
+       trazo lo pinta `.punteado-h` (tokens.css) encima: 3 · 4 · 1,25. */
+    border-top: 1.5px solid transparent;
+    --punteado-color: var(--ink-mute);
   }
   .corto .options .ea-tras-limite::before {
     left: calc(var(--ea-pieza) / 2);
@@ -390,9 +395,10 @@ const alone = milestones === undefined;
       grid-column: 4;
       grid-row: 1 / 4;
       justify-self: start;
-      width: 0;
+      /* El trazo, de `.punteado-v` (tokens.css): 3 · 4 · 1,25. */
+      width: 1.25px;
       margin-left: calc(var(--ea-gap) / -2);
-      border-left: 1.5px dashed var(--ink-mute);
+      --punteado-color: var(--ink-mute);
     }
 
     /* La bisagra baja por las dos filas de abajo: así la salvedad queda
@@ -422,6 +428,9 @@ const alone = milestones === undefined;
       padding: 0;
       border: 0;
     }
+    /* En escritorio el límite es la vertical `.ea-limite`: la horizontal de
+       la tercera opción no se pinta, ni en colores forzados (abajo). */
+    .corto .options .ea-tras-limite { background: none; }
     /* Cada opción cuelga de la línea: el ramal baja desde ella hasta 6 px
        antes del texto. */
     .corto .options li::before,
@@ -445,5 +454,10 @@ const alone = milestones === undefined;
     }
     .ea-billetera { forced-color-adjust: none; background: CanvasText; color: Canvas; }
     .ea-tramo, .ea-cuna { forced-color-adjust: none; color: CanvasText; }
+  }
+  /* La utilidad `.punteado-h` pinta su borde en colores forzados con
+     `!important`; en escritorio esta opción no es el límite y no lo lleva. */
+  @media (forced-colors: active) and (min-width: 900px) {
+    .corto .options .ea-tras-limite { border-top: 0 !important; }
   }
 </style>

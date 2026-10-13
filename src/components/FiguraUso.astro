@@ -56,19 +56,33 @@ interface Props {
 }
 const { kind } = Astro.props;
 
-/* La cuña del sistema (la de `EjeDeAlcance`), en su caja de 56×20. */
-const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
+/*
+  La cuña del sistema, la del Design System §6.2 desde el 2026-10-13: el
+  zigzag de 6:5 (unos 40°, el más cercano a la diagonal de la marca) con la
+  punta en ángulo, en su caja de 56×20. Hasta ese día esta lámina usaba la de
+  45° con la punta redonda, que entró el 2026-10-02 llamándose «la del
+  sistema» sin serlo: el sistema ya tenía una, la del carril de
+  `/como-funciona` (diagnóstico `coherencia-marcas-ficha.md`, C1).
+
+  **El trazo no escala con la lámina** (`vector-effect: non-scaling-stroke`,
+  C2): mide 3 px a cualquier ancho, que es lo que mide la línea que la cuña
+  interrumpe. Antes escalaba y, a lámina pequeña, la cuña salía más fina que
+  su propia línea. Es como ya se dibujaba el tramo verde de `EjeDeAlcance`.
+  `overflow: visible` en el SVG, porque la punta en ángulo asoma 2,3 px del
+  vértice y a escala menor que 1 roza el borde de la caja.
+*/
+const CUNA = 'M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4';
 ---
 <Lamina class:list={['fu', `fu-${kind}`]} aria-hidden="true">
   {kind === 'cruza' && (
     <>
-      <span class="fu-frontera"></span>
+      <span class="fu-frontera punteado-v"></span>
       <span class="fu-rot fu-aca">Chile</span>
       <span class="fu-rot fu-alla">Exterior</span>
       <span class="fu-linea fu-a"></span>
       <span class="fu-linea fu-b"></span>
       <svg class="fu-cuna fu-cuna-cruce" viewBox="0 0 56 20" fill="none">
-        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
       </svg>
       <span class="fu-unidad"></span>
       <span class="fu-rot fu-usd">USD</span>
@@ -86,24 +100,24 @@ const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
       <span class="fu-tramo fu-ida"></span>
       <span class="fu-tramo fu-vuelta"></span>
       <svg class="fu-cuna fu-cuna-ida" viewBox="0 0 56 20" fill="none">
-        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
       </svg>
       <svg class="fu-cuna fu-cuna-vuelta" viewBox="0 0 56 20" fill="none">
-        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
       </svg>
     </>
   )}
 
   {kind === 'reparte' && (
     <>
-      <span class="fu-frontera"></span>
+      <span class="fu-frontera punteado-v"></span>
       <span class="fu-rot fu-aca">Chile</span>
       <span class="fu-rot fu-alla">Exterior</span>
       <span class="fu-pieza fu-tuya"><Icon name="empresa" size={24} /></span>
       <span class="fu-pie fu-pie-tuya">Tu empresa</span>
       <span class="fu-linea fu-tronco"></span>
       <svg class="fu-cuna fu-cuna-cruce" viewBox="0 0 56 20" fill="none">
-        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+        <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
       </svg>
       <span class="fu-rama-v"></span>
       <span class="fu-rama fu-r1"></span>
@@ -137,12 +151,14 @@ const CUNA = 'M0 10h17l8-8 8 16 8-8h15';
     top: calc(var(--s-4) + 16px + var(--s-2));
     bottom: var(--s-4);
     left: var(--fu-x);
-    border-left: 1.5px dashed var(--ink-mute);
+    /* El trazo, de `.punteado-v` (tokens.css): 3 · 4 · 1,25. */
+    width: 1.25px;
+    --punteado-color: var(--ink-mute);
   }
   .fu-aca { top: var(--s-4); right: calc(100% - var(--fu-x) + var(--s-2)); }
   .fu-alla { top: var(--s-4); left: calc(var(--fu-x) + var(--s-2)); }
 
-  .fu-cuna { width: 14cqw; height: 5cqw; }
+  .fu-cuna { width: 14cqw; height: 5cqw; overflow: visible; }
   .fu { --fu-tx: 18%; }
   .fu-linea { height: 3px; margin-top: -1.5px; top: var(--fu-y); background: var(--ink-mute); }
 

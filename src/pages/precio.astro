@@ -252,14 +252,14 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
               que **ningún valor declarado da el mismo punteado en los dos
               anchos**. En HTML el guion y el hueco son píxeles de verdad.
             */}
-            <span class="frontera" aria-hidden="true"></span>
+            <span class="frontera punteado-v" aria-hidden="true"></span>
             {/*
               El segundo límite: donde el plazo se cierra. Mismo dibujo que el
               primero, porque es el mismo signo del §6.2 —un límite: cruzarlo
               cambia algo— y los dos son instantes, no lugares. Si los dos
               punteados no fueran idénticos parecerían dos marcas distintas.
             */}
-            <span class="caduca" aria-hidden="true"></span>
+            <span class="caduca punteado-v" aria-hidden="true"></span>
             <span class="nodo" aria-hidden="true"></span>
           </div>
 
@@ -550,11 +550,10 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
        centro medio píxel más a la derecha: medido, 0,63px de desviación
        respecto del punto que marca el mismo instante. */
     transform: translateX(-50%);
-    background: repeating-linear-gradient(
-      to bottom,
-      var(--line-on-tinta) 0 3px,
-      transparent 3px 7px
-    );
+    /* El degradado ya es la utilidad `.punteado-v` (tokens.css), que trae
+       además su regla de colores forzados: sin ella esta banda se quedaba
+       sin sus dos límites en ese modo. */
+    --punteado-color: var(--line-on-tinta);
   }
 
   /* El segundo límite, idéntico al primero y en el 68 %, que es 816/1200 del
@@ -567,11 +566,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     bottom: 0;
     width: 1.25px;
     transform: translateX(-50%);
-    background: repeating-linear-gradient(
-      to bottom,
-      var(--line-on-tinta) 0 3px,
-      transparent 3px 7px
-    );
+    --punteado-color: var(--line-on-tinta);
   }
 
   /*
@@ -588,6 +583,18 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     border-radius: 50%;
     background: var(--verde);
     transform: translate(-50%, -50%);
+  }
+  /* Colores forzados (2026-10-13): el punto es un fondo y desaparecía con
+     los dos límites. Se ancla a `CanvasText`, como las rayas del menú.
+     Las dos curvas son trazo de SVG, que el modo NO repinta: la verde quedaba
+     en `--verde` sobre el blanco del esquema claro (2,2:1) y la gris en
+     `--on-tinta-mute`, pensado para la tinta. La verde va con su punto, a
+     `CanvasText`; la gris, a `GrayText`, que cada tema del sistema hace
+     legible sobre su fondo y distinto del texto: así siguen siendo dos. */
+  @media (forced-colors: active) {
+    .nodo { forced-color-adjust: none; background: CanvasText; }
+    .precio { stroke: CanvasText; }
+    .mercado { stroke: GrayText; }
   }
 
   /* En móvil los tres rótulos se apilan: colocados bajo su tramo no caben. */
