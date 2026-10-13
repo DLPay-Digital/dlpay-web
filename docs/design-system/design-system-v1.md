@@ -954,7 +954,7 @@ bisagra del portátil. Un filete `--ink-mute` significa «existe, es real, no es
 | Home y `/precio`, los puentes | `.limite` y `.corte` | los mismos dos, copiados a sus figuras |
 | `/empresas` ×2 | `.fc-frontera` de `FiguraCaso` | la frontera de Chile, en el cruce y en la cajonera |
 | `/confianza` y la Home, «Confianza que se comprueba» | `.fm-frontera` de `FiguraMecanismo` | cuándo la transferencia está **acreditada** — antes no movemos nada |
-| `/como-funciona`, «Dónde termina nuestra operación» | `.ea-limite` de `EjeDeAlcance` (en móvil, el borde superior de `.ea-tras-limite`) | antes de la tercera opción: lo que sigue es otro proceso, con otros servicios, y **no lo realiza DLPay** |
+| `/como-funciona`, «Dónde termina nuestra operación» | `.ea-limite` de `EjeDeAlcance` (en móvil, la franja superior de `.ea-tras-limite`, con `.punteado-h`) | antes de la tercera opción: lo que sigue es otro proceso, con otros servicios, y **no lo realiza DLPay** |
 
 **Las otras diez rutas no tienen ninguna**, y eso también se midió: `/preguntas`, `/blog` y sus
 **cuatro** artículos, las tres legales sin `/tarifas` y la 404.
@@ -1023,20 +1023,51 @@ y pasa a `none` al entrar. `.edge` no lleva `data-draw` ni está dentro de uno, 
 movimiento M3 —el guion vale el largo del propio trazo y pasa a `none` al entrar—, no una marca.
 Nunca se lee como punteado.)
 
-**Cómo se dibuja, y por qué el valor declarado no basta** *(2026-09-24)*. Guion **3px**, hueco
-**4px**, trazo **1,25px**, medidos en pantalla. En `UseCaseFigure` salían solos porque su SVG iba
-a escala 1; **desde el 2026-10-02 la frontera de la Home es `.fu-frontera`**, un borde `dashed` de
-1,5 px en `--ink-mute` — igual que `.fc-frontera` y `.fm-frontera`, que es la familia de la
-lámina. En `/precio` **no**: ese lienzo está estirado con `preserveAspectRatio="none"`, y un
-lienzo estirado deforma el ritmo del punteado igual que deformaría un círculo. Con `2 6` declarado
-se dibujaba a **3,09 y 9,28** —la escala vertical es 1,5467 en escritorio y 1,12 en móvil—, así que
-**ningún valor declarado da el mismo punteado en los dos anchos**.
+**Cómo se dibuja, y por qué el valor declarado no basta** *(2026-09-24 · reescrito el 2026-10-13)*.
+Guion **3px**, hueco **4px**, trazo **1,25px**, medidos en pantalla, **en todas las marcas**. Desde el
+2026-10-13 se dibujan con una sola utilidad de `tokens.css`: `.punteado-v` para un límite vertical y
+`.punteado-h` para uno horizontal, un `repeating-linear-gradient`. La marca pone su geometría —dónde
+va y cuánto mide— y su color en `--punteado-color`; la utilidad sólo pinta.
 
-Por eso ahí la frontera es un elemento HTML con `repeating-linear-gradient`, como ya lo era el punto
-y por el mismo motivo. `border: dashed` no sirve: el guion y el hueco los elige el navegador.
+Hasta ese día, ocho de las diez marcas eran `border: 1.5px dashed`, y eso era otra marca con el
+mismo nombre: Chromium redondea ese borde a 1 px con guion 3 y hueco 2, y cada navegador elige los
+suyos. `border: dashed` no sirve porque **el guion y el hueco los elige el navegador**.
+
+En `/precio` había además otro motivo, y sigue valiendo: ese lienzo está estirado con
+`preserveAspectRatio="none"`, que deforma el ritmo de un punteado igual que deformaría un círculo.
+Con `2 6` declarado se dibujaba a **3,09 y 9,28** —la escala vertical es 1,5467 en escritorio y 1,12
+en móvil—, así que **ningún valor declarado da el mismo punteado en los dos anchos**. Por eso ahí la
+frontera ya era un elemento HTML, como el punto.
+
+**En colores forzados un degradado desaparece**, porque ese modo quita las imágenes de fondo. La
+utilidad trae su regla: un borde punteado de 1 px en `CanvasText`. Ahí el ritmo lo elige el
+navegador y da igual; lo que importa es que el límite siga. *Antes de esa regla, la banda de
+`/precio` se quedaba sin sus dos límites en ese modo mientras su texto hablaba del «segundo
+punteado».*
+
+**El color es el del fondo**: `--ink-mute` sobre papel, `--on-tinta` en los puentes y
+`--line-on-tinta` en la banda de `/precio`. **Una excepción, escrita el 2026-10-13:** en `/tarifas`,
+`.limite` y su muestra de la leyenda van en `--ink`, porque «acá termina» es la frase más fuerte de
+la página.
 
 **La regla que queda: un punteado dentro de un SVG estirado se mide en pantalla, nunca se lee del
 atributo.**
+
+**Cómo se dibuja la cuña** *(2026-10-13)*. Un zigzag de **6:5** —sube 7 en 8,4, baja 14 en 8,4 y
+vuelve a la línea— con **la punta en ángulo** (`stroke-linejoin: miter`). En su caja de 56×20:
+`M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4`. Es la proporción de las cuñas más antiguas del sitio —el carril
+de `/como-funciona`, el riel y la malla de la Home— y la más cercana a la diagonal de la marca
+(~34°).
+
+**El trazo es el de la línea que interrumpe.** Si la cuña es un SVG aparte que escala con su lámina,
+lleva `vector-effect: non-scaling-stroke` —el zigzag escala y el trazo no— y `overflow: visible`,
+porque la punta en ángulo asoma del vértice. Sin eso, a lámina pequeña la cuña salía más fina que su
+propia línea.
+
+Hasta el 2026-10-13 convivían cuatro dibujos. El de 45° con punta redonda entró el 2026-10-02
+llamándose «la cuña del sistema» sin serlo: el sistema ya tenía una. **Por eso importa el nombre:** en
+el código, «cuña» es esta marca y las formas de fondo del héroe (§6); el triángulo del desplegable
+de la cabecera es un *marcador*, y el giro de `Steps`, un *chevron*.
 
 **Y un caso de NO usarlo, del 2026-09-30, que vale como precedente.** El panel de `/precio` separa
 «aceptas» de «recibes», y la primera versión puso ahí un filete punteado citando esta marca. **Era
@@ -1240,7 +1271,7 @@ Cada uno se construye sólo cuando una página real lo necesita (Principio 5, CL
 | **Desglose de precio** | Transparencia | Lista label/valor, valores tabulares alineados a la derecha, divisores hairline. |
 | **Badge de estado** | Estado KYC / operación | Pill discreta (`--r-2`), color semántico + texto, nunca color solo. |
 | **Bloque de confianza** | "Por qué DLPay" | Icono line + H3 + 1 frase. 3 en fila (desktop) / apilados (móvil). Sin números inventados. |
-| **Paso** (step) | Proceso | Marcador (número tabular o cuña) + H3 + frase + tiempo (mono, `--ink-mute`). Numerado sólo porque es secuencia real. |
+| **Paso** (step) | Proceso | Marcador (número tabular o chevron) + H3 + frase + tiempo (mono, `--ink-mute`). Numerado sólo porque es secuencia real. |
 | **Callout WhatsApp** | Contacto humano | Icono chat + texto + botón. Presente en fallbacks del cotizador y en "Cómo funciona". |
 | **Franja de bifurcación** | Personas / Empresas | Dos caminos claros; el de Empresas lleva a `/empresas`. Tardía en la Home. |
 | **Banda Empresas** | Pitch B2B | Sobre `--tinta-2`. Texto + CTA a `/empresas`. |
