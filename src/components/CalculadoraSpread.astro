@@ -1,0 +1,387 @@
+---
+/**
+ * «¿Cuánto te están cobrando por el dólar?»: escribes el precio que te
+ * ofrecen y una referencia del mismo momento, y te dice el spread, en
+ * porcentaje y en dinero.
+ *
+ * Cowork, 2026-10-13, entrega `spread-`. Idea 6 de `ideas-zesty-ficha.md`.
+ * Es la **tercera pieza con JavaScript** del sitio, después del cotizador y
+ * del globo: la autoriza ADR-0012, con su costo medido en el build.
+ *
+ * ── Lo que NO hace, y es la condición para que pueda existir ───────────────
+ *
+ * · **No conoce el precio de nadie.** Los cuatro números los pone quien la usa.
+ *   No hay una cifra de DLPay ni de un proveedor: no compara, no expone D7.
+ * · **No envía nada.** El cálculo es local, y el CSP del sitio lo garantiza
+ *   además: `connect-src 'none'`, `form-action 'none'`. No hay `<form>`.
+ * · **No guarda nada**: ni `localStorage`, ni la URL.
+ *
+ * ── Sin JavaScript ─────────────────────────────────────────────────────────
+ *
+ * El build dibuja el EJEMPLO de la guía «Cómo leer un spread» —1.000, 1.010 y
+ * un millón de pesos, números redondos que no son de ningún día—, calculado
+ * con la misma función que usa la isla (`lib/spread.ts`). Sin JavaScript, la
+ * tarjeta enseña ese ejemplo y un aviso dice que es sólo eso. Con JavaScript,
+ * el aviso cambia al primer número que escribes.
+ *
+ * ── La figura ──────────────────────────────────────────────────────────────
+ *
+ * Es la de la guía —dos niveles en filete `--ink-mute` y la magnitud entre
+ * ellos, con topes— con sus cifras vivas. **Las alturas NO escalan con el
+ * spread**: un 0,3 % y un 3 % dibujarían una barra de 2 px y otra de 20, y la
+ * figura pasaría a afirmar una escala que el texto no tiene. Lo que cambia son
+ * los rótulos. Es la segunda copia del dibujo, y a propósito: la de la guía es
+ * HTML dentro de un `.md`, que no puede usar componentes (`FiguraRiel.astro`
+ * explica el mismo caso).
+ */
+import { calcularSpread, formatPorcentaje } from '../lib/spread.ts';
+import { formatCLP, formatRate, formatUSD } from '../lib/pricing/format.ts';
+
+/* El ejemplo de la guía. Inventado y dicho como tal en la tarjeta. */
+const EJEMPLO = { precio: 1010, referencia: 1000, monto: 1_000_000, comision: 0 } as const;
+const r = calcularSpread(EJEMPLO);
+if (!r.valido || !r.conMonto) throw new Error('El ejemplo de la calculadora tiene que ser válido');
+const m = r.conMonto;
+---
+<div class="calc" data-calc>
+  <p class="estado" data-estado>
+    <span data-estado-texto>Un ejemplo con números redondos. Cambia los números por los tuyos.</span>
+  </p>
+
+  {/*
+    Cuatro piezas y no dos columnas, para que en el teléfono el resultado
+    quede a la vista: primero los dos precios, en seguida lo que te cobran,
+    después los pesos y la comisión, y al final lo que te cuestan. Desde 760,
+    la misma rejilla se lee en dos columnas —campos a la izquierda, resultado a
+    la derecha— sin mover nada en el documento: el orden del tabulador es el
+    mismo en los dos anchos.
+  */}
+  <div class="calc-rejilla">
+    <div class="campos campos-a">
+      <div class="campo">
+        <label for="cs-precio">El precio que te ofrecen</label>
+        <span class="caja">
+          <input id="cs-precio" data-campo="precio" type="text" inputmode="decimal" autocomplete="off"
+                 value={formatRate(EJEMPLO.precio)} aria-describedby="cs-precio-u" />
+          <span class="u" id="cs-precio-u">pesos por dólar</span>
+        </span>
+      </div>
+      <div class="campo">
+        <label for="cs-ref">Una referencia del mismo momento</label>
+        <span class="caja">
+          <input id="cs-ref" data-campo="referencia" type="text" inputmode="decimal" autocomplete="off"
+                 value={formatRate(EJEMPLO.referencia)} aria-describedby="cs-ref-u" />
+          <span class="u" id="cs-ref-u">pesos por dólar</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="resultado res-a">
+      {/* La figura: los rótulos cambian; las alturas, no. */}
+      <figure class="lamina" aria-label="El precio, la referencia y el spread entre los dos">
+        <div class="nivel nivel-precio">
+          <span class="nivel-que">el precio</span>
+          <span class="nivel-cifra num" data-o="precio">{formatRate(EJEMPLO.precio)}</span>
+        </div>
+        <div class="tramo">
+          <span class="barra" aria-hidden="true"></span>
+          <span class="tramo-que">spread</span>
+          <span class="tramo-cifra num"><span data-o="porDolar">{formatRate(r.porDolar)}</span> por dólar</span>
+        </div>
+        <div class="nivel nivel-ref">
+          <span class="nivel-que">la referencia</span>
+          <span class="nivel-cifra num" data-o="referencia">{formatRate(EJEMPLO.referencia)}</span>
+        </div>
+      </figure>
+
+      <p class="pct">
+        <span class="pct-rot">te cobran</span>
+        <span class="pct-cifra num" data-o="porcentaje">{formatPorcentaje(r.porcentaje)}</span>
+        <span class="pct-rot">sobre la referencia</span>
+      </p>
+      <p class="aviso" data-aviso hidden></p>
+    </div>
+
+    <div class="campos campos-b">
+      <div class="campo">
+        <label for="cs-monto">Los pesos que vas a cambiar</label>
+        <span class="caja">
+          <input id="cs-monto" data-campo="monto" type="text" inputmode="numeric" autocomplete="off"
+                 value={formatCLP(EJEMPLO.monto)} aria-describedby="cs-monto-u" />
+          <span class="u" id="cs-monto-u">CLP</span>
+        </span>
+      </div>
+      <div class="campo">
+        <label for="cs-com">Una comisión aparte, si te la cobran</label>
+        <span class="caja">
+          <input id="cs-com" data-campo="comision" type="text" inputmode="numeric" autocomplete="off"
+                 value="0" aria-describedby="cs-com-u" />
+          <span class="u" id="cs-com-u">CLP</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="resultado res-b">
+      <dl class="detalle" data-detalle>
+        <div><dt>Recibes</dt><dd class="num"><span data-o="recibes">{formatUSD(m.recibes)}</span> USD</dd></div>
+        <div><dt>A la referencia, con todos tus pesos</dt><dd class="num"><span data-o="aLaReferencia">{formatUSD(m.aLaReferencia)}</span> USD</dd></div>
+        <div class="dif"><dt>La diferencia</dt><dd class="num"><span data-o="diferenciaUSD">{formatUSD(m.diferenciaUSD)}</span> USD · <span data-o="diferenciaCLP">{formatCLP(m.diferenciaCLP)}</span> CLP</dd></div>
+        <div data-efectivo hidden><dt>Con la comisión, el precio es</dt><dd class="num"><span data-o="precioEfectivo">{formatRate(m.precioEfectivo)}</span> · <span data-o="porcentajeEfectivo">{formatPorcentaje(m.porcentajeEfectivo)}</span></dd></div>
+      </dl>
+    </div>
+  </div>
+
+  {/* Sin JavaScript los campos se pueden editar pero no recalculan: se dice. */}
+  <noscript>
+    <p class="aviso">Sin JavaScript, la tarjeta enseña sólo el ejemplo. La cuenta, para hacerla a mano, está más abajo.</p>
+  </noscript>
+
+  {/* Lo que oye un lector de pantalla: una frase, cuando dejas de escribir. */}
+  <p class="sr-only" aria-live="polite" data-anuncio></p>
+</div>
+
+<style>
+  /* `minmax(0, 1fr)` en las dos rejillas: un número largo —alguien que
+     escribe mil millones de pesos— no puede ensanchar la tarjeta más allá de
+     su columna (medido con valores extremos: sin esto, a 320 px con el
+     espaciado de 1.4.12, la página se desplazaba 71 px). */
+  .calc { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-5); }
+
+  /* El estado: ejemplo o tus números. En gris mientras es el ejemplo, en
+     tinta cuando ya son tuyos. Sin raya delante: la lleva el rótulo de la
+     tarjeta justo encima, y dos seguidas se leían como dos rótulos. */
+  .estado { margin: 0; font-size: var(--t-body-sm); color: var(--ink-mute); }
+  .estado.propios { color: var(--ink); }
+
+  .calc-rejilla { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-6); }
+
+  /* ── Los campos: la caja del cotizador, en claro ─────────────────────── */
+  .campos { display: grid; gap: var(--s-4); }
+  .campo { display: grid; gap: var(--s-2); min-width: 0; }
+  .campo label { font-size: var(--t-body-sm); color: var(--ink); font-weight: 600; }
+  .caja {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+    min-height: 52px;
+    padding: 0 var(--s-4);
+    background: var(--papel-2);
+    border: 1px solid transparent;
+    border-radius: var(--r-3);
+  }
+  /* El foco lo dibuja la CAJA, con el anillo del sistema (§10: 2 px de
+     `--focus`, separado 2 px): así abarca también la unidad, que es parte
+     del campo. El campo no dibuja el suyo; dos anillos, uno dentro del otro,
+     se leían como dos cosas enfocadas. */
+  .caja:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
+  /* `width: 100%` y no sólo `flex: 1`: un `<input>` aporta su ancho propio
+     (20 caracteres a 26 px, unos 330) al ancho mínimo de la caja, y la caja
+     se salía de su columna —a 390 px, de la pantalla— aunque el campo
+     llevara `min-width: 0`. */
+  .caja { min-width: 0; }
+  .caja input {
+    flex: 1 1 0;
+    width: 100%;
+    min-width: 0;
+    padding: 14px 0;
+    border: 0;
+    background: transparent;
+    font-family: var(--f-num);
+    font-size: var(--t-dato-m);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+  }
+  .caja input:focus,
+  .caja input:focus-visible { outline: none; }
+  .caja .u { font-size: var(--t-body-sm); color: var(--ink-mute); white-space: nowrap; }
+
+  /* ── El resultado ──────────────────────────────────────────────────── */
+  .resultado { display: grid; gap: var(--s-5); align-content: start; }
+
+  /* La figura de la guía, con cifras vivas. Filetes `--ink-mute`: ninguno de
+     los dos precios es nuestro. La magnitud, en `--verde-deep` sobre papel,
+     y hecha de bordes para que sobreviva a colores forzados. */
+  .lamina { display: grid; margin: 0; }
+  .nivel {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--s-4);
+    padding: var(--s-2) 0;
+  }
+  .nivel-precio { border-bottom: 3px solid var(--ink-mute); }
+  .nivel-ref { border-top: 3px solid var(--ink-mute); }
+  .nivel-que { font-size: var(--t-body-sm); color: var(--ink-mute); }
+  .nivel-cifra { font-size: var(--t-dato-m); line-height: 1; color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
+  .tramo {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: var(--s-4);
+    align-content: center;
+    min-height: 72px;
+    margin: -3px 0;
+  }
+  .barra {
+    grid-row: 1 / 3;
+    position: relative;
+    justify-self: center;
+    width: 0;
+    height: 100%;
+    border-left: 8px solid var(--verde-deep);
+  }
+  .barra::before,
+  .barra::after {
+    content: '';
+    position: absolute;
+    left: -18px;
+    width: 28px;
+    border-top: 3px solid var(--verde-deep);
+  }
+  .barra::before { top: 0; }
+  .barra::after { bottom: 0; }
+  .tramo-que { align-self: end; font-weight: 600; color: var(--ink); }
+  .tramo-cifra { font-size: var(--t-dato-sm); color: var(--ink); }
+
+  /* La cifra que manda (DS §3.0): el porcentaje. En tinta, no en verde: el
+     verde grande sobre tinta es, en `/tarifas`, lo que TÚ recibes, y esto no
+     es de nadie en particular. */
+  .pct {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s-1) var(--s-3);
+    margin: 0;
+    padding: var(--s-4);
+    background: var(--tinta);
+    color: var(--on-tinta);
+    border: 1px solid transparent;
+    border-radius: var(--r-3);
+  }
+  .pct-rot { font-size: var(--t-body-sm); color: var(--on-tinta-mute); }
+  /* Puede partir sólo si no cabe ni sola en su renglón, que con números de
+     verdad no pasa; el «%» va pegado con un espacio fino que no corta. */
+  .pct-cifra { font-size: var(--t-dato); line-height: 1; color: var(--on-tinta); min-width: 0; overflow-wrap: anywhere; }
+
+  .detalle { display: grid; margin: 0; }
+  .detalle > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--s-1) var(--s-4);
+    padding: var(--s-3) 0;
+    border-top: 1px solid var(--line);
+  }
+  .detalle > div[hidden] { display: none; }
+  .detalle dt { font-size: var(--t-body-sm); color: var(--ink-mute); }
+  .detalle dd { margin: 0; font-size: var(--t-body); color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
+  .detalle .dif dt { color: var(--ink); font-weight: 600; }
+  .aviso {
+    margin: 0;
+    padding: var(--s-3) var(--s-4);
+    border-left: 3px solid var(--ink-mute);
+    font-size: var(--t-body-sm);
+    color: var(--ink);
+  }
+
+  @media (min-width: 760px) {
+    .calc-rejilla {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-areas: 'a r' 'b d';
+      column-gap: var(--s-7);
+      row-gap: var(--s-4);
+      align-items: start;
+    }
+    .campos-a { grid-area: a; }
+    .res-a { grid-area: r; }
+    .campos-b { grid-area: b; }
+    .res-b { grid-area: d; }
+  }
+
+  /*
+    Colores forzados: la caja del campo y el porcentaje llevan un borde
+    transparente, que en este modo el navegador pinta, porque su fondo
+    desaparece. La barra y los topes de la figura son bordes.
+  */
+</style>
+
+<script>
+  import { parseAmount, formatCLP, formatRate, formatUSD } from '../lib/pricing/format.ts?isla';
+  import { calcularSpread, formatPorcentaje } from '../lib/spread.ts';
+
+  const root = document.querySelector<HTMLElement>('[data-calc]');
+  if (root) {
+    const campos = root.querySelectorAll<HTMLInputElement>('input[data-campo]');
+    const o = (k: string) => root.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
+    const estado = root.querySelector<HTMLElement>('[data-estado]')!;
+    const estadoTexto = root.querySelector<HTMLElement>('[data-estado-texto]')!;
+    const detalle = root.querySelector<HTMLElement>('[data-detalle]')!;
+    const efectivo = root.querySelector<HTMLElement>('[data-efectivo]')!;
+    const aviso = root.querySelector<HTMLElement>('[data-aviso]')!;
+    const anuncio = root.querySelector<HTMLElement>('[data-anuncio]')!;
+    let espera: number | undefined;
+
+    const leer = (k: string): number =>
+      parseAmount(root.querySelector<HTMLInputElement>(`input[data-campo="${k}"]`)!.value);
+
+    const pintar = (): void => {
+      const precio = leer('precio');
+      const referencia = leer('referencia');
+      const r = calcularSpread({ precio, referencia, monto: leer('monto'), comision: leer('comision') });
+
+      if (!r.valido) {
+        for (const k of ['porDolar', 'porcentaje']) o(k).textContent = '—';
+        o('precio').textContent = precio > 0 ? formatRate(precio) : '—';
+        o('referencia').textContent = referencia > 0 ? formatRate(referencia) : '—';
+        detalle.hidden = true;
+        aviso.hidden = false;
+        aviso.textContent = 'Escribe los dos precios, en pesos por dólar.';
+        return;
+      }
+      o('precio').textContent = formatRate(precio);
+      o('referencia').textContent = formatRate(referencia);
+      o('porDolar').textContent = formatRate(r.porDolar).replace('-', '−');
+      o('porcentaje').textContent = formatPorcentaje(r.porcentaje);
+
+      if (r.conMonto) {
+        const m = r.conMonto;
+        detalle.hidden = false;
+        o('recibes').textContent = formatUSD(m.recibes);
+        o('aLaReferencia').textContent = formatUSD(m.aLaReferencia);
+        o('diferenciaUSD').textContent = formatUSD(m.diferenciaUSD).replace('-', '−');
+        o('diferenciaCLP').textContent = formatCLP(m.diferenciaCLP).replace('-', '−');
+        const hayComision = leer('comision') > 0;
+        efectivo.hidden = !hayComision;
+        o('precioEfectivo').textContent = formatRate(m.precioEfectivo);
+        o('porcentajeEfectivo').textContent = formatPorcentaje(m.porcentajeEfectivo);
+      } else {
+        detalle.hidden = true;
+      }
+
+      /* Bajo la referencia no es un error de cuenta: o la referencia es de
+         otro momento, o ese número es un precio de compra. Se dice cuál. */
+      aviso.hidden = !r.bajoLaReferencia;
+      aviso.textContent = r.bajoLaReferencia
+        ? 'El precio que te ofrecen está bajo la referencia. Revisa que la referencia sea del mismo momento: si lo es, ese número es un precio de compra, no de venta.'
+        : '';
+
+      /* Lo que se anuncia, cuando dejas de escribir y no en cada tecla. */
+      window.clearTimeout(espera);
+      espera = window.setTimeout(() => {
+        anuncio.textContent = `Te cobran ${formatPorcentaje(r.porcentaje)} sobre la referencia${
+          r.conMonto ? `: ${formatUSD(r.conMonto.diferenciaUSD)} dólares menos que a la referencia.` : '.'
+        }`;
+      }, 600);
+    };
+
+    campos.forEach((c) =>
+      c.addEventListener('input', () => {
+        estado.classList.add('propios');
+        estadoTexto.textContent = 'Con tus números. La cuenta se hace en este navegador y no sale de él.';
+        pintar();
+      }),
+    );
+  }
+</script>

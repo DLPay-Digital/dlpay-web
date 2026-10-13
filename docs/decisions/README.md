@@ -16,6 +16,7 @@ evaluadas, decisión y consecuencias**. La documentación explica el *porqué*, 
 | [0009](0009-cero-js-e1-globo-rotativo.md) | Primera excepción a «cero JS al cliente» — runtime acotado al globo | Aceptada | 4 |
 | [0010](0010-motion-v1-e3-intro-de-marca.md) | Motion V1, tercera excepción — intro de marca en la Home, 830 ms sobre el cotizador | Aceptada | 4 |
 | [0011](0011-motion-v1-e4-diario-dlpay.md) | Motion V1, cuarta excepción — el Diario DLPay de `/blog`: hojas que pasan solas, y la única pieza fuera del registro de ADR-0001 | Aceptada | 4 |
+| [0012](0012-cero-js-e2-calculadora-spread.md) | Segunda excepción a «cero JS al cliente»: la calculadora del spread | Aceptada | 4 |
 
 **Convención:** numeración correlativa, un archivo por decisión, nunca se reescribe una decisión
 aceptada — se **enmienda** dejando visible lo anterior, o se supera con un ADR nuevo que la cite.

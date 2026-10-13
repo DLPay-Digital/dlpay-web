@@ -429,9 +429,11 @@ vuelve corporativa · español chileno plano · identidad propia.
 
 **Arquitectura de información v1 — enmendada el 2026-09-09, el 2026-09-11 y el 2026-09-23:**
 `/` (Home con el cotizador en el hero) · `/como-funciona` · `/precio` · `/empresas` · `/confianza` ·
-`/preguntas` · `/blog` y `/blog/<slug>` ·
+`/preguntas` · `/blog` y `/blog/<slug>` · `/cuanto-te-cobran` (la herramienta del spread,
+enlazada desde el blog y **no** desde el menú) ·
 legales: `/terminos`, `/privacidad`, `/tarifas`, `/canal-de-denuncias`.
-Las **once** rutas estáticas existen y resuelven, más una por artículo.
+Las **doce** rutas estáticas existen y resuelven, más una por artículo. *`/cuanto-te-cobran` entró
+el 2026-10-13 con ADR-0012.*
 
 **`/precio` y `/preguntas` se añadieron el 2026-09-23.** Ninguna de las dos es contenido nuevo
 disperso: `/preguntas` **importa** las nueve preguntas de `home.ts` y `business.ts` —siguen
@@ -757,7 +759,11 @@ cualquier servidor estático.* Lo que rompa esa afirmación necesita una enmiend
 - **Contenido / compliance:** nunca inventar datos regulatoria o comercialmente sensibles; marcar
   `REQUIERE VALIDACIÓN DE COMPLIANCE`.
 
-Ver ADR-0009: única excepción a «cero JS al cliente», un runtime acotado al componente del globo.
+Ver ADR-0009: **primera** excepción a «cero JS al cliente», un runtime acotado al componente del
+globo. **Y ADR-0012, del 2026-10-13: la segunda**, la calculadora de `/cuanto-te-cobran` — 3,4 KB
+en línea, una sola cuenta en `lib/spread.ts` que comparten el build y el navegador, y que no
+conoce el precio de nadie ni envía nada. **El cotizador sigue siendo la única isla del producto:**
+ninguna de las dos excepciones participa de una operación.
 
 ---
 

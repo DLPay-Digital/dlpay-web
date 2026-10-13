@@ -1,0 +1,194 @@
+---
+/**
+ * /cuanto-te-cobran — la herramienta del spread.
+ *
+ * Cowork, 2026-10-13, entrega `spread-`. Idea 6 de `ideas-zesty-ficha.md`:
+ * Zesty tiene herramientas gratis que la gente usa y comparte; ésta es la
+ * nuestra, y es nuestro mensaje —el precio de mercado, con el spread
+ * adentro— convertido en algo que se usa.
+ *
+ * ── Ruta nueva ─────────────────────────────────────────────────────────────
+ *
+ * La arquitectura de información de `CLAUDE.md` §6 nombra las rutas. Ésta es
+ * una más, y entra con la decisión de Sebastián que la acompaña (ficha de la
+ * entrega). **No va en el menú ni en el pie todavía**: tocar la cabecera es
+ * tocar todas las rutas, y eso se decide aparte. Se llega desde el blog.
+ *
+ * ── Composición ────────────────────────────────────────────────────────────
+ *
+ * La de `/tarifas`: portada apilada y la tarjeta montada sobre la costura con
+ * el cuerpo, con el mismo mecanismo de `--montaje`. Es el único
+ * `--elev-card` de la página (§4.5): la tarjeta ES el objeto de la página.
+ *
+ * TEXTO NUEVO. REQUIERE VALIDACIÓN DE COMPLIANCE — titular, bajada, los
+ * rótulos de la tarjeta y las cuatro secciones. Lo que dice de DLPay en «En
+ * DLPay» son frases ya publicadas en `/tarifas` y `/precio`.
+ */
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PageHero from '../components/PageHero.astro';
+import CalculadoraSpread from '../components/CalculadoraSpread.astro';
+---
+<Base
+  title="¿Cuánto te están cobrando por el dólar?"
+  description="Escribe el precio que te ofrecen y una referencia del mismo momento: te mostramos el spread, en porcentaje y en pesos. La cuenta se hace en tu navegador."
+  path="/cuanto-te-cobran/"
+>
+  <Header />
+  <main id="main">
+    <PageHero
+      title="¿Cuánto te están cobrando por el dólar?"
+      lead="Escribe el precio que te ofrecen y una referencia del mismo momento. Te mostramos el spread, en porcentaje y en pesos."
+      sequence
+      layout="stacked"
+    >
+      <div class="tarjeta" slot="aside">
+        <p class="eyebrow">calcula el spread</p>
+        <CalculadoraSpread />
+      </div>
+    </PageHero>
+
+    <div class="cuerpo">
+      <div class="inner">
+        <section class="bloque" aria-labelledby="calcula-t">
+          <h2 id="calcula-t">Cómo se calcula</h2>
+          <p>
+            El spread es la distancia entre el precio que te ofrecen y la referencia. Se lee en
+            porcentaje, sobre la referencia:
+          </p>
+          <p class="formula num">(precio − referencia) ÷ referencia × 100</p>
+          <p class="mute">
+            Pero se paga en dinero. Con tus pesos recibes <strong>pesos ÷ precio</strong> dólares; a
+            la referencia, todos tus pesos, comisión incluida, darían <strong>pesos ÷
+            referencia</strong>. La diferencia entre los dos es lo que te cuesta.
+          </p>
+        </section>
+
+        <section class="bloque" aria-labelledby="ref-t">
+          <h2 id="ref-t">Qué referencia usar</h2>
+          <p>
+            Una del <strong>mismo momento</strong> que el precio. El mercado se mueve durante el día, y
+            dos números tomados a horas distintas miden también lo que se movió.
+          </p>
+          <p class="mute">
+            El dólar observado que publica el Banco Central sirve para tener el orden de magnitud,
+            no para medir un spread de hoy: es un promedio del día hábil anterior.
+          </p>
+        </section>
+
+        <section class="bloque ajeno" aria-labelledby="no-t">
+          <h2 id="no-t">Lo que esta herramienta no hace</h2>
+          <ul class="no">
+            <li><strong>No sabe el precio de nadie.</strong> Los números los pones tú.</li>
+            <li><strong>No compara a DLPay con otros.</strong> Sirve para cualquier precio que te ofrezcan.</li>
+            <li><strong>No guarda ni envía lo que escribes.</strong> La cuenta se hace en este navegador y no sale de él.</li>
+          </ul>
+        </section>
+
+        <section class="bloque" aria-labelledby="dlpay-t">
+          <h2 id="dlpay-t">En DLPay</h2>
+          <p>
+            DLPay toma una referencia de mercado y le aplica su spread. El resultado es el precio
+            que ves en el cotizador: un solo número, con el spread ya incorporado.
+          </p>
+          <p class="mute">
+            Un solo cobro en toda la operación, y va dentro del precio. Cómo se compone está en
+            <a href="/tarifas/">tarifas</a>, y qué cuesta y qué no, en <a href="/precio/">el precio</a>.
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  /* Cuánto sobresale la tarjeta de la banda: el mecanismo de `/tarifas`. */
+  main { --montaje: 132px; }
+  @media (min-width: 900px) { main { --montaje: 168px; } }
+
+  .cuerpo {
+    background: var(--papel);
+    padding: calc(var(--montaje) + var(--s-8)) 0 var(--s-9);
+  }
+  .inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 var(--pad-section-m);
+  }
+
+  /* La tarjeta: la de `/tarifas`, con su `color` explícito por el mismo
+     motivo —vive dentro de una banda en tinta que fija `--on-tinta`—, y con
+     un borde transparente para que en colores forzados se vea su contorno. */
+  .tarjeta {
+    /* La banda de `PageHero` es `.on-tinta-surface` y fija `--focus` en el
+       verde vivo, que sobre papel da 2,02:1: el anillo de foco de los campos
+       no se habría visto. La tarjeta es papel, así que vuelve al verde
+       oscuro (DS §10). */
+    --focus: var(--verde-deep);
+    background: var(--papel);
+    color: var(--ink);
+    border: 1px solid transparent;
+    border-radius: var(--r-block);
+    box-shadow: var(--elev-card);
+    padding: var(--s-6) var(--s-5);
+    width: 100%;
+    max-width: 960px;
+    text-align: left;
+  }
+  .eyebrow {
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    letter-spacing: var(--ls-label);
+    color: var(--ink-mute);
+    margin: 0 0 var(--s-4);
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+  }
+  .eyebrow::before {
+    content: '';
+    width: 18px;
+    height: 2px;
+    background: var(--verde-deep);
+    flex: none;
+  }
+
+  .bloque { padding: var(--s-8) 0 0; }
+  .bloque:first-child { padding-top: 0; }
+  h2 {
+    font-size: var(--t-h2-m);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin: 0 0 var(--s-5);
+    font-weight: 700;
+  }
+  .cuerpo p { margin: 0 0 var(--s-4); max-width: 56ch; }
+  .cuerpo p:last-child { margin-bottom: 0; }
+  .mute { color: var(--ink-mute); }
+  .mute strong { color: var(--ink); }
+  .cuerpo a { color: var(--verde-deep); }
+  .formula {
+    display: inline-block;
+    padding: var(--s-3) var(--s-4);
+    background: var(--papel-2);
+    border: 1px solid transparent;
+    border-radius: var(--r-2);
+    font-size: var(--t-body);
+  }
+  /* «Lo que no hace», con el filete de lo ajeno de `/tarifas`: no es nuestro
+     ni de nadie, es el borde de la herramienta. */
+  .ajeno { border-left: 3px solid var(--ink-mute); padding-left: var(--s-5); margin-top: var(--s-8); padding-top: 0; }
+  .no { display: grid; gap: var(--s-3); margin: 0; padding: 0 0 0 var(--s-5); max-width: 60ch; }
+
+  @media (min-width: 900px) {
+    .inner { padding-inline: var(--pad-section); }
+    .tarjeta { padding: var(--s-7); }
+    h2 { font-size: var(--t-h2); }
+  }
+
+  @media (forced-colors: active) {
+    .eyebrow::before { forced-color-adjust: none; background: CanvasText; }
+  }
+</style>
