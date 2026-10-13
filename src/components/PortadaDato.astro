@@ -278,4 +278,31 @@ const fechaISO = portada.fecha.toISOString();
     .intervalo::before,
     .intervalo::after { top: -12px; height: 32px; }
   }
+
+  /*
+    Desde 1112 px, el artículo con riel mueve su columna de lectura 224 px a
+    la derecha (ver `blog/[slug].astro`), y la portada la acompaña para que la
+    cifra arranque donde arranca el titular. `--art-desplaza` lo pone la
+    página; sin él vale 0 y esto no cambia nada. (Cowork, 2026-10-13.)
+  */
+  @media (min-width: 1112px) {
+    .inner {
+      max-width: calc(760px + var(--art-desplaza, 0px));
+      padding-inline-start: var(--art-desplaza, 0px);
+    }
+  }
+
+  /*
+    Colores forzados (Cowork, 2026-10-13). La barra del intervalo y sus dos
+    topes son fondos, y este modo quita los fondos: en la portada de la Fed
+    quedaban «3,75» y «4,00» sin nada entre ellos. Defecto anterior a esta
+    entrega, encontrado al medir las portadas nuevas. Se ancla a
+    `CanvasText` con `forced-color-adjust: none`, el mismo arreglo que las
+    rayas del menú del móvil.
+  */
+  @media (forced-colors: active) {
+    .intervalo,
+    .intervalo::before,
+    .intervalo::after { forced-color-adjust: none; background: CanvasText; }
+  }
 </style>

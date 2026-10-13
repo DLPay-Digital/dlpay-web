@@ -14,19 +14,106 @@ import Footer from '../../components/Footer.astro';
 import Motion from '../../components/Motion.astro';
 import PortadaDato from '../../components/PortadaDato.astro';
 import PortadaFigura from '../../components/PortadaFigura.astro';
-import { publishedPosts } from '../../lib/blog.ts';
+import FilaArticulo from '../../components/FilaArticulo.astro';
+import Icon from '../../components/Icon.astro';
+import {
+  publishedPosts,
+  rutaPublicada,
+  minutosDeLectura,
+  sigueLeyendo,
+} from '../../lib/blog.ts';
+import { site } from '../../lib/config/site.ts';
+/* Las figuras de las guías: ver la cabecera del archivo. */
+import '../../styles/guias.css';
 
 export async function getStaticPaths() {
   /* Sólo los publicados generan ruta: un borrador no tiene URL que alguien
      pueda compartir por accidente. Ver el candado en `lib/blog.ts`. */
   const posts = await publishedPosts();
   /* `post.id` es el nombre del archivo sin extensión: el slug sale del disco y
-     no de un campo que alguien pueda dejar duplicado. */
-  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+     no de un campo que alguien pueda dejar duplicado.
+
+     Cada página recibe además la lista entera: la necesitan la ruta y «Sigue
+     leyendo», y así se decide todo en el build. */
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post, posts } }));
 }
 
-const { post } = Astro.props;
-const { Content } = await render(post);
+const { post, posts } = Astro.props;
+const { Content, headings } = await render(post);
+
+/*
+  ── Lo que la plantilla añade desde el 2026-10-13 (Cowork, entrega `aprende-`) ──
+
+  Idea 2 de `ideas-zesty-ficha.md`: una plantilla de artículo más útil, **sin
+  texto nuevo en los artículos**. Todo sale de lo que ya hay:
+
+  · el índice «En esta página», de los H2 del propio Markdown;
+  · los minutos de lectura, contados del cuerpo (`minutosDeLectura`);
+  · la miga de pan, de la categoría;
+  · «Sigue leyendo», de los demás publicados (`sigueLeyendo`);
+  · el paso de la ruta, del campo `ruta` (`rutaPublicada`);
+  · los datos estructurados `Article` y `BreadcrumbList`, de los campos que
+    el esquema ya exige.
+
+  Lo único que es texto nuevo es «En corto», y es OPCIONAL: sale sólo si el
+  frontmatter trae `resumen`, que firma Compliance con el resto del artículo.
+*/
+
+/* El índice sólo con tres secciones o más: con dos se ve todo de un vistazo y
+   un índice sería ruido. Sólo H2: los H3 lo harían largo y no se escanea. */
+const indice = headings.filter((h) => h.depth === 2);
+const conIndice = indice.length >= 3;
+const minutos = minutosDeLectura(post);
+const ruta = rutaPublicada(posts);
+const aquiEnRuta = ruta.find((r) => r.post.id === post.id);
+const siguientes = sigueLeyendo(post, posts);
+
+/* La miga de pan termina en el grupo del índice, no en el artículo: el titular
+   está justo debajo y repetirlo sería decir lo mismo dos veces. */
+const grupos = {
+  Guía: { id: 'guias', nombre: 'Guías' },
+  Mercado: { id: 'mercado', nombre: 'Mercado' },
+  DLPay: { id: 'novedades', nombre: 'DLPay' },
+} as const;
+const grupo = grupos[post.data.category];
+const canonical = new URL(`/blog/${post.id}/`, site.url).href;
+
+/*
+  Datos estructurados. Mismo criterio que el `Organization` de `Base.astro`:
+  sólo campos verificables y que el artículo ya muestra. El autor es la
+  organización, no una persona —D11, cerrada: sin nombres ni fotos del
+  equipo—. La imagen es la tarjeta Open Graph del sitio, la única que hay.
+*/
+const datos = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Article',
+      headline: post.data.title,
+      description: post.data.description,
+      datePublished: post.data.pubDate.toISOString(),
+      dateModified: (post.data.actualizado ?? post.data.pubDate).toISOString(),
+      inLanguage: site.locale,
+      mainEntityOfPage: canonical,
+      image: new URL('/og-image.png', site.url).href,
+      author: { '@type': 'Organization', name: site.name, url: site.url },
+      publisher: {
+        '@type': 'Organization',
+        name: site.name,
+        logo: { '@type': 'ImageObject', url: new URL('/logo.png', site.url).href },
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Inicio', item: new URL('/', site.url).href },
+        { '@type': 'ListItem', position: 2, name: 'Blog', item: new URL('/blog/', site.url).href },
+        { '@type': 'ListItem', position: 3, name: grupo.nombre, item: new URL(`/blog/#${grupo.id}`, site.url).href },
+        { '@type': 'ListItem', position: 4, name: post.data.title, item: canonical },
+      ],
+    },
+  ],
+};
 
 /**
  * `timeZone: 'UTC'` NO es un detalle. En el frontmatter la fecha va sin hora,
@@ -43,9 +130,18 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
 });
 ---
 <Base title={post.data.title} description={post.data.description} path={`/blog/${post.id}/`}>
+  {/* Va al `<head>` por la ranura de `Base.astro`. Es un bloque de datos, no
+      un script: el navegador no lo ejecuta. */}
+  <Fragment slot="head">
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(datos).replace(/</g, '\\u003c')}
+    />
+  </Fragment>
   <Motion />
   <Header />
-  <main id="main">
+  <main id="main" class:list={['articulo', { 'con-riel': conIndice || aquiEnRuta }]}>
     {/*
       La portada va FUERA del artículo y a sangre; el titular va debajo, sobre
       papel. Con el titular dentro de la banda el artículo se leía como una
@@ -68,7 +164,17 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
         <PortadaDato portada={post.data.portada} />
       ))}
 
-    <article class="post">
+    {/*
+      ── La rejilla (2026-10-13) ──────────────────────────────────────────
+      Bajo 1100 px, una columna de 760 como siempre. Desde 1100, dos: un riel
+      de 176 px a la izquierda con el índice y la ruta, y la columna de
+      lectura con su medida intacta (760). El riel arranca a la altura del
+      cuerpo, no del titular: el titular no necesita índice al lado.
+
+      El orden del documento es cabecera → riel → cuerpo, que es el orden en
+      que se ven: así el foco de teclado no salta hacia atrás.
+    */}
+    <article class:list={['post', { 'con-riel': conIndice || aquiEnRuta }]}>
       {/*
         M6 (2026-09-23): la cabecera entra al cargar, en tres pasos. Es una
         animación CSS y no depende del observador, porque esto está sobre el
@@ -83,21 +189,134 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
         estar ahí, igual que la tarjeta del cotizador en la Home (regla dura 2).
       */}
       <header class="head">
+        {/* La miga de pan: dónde estás, en tres pasos. Entra con la meta. */}
+        <nav class="miga seq" style="--seq:0" aria-label="Miga de pan">
+          <ol role="list">
+            <li><a href="/">Inicio</a></li>
+            <li><span class="miga-sep" aria-hidden="true">/</span><a href="/blog/">Blog</a></li>
+            <li><span class="miga-sep" aria-hidden="true">/</span><a href={`/blog/#${grupo.id}`}>{grupo.nombre}</a></li>
+          </ol>
+        </nav>
         <span class="meta seq" style="--seq:0">
           <span class="cat">{post.data.category}</span>
           <time datetime={post.data.pubDate.toISOString()}>{fecha.format(post.data.pubDate)}</time>
+          {post.data.actualizado && (
+            <span>
+              Actualizado el <time datetime={post.data.actualizado.toISOString()}>{fecha.format(post.data.actualizado)}</time>
+            </span>
+          )}
+          <span class="min">
+            <span class="min-ico" aria-hidden="true"><Icon name="clock" size={16} /></span>
+            {minutos} min de lectura
+          </span>
         </span>
         <h1 class="seq" style="--seq:1">{post.data.title}</h1>
         <p class="lead seq" style="--seq:2">{post.data.description}</p>
+        {aquiEnRuta && (
+          <a class="en-ruta seq" style="--seq:2" href="/blog/#ruta">
+            Paso {aquiEnRuta.numero} de {aquiEnRuta.total} · Tu primera operación
+          </a>
+        )}
       </header>
 
-      <div class="prose">
-        <Content />
-      </div>
+      {(conIndice || aquiEnRuta) && (
+        <aside class="riel-lateral" aria-label="Navegación del artículo">
+          <div class="riel-fijo">
+            {conIndice && (
+              <nav class="lat" aria-labelledby="lat-indice">
+                <p class="lat-t" id="lat-indice">En esta página</p>
+                <ol class="lat-indice" role="list">
+                  {indice.map((h) => (
+                    <li><a href={`#${h.slug}`}>{h.text}</a></li>
+                  ))}
+                </ol>
+              </nav>
+            )}
+            {aquiEnRuta && (
+              <nav class="lat" aria-labelledby="lat-ruta">
+                <p class="lat-t" id="lat-ruta">Tu primera operación</p>
+                <ol class="lat-ruta" role="list">
+                  {ruta.map((r) => (
+                    <li>
+                      <a
+                        href={`/blog/${r.post.id}/`}
+                        aria-current={r.post.id === post.id ? 'page' : undefined}
+                      >
+                        <span class="lat-n num" aria-hidden="true">{r.numero}</span>
+                        <span><span class="sr-only">Paso {r.numero}: </span>{r.post.data.ruta?.titulo}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            )}
+          </div>
+        </aside>
+      )}
 
-      <footer class="back">
-        <a href="/blog/">Ver todos los artículos</a>
-      </footer>
+      <div class="cuerpo">
+        {/*
+          «En corto»: sólo si el frontmatter trae `resumen`. Es texto con
+          firma (ver el esquema). Va en `--papel-2`, plano: no es la pieza
+          protagonista de la página y no gasta la única `--elev-card`.
+        */}
+        {post.data.resumen && (
+          <aside class="en-corto" aria-labelledby="en-corto-t">
+            <p class="en-corto-t" id="en-corto-t">En corto</p>
+            <ul>
+              {post.data.resumen.map((frase) => <li>{frase}</li>)}
+            </ul>
+          </aside>
+        )}
+
+        {/*
+          El índice en móvil: un `<details>` cerrado, sin JavaScript. Desde
+          1100 lo sustituye el riel, así que se oculta allí (y el riel bajo
+          1100): nunca hay dos índices a la vez en el árbol accesible.
+        */}
+        {conIndice && (
+          <details class="indice-movil">
+            <summary>
+              <span>En esta página</span>
+              <span class="indice-n num">{indice.length} secciones</span>
+              <span class="indice-ico" aria-hidden="true"><Icon name="chevron" size={16} /></span>
+            </summary>
+            <ol role="list">
+              {indice.map((h) => (
+                <li><a href={`#${h.slug}`}>{h.text}</a></li>
+              ))}
+            </ol>
+          </details>
+        )}
+
+        <div class="prose">
+          <Content />
+        </div>
+
+        {siguientes.length > 0 && (
+          <section class="sigue" aria-labelledby="sigue-t">
+            <h2 id="sigue-t">Sigue leyendo</h2>
+            <ul class="posts" role="list">
+              {siguientes.map((p) => {
+                const paso = ruta.find((r) => r.post.id === p.id);
+                const esSiguiente = aquiEnRuta && paso && paso.numero === aquiEnRuta.numero + 1;
+                return (
+                  <li>
+                    <FilaArticulo
+                      post={p}
+                      antetitulo={esSiguiente ? `Siguiente paso · ${paso.numero} de ${paso.total}` : undefined}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
+
+        <footer class="back">
+          <a href="/blog/">Ver todos los artículos</a>
+        </footer>
+      </div>
     </article>
   </main>
   <Footer />
@@ -117,14 +336,65 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
      acá el metadato tiene que pesar menos que él. */
   .meta {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--s-3);
+    gap: var(--s-1) var(--s-3);
     margin-bottom: var(--s-4);
     font-family: var(--f-num);
     font-size: var(--t-dato-sm);
     color: var(--ink-mute);
   }
   .cat { color: var(--verde-deep); font-weight: 600; }
+  /* Los minutos, que entraron el 2026-10-13, llevan el reloj del juego de
+     iconos delante y no un punto: a 390 px la línea se parte, y un «·» al
+     principio de la segunda línea se leía como una errata. El reloj marca el
+     dato en cualquier renglón. `flex-wrap` por eso mismo. */
+  .min { display: inline-flex; align-items: center; gap: var(--s-1); }
+  .min-ico { display: grid; }
+  .min-ico :global(svg) { display: block; width: 16px; height: 16px; }
+
+  /* La miga de pan: tres enlaces en la línea tabular del metadato, con «/»
+     entre ellos. La barra va en el marcado con `aria-hidden` y NO como
+     `::before`: el contenido generado por CSS sí lo lee un lector de pantalla
+     (medido en el árbol accesible: «/ Blog»). */
+  .miga { margin-bottom: var(--s-3); }
+  .miga ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-1) 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+  }
+  .miga-sep { margin: 0 var(--s-2); color: var(--ink-mute); }
+  /* 44 px de objetivo táctil (DS §10, «los enlaces de navegación necesitan
+     `min-height` explícito») sin que la línea crezca: el relleno lo compensa
+     un margen negativo. Lo que se agranda es la zona que recibe el toque, no
+     el dibujo. Mismo recurso en el resto de enlaces de navegación de abajo. */
+  .miga a {
+    display: inline-block;
+    padding: 12px 6px;
+    margin: -12px -6px;
+    color: var(--ink-mute);
+    text-underline-offset: 3px;
+  }
+  .miga a:hover { color: var(--ink); }
+
+  /* El paso de la ruta, bajo la bajada. Desde 1112 lo dice el riel y se
+     oculta acá. */
+  .en-ruta {
+    display: inline-block;
+    padding-block: 12px;
+    margin-top: calc(-1 * var(--s-5) - 12px);
+    margin-bottom: calc(var(--s-7) - 12px);
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    font-weight: 600;
+    color: var(--verde-deep);
+    text-underline-offset: 3px;
+  }
 
   .head h1 {
     font-size: var(--t-display-m);
@@ -162,6 +432,8 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
     escribe ese HTML y el ámbito de estilos de Astro no puede alcanzarlo.
   */
   .prose :global(h2) {
+    /* El índice salta a estos títulos: que no queden pegados al borde. */
+    scroll-margin-top: var(--s-6);
     font-size: var(--t-h2-m);
     font-weight: 700;
     line-height: var(--lh-h2);
@@ -251,10 +523,212 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
     padding-top: var(--s-5);
     border-top: 1px solid var(--line);
   }
-  .back a { color: var(--verde-deep); font-weight: 600; font-size: var(--t-body-sm); }
+  /* Desde el 2026-10-13 con su caja de 44 px, como pide el §10: medía 21 de
+     alto desde que existe. Defecto anterior a esta entrega, arreglado de paso. */
+  .back a {
+    display: inline-block;
+    padding-block: 12px;
+    margin-block: -12px;
+    color: var(--verde-deep);
+    font-weight: 600;
+    font-size: var(--t-body-sm);
+  }
+
+  /*
+    ── «En corto» (2026-10-13) ──────────────────────────────────────────────
+    Plano, en `--papel-2`, con el radio de las piezas de contenido. Las
+    viñetas son las del cuerpo: es una lista más, no un objeto nuevo.
+  */
+  .en-corto {
+    margin-bottom: var(--s-6);
+    padding: var(--s-5);
+    background: var(--papel-2);
+    border-radius: var(--r-3);
+  }
+  .en-corto-t {
+    margin-bottom: var(--s-3);
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .en-corto ul { display: grid; gap: var(--s-2); margin: 0 0 0 var(--s-4); color: var(--ink); }
+
+  /*
+    ── El índice en móvil ────────────────────────────────────────────────────
+    Un `<details>`: abre y cierra sin JavaScript. La caja es un filete `--line`
+    («separador sin significado»), y el chevron gira al abrir, que es lo único
+    que se mueve. El resumen mide 48 px de alto: objetivo táctil del §10.
+  */
+  .indice-movil {
+    margin-bottom: var(--s-7);
+    border: 1px solid var(--line);
+    border-radius: var(--r-3);
+  }
+  .indice-movil summary {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    min-height: 48px;
+    padding: 0 var(--s-4);
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .indice-movil summary::-webkit-details-marker { display: none; }
+  .indice-n { margin-left: auto; font-size: var(--t-dato-sm); font-weight: 400; color: var(--ink-mute); }
+  .indice-ico { display: grid; color: var(--ink-mute); transform: rotate(90deg); transition: transform var(--m-fast) var(--m-ease); }
+  .indice-ico :global(svg) { display: block; width: 16px; height: 16px; }
+  .indice-movil[open] .indice-ico { transform: rotate(-90deg); }
+  .indice-movil ol {
+    display: grid;
+    gap: var(--s-1);
+    margin: 0;
+    padding: 0 var(--s-4) var(--s-4);
+    list-style: none;
+    counter-reset: indice;
+  }
+  .indice-movil li { counter-increment: indice; }
+  /* Cada entrada, con su número tabular delante y 44 px de objetivo táctil. */
+  .indice-movil a {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    align-items: center;
+    min-height: 44px;
+    color: var(--ink);
+    font-size: var(--t-body-sm);
+    text-decoration: none;
+  }
+  .indice-movil a::before {
+    content: counter(indice, decimal-leading-zero);
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .indice-ico { transition: none; }
+  }
+
+  /*
+    ── «Sigue leyendo» ──────────────────────────────────────────────────────
+    Las mismas filas que el índice del blog (`FilaArticulo`), con sus mismos
+    filetes: arriba de cada una y abajo de la última.
+  */
+  .sigue { margin-top: var(--s-8); }
+  .sigue h2 {
+    margin-bottom: var(--s-4);
+    font-size: var(--t-h3);
+    font-weight: 700;
+    line-height: var(--lh-h3);
+  }
+  .sigue .posts { margin: 0; padding: 0; list-style: none; }
+  .sigue .posts li { border-top: 1px solid var(--line); }
+  .sigue .posts li:last-child { border-bottom: 1px solid var(--line); }
+  /* Tras «Sigue leyendo», el enlace al índice ya tiene un filete encima —el
+     de la última fila—, así que no lleva el suyo. */
+  .sigue + .back { margin-top: var(--s-6); padding-top: 0; border-top: 0; }
+
+  /* El riel no existe bajo 1112: el índice lo hace el `<details>`. */
+  .riel-lateral { display: none; }
 
   @media (min-width: 900px) {
     .post { padding-inline: 0; }
     .head h1 { font-size: var(--t-h2); }
+  }
+
+  /*
+    ── Desde 1112 px: el riel ───────────────────────────────────────────────
+
+    1112 no es un breakpoint nuevo del §4.2: es el ancho en que la rejilla
+    entera cabe con los márgenes de sección del sitio —176 de riel, 48 de
+    hueco y 760 de lectura son 984, más 64 a cada lado—, o sea el ancho del
+    contenedor (`--container`). Es un «ancho mínimo puntual» de los que el
+    §4.2 deja fuera de la cuenta, como el 1140 de `Business`.
+
+    `--art-desplaza` lo leen las dos portadas: es lo que tienen que moverse a
+    la derecha para que su contenido arranque donde arranca el texto. Sin riel
+    vale 0 y las portadas quedan como siempre.
+  */
+  @media (min-width: 1112px) {
+    .articulo.con-riel { --art-desplaza: 224px; }
+    .post.con-riel {
+      display: grid;
+      grid-template-columns: 176px minmax(0, 760px);
+      column-gap: var(--s-7);
+      max-width: 984px;
+    }
+    .con-riel .head { grid-column: 2; }
+    .con-riel .cuerpo { grid-column: 2; grid-row: 2; min-width: 0; }
+    .con-riel .riel-lateral { display: block; grid-column: 1; grid-row: 2; }
+    .con-riel .indice-movil,
+    .con-riel .en-ruta { display: none; }
+
+    .riel-fijo {
+      position: sticky;
+      top: var(--s-6);
+      display: grid;
+      gap: var(--s-7);
+    }
+    .lat-t {
+      margin-bottom: var(--s-3);
+      font-family: var(--f-num);
+      font-size: var(--t-dato-sm);
+      color: var(--ink-mute);
+    }
+    /* El índice: un filete `--line` a la izquierda y las entradas colgadas de
+       él. Sin marcar «dónde estás»: eso pediría JavaScript, y aquí no hay. */
+    .lat-indice {
+      display: grid;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-left: 1px solid var(--line);
+    }
+    /* Cada entrada, con su caja de 44 px (§10). El relleno vertical hace de
+       hueco entre ellas. */
+    .lat-indice a {
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 6px 0 6px var(--s-4);
+      font-size: var(--t-body-sm);
+      line-height: 1.35;
+      color: var(--ink-mute);
+      text-decoration: none;
+    }
+    .lat-indice a:hover { color: var(--ink); }
+    /* La ruta: los mismos nodos de `RutaGuias`, a 24 px. El paso en el que
+       estás va en tinta y con su nodo trazado; los otros, en gris. */
+    .lat-ruta { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+    .lat-ruta a {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr);
+      column-gap: var(--s-3);
+      align-items: start;
+      min-height: 44px;
+      padding-block: 10px;
+      font-size: var(--t-body-sm);
+      line-height: 1.35;
+      color: var(--ink-mute);
+      text-decoration: none;
+    }
+    .lat-ruta a:hover { color: var(--ink); }
+    .lat-n {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      font-size: var(--t-dato-sm);
+      line-height: 1;
+    }
+    /* El primer renglón del texto, centrado en el nodo de 24: 18,9 de línea,
+       así que baja 2,5 px. Con dos renglones, el nodo queda en el primero. */
+    .lat-ruta a > span:last-child { padding-top: 2.5px; }
+    .lat-ruta a[aria-current='page'] { color: var(--ink); font-weight: 600; }
+    .lat-ruta a[aria-current='page'] .lat-n { border: 1.5px solid var(--ink); }
   }
 </style>

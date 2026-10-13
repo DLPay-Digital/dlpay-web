@@ -67,7 +67,46 @@
  * 2026-09-16: un artículo no puede traer un dibujo suyo, sólo elegir uno de los
  * que el sistema ya dibuja y que están razonados acá.
  */
-export type Figura = 'activo-tokenizado';
+export type Figura = 'activo-tokenizado' | 'billetera' | 'spread';
+
+/*
+  ── Los dos pictogramas del 2026-10-13 (Cowork, entrega `aprende-`) ────────
+
+  Entran con las guías y pasan la misma prueba que el primero. Se escribe acá
+  para que el siguiente no tenga que deducirla.
+
+  **`billetera`** — la guía «Cómo recibir dólar digital». Una billetera y,
+  asomando de ella, la ficha del dólar digital: anillo doble, canto dividido
+  en unidades y el signo. **Es la ficha de `FiguraRiel`, a propósito**: allí
+  su rótulo dice «dólar digital», y en esta guía eso es exactamente lo que se
+  recibe. El techo del §6.1 la descartó para las stablecoins porque allí
+  habría dicho «stablecoin = nuestro producto»; acá dice lo cierto.
+    · Un solo nodo: la billetera. La ficha está DENTRO, no frente a ella: no
+      hay par, ni movimiento, ni cuña.
+    · Quitados los rótulos dice «tu dólar digital en tu billetera», que es la
+      frase con que el sitio ya acota su tramo («Nuestro tramo termina en tu
+      billetera»). La billetera va en `--on-tinta` / `--ink`, el color de «lo
+      tuyo» del eje de alcance; la ficha, en el verde que elige el fondo.
+    · La parte de la ficha que queda dentro no se dibuja: los arcos y el
+      canto se cortan a 6 unidades del borde de la billetera. Sin `clipPath`,
+      para no tener que inventar un `id` único por instancia.
+
+  **`spread`** — la guía «Cómo leer un spread». Dos niveles y la distancia
+  entre ellos, acotada con un segmento de topes: **la misma marca del tipo
+  `rango` de `PortadaDato`**, girada, porque un spread ES un intervalo.
+    · Los dos niveles son filetes neutros: «existe, es real, no es nuestro».
+      La guía enseña a leer el spread de cualquiera, y por eso el dibujo no
+      dice de quién es ninguno de los dos precios.
+    · El segmento va en verde porque es la marca «una magnitud» (§6.2), la
+      misma de la Fed en su portada, que tampoco es nuestra. No es el verde de
+      «lo nuestro»: eso lo dice un tramo de un recorrido, y acá no hay
+      recorrido.
+    · Sin cifra, sin texto, sin cuña. Sin punta de flecha, por la regla del
+      intervalo: un spread no va a ninguna parte.
+    · Los niveles son rectas y no trazos que se mueven: dos líneas paralelas
+      que suben y bajan juntas dirían que el spread es constante, y eso no es
+      una propiedad de los spreads.
+*/
 
 interface Props {
   figura: Figura;
@@ -101,6 +140,8 @@ const { figura, variant = 'banda', size = 112, sizeSm = 72 } = Astro.props;
 const nombres: Record<Figura, string> = {
   'activo-tokenizado':
     'Una ficha marcada con una T, con el canto dividido en unidades, dentro de un bucle de circulación.',
+  billetera: 'Una billetera con una ficha de dólar digital dentro.',
+  spread: 'Dos niveles de precio y la distancia entre ellos, acotada.',
 };
 ---
 <div
@@ -122,6 +163,33 @@ const nombres: Record<Figura, string> = {
       <path class="token unidad" d="M138.00 100.00 L146.00 100.00 M136.71 109.84 L144.43 111.91 M132.91 119.00 L139.84 123.00 M126.87 126.87 L132.53 132.53 M119.00 132.91 L123.00 139.84 M109.84 136.71 L111.91 144.43 M100.00 138.00 L100.00 146.00 M90.16 136.71 L88.09 144.43 M81.00 132.91 L77.00 139.84 M73.13 126.87 L67.47 132.53 M67.09 119.00 L60.16 123.00 M63.29 109.84 L55.57 111.91 M62.00 100.00 L54.00 100.00 M63.29 90.16 L55.57 88.09 M67.09 81.00 L60.16 77.00 M73.13 73.13 L67.47 67.47 M81.00 67.09 L77.00 60.16 M90.16 63.29 L88.09 55.57 M100.00 62.00 L100.00 54.00 M109.84 63.29 L111.91 55.57 M119.00 67.09 L123.00 60.16 M126.87 73.13 L132.53 67.47 M132.91 81.00 L139.84 77.00 M136.71 90.16 L144.43 88.09"/>
       <path class="token signo" d="M82.00 74.43 H118.00"/>
       <path class="token signo" d="M100 74.43 V125.57"/>
+    </svg>
+  )}
+  {figura === 'billetera' && (
+    <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" role="img"
+         aria-label={nombres[figura]}>
+      {/* La ficha del dólar digital, cortada a y = 90: la mitad de abajo está dentro. */}
+      <path class="token aro" d="M52.28 90.00 A40 40 0 1 1 123.72 90.00"/>
+      <path class="token aro" d="M61.54 90.00 A32 32 0 1 1 114.46 90.00"/>
+      <path class="token unidad" d="M120.00 72.00 L128.00 72.00 M118.91 80.28 L126.64 82.35 M57.09 80.28 L49.36 82.35 M56.00 72.00 L48.00 72.00 M57.09 63.72 L49.36 61.65 M60.29 56.00 L53.36 52.00 M65.37 49.37 L59.72 43.72 M72.00 44.29 L68.00 37.36 M79.72 41.09 L77.65 33.36 M88.00 40.00 L88.00 32.00 M96.28 41.09 L98.35 33.36 M104.00 44.29 L108.00 37.36 M110.63 49.37 L116.28 43.72 M115.71 56.00 L122.64 52.00 M118.91 63.72 L126.64 61.65"/>
+      <path class="token signo" d="M88.00 51.20 V90.00"/>
+      <path class="token signo" d="M96.80 64.00 C96.80 60.00 92.96 57.60 88.00 57.60 C83.04 57.60 79.20 60.00 79.20 64.00 C79.20 68.00 82.72 70.00 88.00 72.00 C93.28 74.00 96.80 76.00 96.80 80.00 C96.80 84.00 92.96 86.40 88.00 86.40 C83.04 86.40 79.20 84.00 79.20 80.00"/>
+      {/* La billetera: el dibujo del icono `wallet`, a esta escala. El canto
+          derecho se interrumpe donde entra el bolsillo, como en el icono. */}
+      <path class="propia" d="M158 112 V106 A10 10 0 0 0 148 96 H40 A10 10 0 0 0 30 106 V158 A10 10 0 0 0 40 168 H148 A10 10 0 0 0 158 158 V152"/>
+      <path class="propia" d="M166 112 H136 A20 20 0 0 0 136 152 H166 A4 4 0 0 0 170 148 V116 A4 4 0 0 0 166 112 Z"/>
+    </svg>
+  )}
+  {figura === 'spread' && (
+    <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" role="img"
+         aria-label={nombres[figura]}>
+      {/* Los dos niveles: filetes neutros, rectos. */}
+      <path class="flujo" d="M22 52 H136 M22 148 H136"/>
+      {/* El intervalo: barra y dos topes, la marca del tipo `rango`, girada.
+          Ocupa el alto que ocupa la ficha de `activo-tokenizado` (96 de 200),
+          para que las dos marcas pesen lo mismo en la columna del índice. */}
+      <rect class="magnitud" x="156" y="52" width="10" height="96"/>
+      <path class="token tope" d="M144 52 H178 M144 148 H178"/>
     </svg>
   )}
 </div>
@@ -156,6 +224,8 @@ const nombres: Record<Figura, string> = {
   .portada.marca svg { height: var(--marca-sm); }
   .portada.marca .token { stroke: var(--verde-deep); }
   .portada.marca .flujo { stroke: var(--ink-mute); }
+  .portada.marca .propia { stroke: var(--ink); }
+  .portada.marca .magnitud { fill: var(--verde-deep); }
 
   /*
     El alto en CSS y el ancho en `auto`: así el dibujo no depende del ancho del
@@ -170,10 +240,47 @@ const nombres: Record<Figura, string> = {
   .aro { stroke-width: 3.25; }
   .signo { stroke-width: 3.9; }
   .unidad { stroke-width: 2.55; }
+  /* Los dos del 2026-10-13. Lo tuyo en el claro del fondo; la magnitud,
+     rellena, como la barra del `rango`. Los topes al grueso del aro. */
+  .propia { fill: none; stroke: var(--on-tinta); stroke-width: 3.25; stroke-linejoin: round; }
+  .magnitud { fill: var(--verde); stroke: none; }
+  .tope { stroke-width: 3.25; }
+
 
   @media (min-width: 900px) {
     .portada.banda { padding: var(--s-7) 0; }
     .portada.banda svg { height: 160px; }
     .portada.marca svg { height: var(--marca); }
+  }
+
+  /*
+    Desde 1112 px, el artículo con riel mueve su columna de lectura 224 px a
+    la derecha, y el pictograma se centra sobre esa columna y no sobre la
+    página: se desplaza la mitad. `--art-desplaza` lo pone la página; sin él
+    vale 0 y esto no cambia nada. (Cowork, 2026-10-13.)
+  */
+  @media (min-width: 1112px) {
+    .portada.banda svg { position: relative; left: calc(var(--art-desplaza, 0px) / 2); }
+  }
+
+  /*
+    ── Colores forzados (Cowork, 2026-10-13) ────────────────────────────────
+
+    **Chromium no repinta el trazo ni el relleno de un SVG en este modo**: se
+    quedan con el color del autor, mientras el fondo de la banda sí se va y
+    pasa a `Canvas`. Medido: con el tema claro, la billetera en `--on-tinta`
+    quedaba blanco sobre blanco, y **el bucle de `activo-tokenizado` en
+    `--on-tinta-mute` daba 2,1:1 desde que existe** —un defecto anterior a
+    esta entrega, que se arregla de paso—. Todo pasa a `CanvasText`: en este
+    modo el color no puede portar nada, y la forma lo sigue diciendo todo.
+
+    Va al final y con la misma especificidad que las reglas de `marca`, para
+    ganarles por orden.
+  */
+  @media (forced-colors: active) {
+    .portada.banda .token, .portada.marca .token,
+    .portada.banda .flujo, .portada.marca .flujo,
+    .portada.banda .propia, .portada.marca .propia { stroke: CanvasText; }
+    .portada.banda .magnitud, .portada.marca .magnitud { fill: CanvasText; }
   }
 </style>

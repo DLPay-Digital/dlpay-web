@@ -40,3 +40,12 @@ export async function publishedPosts(): Promise<Post[]> {
   /* Más reciente primero. El orden lo decide el dato, no el nombre del archivo. */
   return posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 }
+
+/*
+  La ruta, los minutos de lectura y «Sigue leyendo» viven en
+  `blog-indice.ts` desde el 2026-10-13: son funciones puras sobre la lista ya
+  filtrada, y separadas de `astro:content` se pueden probar con `node --test`
+  (`tests/blog-indice.test.ts`). Se reexportan para que nadie tenga que saber
+  dónde están.
+*/
+export { rutaPublicada, minutosDeLectura, sigueLeyendo, type PasoDeRuta } from './blog-indice.ts';

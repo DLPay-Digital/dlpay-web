@@ -1,0 +1,162 @@
+---
+/**
+ * La ruta «Tu primera operación»: las guías que conviene leer antes de operar,
+ * en orden, como un recorrido de pasos numerados.
+ *
+ * Cowork, 2026-10-13, entrega `aprende-`. Idea 1 de `ideas-zesty-ficha.md`:
+ * Zesty tiene una ruta numerada en `/aprende`; ésta es la nuestra, corta.
+ *
+ * ── Por qué se dibuja con la gramática de «Cómo empezamos» ─────────────────
+ *
+ * El sitio ya tiene UN recorrido de pasos: el de `/empresas`
+ * (`ComoEmpezamos.astro`), con nodo circular, filete `--line` hasta el
+ * siguiente y chevron al final. Un segundo recorrido con otro dibujo diría
+ * que son dos clases de cosa. Así que es la misma pieza, con las mismas
+ * medidas: nodo de 44, trazo de 1,5, hueco `--s-6`.
+ *
+ * **El chevron es un «marcador de paso»** (DS §6, primera fila de usos
+ * permitidos): apunta al siguiente. No es la cuña del §6.2, que es valor
+ * cambiando de manos, y por eso tampoco es verde.
+ *
+ * **Nada es verde.** Una guía no es dinero ni un tramo nuestro. El nodo va en
+ * tinta, como en `/empresas`.
+ *
+ * ── Los números ────────────────────────────────────────────────────────────
+ *
+ * Salen de `rutaPublicada()` y cuentan sólo lo publicado: si un paso está en
+ * borrador, el siguiente ocupa su número. El nodo es `aria-hidden` y el número
+ * se repite dentro del enlace como texto para lectores de pantalla («Paso 2:
+ * …»), porque `role="list"` con `list-style: none` hace que VoiceOver deje de
+ * anunciar la posición.
+ */
+import Icon from './Icon.astro';
+import { minutosDeLectura, type PasoDeRuta } from '../lib/blog.ts';
+
+interface Props {
+  pasos: PasoDeRuta[];
+  /** El fondo de la banda: el nodo lo repite para tapar el filete. */
+  fondo?: 'papel' | 'papel-2';
+}
+const { pasos, fondo = 'papel' } = Astro.props;
+---
+{/* Tantas columnas como pasos, con tope en cuatro: con cinco, cada título
+    tendría unos 150 px y partiría en cuatro líneas. El quinto baja de fila. */}
+<ol class:list={['rg', `sobre-${fondo}`]} role="list" style={`--rg-n: ${Math.min(pasos.length, 4)}`}>
+  {pasos.map(({ post, numero, total }) => (
+    <li>
+      <span class="rg-nodo num" aria-hidden="true">{numero}</span>
+      {numero < total && (
+        <span class="rg-hacia" aria-hidden="true"><Icon name="chevron" size={16} /></span>
+      )}
+      <span class="rg-texto">
+        <a class="rg-titulo" href={`/blog/${post.id}/`}>
+          <span class="sr-only">Paso {numero}: </span>{post.data.ruta?.titulo}
+        </a>
+        <span class="rg-min">{minutosDeLectura(post)} min de lectura</span>
+      </span>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .rg {
+    --rg-nodo: 44px;
+    --rg-gap: var(--s-6);
+    --rg-fondo: var(--papel);
+    display: grid;
+    gap: var(--rg-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .rg.sobre-papel-2 { --rg-fondo: var(--papel-2); }
+
+  /* En móvil, de pie: nodo a la izquierda y el filete bajando al siguiente,
+     con el chevron girado hacia abajo. Igual que `/empresas`. */
+  .rg li {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--rg-nodo) minmax(0, 1fr);
+    column-gap: var(--s-4);
+    align-items: start;
+  }
+  .rg-nodo {
+    display: grid;
+    place-items: center;
+    width: var(--rg-nodo);
+    height: var(--rg-nodo);
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    background: var(--rg-fondo);
+    font-size: var(--t-body);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .rg-texto { display: grid; gap: var(--s-1); padding-top: 9px; min-width: 0; }
+  /* La caja de 44 px del §10 sin que el texto se mueva: relleno y margen
+     negativo, como la miga de pan del artículo. */
+  .rg-titulo {
+    display: block;
+    padding-block: 12px;
+    margin-block: -12px;
+    font-size: var(--t-h3-m);
+    font-weight: 700;
+    line-height: var(--lh-h3);
+    color: var(--ink);
+    text-decoration: none;
+    transition: color var(--m-fast) var(--m-ease);
+  }
+  .rg-titulo:hover { color: var(--verde-deep); }
+  .rg-min { font-family: var(--f-num); font-size: var(--t-dato-sm); color: var(--ink-mute); }
+
+  .rg li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: calc(var(--rg-nodo) / 2 - .5px);
+    top: calc(var(--rg-nodo) + var(--s-2));
+    bottom: calc(-1 * var(--rg-gap) + var(--s-2) + 12px);
+    border-left: 1px solid var(--line);
+  }
+  .rg-hacia {
+    position: absolute;
+    left: calc(var(--rg-nodo) / 2 - 8px);
+    bottom: calc(-1 * var(--rg-gap) + var(--s-1));
+    width: 16px;
+    height: 16px;
+    color: var(--ink-mute);
+    transform: rotate(90deg);
+  }
+  .rg-hacia :global(svg) { display: block; width: 16px; height: 16px; }
+
+  /*
+    Colores forzados: el nodo es un borde y sobrevive, pero su relleno —que es
+    lo que tapa el filete— desaparece. El filete también es un borde, así que
+    lo único que se pierde es que el filete no pase por dentro del círculo, y
+    no pasa: arranca a `--s-2` del nodo. Nada que corregir; queda escrito para
+    que nadie lo busque.
+  */
+
+  @media (min-width: 900px) {
+    /* En horizontal: cuatro columnas, el filete sale a la derecha del nodo y
+       llega hasta el siguiente, una columna y un hueco más allá. */
+    .rg { grid-template-columns: repeat(var(--rg-n, 4), minmax(0, 1fr)); column-gap: var(--rg-gap); }
+    .rg li { display: flex; flex-direction: column; gap: var(--s-4); }
+    .rg-texto { padding-top: 0; max-width: 26ch; }
+    .rg-titulo { font-size: var(--t-h3); }
+    .rg li:not(:last-child)::after {
+      left: calc(var(--rg-nodo) + var(--s-2));
+      right: calc(-1 * var(--rg-gap) + var(--s-2) + 12px);
+      top: calc(var(--rg-nodo) / 2 - .5px);
+      bottom: auto;
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+    .rg-hacia {
+      left: auto;
+      right: calc(-1 * var(--rg-gap) + var(--s-1));
+      top: calc(var(--rg-nodo) / 2 - 8px);
+      bottom: auto;
+      transform: none;
+    }
+  }
+</style>

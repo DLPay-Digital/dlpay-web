@@ -22,13 +22,63 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import PageHero from '../../components/PageHero.astro';
 import Motion from '../../components/Motion.astro';
-import { publishedPosts } from '../../lib/blog.ts';
-import PortadaFigura from '../../components/PortadaFigura.astro';
-import { formatFigure, formatFigureRange } from '../../lib/pricing/format.ts';
+import { publishedPosts, rutaPublicada, minutosDeLectura, type Post } from '../../lib/blog.ts';
 import DiarioDLPay from '../../components/DiarioDLPay.astro';
+import FilaArticulo from '../../components/FilaArticulo.astro';
+import RutaGuias from '../../components/RutaGuias.astro';
 
 /* Ya vienen filtrados por el candado de publicación y ordenados. Ver lib/blog.ts. */
 const posts = await publishedPosts();
+
+/*
+  ── La ruta y las dos listas (Cowork, 2026-10-13, entrega `aprende-`) ──────
+
+  **La ruta** sale de los artículos con `ruta` en el frontmatter, contados
+  sobre lo publicado. Con menos de dos pasos no se dibuja: ver
+  `rutaPublicada()`.
+
+  **Las listas van por categoría**, y en este orden: las guías primero,
+  porque no envejecen, y el mercado después. Dentro de las guías, las de la
+  ruta en su orden y luego el resto por fecha; el mercado, por fecha, el más
+  reciente arriba. Una categoría sin artículos no dibuja su lista.
+
+  La lista sigue ENTERA, como pedía la nota de la portada de abajo: quien busca
+  un artículo los encuentra todos quietos, ahora en dos grupos con nombre.
+*/
+const ruta = rutaPublicada(posts);
+const minutosRuta = ruta.reduce((suma, r) => suma + minutosDeLectura(r.post), 0);
+const enRuta = (p: Post) => ruta.findIndex((r) => r.post.id === p.id);
+const porRuta = (a: Post, b: Post) => {
+  const ia = enRuta(a), ib = enRuta(b);
+  if (ia >= 0 && ib >= 0) return ia - ib;
+  if (ia >= 0) return -1;
+  if (ib >= 0) return 1;
+  return 0; // los dos fuera de la ruta: se queda el orden por fecha que ya traen
+};
+/*
+  Las bajadas de las dos listas son TEXTO NUEVO.
+  REQUIERE VALIDACIÓN DE COMPLIANCE (CLAUDE.md §3).
+*/
+const grupos = [
+  {
+    id: 'guias',
+    titulo: 'Guías',
+    bajada: 'Lo que no cambia con el mercado: qué es cada cosa y cómo se lee.',
+    posts: posts.filter((p) => p.data.category === 'Guía').sort(porRuta),
+  },
+  {
+    id: 'mercado',
+    titulo: 'Mercado',
+    bajada: 'Un dato con fecha: qué se publicó y cómo lo recibió el peso.',
+    posts: posts.filter((p) => p.data.category === 'Mercado'),
+  },
+  {
+    id: 'novedades',
+    titulo: 'DLPay',
+    bajada: '',
+    posts: posts.filter((p) => p.data.category === 'DLPay'),
+  },
+].filter((g) => g.posts.length > 0);
 
 /*
   ── La portada: el Diario DLPay ─────────────────────────────────────────────
@@ -74,27 +124,6 @@ const posts = await publishedPosts();
 const DESCRIPCION =
   'Análisis del mercado cambiario: lo que conviene entender del dólar y del dólar digital antes de operar.';
 
-/**
- * La fecha del ÍNDICE va tabular y numérica (`17-09-2026`), no en prosa. Acá es
- * una columna de datos: se alinea con las de arriba y abajo y nunca parte en
- * dos líneas, que es justo lo que hacía «17 de septiembre de 2026» dentro de una
- * columna estrecha. En el ARTÍCULO va larga, porque ahí es prosa. El
- * `datetime` conserva la fecha ISO en los dos sitios, que es lo que leen las
- * máquinas.
- *
- * `timeZone: 'UTC'` NO es un detalle. En el frontmatter la fecha va sin hora,
- * así que `z.coerce.date()` la interpreta como medianoche UTC; formateada en la
- * zona local de Chile (−03:00) retrocedía un día y el artículo aparecía
- * publicado la víspera.
- */
-const fecha = new Intl.DateTimeFormat('es-CL', {
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-  timeZone: 'UTC',
-});
-/* `es-CL` compone `17-09-2026` con guiones, que es la forma tabular buscada. */
-
 ---
 <Base
   title="Blog"
@@ -131,83 +160,46 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
       />
     )}
 
-    <section class="list" aria-labelledby="list-title">
-      <div class="inner">
-        <h2 id="list-title" class="sr-only">Artículos</h2>
+    {/*
+      La ruta, entre la portada y las listas: es lo primero que alguien que
+      llega sin saber qué leer necesita, y lo único de la página que dice en
+      qué orden. Sobre `--papel-2` para que se lea como una pieza aparte de la
+      lista que sigue, que va sobre `--papel`.
+    */}
+    {ruta.length > 0 && (
+      <section class="ruta" id="ruta" aria-labelledby="ruta-title">
+        <div class="inner">
+          <div class="ruta-cab">
+            {/* REQUIERE VALIDACIÓN DE COMPLIANCE: titular y bajada nuevos. */}
+            <h2 id="ruta-title">Tu primera operación</h2>
+            <p>Las guías que conviene leer antes de operar, en este orden.</p>
+            <p class="ruta-suma num">{ruta.length} guías · {minutosRuta} min de lectura</p>
+          </div>
+          <RutaGuias pasos={ruta} fondo="papel-2" />
+        </div>
+      </section>
+    )}
 
+    <section class="list" aria-label="Artículos">
+      <div class="inner">
         {posts.length === 0 ? (
           <p class="empty">Todavía no hay artículos publicados.</p>
         ) : (
-          <ul class="posts" role="list">
-            {posts.map((post) => {
-              const p = post.data.portada;
-              /*
-                La cifra de la marca se arma acá y no en la plantilla porque un
-                rango son dos números y un separador, y eso dentro del JSX se
-                lee peor de lo que es. `formatFigure` y no `formatRate`: éste
-                fuerza dos decimales y escribía «50.000,00» para un mínimo que
-                no tiene centavos.
-              */
-              const cifra =
-                p === undefined || p.tipo === 'figura'
-                  ? ''
-                  : p.tipo === 'cifra'
-                    ? formatFigure(p.valor)
-                    : formatFigureRange(p.min, p.max);
-              /*
-                `larga` mide la cifra **y su unidad**. Corregido el 2026-09-29:
-                medía sólo el número, y con la primera portada de tipo `cifra`
-                —«292» más «mil millones de dólares»— el número tiene 3
-                caracteres y la unidad 23, así que no se activaba. Y como
-                `.cifra` lleva `white-space: nowrap`, la cadena se salía de la
-                columna en vez de repartirse. Lo que tiene que caber en 132px es
-                la cadena entera, no su primera mitad.
-              */
-              const esLarga =
-                p !== undefined && p.tipo !== 'figura' && (cifra + p.unidad).length > 7;
-              return (
-                <li data-enter>
-                  <a href={`/blog/${post.id}/`}>
-                    {/*
-                      La marca es la PORTADA del propio artículo, no un dibujo
-                      nuevo: el pictograma sale de `PortadaFigura` en su variante
-                      `marca`, así que el trazado sigue viviendo en un solo sitio.
-
-                      Un artículo sin portada deja la columna vacía, y es
-                      decisión: rellenarla con algo genérico diría «acá hay una
-                      figura» donde no la hay, y quitar la columna dejaría el
-                      borde izquierdo de la lista dentado.
-                    */}
-                    <span class="marca">
-                      {p?.tipo === 'figura' && (
-                        <PortadaFigura figura={p.figura} variant="marca" />
-                      )}
-                      {p !== undefined && p.tipo !== 'figura' && (
-                        <span class:list={['marca-dato', { larga: esLarga }]}>
-                          <span class="cifra">
-                            {cifra}<span class="u">{p.unidad}</span>
-                          </span>
-                          <span class="raya" aria-hidden="true"></span>
-                          <span class="et">{p.etiqueta}</span>
-                        </span>
-                      )}
-                    </span>
-
-                    <span class="texto">
-                      <span class="p-meta">
-                        <span class="cat">{post.data.category}</span>
-                        <time datetime={post.data.pubDate.toISOString()}>
-                          {fecha.format(post.data.pubDate)}
-                        </time>
-                      </span>
-                      <span class="p-title">{post.data.title}</span>
-                      <span class="p-desc">{post.data.description}</span>
-                    </span>
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
+          grupos.map((g) => (
+            <div class="grupo" id={g.id}>
+              <div class="grupo-cab">
+                <h2 id={`${g.id}-title`}>{g.titulo}</h2>
+                {g.bajada && <p>{g.bajada}</p>}
+              </div>
+              <ul class="posts" role="list" aria-labelledby={`${g.id}-title`}>
+                {g.posts.map((post) => (
+                  <li data-enter>
+                    <FilaArticulo post={post} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
         )}
       </div>
     </section>
@@ -246,119 +238,49 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
   .posts { list-style: none; margin: 0; padding: 0; }
   .posts li { border-top: 1px solid var(--line); }
   .posts li:last-child { border-bottom: 1px solid var(--line); }
-  /*
-    Sigue siendo una lista de FILAS y no una rejilla de tarjetas: una tarjeta
-    obliga a recortar el titular, y acá el titular es el argumento.
-
-    Dos columnas desde el principio —la marca y el texto—, con la marca a un
-    ancho FIJO. Si fuera flexible, una cifra larga la ensancharía y el titular
-    de esa fila arrancaría en otro sitio que el de las demás.
-  */
-  .posts a {
-    display: grid;
-    grid-template-columns: 88px 1fr;
-    column-gap: var(--s-5);
-    align-items: start;
-    padding: var(--s-6) 0;
-    text-decoration: none;
-  }
-  .marca { display: grid; justify-items: start; }
-  .texto { display: grid; gap: var(--s-2); min-width: 0; }
-
-  /* La marca de una portada de dato: la cifra, un filete y la etiqueta. Acá no
-     hay dibujo que duplicar —es tipografía—, así que no sale de `PortadaDato`;
-     lo único compartido es el formateo, que viene de `lib/pricing/format.ts`. */
-  .marca-dato {
-    display: grid;
-    /* `--s-2` y no `--s-1`: a 4px el filete se leía como el subrayado de la
-       cifra en vez de como una marca aparte. Medido mirándolo, que para una
-       distancia de 4px es la única forma. */
-    gap: var(--s-2);
-    justify-items: start;
-    font-family: var(--f-num);
-  }
-  .cifra {
-    font-size: var(--t-dato-m);
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: -0.01em;
-    color: var(--ink);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-  /*
-    La cifra baja de cuerpo cuando la cadena es larga: **manda la columna, no la
-    escala**. Un rango de dos decimales a los dos lados —«3,75–4,00»— es el caso
-    que obliga, y son dos escalones porque son dos columnas.
-
-    En móvil la columna mide 88px y un rango de nueve caracteres en mono no cabe
-    en una línea a ningún cuerpo legible: a 20px pide 118px y a 16px, 86 más la
-    unidad. Medido, se salía **28,8px** y chocaba con el titular. Así que en
-    móvil la unidad baja a su propia línea, que es como la portada del artículo
-    ya la trata: cifra arriba, unidad debajo y en gris.
-  */
-  .marca-dato.larga .cifra { font-size: var(--t-body); }
-  /* 8 px entre la cifra y su unidad, medidos con la tinta. Eran 3, y «292mil
-     millones» se leía como una sola palabra: es el mismo hueco que se corrigió en
-     el panel de `/precio` el 2026-09-30. */
-  .cifra .u { font-size: var(--t-dato-sm); color: var(--ink-mute); margin-left: var(--s-2); }
-  /* `white-space: normal` es imprescindible y no cosmético: `.cifra` lleva
-     `nowrap` y eso lo hereda el bloque de la unidad, así que sin esto una unidad
-     larga se sale de la columna en vez de repartirse en líneas. Con `%` no
-     cambia nada; con «mil millones de dólares» es la diferencia entre caber y
-     no caber. */
-  .marca-dato.larga .cifra .u { display: block; margin-left: 0; white-space: normal; }
-  .raya { width: 26px; border-top: 2px solid var(--verde-deep); }
-  .et {
-    font-size: var(--t-dato-sm);
-    line-height: 1.35;
-    color: var(--ink-mute);
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-  }
-
-  /* La categoría y la fecha son metadato: tabulares y discretas. Desde el
-     2026-09-24 van SOBRE el titular y no en columna propia: la columna es
-     ahora de la marca, y así el titular gana todo el ancho restante. */
-  .p-meta {
-    display: flex;
-    gap: var(--s-3);
-    font-family: var(--f-num);
-    font-size: var(--t-dato-sm);
-    color: var(--ink-mute);
-  }
-  .p-meta .cat { color: var(--verde-deep); font-weight: 600; }
-
-  /* El titular lleva el peso: es lo único que se lee en un barrido. */
-  .p-title {
-    font-size: var(--t-h3-m);
-    font-weight: 700;
-    line-height: var(--lh-h3);
-    color: var(--ink);
-    transition: color var(--m-fast) var(--m-ease);
-  }
-  .p-desc { color: var(--ink-mute); font-size: var(--t-body-sm); max-width: 47ch; }
-  /* M1 y nada más: el índice no necesita que nada entre ni se mueva. */
-  .posts a:hover .p-title { color: var(--verde-deep); }
+  /* La fila —marca y texto— vive en `FilaArticulo.astro` desde el
+     2026-10-13, con sus estilos y sus comentarios: la usa también «Sigue
+     leyendo» al pie de cada artículo. */
 
   .empty { color: var(--ink-mute); }
 
+  /*
+    ── La ruta (2026-10-13) ───────────────────────────────────────────────
+    Banda en `--papel-2`, entre la portada y las listas. La cabecera a dos
+    columnas de las cuatro en escritorio, como «Cómo empezamos» en
+    `/empresas`, y la suma de minutos en la misma línea tabular del metadato.
+  */
+  .ruta { background: var(--papel-2); padding: var(--s-8) 0; }
+  .ruta-cab { display: grid; gap: var(--s-2); margin-bottom: var(--s-7); max-width: 40ch; }
+  .ruta-cab h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+  }
+  .ruta-cab p { color: var(--ink-mute); }
+  .ruta-suma { font-size: var(--t-dato-sm); margin-top: var(--s-1); }
+
+  /*
+    ── Los grupos ────────────────────────────────────────────────────────
+    El titular del grupo y su bajada, sobre su lista. Sin recuento: lo
+    probé a la derecha, en tabular, y quedaba suelto lejos del titular.
+  */
+  .grupo + .grupo { margin-top: var(--s-9); }
+  .grupo { scroll-margin-top: var(--s-6); }
+  .grupo-cab { display: grid; gap: var(--s-1); margin-bottom: var(--s-5); }
+  .grupo-cab h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+  }
+  .grupo-cab p { color: var(--ink-mute); font-size: var(--t-body-sm); }
+
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
-    /*
-      La marca sube a 132px, que es lo que el pictograma necesita para que sus
-      24 marcas de canto se distingan: a 112 los trazos reales miden 1,82 /
-      2,18 / 1,43 px; más pequeño se empastan y el dibujo diría menos.
-
-      Hasta el 2026-09-24 esta columna era de la fecha. El metadato se fue
-      sobre el titular y la columna quedó para la portada del artículo, que ya
-      existía y sólo se veía dentro del artículo.
-    */
-    .posts a { grid-template-columns: 132px 1fr; column-gap: var(--s-7); }
-    .p-title { font-size: var(--t-h2-m); }
-    /* Con 132px la cadena larga cabe entera en una línea al cuerpo mayor, y la
-       unidad vuelve a su sitio junto a la cifra. */
-    .marca-dato.larga .cifra { font-size: var(--t-h3); }
-    .marca-dato.larga .cifra .u { display: inline; margin-left: var(--s-2); font-size: var(--t-label); }
+    .ruta { padding: var(--s-9) 0; }
+    .ruta-cab h2,
+    .grupo-cab h2 { font-size: var(--t-h2); }
   }
 </style>

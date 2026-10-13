@@ -1,0 +1,283 @@
+/*
+  Las figuras de las guías del blog.
+
+  Cowork, 2026-10-13, entrega `aprende-`. Las importa sólo
+  `pages/blog/[slug].astro`, así que no viajan a ninguna otra página.
+
+  ── Por qué un archivo y no `:global` en la plantilla ──────────────────────
+
+  Las figuras viven en el Markdown como HTML crudo —los artículos son `.md`,
+  no `.mdx`, y no pueden usar componentes; ver `FiguraRiel.astro`—, así que sus
+  estilos tienen que ser globales. La figura del riel ya los tenía dentro de
+  la plantilla, con `:global`, y se quedan allí. Con tres figuras más, la
+  plantilla pasaba a ser sobre todo estilos de contenido: van acá, cada uno
+  bajo `.prose`, para que no alcancen nada fuera del cuerpo de un artículo.
+
+  ── Las reglas que comparten ───────────────────────────────────────────────
+
+  · **Texto de verdad, no dibujo.** Ninguna lleva `aria-hidden` en lo que
+    dice: la línea del observado es una lista ordenada, los tres datos son una
+    lista de definiciones y el spread son tres filas de texto. Un lector de
+    pantalla las lee como se leen.
+  · **Las marcas son las del §6.2, con su significado.** Filete `--ink-mute`:
+    existe, es real, no es nuestro. Punteado: un límite, y cruzarlo cambia
+    algo. Barra verde con topes: una magnitud. `--line`: separador sin
+    significado. Nada más.
+  · **Todo lo que dibuja es borde**, no fondo, salvo el punteado: en colores
+    forzados los fondos desaparecen y los bordes los pinta el navegador. El
+    punteado lleva su propia regla para ese modo.
+  · 13 px de piso para todo texto.
+  · **Especificidad.** Las reglas del cuerpo en la plantilla pesan (0,2,1)
+    —`.prose` más su clase de ámbito y una etiqueta—, así que éstas llevan
+    `figure` delante y, donde chocan con `ol` o `p`, la etiqueta también.
+*/
+
+.prose figure.g-linea,
+.prose figure.g-datos,
+.prose figure.g-spread {
+  margin: var(--s-6) 0;
+  padding: var(--s-5) 0;
+  border-block: 1px solid var(--line);
+}
+.prose figure .g-rot {
+  margin-bottom: var(--s-5);
+  font-family: var(--f-num);
+  font-size: var(--t-dato-sm);
+  color: var(--ink-mute);
+}
+.prose figure p.g-nota {
+  margin: var(--s-4) 0 0;
+  font-size: var(--t-label);
+  line-height: 1.45;
+  color: var(--ink-mute);
+}
+
+/*
+  ── 1 · La línea del dólar observado ───────────────────────────────────────
+
+  Cuatro hitos. El primero es un tramo, no un instante —«hasta las 16:00»—, y
+  se dibuja como filete grueso `--ink-mute`: son las operaciones del mercado,
+  reales y no nuestras. Termina en el **punteado de las 16:00, que es un
+  límite de verdad**: lo que se opera después ya no cuenta para este
+  observado, sino para el siguiente. Los otros tres son instantes: una marca
+  corta sobre el eje, que es `--line`.
+
+  En móvil, de pie: el eje baja por la izquierda y el punteado lo cruza en
+  horizontal. Desde 760, acostado.
+*/
+.prose figure ol.g-linea-hitos {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.prose figure .g-linea-hitos li {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  margin: 0;
+  padding: 0 0 var(--s-4) var(--s-5);
+  border-left: 1px solid var(--line);
+}
+.prose figure .g-linea-hitos li:last-child { padding-bottom: 0; }
+/* El instante: una marca corta que cruza el eje. */
+.prose figure .g-linea-hitos li::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 9px;
+  width: 11px;
+  border-top: 1px solid var(--ink);
+}
+/* El tramo de las operaciones: el eje se vuelve filete grueso. */
+.prose figure .g-linea-hitos li.g-ops {
+  border-left: 3px solid var(--ink-mute);
+  padding-bottom: var(--s-6);
+}
+.prose figure .g-linea-hitos li.g-ops::before { display: none; }
+/* El límite de las 16:00: guion 3, hueco 4, trazo 1,25, medidos en
+   pantalla, como pide el §6.2. Degradado y no `border: dashed`, porque el
+   ritmo de un borde punteado lo elige cada navegador. */
+.prose figure .g-linea-hitos li.g-ops::after {
+  content: '';
+  position: absolute;
+  left: -12px;
+  bottom: var(--s-3);
+  width: 40px;
+  height: 1.25px;
+  background: repeating-linear-gradient(to right, var(--ink-mute) 0 3px, transparent 3px 7px);
+}
+.prose figure .g-hora {
+  font-family: var(--f-num);
+  font-size: var(--t-dato-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+.prose figure .g-que { font-size: var(--t-body-sm); line-height: 1.4; color: var(--ink-mute); }
+
+@media (min-width: 760px) {
+  .prose figure ol.g-linea-hitos {
+    grid-template-columns: 1.25fr 1fr 1fr 1.15fr;
+    column-gap: var(--s-4);
+  }
+  .prose figure .g-linea-hitos li,
+  .prose figure .g-linea-hitos li.g-ops {
+    padding: var(--s-4) 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .prose figure .g-linea-hitos li::before {
+    left: 0;
+    top: -6px;
+    width: 0;
+    height: 11px;
+    border-top: 0;
+    border-left: 1px solid var(--ink);
+  }
+  /* 3 px de filete y no 1: se le quitan 2 al relleno para que su texto
+     arranque a la altura del de los otros tres. */
+  .prose figure .g-linea-hitos li.g-ops {
+    border-top: 3px solid var(--ink-mute);
+    padding-top: calc(var(--s-4) - 2px);
+  }
+  /* El límite, ahora vertical, en el borde derecho del tramo: a medio
+     camino del hueco que lo separa del hito siguiente. */
+  .prose figure .g-linea-hitos li.g-ops::after {
+    left: auto;
+    right: calc(-1 * var(--s-4) / 2 - 0.625px);
+    top: -18px;
+    bottom: auto;
+    width: 1.25px;
+    height: 40px;
+    background: repeating-linear-gradient(to bottom, var(--ink-mute) 0 3px, transparent 3px 7px);
+  }
+}
+
+/*
+  ── 2 · Los tres datos ─────────────────────────────────────────────────────
+
+  Una ficha en `--papel-2`, plana. La dirección en mono, con sus primeros y
+  últimos cuatro caracteres recuadrados: es lo que la guía pide comparar.
+  El recuadro es un borde `--ink`, así que sobrevive a colores forzados.
+*/
+.prose figure.g-datos dl {
+  margin: 0;
+  padding: var(--s-2) var(--s-5);
+  background: var(--papel-2);
+  border-radius: var(--r-3);
+}
+.prose figure.g-datos dl > div {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: var(--s-4);
+  padding: var(--s-3) 0;
+}
+.prose figure.g-datos dl > div + div { border-top: 1px solid var(--line); }
+.prose figure.g-datos dt {
+  font-family: var(--f-num);
+  font-size: var(--t-dato-sm);
+  color: var(--ink-mute);
+}
+.prose figure.g-datos dd {
+  margin: 0;
+  font-family: var(--f-num);
+  font-size: var(--t-body);
+  color: var(--ink);
+}
+.prose figure .g-dir { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-1); }
+.prose figure .g-dir-marca {
+  padding: 0 3px;
+  border: 1px solid var(--ink);
+  border-radius: var(--r-1);
+}
+.prose figure .g-dir-medio { color: var(--ink-mute); letter-spacing: 0.08em; }
+
+/*
+  ── 3 · El spread ──────────────────────────────────────────────────────────
+
+  La misma figura que la portada `spread` de `PortadaFigura`, con los rótulos
+  puestos: dos niveles —filetes `--ink-mute`, porque la guía no dice de quién
+  es ninguno de los dos precios— y, entre ellos, la magnitud acotada con dos
+  topes, la marca del intervalo. La barra y los topes son bordes, no fondos.
+*/
+.prose figure .g-spread-fig {
+  display: grid;
+  max-width: 520px;
+}
+.prose figure .g-nivel {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-4);
+  padding: var(--s-2) 0;
+}
+.prose figure .g-nivel-precio { border-bottom: 3px solid var(--ink-mute); }
+.prose figure .g-nivel-ref { border-top: 3px solid var(--ink-mute); }
+.prose figure .g-nivel-que { font-size: var(--t-body-sm); color: var(--ink-mute); }
+.prose figure .g-nivel-cifra {
+  font-family: var(--f-num);
+  font-size: var(--t-dato-m);
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.prose figure .g-tramo {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: var(--s-4);
+  align-content: center;
+  min-height: 72px;
+  margin: -3px 0;
+}
+/* La barra: 8 de ancho, de filete a filete. Los topes, 28 × 3, encima de
+   cada filete. */
+.prose figure .g-tramo-barra {
+  grid-row: 1 / 3;
+  position: relative;
+  justify-self: center;
+  width: 0;
+  height: 100%;
+  border-left: 8px solid var(--verde-deep);
+}
+.prose figure .g-tramo-barra::before,
+.prose figure .g-tramo-barra::after {
+  content: '';
+  position: absolute;
+  left: -18px;
+  width: 28px;
+  border-top: 3px solid var(--verde-deep);
+}
+.prose figure .g-tramo-barra::before { top: 0; }
+.prose figure .g-tramo-barra::after { bottom: 0; }
+.prose figure .g-tramo-que { align-self: end; font-weight: 600; color: var(--ink); }
+.prose figure .g-tramo-cifra {
+  font-family: var(--f-num);
+  font-size: var(--t-dato-sm);
+  color: var(--ink);
+}
+
+/*
+  Colores forzados. Todo es borde y lo pinta el navegador, salvo el punteado,
+  que es un degradado y desaparecería: pasa a borde punteado del sistema. El
+  ritmo lo elige entonces el navegador, y en este modo eso da igual: lo que
+  importa es que el límite siga ahí.
+*/
+@media (forced-colors: active) {
+  .prose figure .g-linea-hitos li.g-ops::after {
+    background: none;
+    height: 0;
+    border-top: 1px dashed CanvasText;
+  }
+}
+@media (forced-colors: active) and (min-width: 760px) {
+  .prose figure .g-linea-hitos li.g-ops::after {
+    width: 0;
+    height: 40px;
+    border-top: 0;
+    border-left: 1px dashed CanvasText;
+  }
+}

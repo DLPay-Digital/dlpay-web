@@ -29,10 +29,44 @@ const blog = defineCollection({
       /** `coerce` porque en el frontmatter la fecha llega como texto. */
       pubDate: z.coerce.date(),
       /**
-       * Dos categorías y nada más. El `enum` es la garantía: un valor fuera de
+       * Tres categorías y nada más. El `enum` es la garantía: un valor fuera de
        * la lista rompe el build en vez de publicar una categoría inventada.
+       *
+       * `Guía` entró el 2026-10-13 (Cowork, entrega `aprende-`): es lo que no
+       * envejece con el mercado —qué es el dólar observado, cómo se lee un
+       * spread— frente a `Mercado`, que comenta un dato con fecha. El índice
+       * del blog las separa en dos listas por este campo.
        */
-      category: z.enum(['DLPay', 'Mercado']),
+      category: z.enum(['DLPay', 'Mercado', 'Guía']),
+      /**
+       * La fecha de la última revisión de fondo, si la hubo. Se muestra junto
+       * a la de publicación y va al `dateModified` de los datos estructurados.
+       *
+       * **Se escribe a mano y sólo cuando cambia lo que el artículo afirma**:
+       * una cifra puesta al día, una sección nueva. Una errata no la mueve.
+       * Si no está, el artículo no dice nada y `dateModified` es la
+       * publicación, que es lo cierto.
+       */
+      actualizado: z.coerce.date().optional(),
+      /**
+       * «En corto»: de dos a cuatro frases arriba del cuerpo, para quien viene
+       * a buscar la respuesta y no a leer el artículo entero. Es TEXTO NUEVO y
+       * lo firma Compliance como el resto (CLAUDE.md §3): cada frase tiene que
+       * estar dicha también en el cuerpo, porque un resumen no puede afirmar
+       * algo que el artículo no sostiene.
+       */
+      resumen: z.array(z.string().min(1)).min(2).max(4).optional(),
+      /**
+       * El lugar del artículo en la ruta «Tu primera operación» del índice.
+       * `paso` ordena; `titulo` es el nombre corto con que aparece en la ruta,
+       * porque el titular entero no cabe en una columna de cuatro.
+       *
+       * La ruta se cuenta sobre lo PUBLICADO: un paso en borrador no existe, y
+       * el siguiente ocupa su número. Ver `lib/blog.ts`.
+       */
+      ruta: z
+        .object({ paso: z.number().int().min(1), titulo: z.string().min(1) })
+        .optional(),
       /**
        * El candado de publicación, **cerrado por omisión**. Un artículo sin
        * `estado` es borrador y no entra a un build: ni al listado, ni a su
@@ -102,7 +136,7 @@ const blog = defineCollection({
           z.object({
             tipo: z.literal('figura'),
             /** Cerrado. El catálogo y su porqué están en `PortadaFigura.astro`. */
-            figura: z.enum(['activo-tokenizado']),
+            figura: z.enum(['activo-tokenizado', 'billetera', 'spread']),
           }),
         ])
         /*
@@ -116,6 +150,12 @@ const blog = defineCollection({
           }
         })
         .optional(),
+    })
+    /* Una revisión no puede ser anterior a la publicación: se vería en la
+       página como «actualizado» antes de existir. */
+    .refine((d) => d.actualizado === undefined || d.actualizado >= d.pubDate, {
+      message: '`actualizado` no puede ser anterior a `pubDate`',
+      path: ['actualizado'],
     }),
 });
 

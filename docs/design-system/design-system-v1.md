@@ -304,6 +304,9 @@ los breakpoints **añaden**, nunca deshacen.
 Anchos mínimos puntuales (una tabla que no puede comprimirse más, un menú
 desplegable) **no** son breakpoints y no cuentan para esta regla.
 
+`1112px`, el riel del artículo: es el ancho en que caben riel, hueco y columna de lectura con los
+márgenes de sección. *(2026-10-13)*
+
 ### 4.3 Grid
 
 - Contenedor de contenido: **máx. ~1112 px**, centrado.
@@ -814,6 +817,16 @@ ocupadas—, **la portada correcta es ninguna**, y `blog/index.astro` ya lo cont
 alternativa honesta no es un pictograma más flojo: es `cifra` o `rango`, que traen el campo `fuente`
 que este contenido necesita.
 
+**El catálogo, 2026-10-13: `billetera` y `spread`.** Entran con las guías.
+
+- `billetera` es la ficha del dólar digital de `FiguraRiel` dentro de una billetera: aquí dice
+  lo cierto, «tu dólar digital en tu billetera», que es justo lo que el techo de la enmienda
+  impidió decir de las stablecoins.
+- `spread` son dos niveles neutros y la marca del intervalo, girada: un spread es un intervalo.
+
+Los dos cumplen la condición: un solo nodo, sin cifra, sin texto y sin cuña. El razonamiento
+está en la cabecera de `PortadaFigura.astro`.
+
 ### 6.2 El significado lo lleva la marca, no el color  ·  *añadido el 2026-09-17*
 
 Con cinco familias de figura vivas —los cuatro casos de `/empresas`, la línea de tenencia de
@@ -971,6 +984,10 @@ cordón. Entró el 2026-10-01 con `a3d3bf6` y es **materia, no vocabulario**: no
 dice «esto es un cordón trenzado», y la trae una de las dos piezas a las que ADR-0011 concede
 textura. La tabla de arriba cuenta marcas que significan algo; el método de abajo cuenta píxeles
 punteados, y desde que existe una pieza con materia los dos números dejan de coincidir.
+
+Las guías en borrador traen uno más: el corte de las 16:00 de la guía del dólar observado
+(`.g-ops::after`). Cuenta cuando se publique. Ya va con el ritmo del §6.2 (3 · 4 · 1,25) hecho
+con degradado, y con su regla para colores forzados. *(2026-10-13)*
 
 > **El método necesita una exclusión más, y es de clase y no de lista:** un `stroke-dasharray` puede
 > ser **textura de un material** y no una marca. Antes sólo había que descontar el de `[data-draw]`,
@@ -1265,6 +1282,8 @@ cada una, no qué significa.
 | **404** | Dirección inexistente | Reusa `PageHero`. `noindex`, fuera del sitemap y en cero bytes de JavaScript |
 | **Bloque institucional** | Los emblemas de FinteChile y la UAF, en el pie | `Alliances.astro`. El claim regulatorio se dice **con palabras**, no colgado de un emblema, y el dato declara el alcance de su propio claim |
 | **Motor de movimiento** | Encender el Motion System en las páginas que lo usan | `Motion.astro`. No es una pieza visual: es el `IntersectionObserver` y su interruptor. Las cuatro legales y la 404 no lo llevan y siguen en cero JavaScript |
+| **Fila de artículo** | Una entrada de artículo en una lista | `FilaArticulo`. Marca y texto en un solo enlace. La usan el índice del blog y «Sigue leyendo». *2026-10-13.* |
+| **Ruta de guías** | Los pasos de «Tu primera operación», en `/blog` | `RutaGuias`. Pasos numerados con la gramática de «Cómo empezamos». Cuenta sólo lo publicado. *2026-10-13.* |
 
 > **Cómo se mantiene esta tabla.** Se escribió midiendo `src/components/` contra el build, no de
 > memoria. Si aparece un componente que no está acá, la tabla está vieja — y eso ha pasado: entre
