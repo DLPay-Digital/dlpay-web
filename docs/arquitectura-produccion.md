@@ -257,6 +257,9 @@ Lo que se comprobó contra el build antes de fijar el conjunto, y conviene rehac
   construcción no pueden desincronizarse: si entra un script nuevo entra su hash, y si uno cambia
   cambia su hash. La línea mide 542 de los 2.000 caracteres que `_headers` admite, y el build
   **para** si alguna vez se pasara, porque un CSP truncado se rompe en silencio.
+  *(2026-10-13)* Los bloques `application/ld+json` no se cuentan: son datos, no scripts, y el CSP no
+  los alcanza. Cada artículo del blog trae el suyo desde la entrega `aprende-`, y contados habrían
+  hecho crecer la línea del CSP con cada artículo hasta su techo de 2.000 caracteres.
 - **`style-src` CONSERVA `'unsafe-inline'`, y no es pereza.** El build emite **124 atributos
   `style="..."`**, y un hash de CSP sólo alcanza a un bloque `<style>`: para un atributo haría falta
   `'unsafe-hashes'` más el hash de cada uno de los 124 valores. Lo que lo hace tolerable es el

@@ -151,7 +151,21 @@ function cabecerasDeSeguridad() {
         for (const e of readdirSync(dir, { recursive: true, withFileTypes: true })) {
           if (!e.isFile() || !e.name.endsWith('.html')) continue;
           const html = readFileSync(new URL(`${e.parentPath.slice(dir.pathname.length)}/${e.name}`.replace(/^\/+/, ''), dir), 'utf-8');
-          for (const m of html.matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+          /*
+            **Los bloques de datos no se cuentan** (Cowork, 2026-10-13). Un
+            `<script type="application/ld+json">` no es un script: el
+            navegador no lo ejecuta, y por eso el CSP no lo alcanza —el HTML
+            lo trata como bloque de datos antes de mirar la política—.
+            Comprobado en Chromium con `script-src 'self'` y sin hash: cero
+            avisos por el bloque y el bloque se sigue leyendo.
+
+            Importa porque cada artículo del blog trae ahora el suyo, distinto
+            (`Article` y `BreadcrumbList`), y contados sumaban unos 55
+            caracteres por artículo a esta línea, que tiene techo de 2.000:
+            el blog se habría quedado sin sitio hacia los treinta artículos.
+            Fuera de la cuenta, la línea ya no crece con el blog.
+          */
+          for (const m of html.matchAll(/<script(?![^>]*\ssrc=)(?![^>]*\stype="application\/ld\+json")[^>]*>([\s\S]*?)<\/script>/g)) {
             // El grupo 1 es `string | undefined` para TypeScript, porque un grupo
             // de captura puede no participar en la coincidencia. Éste siempre lo
             // hace —no es opcional en el patrón—, pero el tipo no lo sabe y sin
@@ -197,8 +211,9 @@ function cabecerasDeSeguridad() {
 
         /*
           `_headers` corta a los 2.000 caracteres por línea, y la del CSP es la
-          que crece: cada script en línea nuevo le suma unos 55. Hoy son seis y
-          la línea anda por la mitad del límite. Si alguna vez se pasa, el
+          que crece: cada script en línea nuevo le suma unos 55. Hoy son cinco
+          —los bloques `ld+json` no cuentan, ver arriba— y la línea mide 488,
+          la cuarta parte del límite (2026-10-13). Si alguna vez se pasa, el
           navegador recibiría un CSP truncado —o sea, roto— sin que nada
           avisara, así que el build para aquí.
         */
