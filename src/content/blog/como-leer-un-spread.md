@@ -39,8 +39,10 @@ Lo que se afirma de DLPay son frases ya publicadas y firmadas: la
 composición, de `/tarifas`; «un solo cobro…», de `/precio`; el precio
 referencial y el ejecutivo, de los artículos del blog.
 
-PENDIENTE DE DECISIÓN — enlazar la herramienta «¿Cuánto te están cobrando
-por el dólar?» (entrega siguiente de Cowork) el día que exista.
+La herramienta «¿Cuánto te están cobrando por el dólar?» (`/cuanto-te-cobran/`)
+hace esta misma cuenta con los números de quien la usa, y se enlaza en «La
+comparación que sí sirve». Entró con la entrega `spread-` de Cowork, el
+2026-10-13.
 
 Regla de estilo aplicada: cero rayas (em-dash o en-dash).
 -->
@@ -107,6 +109,11 @@ otro.
 
 Si lo que necesitas es una cantidad de dólares, vale lo mismo al revés:
 cuántos pesos pagas por ella, en total.
+
+Para hacer esta cuenta con tus números está la herramienta
+[¿cuánto te están cobrando por el dólar?](/cuanto-te-cobran/): escribes el
+precio que te ofrecen y una referencia del mismo momento, y te muestra el
+spread en porcentaje y en pesos.
 
 ## Qué hacemos en la mesa
 

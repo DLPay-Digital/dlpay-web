@@ -81,6 +81,24 @@ const grupos = [
 ].filter((g) => g.posts.length > 0);
 
 /*
+  ── La herramienta (Cowork, 2026-10-13, entrega `spread-`) ─────────────────
+
+  `/cuanto-te-cobran/` no está en el menú ni en el pie (ver su cabecera): se
+  llega desde acá. Va en un grupo propio y PRIMERO, debajo de la ruta, porque
+  es lo único del índice que se usa y no se lee. Con la fila de siempre: la
+  marca es el pictograma `spread`, el mismo de la guía que la explica.
+
+  REQUIERE VALIDACIÓN DE COMPLIANCE: titular, bajada y etiqueta, nuevos.
+*/
+const herramienta = {
+  href: '/cuanto-te-cobran/',
+  etiqueta: 'Herramienta',
+  titulo: '¿Cuánto te están cobrando por el dólar?',
+  bajada: 'Escribe el precio que te ofrecen y una referencia del mismo momento: te mostramos el spread, en porcentaje y en pesos.',
+  figura: 'spread',
+} as const;
+
+/*
   ── La portada: el Diario DLPay ─────────────────────────────────────────────
 
   Pedido por Sebastián el 2026-10-01: un diario cuyas hojas pasan solas, una
@@ -182,6 +200,16 @@ const DESCRIPCION =
 
     <section class="list" aria-label="Artículos">
       <div class="inner">
+        <div class="grupo" id="herramientas">
+          <div class="grupo-cab">
+            <h2 id="herramientas-title">Herramientas</h2>
+            <p>Para hacer la cuenta con tus propios números.</p>
+          </div>
+          <ul class="posts" role="list" aria-labelledby="herramientas-title">
+            <li data-enter><FilaArticulo item={herramienta} /></li>
+          </ul>
+        </div>
+
         {posts.length === 0 ? (
           <p class="empty">Todavía no hay artículos publicados.</p>
         ) : (

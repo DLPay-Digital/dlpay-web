@@ -22,15 +22,26 @@
  * El `<li>` NO es de este componente: lo pone quien lista, porque el borde, el
  * escalonado de entrada (`data-enter`) y el ritmo entre filas son del listado.
  */
-import PortadaFigura from './PortadaFigura.astro';
+import PortadaFigura, { type Figura } from './PortadaFigura.astro';
 import { formatFigure, formatFigureRange } from '../lib/pricing/format.ts';
 import type { Post } from '../lib/blog.ts';
 
-interface Props {
-  post: Post;
-  antetitulo?: string;
+/**
+ * Una fila que NO es un artículo: hoy, la herramienta del spread en el índice
+ * del blog (entrega `spread-`, 2026-10-13). Misma fila, con su pictograma del
+ * catálogo cerrado como marca y una etiqueta en el sitio de la categoría. Sin
+ * fecha: una herramienta no se publica un día.
+ */
+export interface ItemFila {
+  href: string;
+  etiqueta: string;
+  titulo: string;
+  bajada: string;
+  figura: Figura;
 }
-const { post, antetitulo } = Astro.props;
+
+type Props = { antetitulo?: string } & ({ post: Post; item?: never } | { item: ItemFila; post?: never });
+const { post, item, antetitulo } = Astro.props;
 
 /**
  * La fecha del ÍNDICE va tabular y numérica (`17-09-2026`), no en prosa. Acá es
@@ -53,7 +64,7 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
 });
 /* `es-CL` compone `17-09-2026` con guiones, que es la forma tabular buscada. */
 
-const p = post.data.portada;
+const p = post?.data.portada;
 /*
   La cifra de la marca se arma acá y no en la plantilla porque un rango son
   dos números y un separador, y eso dentro del JSX se lee peor de lo que es.
@@ -76,6 +87,16 @@ const cifra =
 */
 const esLarga = p !== undefined && p.tipo !== 'figura' && (cifra + p.unidad).length > 7;
 ---
+{item ? (
+<a class="fila" href={item.href}>
+  <span class="marca"><PortadaFigura figura={item.figura} variant="marca" /></span>
+  <span class="texto">
+    <span class="p-meta"><span class="cat">{item.etiqueta}</span></span>
+    <span class="p-title">{item.titulo}</span>
+    <span class="p-desc">{item.bajada}</span>
+  </span>
+</a>
+) : post && (
 <a class="fila" href={`/blog/${post.id}/`}>
   {/*
     La marca es la PORTADA del propio artículo, no un dibujo nuevo: el
@@ -109,6 +130,7 @@ const esLarga = p !== undefined && p.tipo !== 'figura' && (cifra + p.unidad).len
     <span class="p-desc">{post.data.description}</span>
   </span>
 </a>
+)}
 
 <style>
   /*
