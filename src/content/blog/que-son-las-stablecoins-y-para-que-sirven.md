@@ -2,8 +2,15 @@
 title: 'Qué son las stablecoins, quiénes las emiten y para qué sirven desde Chile.'
 description: 'Qué son, cómo mantienen su paridad con el dólar, quiénes las emiten hoy y para qué sirven desde Chile en el cambio de divisas.'
 pubDate: 2026-09-29
-category: 'Mercado'
+# `Guía` desde el 2026-10-13 (Cowork, entrega `aprende-`): explica qué es una
+# cosa y no comenta un dato con fecha, que es lo que separa las dos listas del
+# índice. Es además el paso 2 de la ruta «Tu primera operación». El cuerpo no
+# cambia una palabra.
+category: 'Guía'
 estado: publicado
+ruta:
+  paso: 2
+  titulo: 'Qué es una stablecoin'
 portada:
   tipo: cifra
   etiqueta: 'Stablecoins en circulación'

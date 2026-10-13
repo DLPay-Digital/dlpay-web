@@ -2,7 +2,10 @@
 title: 'Activos tokenizados: qué son, quién los está construyendo y por qué la conversación se aceleró.'
 description: 'Qué son, quién los está construyendo y qué rol cumplen las stablecoins como capa de settlement en el ecosistema global.'
 pubDate: 2026-09-21
-category: 'Mercado'
+# `Guía` desde el 2026-10-13 (Cowork, entrega `aprende-`): explica qué es una
+# cosa y no comenta un dato con fecha. No entra en la ruta «Tu primera
+# operación»: no hace falta para operar. El cuerpo no cambia una palabra.
+category: 'Guía'
 estado: publicado
 # Portada de tipo `figura`, aprobada por Sebastián el 2026-09-22.
 #
