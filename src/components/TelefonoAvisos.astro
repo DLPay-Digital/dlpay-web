@@ -32,9 +32,17 @@
  * · **La cifra de la billetera es la misma que envía el ejecutivo**, porque el
  *   costo de red lo asume DLPay (`/precio`, «sin costo de red»). Las dos salen
  *   de `lib/pricing`, una sola variable (D24).
- * · **«USDT» en la billetera y «USD» en nuestro aviso**, a propósito: la
- *   billetera enseña el activo que recibe (la Home publica que es USDT) y
- *   nosotros hablamos como habla el sitio.
+ * · **La billetera y nuestro aviso dicen los dos «USD»** desde el 2026-10-21.
+ *   Decían «USDT» y «USD» respectivamente, y era deliberado: la billetera
+ *   enseñaba el activo que recibe y nosotros hablábamos como habla el sitio,
+ *   que entonces publicaba en su FAQ que el activo es USDT.
+ *
+ *   **ADR-0013 sacó el mecanismo del mensaje comercial**, así que la Home ya no
+ *   publica ese nombre y dejarlo acá lo repondría por la puerta de atrás, en una
+ *   figura de `/confianza`. Se pierde algo real y conviene saberlo: la distinción
+ *   enseñaba que el activo tiene un nombre propio y que nosotros no lo
+ *   disfrazamos. Si vuelve, vuelve con el nombre que el sitio publique entonces,
+ *   no con uno elegido acá.
  * · **Sin horas.** Un aviso real lleva hora, y tres horas afirmarían cuánto
  *   tarda una operación. No hay un dato aprobado para eso.
  *
@@ -142,7 +150,7 @@ const avisos = [
     icono: 'wallet' as const,
     titulo: 'Depósito recibido',
     texto: '',
-    entero: `${cifra} USDT`,
+    entero: `${cifra} USD`,
   },
 ];
 ---

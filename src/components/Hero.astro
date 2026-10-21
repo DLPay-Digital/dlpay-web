@@ -39,14 +39,15 @@ const trustStrip = [
       {/*
         El sujeto de "en minutos" NO se puede soltar. D17 (CLAUDE.md §1) reformuló
         esta frase justamente para que la rapidez se prediquara de NUESTRA
-        operación —la conversión y la entrega del dólar digital— y nunca de una
+        operación —la conversión y la entrega de la divisa— y nunca de una
         recepción bancaria en destino: "sin esperar días" jamás debe poder leerse
         como "el destinatario recibe dinero en su cuenta en minutos". Por eso
-        "Recibes dólar digital:" encabeza la frase y ancla a qué se refiere.
+        "Recibes la divisa que necesites:" encabeza la frase y ancla a qué se
+        refiere. El sujeto cambió con ADR-0013; la función de la frase, no.
       */}
       <p class="sub seq" style={`--seq:${seqSub}`}>
-        Recibes dólar digital: en minutos, a cualquier hora, sin los tiempos de una
-        operación bancaria tradicional.
+        Recibes la divisa que necesites: en minutos, a cualquier hora, sin los tiempos de
+        una operación bancaria tradicional.
       </p>
       <ul class="strip seq" role="list" style={`--seq:${seqStrip}`}>
         {trustStrip.map((item) => (

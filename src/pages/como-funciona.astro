@@ -53,7 +53,7 @@ const hilo = [
 ---
 <Base
   title="Cómo funciona"
-  description="El recorrido completo de una operación en DLPay: cotizas en la web, confirmas con un ejecutivo por WhatsApp, transfieres, verificamos y recibes dólar digital en tu billetera."
+  description="El recorrido completo de una operación en DLPay: cotizas en la web, confirmas con un ejecutivo por WhatsApp, transfieres, verificamos y recibes la divisa en tu billetera."
   path="/como-funciona/"
 >
   <Motion />
@@ -201,8 +201,8 @@ const hilo = [
         <EjeDeAlcance hinge={hinge} options={options}>
           <Fragment slot="caveat">
             Ese último paso es un proceso distinto, con otros servicios, y
-            <strong>no lo realiza DLPay</strong>. Nosotros hacemos el cambio de divisas y te
-            entregamos dólar digital en tu billetera:
+            <strong>no lo realiza DLPay</strong>. Nosotros hacemos el cambio de divisas y te la
+            entregamos en forma digital en tu billetera:
             <strong>no depositamos dinero en cuentas bancarias en el extranjero</strong>.
           </Fragment>
         </EjeDeAlcance>
@@ -211,10 +211,16 @@ const hilo = [
 
     {/*
       El puente al artículo de activos tokenizados. Cierra un circuito que
-      estaba abierto por un lado: esta página usa «dólar digital» CUATRO veces
-      en su `<main>` y no lo explica ninguna, su casa está escrita en
+      estaba abierto por un lado: la página usaba «dólar digital» CUATRO veces
+      en su `<main>` y no lo explicaba ninguna, su casa está escrita en
       `content/glossary.ts` —que manda ese término a este artículo— y el enlace
       de vuelta ya existía, porque el artículo termina mandando acá.
+
+      **Tras ADR-0013 el circuito sigue cerrado y por el mismo sitio.** Las
+      cuatro menciones pasaron a «la divisa» y la entrada del glosario pasó a
+      «Divisa digital», pero sigue apuntando a este artículo. Lo único que NO se
+      tocó es el titular del puente, que nombra el dólar: lleva firma de
+      Compliance del 2026-09-22 y es cierto del artículo al que lleva.
 
       Y con esto la página deja de ser la única de contenido del sitio sin un
       solo enlace interno: hasta hoy su `<main>` salía a tres sitios —la app de

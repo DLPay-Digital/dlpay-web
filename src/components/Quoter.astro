@@ -60,7 +60,7 @@ const intents = [
   data-source={price.source}
   aria-labelledby="quoter-title"
 >
-  <h2 class="sr-only" id="quoter-title">Cotizador de dólar digital</h2>
+  <h2 class="sr-only" id="quoter-title">Cotizador de divisas</h2>
 
   <fieldset class="intent">
     <legend class="intent-legend">¿Qué quieres hacer?</legend>
@@ -151,6 +151,12 @@ const intents = [
     ésta no está en el mismo caso: **es la mitigación de un claim marcado, y el
     spec la exige donde está.**
 
+    **ADR-0013 (2026-10-21) no deroga esta nota, la amplía:** el sitio pasa de
+    una divisa a doce, así que la nota dice «la divisa en forma digital» en vez
+    de «dólar digital», y sigue haciendo exactamente lo que el spec le pide. La
+    cita de abajo es la del spec tal como está escrito hoy; el spec se enmienda
+    con el cotizador multidivisa.
+
     `cotizador-spec` §42, literal: «El dólar digital es el riel y se explica en
     una nota permanente **dentro del propio cotizador**». Y la línea siguiente de
     ese mismo párrafo es el motivo: `REQUIERE VALIDACIÓN DE COMPLIANCE — mostrar
@@ -163,12 +169,12 @@ const intents = [
     dos únicas afirmaciones que cargan peso: **qué recibes** y **qué no es**.
 
     Lo que se fue, y dónde sigue: la equivalencia 1:1 está en el glosario de
-    `/preguntas` («Dólar digital»), y «en minutos, a cualquier hora» es la bajada
+    `/preguntas` («Divisa digital»), y «en minutos, a cualquier hora» es la bajada
     del héroe de esta misma página y el paso 06 de `/como-funciona`. Ninguna de
     las dos era la que mitigaba nada.
   */}
   <p class="rail">
-    Recibes <strong>dólar digital</strong>, no un depósito en un banco del extranjero.
+    Recibes <strong>la divisa en forma digital</strong>, no un depósito en un banco del extranjero.
   </p>
 
   <a class="cta" href={wa} target="_blank" rel="noopener" data-cta>

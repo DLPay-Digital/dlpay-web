@@ -65,7 +65,7 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
   { what: 'Cotizar, las veces que quieras', cost: 'Sin costo · sin cuenta' },
   { what: 'Hablar con tu ejecutivo', cost: 'Sin costo' },
   { what: 'Cancelar antes de transferir', cost: 'Sin costo · basta con no transferir' },
-  { what: 'Recibir el dólar digital en tu billetera', cost: 'Sin costo' },
+  { what: 'Recibir la divisa en tu billetera', cost: 'Sin costo' },
   { what: 'El costo de red del traspaso', cost: 'Sin costo · lo asumimos nosotros' },
   { what: 'Convertir', cost: 'El spread, ya incluido en el precio que ves', isCharge: true },
 ];
@@ -161,7 +161,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
         </dl>
         {/* La misma salvedad que ya publica `/tarifas` sobre servicios ajenos. */}
         <p class="nota">
-          Lo que hagas después con ese dólar digital, moverlo a otra billetera o convertirlo a
+          Lo que hagas después con esa divisa, moverla a otra billetera o convertirla a
           moneda local en otro país, puede tener costos de los servicios que uses para eso, que son
           ajenos a DLPay.
         </p>
