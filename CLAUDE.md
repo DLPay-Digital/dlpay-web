@@ -178,11 +178,27 @@ persona que cierra la operación por WhatsApp. Personas y empresas.
 
 **Alcance que la web comunica:** envío de dinero al extranjero (persona a persona, a cuenta
 propia, empresa a persona, empresa a empresa) · pagos internacionales y a proveedores ·
-tesorería en dólares · cambio de divisas CLP ↔ USD como operación independiente.
+tesorería en dólares · **cambio de divisas CLP ↔ la divisa de destino** como operación
+independiente.
+
+**Enmendado el 2026-10-21 — ADR-0013: el sitio pasa de una divisa a varias.** Decía «CLP ↔ USD», y
+el servicio pasa a cubrir doce divisas para catorce destinos: USD (Estados Unidos y **Ecuador**,
+que está dolarizado y no añade moneda), EUR, CNY, JPY, VES, COP, PEN, ARS, BRL, UYU, PYG y BOB. La
+lista es abierta. **El dólar deja de ser el producto y pasa a ser una divisa más.**
 
 **El dólar digital (USDT) es la infraestructura, no el mensaje comercial.** Se explica donde
 aporta —una nota en el cotizador, una respuesta en la FAQ— y nunca protagoniza un titular. La web
 **no** debe leerse como un sitio de criptomonedas.
+
+**Llevado hasta el final el 2026-10-21 (ADR-0013), y conviene no confundir las dos mitades:**
+
+| | qué es | qué pasa |
+|---|---|---|
+| **USDT, «stablecoin», redes, cadena de bloques** | el mecanismo | **sale del mensaje comercial.** Sobrevive en el blog y en el glosario, que son contenido educativo |
+| **«divisa digital», «billetera»** | qué recibe el cliente | **se queda, y es obligatorio.** Sin eso el sitio no puede decir dónde termina el servicio, y el límite de abajo deja de ser comprobable |
+
+Dicho de otro modo: se deja de nombrar **cómo** se mueve el valor, nunca **qué** recibe el cliente
+ni **dónde** lo recibe. Quitar lo segundo sería mentir por omisión.
 
 ### Dónde termina el servicio (definido el 2026-09-04 — regla dura de contenido)
 
@@ -198,9 +214,31 @@ presta hoy.
 de valor mediante dólar digital, que mantiene una equivalencia 1:1 con el dólar y se transfiere
 por distintas redes en minutos, sin depender de los tiempos de una transferencia bancaria.
 
-**La rapidez se predica de NUESTRA operación** —la conversión y la entrega del dólar digital—,
+**La rapidez se predica de NUESTRA operación** —la conversión y la entrega de la divisa digital—,
 nunca de una recepción bancaria final. "Sin esperar días" jamás debe poder leerse como "el
 destinatario recibe dinero en su cuenta en minutos".
+
+#### Enmienda del 2026-10-21 (ADR-0013) — la regla sigue entera, con más divisas dentro
+
+El flujo pasa a ser: **CLP del cliente → DLPay convierte → entrega la divisa de destino, en forma
+digital, en la billetera que el cliente indique → desde ahí él decide.** Lo único que cambia es
+**qué moneda llega**. La prohibición de arriba **no se toca ni una palabra**: sigue prohibido
+afirmar o sugerir que DLPay deposita en una cuenta bancaria en el extranjero, que hace una
+transferencia bancaria internacional o que el destinatario recibe moneda local.
+
+**Y el sitio NO dice «remesa».** El público entiende por remesa que el destinatario cobra; mientras
+la entrega sea en billetera, esa palabra promete de más por omisión. El enfoque es, y se dice así,
+**cambio de divisas**. *Decisión de Sebastián del 2026-10-21.*
+
+**Lo que queda abierto, y es el riesgo vivo de esta enmienda:** `PENDIENTE DE DECISIÓN — qué llega
+exactamente, por divisa`. «Esa divisa, en forma digital, en una billetera» es cierto del dólar,
+bastante menos del euro y probablemente de ninguna de las otras diez: no hay versión digital
+líquida de yuan, yen, bolívar, peso colombiano, sol, peso argentino, real, guaraní, boliviano ni
+peso uruguayo. O lo que llega sigue siendo **dólar digital** y lo que cambia es **en qué moneda se
+cotiza** —y el sitio tiene que decirlo sin rodeos—, o el servicio **paga en moneda local en
+destino**, y entonces estamos otra vez en la regla de arriba y hace falta un ADR que la derogue, con
+firma de Compliance. **Mientras no se cierre, el sitio no ofrece una divisa que no sabemos
+entregar:** el selector del cotizador sólo muestra las que tengan tasa configurada.
 
 El límite se declara **de frente** en `/como-funciona` y en `/confianza`, antes de que el usuario
 opere. Es una señal de confianza, no letra chica.
@@ -712,6 +750,21 @@ WhatsApp prellenado → el ejecutivo confirma el precio final y coordina el dest
 como un camino duplicado. Lo que se pierde está razonado en `cotizador-spec.md`. Especificación completa en `docs/design-system/cotizador-spec.md`. No ejecuta
 operaciones, no bloquea precios, no promete cotizaciones cerradas.
 
+**Enmendado el 2026-10-21 — ADR-0013: el cotizador pasa a tener divisa de destino.** La pregunta
+que responde deja de ser «cuántos dólares recibo» y pasa a ser **«cuánto llega»**, en la moneda del
+destino. Es un cambio de la pieza central del sitio, así que `cotizador-spec.md` se enmienda con él.
+
+**Y reabre una decisión del 2026-09-14 sin deshacerla.** «Enviar al extranjero» se retiró entonces
+*porque hacía la misma aritmética que «convertir a dólares»*. Con varias divisas **ya no la hace**:
+el motivo de aquella retirada deja de existir. No se repone automáticamente —la intención y la
+divisa de destino pueden ser el mismo control o dos— pero quien lea aquel párrafo debe saber que su
+razón caducó.
+
+**Las cifras siguen siendo referenciales, y ahora son varias.** Una tasa de muestra por divisa, con
+la reserva que el sitio ya publica: el precio que se aplica es el que confirma el ejecutivo. Una
+divisa **sin tasa configurada no aparece en el selector**, que es el mecanismo de D21 y la garantía
+de que el sitio no publique un número inventado.
+
 **Nunca afirmar** que DLPay está regulado o autorizado por la CMF, ni ningún claim regulatorio
 equivalente.
 
@@ -914,16 +967,16 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | ~~D22~~ | ~~Mensaje prellenado en cinco enlaces planos a WhatsApp~~ | ✅ **Cerrada 2026-09-29.** Los cinco que abrían el chat en blanco —el pie, `/tarifas`, `/confianza`, `/como-funciona` y el botón del héroe de `/empresas`— llevan mensaje. Comprobado sobre el build: **cero enlaces sin texto en las once páginas**, once mensajes distintos, cada uno escrito para el sitio desde donde se pulsa. El del pie es a propósito el más vago —está en todas las páginas y no puede suponer por qué escribes—, y `/empresas` lleva dos distintos: el del héroe es de quien acaba de llegar y el del cierre de quien ya leyó. **El texto del botón «Habla con nosotros» se queda**, decisión de Sebastián del mismo día | — | — |
 | D23 | **Canal de respaldo si WhatsApp no abre.** Todo el funnel termina en un único canal; si el enlace no abre, la persona queda sin salida visible en ese momento | No | Sebastián |
 | ~~D24~~ | ~~Consolidar el monto mínimo en `lib/config`~~ | ✅ **Cerrada 2026-09-09.** Los límites del cotizador (`PUBLIC_QUOTE_MIN_CLP`, `PUBLIC_QUOTE_MAX_CLP`) y el monto de muestra se resuelven UNA vez en `lib/config/environment.ts` (`resolveQuoteLimits`, puro y testeado) y se exponen como `quoteLimits` en `lib/config/site.ts`. Los cinco consumidores —cotizador, `/tarifas`, mockup y las dos ilustraciones de la Home— dejaron de leer el entorno: `/tarifas` publica por construcción el mismo mínimo que el cotizador aplica. Commit `c5f0ad5` | — | — |
-| D7 | **Fuente oficial de market price**, y con ella la tasa que el sitio publica hoy: `PUBLIC_QUOTE_SAMPLE_RATE`, **919,70 CLP por dólar**, que es el número del que cuelgan todas las cifras de muestra de la web. *Anotado el 2026-09-25, al cerrar D6:* el registro llamaba «precio de muestra» a dos cosas distintas y la tasa es ésta, no el monto. **Subió de exposición el 2026-09-30 y volvió a bajar el 2026-10-01:** el panel de `/precio` publicó durante un día **2.174,62 USD por CLP 2.000.000** en su portada; el abanico de etiquetas lo sustituyó y esa cifra salió de la página. **Y volvió a subir el 2026-10-02**, ahora en la Home: el puente a `/tarifas` publica esa misma cifra, **2.174,62 USD**, porque el titular promete un número y la figura no lo enseñaba. Así que la frase «la tasa vive sólo dentro del cotizador» duró un día y hoy es falsa. **Lo que la hace menos grave de lo que suena:** la cifra sale de la misma cadena `ConfigPriceSource → convert`, no está tecleada, y aparece **en la misma página que el cotizador**, que ya la mostraba — así que el día que D7 se cierre, las dos cambian juntas y no hay nada que sincronizar a mano. **Lo que sí cambia:** el número deja de estar sólo dentro de un control que el visitante manipula y pasa a estar también en una afirmación de la página. Sigue abierta y sigue siendo el número del que cuelgan las cifras de muestra. Cowork reporta que el 30 de septiembre el USDT se cotizaba entre 969,88 y 981 pesos, lo que haría el ejemplo **entre un 5,5 % y un 6,7 % más generoso que el mercado**; **ese dato no está verificado acá** y verificarlo pide una cotización de mercado. No corre prisa —el sitio no está publicado— pero **el orden correcto es fijar la tasa antes de publicar esta página, no después**: la etiqueta «ejemplo» protege de que la cifra se lea como oferta, no de que sea inverosímil | No — `ConfigPriceSource` cubre v1 | DLPay |
+| D7 | **Fuente oficial de market price**, y con ella la tasa que el sitio publica hoy: `PUBLIC_QUOTE_SAMPLE_RATE`, **919,70 CLP por dólar**, que es el número del que cuelgan todas las cifras de muestra de la web. *Anotado el 2026-09-25, al cerrar D6:* el registro llamaba «precio de muestra» a dos cosas distintas y la tasa es ésta, no el monto. **Subió de exposición el 2026-09-30 y volvió a bajar el 2026-10-01:** el panel de `/precio` publicó durante un día **2.174,62 USD por CLP 2.000.000** en su portada; el abanico de etiquetas lo sustituyó y esa cifra salió de la página. **Y volvió a subir el 2026-10-02**, ahora en la Home: el puente a `/tarifas` publica esa misma cifra, **2.174,62 USD**, porque el titular promete un número y la figura no lo enseñaba. Así que la frase «la tasa vive sólo dentro del cotizador» duró un día y hoy es falsa. **Lo que la hace menos grave de lo que suena:** la cifra sale de la misma cadena `ConfigPriceSource → convert`, no está tecleada, y aparece **en la misma página que el cotizador**, que ya la mostraba — así que el día que D7 se cierre, las dos cambian juntas y no hay nada que sincronizar a mano. **Lo que sí cambia:** el número deja de estar sólo dentro de un control que el visitante manipula y pasa a estar también en una afirmación de la página. Sigue abierta y sigue siendo el número del que cuelgan las cifras de muestra. Cowork reporta que el 30 de septiembre el USDT se cotizaba entre 969,88 y 981 pesos, lo que haría el ejemplo **entre un 5,5 % y un 6,7 % más generoso que el mercado**; **ese dato no está verificado acá** y verificarlo pide una cotización de mercado. No corre prisa —el sitio no está publicado— pero **el orden correcto es fijar la tasa antes de publicar esta página, no después**: la etiqueta «ejemplo» protege de que la cifra se lea como oferta, no de que sea inverosímil. **Se amplía el 2026-10-21 con ADR-0013, y sube de importancia:** deja de ser *una* tasa y pasa a ser **una por divisa**, doce de momento. El mecanismo es el de D21 —cada divisa se enciende definiendo su variable, y la que no la tenga **no aparece en el selector**—, así que el sitio sigue sin poder publicar un número inventado. Lo que empeora es el envejecimiento: **bolívar y peso argentino se mueven lo bastante rápido como para que una cifra de muestra quede vieja en días**, y la reserva «referencial, lo confirma tu ejecutivo» protege de que se lea como oferta, no de que sea inverosímil. El orden correcto sigue siendo fijar las tasas antes de publicar, no después | No — `ConfigPriceSource` cubre v1 | DLPay |
 | ~~D8~~ | ~~Alcance de servicios a comunicar~~ | ✅ Cerrado 2026-09-04: el amplio, alineado con los T&C publicados | Equipo DLPay |
-| ~~D16~~ | ~~Cómo llega el dinero al destinatario final~~ | ✅ Cerrado 2026-09-04: DLPay entrega **dólar digital en la billetera**; no deposita en cuentas bancarias en el extranjero. Ver §1 | Equipo DLPay |
+| ~~D16~~ | ~~Cómo llega el dinero al destinatario final~~ | ✅ Cerrado 2026-09-04: DLPay entrega **dólar digital en la billetera**; no deposita en cuentas bancarias en el extranjero. Ver §1. **Sigue cerrado el 2026-10-21 en lo que decidía —la entrega es en billetera— y ADR-0013 no lo reabre.** Lo que abre es una pregunta vecina y nueva: **qué divisa llega**, porque de las doce de la lista sólo el dólar tiene una versión digital líquida de verdad. Está como `PENDIENTE DE DECISIÓN` en §1, no acá, porque no es esta decisión | Equipo DLPay |
 | ~~D17~~ | ~~"Sin esperar días"~~ | ✅ Reformulado 2026-09-04: la rapidez se predica de la conversión y del movimiento del dólar digital, nunca de una recepción bancaria en destino | Equipo DLPay |
 | ~~D18~~ | ~~Fuente real de actividad reciente~~ | ✅ **Cerrada 2026-09-09: se descarta la funcionalidad.** El feed de «operaciones recientes» nunca salió de la investigación —cero menciones en `phase-2.5` y en `cotizador-spec`—; nació al construir `/cotizar` y se quedó sin página al eliminarla. Además chocaba con **D10**: un feed de actividad **es** una cifra de volumen, y publicarlo en continuo es una decisión de Compliance, no de ingeniería. `ActivityFeed.astro`, `lib/activity` y sus 15 tests se eliminaron (514 líneas). Si algún día se quiere prueba social, la puerta es **D10** y el punto de partida está en el historial, antes de `7577ffe` | — | — |
 | ~~D28~~ | ~~¿Necesita la franja de notificación un botón de cerrar?~~ | ✅ **Cerrada 2026-09-29: no se hace.** Y el argumento con el que estuvo aparcada **caducó** el 2026-09-25: decía que un botón costaría «el fin de cero almacenamiento y de las cuatro legales en cero JS», y la intro de marca ya gastó lo primero —escribe en `sessionStorage`— mientras lo segundo nunca estuvo en juego, porque la franja no vive en las legales y `tests/zero-js.test.ts` lo comprueba. El motivo real de no hacerlo es otro: **nadie ha pedido cerrarla**, y la franja ya se oculta sola en la página que enlaza. La mitad de accesibilidad de esta decisión NO se cierra con ella: sigue como deuda declarada en ADR-0006, con tres mecanismos de pausa ya implementados | — | — |
 | ~~D27~~ | ~~Cabeceras del host~~ | ✅ **Cerrada 2026-10-10.** Las escribe una integración del build en `dist/_headers`, que Cloudflare consume como configuración. Siete cabeceras, verificadas sobre el runtime: CSP, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options`, HSTS y —**sólo en Staging**— `X-Robots-Tag: noindex`. Esa última sale de `allowsIndexing()`, la misma llave que el `noindex` del HTML, así que no puede colarse en producción: comprobado que con `PUBLIC_ALLOW_INDEXING=true` desaparece. Cero violaciones de CSP en las siete rutas con JavaScript. **Y el CSP por hash entró el mismo día:** `script-src` ya no lleva `'unsafe-inline'`, sino el `sha256` de los seis scripts en línea, calculados sobre el HTML del propio build. `style-src` sí lo conserva, y por un motivo medido: hay **124 atributos `style="..."`** y un hash no alcanza a un atributo | — | — |
 | D9 | **Razón social**: se usa **DLPZ INCZ SpA**. Los T&C publicados dicen "DLPZ PRO SpA" (RUT 78.378.714-8). **Desde el 2026-09-30 tiene un consumidor nuevo y visible:** el aviso del banco en la portada de `/confianza` dice a quién fue la transferencia, y **ése es el dato que el cliente comprueba en su banco** —que el destinatario es una sociedad y no una persona—. Publicar ahí un nombre que no coincida con el de su cartola haría que la portada de «Confianza que se comprueba» **falle su propia prueba**. Por eso el aviso dice **«a la cuenta de DLPay»**, frase ya publicada, y no la razón social; *decisión de Sebastián del 2026-09-30*. Es más débil como comprobación y **se cambia el día que D9 cierre**: una línea en `TelefonoAvisos.astro` | **Sí — bloquea publicar los textos legales.** No se puede publicar bajo una entidad que contradiga el contrato vigente | `REQUIERE VALIDACIÓN DE COMPLIANCE` — Joaquín. **No reinvestigar.** |
 | D19 | **Correo oficial de contacto**: los T&C dicen `contacto@dlpay.cl`, la Política dice `contacto@dlpzpro.cl` | Sí, para el canal de denuncias. La web no publica ninguno hasta confirmarlo | Compliance |
-| D20 | **El alcance de los T&C ya no coincide con el servicio**: hablan de custodia y liquidaciones internacionales; el servicio real es cambio de divisas con entrega de dólar digital | Sí, antes de publicar los textos | Compliance |
+| D20 | **El alcance de los T&C ya no coincide con el servicio**: hablan de custodia y liquidaciones internacionales; el servicio real es cambio de divisas con entrega de dólar digital. **Cambia de forma el 2026-10-21 con ADR-0013, no de estado:** el servicio pasa a cubrir doce divisas, así que los T&C publicados tampoco coinciden con éste, y de otra manera. Sigue bloqueando | Sí, antes de publicar los textos | Compliance |
 | D10 | **Testimonios, cifras de clientes/volumen, logos de empresas** | No — no se publican hasta verificar | DLPay (I15) |
 | ~~D25~~ | ~~Membresía en FinteChile~~ | ✅ Cerrada 2026-09-07: socio confirmado por Sebastián. Logo publicado en el pie | — |
 | ~~D26~~ | ~~Emblema de la UAF en el pie~~ | ✅ Cerrada 2026-09-07: Sebastián afirma registro y supervisión vigentes. Se publica el emblema **y** la frase que fija su alcance. La redacción exacta —"registrada y supervisada", nunca "autorizada" ni "avalada"— queda fijada en `lib/config/alliances.ts`; ampliarla es un claim nuevo | — |
