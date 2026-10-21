@@ -42,10 +42,14 @@ export interface Term {
 
 export const glossary: readonly Term[] = [
   {
-    // Palabras de `home.ts`, respuesta «¿Qué es el "dólar digital" que recibo?».
-    term: 'Dólar digital',
+    // Palabras de `home.ts`, respuesta «¿Qué es la "divisa digital" que recibo?».
+    // Cambió de término el 2026-10-21 con ADR-0013: el sitio pasa de una divisa
+    // a doce, así que la entrada que nombraba el producto deja de ser «dólar».
+    // El mecanismo no se pierde — baja a la entrada «Stablecoin», que es donde
+    // el ADR lo deja: fuera del mensaje comercial, dentro de lo educativo.
+    term: 'Divisa digital',
     definition:
-      'Una stablecoin, USDT: una moneda digital diseñada para mantener una equivalencia 1:1 con el dólar y que puede transferirse por distintas redes. Es lo que te entregamos.',
+      'Una versión digital de la moneda, pensada para conservar su valor y moverse por redes propias en minutos, sin depender de horarios bancarios. Es lo que te entregamos.',
     href: '/blog/activos-tokenizados-que-son-y-quien-los-construye/',
     linkLabel: 'En el blog',
   },
@@ -53,7 +57,7 @@ export const glossary: readonly Term[] = [
     // Copy nuevo, aprobado el 2026-09-23. Sin nombrar redes.
     term: 'Stablecoin',
     definition:
-      'Una moneda digital diseñada para mantener su valor pegado al de otra moneda. La que usamos está pegada al dólar.',
+      'Una moneda digital diseñada para mantener su valor pegado al de otra moneda. Es la forma en que viaja lo que te entregamos.',
     href: '/blog/activos-tokenizados-que-son-y-quien-los-construye/',
     linkLabel: 'En el blog',
   },
@@ -78,7 +82,7 @@ export const glossary: readonly Term[] = [
     // misma frontera que declara `content/scope.ts`.
     term: 'Billetera',
     definition:
-      'La aplicación o cuenta digital donde recibes y guardas el dólar digital. Es tuya, tú la controlas, y es donde termina nuestra operación.',
+      'La aplicación o cuenta digital donde recibes y guardas la divisa digital. Es tuya, tú la controlas, y es donde termina nuestra operación.',
     href: '/como-funciona/',
     linkLabel: 'Cómo funciona',
   },
@@ -87,7 +91,7 @@ export const glossary: readonly Term[] = [
     // ninguna parte, y el hueco es información.
     term: 'Red',
     definition:
-      'El canal por el que viaja el dólar digital. Hay varias, y la que se usa cambia el tiempo y el costo del traspaso, no el valor de lo que recibes.',
+      'El canal por el que viaja la divisa digital. Hay varias, y la que se usa cambia el tiempo y el costo del traspaso, no el valor de lo que recibes.',
   },
   {
     // Palabras de `/confianza`, «Qué te pedimos, y por qué».

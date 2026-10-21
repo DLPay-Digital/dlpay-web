@@ -178,7 +178,7 @@ persona que cierra la operación por WhatsApp. Personas y empresas.
 
 **Alcance que la web comunica:** envío de dinero al extranjero (persona a persona, a cuenta
 propia, empresa a persona, empresa a empresa) · pagos internacionales y a proveedores ·
-tesorería en dólares · **cambio de divisas CLP ↔ la divisa de destino** como operación
+tesorería en moneda extranjera · **cambio de divisas CLP ↔ la divisa de destino** como operación
 independiente.
 
 **Enmendado el 2026-10-21 — ADR-0013: el sitio pasa de una divisa a varias.** Decía «CLP ↔ USD», y

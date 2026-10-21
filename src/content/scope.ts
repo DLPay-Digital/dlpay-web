@@ -7,6 +7,13 @@
  * Si una derivara, el sitio dejaría de coincidir consigo mismo sobre hasta dónde
  * llega el servicio, que es justo lo que no puede pasar.
  *
+ * ── Enmendado el 2026-10-21 (ADR-0013) ─────────────────────────────────────
+ *
+ * El servicio pasa de una divisa a doce. **El límite no se mueve**: se sigue
+ * entregando en una billetera, así que la bisagra, las tres opciones y la
+ * tercera como frontera se quedan exactamente donde estaban. Lo único que
+ * cambia es de qué moneda habla este archivo.
+ *
  * ── Nada de esto es copy nuevo ──────────────────────────────────────────────
  *
  * · La bisagra es la frase literal del paso 06 de `content/process.ts`.
@@ -68,7 +75,7 @@ export const options: readonly string[] = [
 export const ourLegBusiness: readonly Milestone[] = [
   { what: 'Los pesos de tu empresa', data: 'CLP' },
   { what: 'Cambiamos y verificamos', data: 'tu ejecutivo cierra' },
-  { what: 'Dólar digital en la billetera que indiques', data: 'USD' },
+  { what: 'La divisa en la billetera que indiques', data: 'la moneda del destino' },
 ];
 
 export const hingeBusiness: Hinge = {
@@ -78,7 +85,7 @@ export const hingeBusiness: Hinge = {
 
 /** Las tres salidas de una empresa, sacadas de los casos de `business.ts`. */
 export const optionsBusiness: readonly string[] = [
-  'Pagas a un proveedor que opera con dólar digital',
+  'Pagas a un proveedor que opera con divisa digital',
   'Lo mantienes como tesorería en dólares',
   'Lo conviertes a moneda local en destino',
 ];

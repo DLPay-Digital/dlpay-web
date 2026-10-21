@@ -28,17 +28,17 @@ export const businessUseCases: UseCase[] = [
   {
     title: 'Pagos a proveedores en el exterior',
     emblem: 'proveedores',
-    body: 'Conviertes a dólar digital y pagas a proveedores que operan con él, sin la cadena de bancos corresponsales ni sus horarios. Si tu proveedor sólo recibe por banco, conversémoslo antes.',
+    body: 'Conviertes a la divisa que tu proveedor necesita y le pagas en forma digital, sin la cadena de bancos corresponsales ni sus horarios. Si tu proveedor sólo recibe por banco, conversémoslo antes.',
   },
   {
-    title: 'Tesorería en dólares',
+    title: 'Tesorería en moneda extranjera',
     emblem: 'tesoreria',
-    body: 'Mantienes parte de la caja en dólar digital y la conviertes de vuelta a pesos cuando la necesitas, sin abrir una cuenta en el extranjero.',
+    body: 'Mantienes parte de la caja en la divisa que elijas y la conviertes de vuelta a pesos cuando la necesitas, sin abrir una cuenta en el extranjero.',
   },
   {
     title: 'Pagos recurrentes al exterior',
     emblem: 'recurrentes',
-    body: 'Servicios, equipos o proveedores fijos que reciben en dólar digital. Tu ejecutivo ya conoce la operación y el ida y vuelta se acorta cada mes.',
+    body: 'Servicios, equipos o proveedores fijos que reciben en divisa digital. Tu ejecutivo ya conoce la operación y el ida y vuelta se acorta cada mes.',
   },
   {
     title: 'Cambio de divisas por volumen',
@@ -82,7 +82,7 @@ export const differences: Difference[] = [
 export const checklist: readonly ChecklistItem[] = [
   { icon: 'documento', text: 'Los documentos de la sociedad y de quienes la representan legalmente' },
   { icon: 'bank', text: 'Una cuenta bancaria a nombre de la empresa' },
-  { icon: 'wallet', text: 'La dirección de la billetera donde quieres recibir el dólar digital' },
+  { icon: 'wallet', text: 'La dirección de la billetera donde quieres recibir' },
 ];
 
 /**
@@ -125,7 +125,7 @@ export const faq: readonly FaqItem[] = [
   {
     q: '¿Qué pasa si mi proveedor sólo recibe por banco?',
     concern: 'alcance',
-    a: 'Conversémoslo antes. Nosotros entregamos dólar digital en la billetera que nos indiques y no depositamos dinero en cuentas bancarias en el extranjero. Si tu proveedor sólo opera con su banco, esa última conversión es un proceso distinto que DLPay no realiza.',
+    a: 'Conversémoslo antes. Nosotros entregamos la divisa, en forma digital, en la billetera que nos indiques, y no depositamos dinero en cuentas bancarias en el extranjero. Si tu proveedor sólo opera con su banco, esa última conversión es un proceso distinto que DLPay no realiza.',
   },
   {
     q: '¿Desde qué volumen conviene?',

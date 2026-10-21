@@ -25,7 +25,7 @@ export const flow: FlowNode[] = [
   { label: 'Tú', detail: 'Transfieres en pesos desde tu banco' },
   { label: 'El banco', detail: 'Confirmamos que el dinero llegó' },
   { label: 'DLPay', detail: 'Cambiamos al precio acordado' },
-  { label: 'Tu billetera', detail: 'Recibes el dólar digital y decides qué hacer' },
+  { label: 'Tu billetera', detail: 'Recibes la divisa digital y decides qué hacer' },
 ];
 
 export const detailedSteps: DetailedStep[] = [
@@ -33,7 +33,7 @@ export const detailedSteps: DetailedStep[] = [
     n: 1,
     who: 'tú',
     title: 'Dices qué necesitas',
-    body: 'Pasar pesos a dólares o volver a pesos. Escribes el monto y ves al instante el precio referencial y cuánto recibes. No necesitas cuenta para esto.',
+    body: 'Pasar pesos a la divisa que necesites, o volver a pesos. Eliges el destino, escribes el monto y ves al instante el precio referencial y cuánto llega. No necesitas cuenta para esto.',
     time: 'ahora mismo',
   },
   {
@@ -68,11 +68,17 @@ export const detailedSteps: DetailedStep[] = [
     n: 6,
     who: 'DLPay',
     // REQUIERE VALIDACIÓN DE COMPLIANCE — el tiempo de ~5 minutos
-    title: 'Recibes el dólar digital',
-    // Cerrado el 2026-09-04: DLPay entrega dólar digital en la billetera. NO
-    // realiza depósito en cuenta bancaria en destino. El tiempo es el de nuestra
-    // operación, no el de una liquidación bancaria.
-    body: 'Enviamos el dólar digital a la billetera que nos indicaste y te confirmamos por el mismo chat. Ahí termina nuestra operación: desde ese punto decides tú.',
+    title: 'Recibes la divisa',
+    // Cerrado el 2026-09-04: DLPay entrega en la billetera. NO realiza depósito
+    // en cuenta bancaria en destino. El tiempo es el de nuestra operación, no el
+    // de una liquidación bancaria.
+    //
+    // Enmendado el 2026-10-21 (ADR-0013): la divisa ya no es siempre el dólar,
+    // y el límite no se mueve ni una palabra. La frase «Ahí termina nuestra
+    // operación: desde ese punto decides tú» la REPITE `content/scope.ts` como
+    // dato: si se toca acá, hay que tocarla allá o el sitio deja de coincidir
+    // consigo mismo sobre hasta dónde llega el servicio.
+    body: 'Enviamos la divisa, en forma digital, a la billetera que nos indicaste, y te confirmamos por el mismo chat. Ahí termina nuestra operación: desde ese punto decides tú.',
     time: '~5 min desde el pago',
   },
 ];
@@ -95,7 +101,7 @@ export interface ChecklistItem {
 export const checklist: readonly ChecklistItem[] = [
   { icon: 'documento', text: 'Tu cédula de identidad vigente' },
   { icon: 'bank', text: 'Una cuenta bancaria a tu nombre' },
-  { icon: 'wallet', text: 'La dirección de la billetera donde quieres recibir el dólar digital' },
+  { icon: 'wallet', text: 'La dirección de la billetera donde quieres recibir' },
 ];
 
 /**
@@ -126,6 +132,6 @@ export function chatLines(monto: string, tasa: string) {
     acepta: 'Sí, acepto.',
     transfiere: 'Transferencia enviada.',
     recibido: 'Fondos recibidos. Procesando...',
-    entregado: '¡Listo! Dólares digitales enviados a tu billetera.',
+    entregado: '¡Listo! Enviado a tu billetera.',
   } as const;
 }

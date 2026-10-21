@@ -83,6 +83,10 @@ export const generalFaq: readonly GeneralItem[] = [
     /*
       Los tres datos de esta respuesta los dio Sebastián el 2026-09-29: el
       recorrido (se deposita dólar digital en la plataforma y se convierte ahí),
+      y ADR-0013 NO lo cambia: acá «dólar digital» no es el nombre genérico del
+      producto —que el 2026-10-21 pasó a ser «divisa digital»— sino el dato
+      concreto de lo que esa plataforma recibe. Generalizarlo a doce divisas
+      sería menos cierto, no más moderno,
       la cuenta de destino (cualquiera registrada, del titular) y que **el mínimo
       en pesos es fijo en 500.000 y su equivalente en dólares se mueve con el
       precio del día**.

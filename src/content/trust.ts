@@ -106,11 +106,11 @@ export const honesty: { claim: string; reality: string }[] = [
   },
   {
     claim: 'No decimos que depositamos en cuentas bancarias en el extranjero',
-    reality: 'Nuestro servicio es el cambio de divisas: te entregamos dólar digital en tu billetera. Convertirlo a moneda local en destino es un proceso distinto que no realizamos.',
+    reality: 'Nuestro servicio es el cambio de divisas: te entregamos la divisa, en forma digital, en tu billetera. Convertirla a moneda local en destino es un proceso distinto que no realizamos.',
   },
   {
     claim: 'No prometemos rentabilidad ni protección del capital',
-    reality: 'El valor del dólar se mueve, y las operaciones que usan dólar digital son irreversibles una vez ejecutadas. Por eso confirmamos cada paso contigo antes de darlo.',
+    reality: 'El valor de las monedas se mueve, y las operaciones con divisa digital son irreversibles una vez ejecutadas. Por eso confirmamos cada paso contigo antes de darlo.',
   },
 ];
 
