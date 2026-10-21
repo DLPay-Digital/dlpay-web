@@ -120,7 +120,7 @@ const { forma = 'telefono' } = Astro.props;
 
 const precio = await new ConfigPriceSource().getPrice();
 const montoCLP = quoteLimits.samplePayClp;
-const cifra = formatUSD(convert('to_usd', montoCLP, precio.rate));
+const cifra = formatUSD(convert('to_foreign', montoCLP, precio.rate));
 /* **No es `site.legalName`, y es a propósito: D9.** Ver la cabecera. */
 const titular = 'la cuenta de DLPay';
 

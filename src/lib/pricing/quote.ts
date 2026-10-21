@@ -7,14 +7,34 @@
  * se comprueba con tests (CLAUDE.md §7).
  */
 
-import type { Currency, Direction, Intent, PriceReference, Quote, QuoteState } from './types.ts';
-import { formatCLP, formatUSD } from './format.ts';
+import type {
+  Currency,
+  Direction,
+  ForeignCurrency,
+  Intent,
+  PriceReference,
+  Quote,
+  QuoteState,
+} from './types.ts';
+import { DEFAULT_CURRENCY, currencyInfo } from './currencies.ts';
+import { formatCLP, formatForeign, formatUSD } from './format.ts';
 
-/** Qué se entrega y qué se recibe, según lo que la persona quiere hacer. */
-export function currenciesFor(intent: Intent): { give: Currency; get: Currency } {
+/**
+ * Qué se entrega y qué se recibe, según lo que la persona quiere hacer.
+ *
+ * La divisa es un parámetro desde ADR-0013 y **tiene valor por omisión**: las
+ * ocho piezas del sitio que hablan de dólares —las figuras de la Home, el
+ * mockup, `/tarifas`— siguen llamando a esta función con un solo argumento y
+ * siguen recibiendo exactamente lo mismo que antes. Sólo el cotizador pasa la
+ * divisa que el visitante eligió.
+ */
+export function currenciesFor(
+  intent: Intent,
+  foreign: ForeignCurrency = DEFAULT_CURRENCY
+): { give: Currency; get: Currency } {
   return intent === 'to_clp'
-    ? { give: 'USD', get: 'CLP' }
-    : { give: 'CLP', get: 'USD' };
+    ? { give: foreign, get: 'CLP' }
+    : { give: 'CLP', get: foreign };
 }
 
 export function directionFor(intent: Intent): Direction {
@@ -53,7 +73,7 @@ export function buildQuote(input: {
     payAmount: clp,
     payCurrency: 'CLP',
     getAmount: convert(intent, giveAmount, price.rate),
-    getCurrency: currenciesFor(intent).get,
+    getCurrency: currenciesFor(intent, price.currency).get,
     price,
     spreadIncluded: true,
     isReferential: true,
@@ -63,8 +83,21 @@ export function buildQuote(input: {
   };
 }
 
+/**
+ * Un monto con su moneda delante, como lo escribe el sitio.
+ *
+ * **El dólar conserva «US$» y no pasa a «USD»**, aunque las otras once usen su
+ * código. No es una inconsistencia que se coló: «US$ 2.174,62» está publicado
+ * hoy en la Home, en `/tarifas` y en el mensaje que recibe el ejecutivo, y
+ * cambiarlo habría movido cifras que ADR-0013 no tenía por qué mover. Las
+ * divisas nuevas estrenan el código porque no arrastran nada — y porque un
+ * símbolo propio para once monedas es una decisión de diseño que nadie ha
+ * tomado.
+ */
 export function formatAmount(value: number, currency: Currency): string {
-  return currency === 'CLP' ? `CLP ${formatCLP(value)}` : `US$ ${formatUSD(value)}`;
+  if (currency === 'CLP') return `CLP ${formatCLP(value)}`;
+  if (currency === 'USD') return `US$ ${formatUSD(value)}`;
+  return `${currency} ${formatForeign(value, currencyInfo(currency).decimals)}`;
 }
 
 /**
@@ -76,7 +109,7 @@ export function formatAmount(value: number, currency: Currency): string {
  */
 export function whatsappMessage(quote: Quote, giveAmount: number): string {
   const { intent, state, price } = quote;
-  const { give, get } = currenciesFor(intent);
+  const { give, get } = currenciesFor(intent, price.currency);
 
   if (state === 'unavailable' || state === 'market_moving') {
     return 'Hola, quiero cotizar una operación. El cotizador no me está mostrando precio ahora.';
@@ -89,8 +122,15 @@ export function whatsappMessage(quote: Quote, giveAmount: number): string {
     return 'Hola, quiero cotizar una operación de cambio de divisas.';
   }
 
+  // El nombre en plural sale del catálogo y no de una regla: «guaraníes» y
+  // «bolívares» no se derivan con un sufijo, y el ejecutivo lee este mensaje
+  // tal como llega.
+  const destino = currencyInfo(
+    (intent === 'to_clp' ? give : get) as ForeignCurrency
+  ).plural;
+
   const what: Record<Intent, string> = {
-    to_usd: `convertir ${formatAmount(giveAmount, give)} a dólares`,
+    to_foreign: `convertir ${formatAmount(giveAmount, give)} a ${destino}`,
     to_clp: `convertir ${formatAmount(giveAmount, give)} a pesos`,
   };
 

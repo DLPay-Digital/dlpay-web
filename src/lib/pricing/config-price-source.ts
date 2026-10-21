@@ -8,20 +8,50 @@
  */
 
 import type { PriceReference, PriceSource } from './types.ts';
+import { DEFAULT_CURRENCY, type ForeignCurrency, rateFor } from './currencies.ts';
 
 const env = import.meta.env;
 
-function readNumber(value: unknown, fallback: number): number {
-  const parsed = typeof value === 'string' ? Number(value) : Number.NaN;
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-}
+/** El valor por omisión del dólar, que es la tasa que D7 tiene abierta. */
+export const DEFAULT_USD_RATE = 919.7;
 
+/**
+ * Desde ADR-0013 recibe la divisa.
+ *
+ * **Sin argumentos sigue siendo exactamente lo que era**: el dólar, a la tasa de
+ * `PUBLIC_QUOTE_SAMPLE_RATE`. Las ocho piezas del sitio que la instancian así no
+ * cambiaron una línea y publican las mismas cifras.
+ *
+ * Una divisa sin tasa configurada **no cae a un valor por defecto**: lanza. Es
+ * deliberado y es la mitad del mecanismo de D21 —la otra mitad es
+ * `availableCurrencies`, que impide que el selector la ofrezca—. Un valor por
+ * defecto inventado para el euro sería una cifra que nadie aprobó publicada en
+ * la portada del sitio, que es justo lo que §3 y §7 prohíben; que el build se
+ * caiga es infinitamente preferible.
+ */
 export class ConfigPriceSource implements PriceSource {
   readonly label: string;
   readonly #rate: number;
+  readonly #currency: ForeignCurrency;
 
-  constructor(rate?: number, label?: string) {
-    this.#rate = rate ?? readNumber(env.PUBLIC_QUOTE_SAMPLE_RATE, 919.7);
+  constructor(currency: ForeignCurrency = DEFAULT_CURRENCY, rate?: number, label?: string) {
+    this.#currency = currency;
+    const configured =
+      rate ??
+      rateFor(
+        currency,
+        env,
+        currency === DEFAULT_CURRENCY ? DEFAULT_USD_RATE : undefined
+      );
+
+    if (configured === undefined) {
+      throw new Error(
+        `Sin tasa de muestra para ${currency}. ` +
+          'Defínela en el entorno o no ofrezcas esa divisa (ADR-0013, D7).'
+      );
+    }
+    this.#rate = configured;
+
     this.label =
       label ??
       (typeof env.PUBLIC_QUOTE_SOURCE_LABEL === 'string' &&
@@ -33,7 +63,8 @@ export class ConfigPriceSource implements PriceSource {
   async getPrice(): Promise<PriceReference> {
     return {
       rate: this.#rate,
-      pair: 'USD/CLP',
+      currency: this.#currency,
+      pair: `${this.#currency}/CLP`,
       source: this.label,
       asOf: new Date(),
     };

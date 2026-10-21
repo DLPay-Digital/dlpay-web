@@ -182,7 +182,7 @@ tesorería en moneda extranjera · **cambio de divisas CLP ↔ la divisa de dest
 independiente.
 
 **Enmendado el 2026-10-21 — ADR-0013: el sitio pasa de una divisa a varias.** Decía «CLP ↔ USD», y
-el servicio pasa a cubrir doce divisas para catorce destinos: USD (Estados Unidos y **Ecuador**,
+el servicio pasa a cubrir doce divisas para trece destinos: USD (Estados Unidos y **Ecuador**,
 que está dolarizado y no añade moneda), EUR, CNY, JPY, VES, COP, PEN, ARS, BRL, UYU, PYG y BOB. La
 lista es abierta. **El dólar deja de ser el producto y pasa a ser una divisa más.**
 

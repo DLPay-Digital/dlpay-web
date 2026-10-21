@@ -77,7 +77,7 @@ import { convert, formatAmount } from '../lib/pricing/quote.ts';
 import { quoteLimits } from '../lib/config/site.ts';
 
 const price = await new ConfigPriceSource().getPrice();
-const recibes = formatAmount(convert('to_usd', quoteLimits.samplePayClp, price.rate), 'USD').replace('US$ ', '');
+const recibes = formatAmount(convert('to_foreign', quoteLimits.samplePayClp, price.rate), 'USD').replace('US$ ', '');
 ---
 <div class="ft">
   <div class="llave" data-enter></div>

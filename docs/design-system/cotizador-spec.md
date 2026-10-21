@@ -21,8 +21,24 @@ confirma el precio final y coordina el destino`.
 
 | Intención | Entregas | Recibes | Por qué existe |
 |---|---|---|---|
-| `to_usd` — Convertir a dólares | CLP | USD | El caso principal |
-| `to_clp` — Convertir a pesos | USD | CLP | La vuelta |
+| `to_foreign` — Convertir a otra moneda | CLP | la divisa de destino | El caso principal |
+| `to_clp` — Convertir a pesos | la divisa | CLP | La vuelta |
+
+**Enmienda del 2026-10-21 — ADR-0013: el cotizador tiene divisa de destino.** La pregunta que
+responde deja de ser «cuántos dólares recibo» y pasa a ser **«cuánto llega»**, en la moneda del
+destino. `to_usd` pasa a llamarse `to_foreign`: es un renombre, la aritmética no cambia, y la
+divisa viaja aparte de la intención.
+
+**Un tercer control, y sólo cuando hace falta.** Entre la intención y los montos aparece «¿A qué
+moneda?», un desplegable con las divisas que tengan **tasa de muestra configurada**. Con una sola
+—que es el estado de hoy, con D7 abierta— **el control no se dibuja** y la intención vuelve a
+nombrarla: «Convertir a dólares», exactamente como esta tarjeta se ve desde que existe. Un
+desplegable de una opción no es una elección.
+
+**Y eso deja caduco el motivo de la enmienda de abajo.** `send_abroad` se retiró porque «hacía la
+misma aritmética que `to_usd`». Con doce divisas ya no la hace. No se repone automáticamente —la
+intención y la divisa pueden ser un control o dos—, pero quien lea el párrafo siguiente debe saber
+que su razón venció.
 
 **Enmienda del 2026-09-14.** Había una tercera, `send_abroad` — «Enviar al extranjero» —, retirada
 a petición de Sebastián. Hacía exactamente la misma aritmética que `to_usd` y en el selector las

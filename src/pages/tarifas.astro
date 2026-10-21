@@ -167,7 +167,7 @@ const minPay = quoteLimits.minPayClp;
 /* Y la muestra del cotizador en miniatura, por el mismo motivo: es el monto que
    el cotizador carga al abrir, convertido con el precio del build. */
 const samplePay = quoteLimits.samplePayClp;
-const sampleGet = convert('to_usd', samplePay, price.rate);
+const sampleGet = convert('to_foreign', samplePay, price.rate);
 
 /*
   Este enlace vive DENTRO del aviso «Tabla de tarifas: en publicación», así que

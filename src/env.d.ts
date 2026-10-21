@@ -12,7 +12,24 @@ interface ImportMetaEnv {
    */
   readonly PUBLIC_ALLOW_INDEXING?: string;
   readonly PUBLIC_WHATSAPP_NUMBER?: string;
+  /** Tasa de muestra del DÓLAR, en CLP por 1 USD. El nombre es histórico: es
+      la variable que D7 nombra y que media docena de documentos citan, así que
+      no pasó a `PUBLIC_QUOTE_RATE_USD` al llegar las otras once (ADR-0013). */
   readonly PUBLIC_QUOTE_SAMPLE_RATE?: string;
+  /** Las otras once divisas, en CLP por 1 unidad. **Sin definir, la divisa no
+      existe para el sitio**: no aparece en el selector del cotizador y nadie
+      puede publicar un número que no se aprobó (ADR-0013, D7). */
+  readonly PUBLIC_QUOTE_RATE_EUR?: string;
+  readonly PUBLIC_QUOTE_RATE_ARS?: string;
+  readonly PUBLIC_QUOTE_RATE_BOB?: string;
+  readonly PUBLIC_QUOTE_RATE_BRL?: string;
+  readonly PUBLIC_QUOTE_RATE_CNY?: string;
+  readonly PUBLIC_QUOTE_RATE_COP?: string;
+  readonly PUBLIC_QUOTE_RATE_JPY?: string;
+  readonly PUBLIC_QUOTE_RATE_PEN?: string;
+  readonly PUBLIC_QUOTE_RATE_PYG?: string;
+  readonly PUBLIC_QUOTE_RATE_UYU?: string;
+  readonly PUBLIC_QUOTE_RATE_VES?: string;
   readonly PUBLIC_QUOTE_SOURCE_LABEL?: string;
   readonly PUBLIC_QUOTE_MIN_CLP?: string;
   readonly PUBLIC_QUOTE_MAX_CLP?: string;

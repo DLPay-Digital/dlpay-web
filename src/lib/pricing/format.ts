@@ -21,6 +21,24 @@ export function formatUSD(value: number): string {
   }).format(value);
 }
 
+/**
+ * Un monto en divisa extranjera, con los decimales que esa moneda usa.
+ *
+ * Generaliza a `formatUSD`, que se queda: es la que usan la calculadora del
+ * spread y media docena de figuras que hablan de dólares y sólo de dólares, y
+ * cambiarlas por ésta habría sido tocar piezas que ADR-0013 no toca.
+ *
+ * Los decimales los trae el catálogo (`currencies.ts`) y no esta función:
+ * escribir «1.250,00 yenes» es escribir una fracción que esa moneda no usa, y
+ * en una cifra de dinero eso se lee como precisión falsa.
+ */
+export function formatForeign(value: number, decimals: 0 | 2): string {
+  return new Intl.NumberFormat(LOCALE, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value);
+}
+
 /** Precio con 2 decimales: 919,70 */
 export function formatRate(value: number): string {
   return new Intl.NumberFormat(LOCALE, {

@@ -12,8 +12,13 @@
  * Es la ÚNICA isla interactiva del sitio (ADR-0002 §2). El precio se resuelve
  * en build desde ConfigPriceSource y viaja al cliente en data-attributes.
  */
-import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
-import { formatCLP, formatRate, formatUSD } from '../lib/pricing/format.ts';
+import { ConfigPriceSource, DEFAULT_USD_RATE } from '../lib/pricing/config-price-source.ts';
+import {
+  DEFAULT_CURRENCY,
+  availableCurrencies,
+  currencyInfo,
+} from '../lib/pricing/currencies.ts';
+import { formatCLP, formatForeign, formatRate } from '../lib/pricing/format.ts';
 import { buildQuote, whatsappUrl } from '../lib/pricing/quote.ts';
 import { contact, platform, quoteLimits } from '../lib/config/site.ts';
 
@@ -23,7 +28,30 @@ interface Props {
 }
 const { variant = 'floating' } = Astro.props;
 
-const price = await new ConfigPriceSource().getPrice();
+/**
+ * Las divisas que el sitio puede ofrecer HOY (ADR-0013).
+ *
+ * Son las que tienen tasa de muestra definida. Mientras D7 siga abierta eso es
+ * sólo el dólar, y entonces el cotizador se dibuja **exactamente como antes**:
+ * sin selector, con «Convertir a dólares» en la intención. Un desplegable con
+ * una sola opción no es una elección, es un adorno que no hace nada.
+ *
+ * Cada divisa nueva entra definiendo su variable —`PUBLIC_QUOTE_RATE_EUR` y
+ * compañía—, sin tocar una línea de este archivo. Es el mecanismo con el que se
+ * cerró D21.
+ */
+const divisas = availableCurrencies(import.meta.env, DEFAULT_USD_RATE);
+const unaSola = divisas.length === 1;
+
+const price = await new ConfigPriceSource(DEFAULT_CURRENCY).getPrice();
+
+/** Lo que la isla necesita de cada divisa: código, tasa, decimales y plural. */
+const tasas = await Promise.all(
+  divisas.map(async (d) => {
+    const p = await new ConfigPriceSource(d.code).getPrice();
+    return { c: d.code, r: p.rate, d: d.decimals, p: d.plural };
+  })
+);
 
 /* Límites y monto inicial: UN solo origen para toda la web (D24). Los
    pendientes D6 y D21 están anotados donde vive el valor, en environment.ts. */
@@ -36,7 +64,7 @@ const initialGet = initialPay / price.rate;
  * ejemplo escrito; con JavaScript se actualiza a medida que el usuario tipea.
  */
 const initialQuote = buildQuote({
-  intent: 'to_usd',
+  intent: 'to_foreign',
   giveAmount: initialPay,
   price,
   minPay,
@@ -44,8 +72,14 @@ const initialQuote = buildQuote({
 });
 const wa = whatsappUrl(contact.whatsappNumber, initialQuote, initialPay);
 
+/* Con una sola divisa la intención la nombra —«Convertir a dólares»—, que es
+   lo que esta tarjeta dice desde que existe. Con varias no puede nombrarla,
+   porque la elige el visitante dos campos más abajo. */
 const intents = [
-  { value: 'to_usd', label: 'Convertir a dólares' },
+  {
+    value: 'to_foreign',
+    label: unaSola ? `Convertir a ${divisas[0]!.plural}` : 'Convertir a otra moneda',
+  },
   { value: 'to_clp', label: 'Convertir a pesos' },
 ];
 ---
@@ -58,6 +92,7 @@ const intents = [
   data-max={maxPay ?? ''}
   data-wa={contact.whatsappNumber}
   data-source={price.source}
+  data-divisas={JSON.stringify(tasas)}
   aria-labelledby="quoter-title"
 >
   <h2 class="sr-only" id="quoter-title">Cotizador de divisas</h2>
@@ -73,6 +108,21 @@ const intents = [
       ))}
     </div>
   </fieldset>
+
+  {!unaSola && (
+    <div class="field">
+      <label class="label" for="divisa-select">¿A qué moneda?</label>
+      <div class="input-box">
+        <select id="divisa-select" class="divisa" data-divisa>
+          {divisas.map((d) => (
+            <option value={d.code} selected={d.code === DEFAULT_CURRENCY}>
+              {d.name.charAt(0).toUpperCase() + d.name.slice(1)} · {d.code} ({d.destinations.join(', ')})
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  )}
 
   <div class="field">
     <label class="label" for="give-input">Conviertes</label>
@@ -99,7 +149,7 @@ const intents = [
         type="text"
         inputmode="decimal"
         autocomplete="off"
-        value={formatUSD(initialGet)}
+        value={formatForeign(initialGet, currencyInfo(DEFAULT_CURRENCY).decimals)}
       />
       <span class="currency" data-cur-get>USD</span>
     </div>
@@ -197,7 +247,7 @@ const intents = [
   <div class="dock-in">
     <span class="dock-fig">
       <span class="dock-label" data-dock-label>Recibes</span>
-      <span class="dock-amount num" data-dock-amount>{formatUSD(initialGet)}</span>
+      <span class="dock-amount num" data-dock-amount>{formatForeign(initialGet, currencyInfo(DEFAULT_CURRENCY).decimals)}</span>
     </span>
     <a class="dock-cta" href={wa} target="_blank" rel="noopener" data-dock-cta>
       Continuar
@@ -318,6 +368,27 @@ const intents = [
     width: 100%;
   }
   .amount:focus { outline: none; }
+
+  /* El selector de divisa (ADR-0013). Reutiliza la caja de los montos para que
+     los tres campos se lean como la misma familia, y nada más: el alto de 44 px
+     lo da el `padding`, que es el mismo de `.amount`, y así cumple el mínimo de
+     target táctil del Design System §4.7 sin una regla propia.
+
+     `appearance: none` quitaría la flecha nativa y obligaría a dibujar una:
+     se deja la del sistema a propósito — es la señal de que esto se despliega,
+     y dibujarla sería tocar un control que el navegador ya resuelve. */
+  .divisa {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    padding: var(--s-3) 0;
+    font: inherit;
+    font-size: var(--t-body);
+    color: var(--ink);
+  }
+  .divisa:focus { outline: none; }
   .currency {
     flex: none;
     font-size: var(--t-body-sm);
@@ -526,7 +597,7 @@ const intents = [
 </style>
 
 <script>
-  import { formatCLP, formatUSD, parseAmount } from '../lib/pricing/format.ts';
+  import { formatCLP, formatForeign, parseAmount } from '../lib/pricing/format.ts';
   import {
     buildQuote,
     clpAmount,
@@ -536,10 +607,18 @@ const intents = [
     whatsappUrl,
   } from '../lib/pricing/quote.ts';
   import type { Currency, Intent } from '../lib/pricing/types.ts';
+  import type { IslandCurrency } from '../lib/pricing/currencies.ts';
 
   const root = document.querySelector<HTMLElement>('#cotizador');
   if (root) {
-    const rate = Number(root.dataset.rate);
+    const divisas: IslandCurrency[] = JSON.parse(root.dataset.divisas ?? '[]');
+    let divisa: IslandCurrency = divisas[0] ?? {
+      c: 'USD',
+      r: Number(root.dataset.rate),
+      d: 2,
+      p: 'dólares',
+    };
+    let rate = divisa.r;
     const minPay = Number(root.dataset.min);
     const maxRaw = Number(root.dataset.max);
     const maxPay = Number.isFinite(maxRaw) && maxRaw > 0 ? maxRaw : undefined;
@@ -559,13 +638,17 @@ const intents = [
     const dockAmount = dock?.querySelector<HTMLElement>('[data-dock-amount]');
     const dockCta = dock?.querySelector<HTMLAnchorElement>('[data-dock-cta]');
     const intentInputs = root.querySelectorAll<HTMLInputElement>('input[name="intent"]');
+    const divisaSel = root.querySelector<HTMLSelectElement>('[data-divisa]');
 
+    /* Los decimales los trae la divisa elegida: «1.250,00 yenes» escribiría una
+       fracción que esa moneda no usa, y en dinero eso se lee como precisión
+       falsa. El peso chileno nunca lleva decimales. */
     const fmt = (value: number, currency: Currency): string =>
-      currency === 'CLP' ? formatCLP(value) : formatUSD(value);
+      currency === 'CLP' ? formatCLP(value) : formatForeign(value, divisa.d);
 
-    const price = { rate, pair: 'USD/CLP' as const, source, asOf: new Date() };
+    let price = { rate, currency: divisa.c, pair: `${divisa.c}/CLP` as const, source, asOf: new Date() };
 
-    let intent: Intent = 'to_usd';
+    let intent: Intent = 'to_foreign';
     let giveAmount = parseAmount(giveInput.value);
     let lastShown = '';
 
@@ -575,7 +658,7 @@ const intents = [
     const received = (): number => convert(intent, giveAmount, rate);
 
     const render = (): void => {
-      const { give, get } = currenciesFor(intent);
+      const { give, get } = currenciesFor(intent, divisa.c);
       const quote = buildQuote({
         intent,
         giveAmount,
@@ -656,15 +739,15 @@ const intents = [
 
     giveInput.addEventListener('input', () => {
       giveAmount = parseAmount(giveInput.value);
-      getInput.value = fmt(received(), currenciesFor(intent).get);
+      getInput.value = fmt(received(), currenciesFor(intent, divisa.c).get);
       render();
     });
     giveInput.addEventListener('blur', () => {
-      giveInput.value = fmt(giveAmount, currenciesFor(intent).give);
+      giveInput.value = fmt(giveAmount, currenciesFor(intent, divisa.c).give);
     });
 
     getInput.addEventListener('input', () => {
-      const { give } = currenciesFor(intent);
+      const { give } = currenciesFor(intent, divisa.c);
       const target = parseAmount(getInput.value);
       // La inversa de `convert`, con la misma guarda de tasa.
       giveAmount = rate > 0 ? (give === 'CLP' ? target * rate : target / rate) : 0;
@@ -672,7 +755,26 @@ const intents = [
       render();
     });
     getInput.addEventListener('blur', () => {
-      getInput.value = fmt(received(), currenciesFor(intent).get);
+      getInput.value = fmt(received(), currenciesFor(intent, divisa.c).get);
+    });
+
+    /* Al cambiar de divisa se conserva el monto en PESOS, igual que al cambiar
+       de intención y por el mismo motivo: el cliente piensa la operación en lo
+       que pone, no en lo que recibe. */
+    divisaSel?.addEventListener('change', () => {
+      const clpBefore = clpAmount(intent, giveAmount, rate);
+      const elegida = divisas.find((d) => d.c === divisaSel.value);
+      if (!elegida) return;
+      divisa = elegida;
+      rate = divisa.r;
+      price = { rate, currency: divisa.c, pair: `${divisa.c}/CLP` as const, source, asOf: new Date() };
+      const { give, get } = currenciesFor(intent, divisa.c);
+      giveAmount = give === 'CLP' ? clpBefore : rate > 0 ? clpBefore / rate : 0;
+      giveInput.value = fmt(giveAmount, give);
+      getInput.value = fmt(received(), get);
+      settle(giveInput);
+      settle(getInput);
+      render();
     });
 
     // Al cambiar de intención se conserva el monto en PESOS, que es como el
@@ -681,7 +783,7 @@ const intents = [
       input.addEventListener('change', () => {
         const clpBefore = clpAmount(intent, giveAmount, rate);
         intent = input.value as Intent;
-        const { give, get } = currenciesFor(intent);
+        const { give, get } = currenciesFor(intent, divisa.c);
         giveAmount = give === 'CLP' ? clpBefore : rate > 0 ? clpBefore / rate : 0;
         giveInput.value = fmt(giveAmount, give);
         getInput.value = fmt(received(), get);

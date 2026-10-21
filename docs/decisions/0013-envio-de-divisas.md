@@ -97,7 +97,7 @@ de pricing real ni una fórmula de spread.
 
 ## Las divisas, y quién atiende
 
-**Catorce destinos, doce divisas** *(Sebastián, 2026-10-21; la lista es abierta — «etc.»)*:
+**Trece destinos, doce divisas** *(Sebastián, 2026-10-21; la lista es abierta — «etc.»)*:
 
 | destino | divisa | destino | divisa |
 |---|---|---|---|

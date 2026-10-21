@@ -7,6 +7,9 @@
  * distribuida, ni cola. Un módulo, una interfaz, una config.
  */
 
+import type { Currency, ForeignCurrency } from './currencies.ts';
+export type { Currency, ForeignCurrency };
+
 export type Direction = 'buy' | 'sell';
 
 /**
@@ -19,11 +22,17 @@ export type Direction = 'buy' | 'sell';
  * mensaje de WhatsApp distinto —«quiero enviar X al extranjero»—, y eso es lo
  * único que se pierde: el ejecutivo ya no recibe esa intención escrita y, si le
  * importa, la pregunta. Está en el historial si se quiere reponer.
+ *
+ * **`to_usd` pasó a llamarse `to_foreign` el 2026-10-21 (ADR-0013)**, porque el
+ * destino dejó de ser siempre el dólar. Es un renombre, no un cambio de
+ * comportamiento: la aritmética es la misma y la divisa viaja aparte.
+ *
+ * Y con eso **caduca el motivo por el que `send_abroad` se retiró**: hacía «la
+ * misma aritmética» porque sólo había una divisa. Con doce ya no la hace. No se
+ * repone automáticamente —la intención y la divisa pueden ser un control o
+ * dos—, pero quien lea el párrafo de arriba debe saber que su razón venció.
  */
-export type Intent = 'to_usd' | 'to_clp';
-
-/** La moneda que ve el usuario. El dólar se entrega como dólar digital. */
-export type Currency = 'CLP' | 'USD';
+export type Intent = 'to_foreign' | 'to_clp';
 
 /**
  * Los estados de una cotización.
@@ -62,9 +71,12 @@ export type QuoteState =
   | 'unavailable';
 
 export interface PriceReference {
-  /** CLP por 1 dólar. */
+  /** CLP por 1 unidad de `currency`. */
   rate: number;
-  pair: 'USD/CLP';
+  /** La divisa de destino a la que se refiere esta tasa. */
+  currency: ForeignCurrency;
+  /** `USD/CLP`, `EUR/CLP`… Se deriva de `currency`, nunca se escribe a mano. */
+  pair: `${ForeignCurrency}/CLP`;
   /** Etiqueta legible para mostrar junto al dato. */
   source: string;
   asOf: Date;
