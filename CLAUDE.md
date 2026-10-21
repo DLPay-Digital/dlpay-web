@@ -81,8 +81,9 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   `npm run build` en verde, fuentes T-C auto-hospedadas, tokens del Design System en código, y la
   cadena `PriceSource → Quote` en pie. Ver `docs/development.md`.
   **Sobre el JavaScript, que ya no es cero:** el esqueleto se levantó sin una sola línea en el
-  cliente y así siguen las cuatro legales y la 404. Hoy la Home envía **50,3 KB**: el cotizador
-  (4,5 KB), el Motion System (0,5 KB), el globo (40,5 KB, casi todo coordenadas) y la intro de marca
+  cliente y así siguen las cuatro legales y la 404. Hoy la Home envía **53,1 KB**: el cotizador
+  (6,5 KB, **2,1 más desde el 2026-10-21** porque el catálogo de divisas de ADR-0013 viaja con él),
+  el Motion System (0,5 KB), el globo (40,5 KB, casi todo coordenadas) y la intro de marca
   (6,3 KB). Las excepciones están autorizadas y acotadas —ADR-0009, ADR-0008 y ADR-0010—; el
   inventario exacto, por página, está en `docs/arquitectura-produccion.md` §1.1.
   **Que las cinco páginas en cero sigan en cero ya no depende de la memoria de nadie:**

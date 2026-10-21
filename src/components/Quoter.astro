@@ -45,11 +45,11 @@ const unaSola = divisas.length === 1;
 
 const price = await new ConfigPriceSource(DEFAULT_CURRENCY).getPrice();
 
-/** Lo que la isla necesita de cada divisa: código, tasa, decimales y plural. */
+/** Lo único que el catálogo no sabe y el build sí: la tasa de cada divisa. */
 const tasas = await Promise.all(
   divisas.map(async (d) => {
     const p = await new ConfigPriceSource(d.code).getPrice();
-    return { c: d.code, r: p.rate, d: d.decimals, p: d.plural };
+    return { c: d.code, r: p.rate };
   })
 );
 
@@ -607,17 +607,12 @@ const intents = [
     whatsappUrl,
   } from '../lib/pricing/quote.ts';
   import type { Currency, Intent } from '../lib/pricing/types.ts';
-  import type { IslandCurrency } from '../lib/pricing/currencies.ts';
+  import { currencyInfo, type IslandCurrency } from '../lib/pricing/currencies.ts';
 
   const root = document.querySelector<HTMLElement>('#cotizador');
   if (root) {
     const divisas: IslandCurrency[] = JSON.parse(root.dataset.divisas ?? '[]');
-    let divisa: IslandCurrency = divisas[0] ?? {
-      c: 'USD',
-      r: Number(root.dataset.rate),
-      d: 2,
-      p: 'dólares',
-    };
+    let divisa: IslandCurrency = divisas[0] ?? { c: 'USD', r: Number(root.dataset.rate) };
     let rate = divisa.r;
     const minPay = Number(root.dataset.min);
     const maxRaw = Number(root.dataset.max);
@@ -644,7 +639,7 @@ const intents = [
        fracción que esa moneda no usa, y en dinero eso se lee como precisión
        falsa. El peso chileno nunca lleva decimales. */
     const fmt = (value: number, currency: Currency): string =>
-      currency === 'CLP' ? formatCLP(value) : formatForeign(value, divisa.d);
+      currency === 'CLP' ? formatCLP(value) : formatForeign(value, currencyInfo(divisa.c).decimals);
 
     let price = { rate, currency: divisa.c, pair: `${divisa.c}/CLP` as const, source, asOf: new Date() };
 

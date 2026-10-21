@@ -572,6 +572,52 @@ a lo que sólo se vería distinto; aplica a lo que taparía el resto.
 
 ---
 
+### 4.18 Un catálogo pequeño es la forma de no publicar un número inventado  ·  *2026-10-21*
+
+**El problema.** ADR-0013 lleva el sitio de una divisa a doce, y once de ellas no tienen precio:
+D7 sigue abierta. La tentación evidente —poner valores de muestra «provisionales» para que el
+selector se vea lleno— es exactamente lo que `CLAUDE.md` §3 y §7 prohíben, y el riesgo no es
+teórico: la tasa del dólar que el sitio publica hoy puede estar entre un 5,5 % y un 6,7 % lejos
+del mercado, y lleva meses ahí sin que nadie lo note.
+
+**Lo que se hizo.** El catálogo (`lib/pricing/currencies.ts`) no guarda ni un precio: guarda el
+**nombre de la variable de entorno** donde vive el de cada divisa. `availableCurrencies` devuelve
+sólo las que tengan la suya definida, y el selector se dibuja con esa lista. **Una divisa sin tasa
+no se puede ofrecer, porque no existe para el sitio.** Y `ConfigPriceSource` **lanza** en vez de
+caer a un valor por defecto: un build caído es infinitamente preferible a un euro inventado en la
+portada.
+
+Es el mecanismo con el que se cerró **D21** —la maquinaria entera, encendida por una variable— y
+es la segunda vez que paga. La diferencia es qué protege: allá, que no se publicara un tope que
+nadie había decidido; acá, que no se publique un precio que nadie aprobó.
+
+**Lo reutilizable.** *Cuando un dato lo decide otro —un precio, un tope, un nombre legal—, la
+forma de no inventarlo no es acordarse de no hacerlo: es que el código no pueda.* La diferencia
+entre «no pongas una cifra falsa» y «sin la variable, la opción no se dibuja» es que la segunda
+sigue valiendo dentro de seis meses y con otra persona escribiendo.
+
+**Y un efecto de borde que conviene mirar.** Con una sola divisa configurada —el estado de hoy—
+el selector **no se dibuja**, y el cotizador se ve exactamente como antes. Eso es correcto, y a la
+vez significa que **el trabajo entero es invisible hasta que Sebastián fije la primera tasa**. Una
+pieza que no se ve no está terminada a medias: está esperando un dato que no es de ingeniería.
+
+### 4.19 Un test de contenido encontró un error de recuento que tres documentos ya repetían  ·  *2026-10-21*
+
+Escribí «catorce destinos, doce divisas» en el ADR, en `CLAUDE.md`, en el catálogo y en
+`.env.example` antes de contar. La lista de Sebastián tiene **trece**. Lo detectó
+`assert.equal(destinos.length, 13)`, un test que en principio no comprueba nada interesante —¿quién
+necesita verificar cuántos elementos tiene una lista que acaba de escribir?—.
+
+**Por qué no lo cazó nada más.** Ni `astro check` ni el build ni la revisión miran si una prosa
+coincide con una estructura de datos: el número vivía en cuatro textos y la lista en un array, y
+nada los ataba. Es la misma familia de fallo que §4.15 —*una lista de consumidores es un recuento
+con otro nombre*— y que el recuento de documentación desfasado del §5.
+
+**Lo reutilizable.** *Cuando un documento afirma un número sobre un dato que el código tiene, ese
+número es un test.* Cuesta una línea y es la única forma de que la prosa no se despegue en
+silencio. El corolario incómodo: el error estaba en cuatro sitios **porque lo copié de mí mismo**,
+y copiar la propia afirmación se siente como confirmarla.
+
 ## 5. Errores propios, registrados
 
 Se anotan porque un registro que sólo cuenta aciertos no sirve para nada.
@@ -583,6 +629,8 @@ Se anotan porque un registro que sólo cuenta aciertos no sirve para nada.
 | `--verde-deep` no cumplía AA sobre `--papel-2`: nueve rótulos por debajo del piso | Cowork, y un noveno lo encontré yo al verificar |
 | `.sr-only` definido cuatro veces con **tres** implementaciones, una sin `white-space` | Cowork lo reportó como dos; al abrirlo eran tres |
 | La alternancia de superficies de `/empresas` rota al integrar el eje | Cowork, verificando mi integración |
+| «Catorce destinos» escrito en cuatro sitios cuando la lista tiene trece | Un test propio, al escribirlo (§4.19) |
+| Un comentario afirmaba que el catálogo de divisas no viajaba al navegador, y sí viajaba | Medir la isla antes y después: 4 528 → 6 673 B |
 | El bloque `PENDIENTE DE ASSET` del artículo de la Fed revivió en una actualización | Detectado al ir a ejecutarlo |
 | El recuento de marcas punteadas del DS §6.2 llevaba un día desfasado: `.et-torsion` entró con el abanico el 2026-10-01 | Al rehacer el barrido para integrar `/empresas` |
 | «Nada está roto» en el relevo de `/empresas`: el piso de 40 px SÍ se rompía, a 37,99 entre 417 y 419 px | Cowork, barriendo cada 1 px donde yo barrí cada 20 |

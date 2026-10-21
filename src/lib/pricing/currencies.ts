@@ -80,20 +80,27 @@ export interface CurrencyInfo {
 }
 
 /**
- * Lo mínimo de una divisa que la isla del cotizador necesita: código, tasa,
- * decimales y plural.
+ * Lo que la isla del cotizador recibe del servidor por cada divisa: **el código
+ * y su tasa, y nada más**.
  *
- * Viaja al navegador en un `data-attribute` y no importando este catálogo: doce
- * entradas con sus destinos no tienen por qué cruzar para que la aritmética
- * funcione. Vive acá, y no dentro del componente, porque es la forma de un dato
- * de este módulo — y porque un `interface` declarado dentro de un `<script>` de
- * Astro deja al comprobador sin ver el `Props` del propio componente.
+ * La primera versión mandaba también los decimales y el plural, y estaba de
+ * más: `quote.ts` importa este catálogo para redactar el mensaje de WhatsApp,
+ * así que **el catálogo ya viaja al navegador** y mandar esos dos campos aparte
+ * era publicar el mismo dato dos veces. Medido: la isla pasó de 4.528 a 6.678
+ * bytes al entrar el multidivisa, y esos 2,1 KB son el catálogo — quitarlos
+ * pedía sacar `currencyInfo` de `quote.ts`, que es lo que garantiza que la web
+ * y el chat digan la misma palabra.
+ *
+ * La tasa, en cambio, no está acá y no puede estarlo: vive en el entorno
+ * (ADR-0013, D7) y sólo el build la conoce.
+ *
+ * Vive en este módulo, y no dentro del componente, porque es la forma de un
+ * dato de acá — y porque un `interface` declarado en el `<script>` de un
+ * `.astro` deja al comprobador sin ver el `Props` del propio componente.
  */
 export interface IslandCurrency {
   c: ForeignCurrency;
   r: number;
-  d: 0 | 2;
-  p: string;
 }
 
 export const DEFAULT_CURRENCY: ForeignCurrency = 'USD';
