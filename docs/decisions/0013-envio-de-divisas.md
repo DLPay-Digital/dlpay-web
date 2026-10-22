@@ -1,6 +1,9 @@
 # ADR-0013 — De «dólar digital» a «envío de divisas»: el sitio cambia de enfoque, el límite no
 
-- **Estado:** Aceptada — 2026-10-21
+- **Estado:** Aceptada — 2026-10-21. **Su punto 2 lo supera [ADR-0014](0014-entrega-en-moneda-local.md)
+  el 2026-10-22**: el límite del servicio SÍ se movió, y el `PENDIENTE DE DECISIÓN` que este
+  documento dejó abierto —qué llega exactamente, por divisa— se cerró por la segunda de las dos
+  salidas que nombra. Todo lo demás de este ADR sigue vigente
 - **Decide:** Sebastián Villanueva
 - **Ámbito:** el mensaje comercial de todo el sitio, el cotizador del héroe y el contenido tipado
   de `src/content/`. **No** el límite del servicio, que se queda donde está.

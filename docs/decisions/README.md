@@ -18,6 +18,7 @@ evaluadas, decisión y consecuencias**. La documentación explica el *porqué*, 
 | [0011](0011-motion-v1-e4-diario-dlpay.md) | Motion V1, cuarta excepción — el Diario DLPay de `/blog`: hojas que pasan solas, y la única pieza fuera del registro de ADR-0001 | Aceptada | 4 |
 | [0012](0012-cero-js-e2-calculadora-spread.md) | Segunda excepción a «cero JS al cliente»: la calculadora del spread | Aceptada | 4 |
 | [0013](0013-envio-de-divisas.md) | De «dólar digital» a «envío de divisas» — el mensaje cambia de una divisa a varias; el límite del servicio no se mueve | Aceptada | 4 |
+| [0014](0014-entrega-en-moneda-local.md) | El servicio llega hasta la moneda local del destino — deroga la regla dura de §1 y supera el punto 2 de ADR-0013 | Aceptada | 4 |
 
 **Convención:** numeración correlativa, un archivo por decisión, nunca se reescribe una decisión
 aceptada — se **enmienda** dejando visible lo anterior, o se supera con un ADR nuevo que la cite.
