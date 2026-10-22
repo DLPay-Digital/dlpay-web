@@ -289,6 +289,22 @@
     implementaciones: **una regla repetida no se lee como repetida, se lee como
     la única**, y la de arriba llevaba meses sin pintar nada. *2026-10-23.*
   */
+  /*
+    ── El contraste de esta maqueta NO se sube: es una decisión ─────────────
+
+    *Sebastián, 2026-10-23: «la maqueta del portátil dejémosla tal cual, es
+    parte de nuestra interfaz interna».*
+
+    `axe` marca **diez** incumplimientos aquí dentro, y los diez son blanco
+    sobre los verdes de arriba: seis `.mac-nav` y `.app-name` y `.card-btn` a
+    4,29–4,31:1 sobre la barra, el chip a 3,13 y el ítem activo a 3,3. Ocho de
+    los diez cuelgan de `--pf-verde`, así que se moverían juntos.
+
+    **No se tocan porque estos colores están muestreados, no elegidos.** Subir
+    el contraste no sería ajustar un token del sitio: sería dibujar un producto
+    que no se parece al producto. El día que la plataforma cambie sus colores,
+    esto cambia con ella. Queda también en `CLAUDE.md` §6, con la tabla.
+  */
   .app-name {
     font-size: var(--t-label);
     font-weight: 600;

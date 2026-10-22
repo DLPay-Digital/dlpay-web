@@ -682,6 +682,29 @@ eran de esta reforma —una región desplazable sin foco a 390 (WCAG) y un encab
 (buena práctica)—, y los dos desaparecen. Lo único que `axe` sigue marcando en la página es el
 contraste dentro del portátil dibujado del encabezado, **idéntico a antes** y ajeno a esto.
 
+**Y el 2026-10-23 ese resto deja de ser un pendiente y pasa a ser una decisión: se queda como
+está.** *Sebastián, ese día: «la maqueta del portátil dejémosla tal cual, es parte de nuestra
+interfaz interna».* Conviene tener los números delante, porque quien vuelva a correr `axe` los verá
+y pensará que se olvidaron:
+
+| qué | contraste | sobre |
+|---|---|---|
+| `.mac-nav` ×6, los ítems del menú lateral | 4,29 y 4,31:1 | `#54836F`, el verde de la barra |
+| `.app-name`, «DLPay» en la barra de título | 4,29:1 | el mismo verde |
+| `.card-btn`, el botón de la tarjeta | 4,31:1 | el mismo verde |
+| `.user-chip`, «Mi cuenta» | **3,13:1** | blanco al 18 % sobre ese verde |
+| `.on`, «Retirar», el ítem activo | **3,3:1** | `#19A071`, la entrada abierta |
+
+**Diez, y ocho cuelgan del mismo color.** La razón de dejarlos es la que el propio componente
+escribe: **esos verdes están muestreados de una captura real de la plataforma**, no elegidos. Subir
+el contraste no es ajustar un token del sitio, es dibujar un producto que no se parece al producto.
+El día que la plataforma cambie sus colores, esto cambia con ella.
+
+**Lo que SÍ se arregló ese día** fue un fallo de verdad que vivía ahí dentro: `.app-name` estaba
+declarada dos veces y ganaba la de abajo, que la pintaba en `--on-tinta-mute` sobre el verde —
+**1,88:1**—. Con el blanco que la otra regla llevaba meses sin aplicar queda en 4,29, igual que sus
+vecinas. Una regla repetida no se lee como repetida: se lee como la única.
+
 **`/confianza` rehízo sus cuatro secciones de contenido el 2026-10-02**, el mismo día que
 `/empresas` y con el mismo criterio, pedido por Sebastián. **Tampoco cambia una palabra**: todo sigue
 saliendo de `trust.ts` y `alliances.ts`.
