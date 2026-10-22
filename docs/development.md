@@ -610,8 +610,27 @@ Generados, no escritos a mano:
   **Lo que esta línea decía y era falso:** «para regenerarla hay un guion en el historial del
   commit correspondiente». *Comprobado el 2026-10-22, en todos los commits de todas las ramas: ese
   guion no está.* El commit que añadió la imagen (`0d7eeb8`) trae el PNG y ningún fuente, así que
-  se compuso fuera del repositorio y se perdió. Quien tenga que rehacerla **empieza de cero**, y
-  conviene que esa vez sí deje el fuente versionado.
+  se compuso fuera del repositorio y se perdió.
+
+  **Ya no se empieza de cero: el fuente está en `docs/og-image/`** desde que se rehízo, ese mismo
+  día, porque el héroe cambió de titular y la imagen se quedó diciendo lo de antes.
+
+  - **`og-fuente.html`** — la composición. Usa las fuentes reales del proyecto por ruta relativa,
+    `../../public/fonts/`, así que se abre en el navegador y se ve tal cual.
+  - **`og-rasterizar.mjs.txt`** — el rasterizador: Playwright a 1200 × 630 y después una reducción
+    a 128 colores, que deja el archivo en 31 KB sin que se note. **Va en `.txt` y no en `.mjs`
+    porque `tsconfig.json` incluye `**/*`**: un `.mjs` que importa `playwright` —que no es
+    dependencia— rompería `astro check`. Es la convención que `cowork/README.md` ya usa.
+  - **La captura de línea de comandos de Chrome NO sirve** (`--headless=new --screenshot`): su
+    ventana deja una vista de ~543 px y corta la figura de abajo. Probado el 2026-10-22.
+
+  **Comprobado que el fuente reproduce la imagen:** rasterizado desde `docs/og-image/`, da los
+  mismos 1200 × 630 y un 1,1 % de píxeles distintos, todos en bordes de texto y diagonales — es el
+  paso de 128 colores, no otro dibujo.
+
+  **Y una advertencia para quien toque el héroe:** el titular y la bajada de la imagen son los de
+  `Hero.astro`, letra por letra. Si cambia el héroe, esta imagen queda desfasada y hay que
+  rehacerla; su texto alternativo, en `Base.astro`, cambia con ella.
 - **Datos estructurados** (`Organization`): sólo nombre, razón social, sitio y logo. Nada de
   fundación, cobertura ni valoraciones — el mismo criterio que rige el resto del contenido.
 - **Favicon** SVG derivado del isotipo, más `apple-touch-icon.png`.

@@ -1,0 +1,122 @@
+<!doctype html>
+<!--
+  og-image.png · fuente · Cowork, entrega `og-`, 2026-10-22. Archivo: `og-fuente.html`.
+
+  Se rasteriza a 1200 × 630 con Chromium (Playwright): `node og-rasterizar.mjs`, que va al lado.
+  **No sirve la captura de la línea de comandos de Chrome** (`--headless=new --screenshot`): su
+  ventana de 630 deja una vista de ~543 px y corta la figura de abajo. Probado el 2026-10-22.
+  Después se reduce a 128 colores (PIL: quantize, MEDIANCUT, sin tramado): 31 KB, igual a la vista.
+  Las fuentes son las de `public/fonts/` del repo, por ruta relativa. **Este archivo ya vive en
+  `docs/og-image/`**, así que las tres apuntan a `../../public/fonts/`: se versionó el 2026-10-22,
+  que era la condición que `docs/development.md` pedía tras perderse el fuente de la primera
+  versión.
+
+  Qué dice, y de dónde sale cada cosa:
+  · Titular: `Hero.astro`, letra por letra — «Envías en pesos. Llega en la moneda del destino.»
+  · Bajada: la bajada del héroe, letra por letra.
+  · La figura: el recorrido de «El mismo envío, por dos caminos» y del cotizador, con sus marcas
+    del DS §6.2 — tramo verde (lo nuestro, de punta a punta desde ADR-0014), punto verde (la
+    unidad de valor), cuña (cambia de manos), punteado (la frontera de Chile, un límite).
+  · Las doce monedas van en orden alfabético y con el mismo peso: el dólar es una más (ADR-0013).
+
+  Lo que NO dice, ni escrito ni dibujado (CLAUDE.md §1, ADR-0014): ningún plazo ni reloj, ningún
+  canal de entrega ni banco en el destino, nada regulatorio, ni «remesa».
+-->
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: 'Familjen Grotesk'; font-weight: 400 700; src: url('../../public/fonts/familjen-grotesk-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
+  @font-face { font-family: 'Familjen Grotesk'; font-weight: 400 700; src: url('../../public/fonts/familjen-grotesk-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA; }
+  @font-face { font-family: 'Spline Sans Mono'; font-weight: 400 600; src: url('../../public/fonts/spline-sans-mono-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
+
+  :root {
+    --tinta: #0B1320; --tinta-2: #101A2B; --verde: #16C784;
+    --on-tinta: #EDF2EF; --on-tinta-mute: #9DB0AA; --line-on-tinta: rgba(237, 242, 239, .40);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1200px; height: 630px; }
+  body {
+    position: relative; overflow: hidden;
+    background: var(--tinta); color: var(--on-tinta);
+    font-family: 'Familjen Grotesk', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Las cuñas del héroe, con su misma geometría y su misma opacidad. */
+  .cunas {
+    position: absolute; inset: 0; background: var(--verde); opacity: .07;
+    clip-path: polygon(0 100%, 46% 0, 60% 0, 15% 100%, 20% 100%, 66% 0, 71% 0, 26% 100%);
+  }
+  .lienzo { position: absolute; inset: 0; padding: 56px 88px 0; }
+
+  .marca { display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 36px; letter-spacing: -.01em; }
+  .marca svg { height: 32px; width: auto; color: var(--verde); display: block; }
+
+  h1 {
+    margin-top: 64px;
+    font-weight: 700; font-size: 72px; line-height: 1.04; letter-spacing: -.015em;
+  }
+  h1 span { display: block; }
+  .bajada {
+    margin-top: 22px; max-width: 960px;
+    font-size: 25px; line-height: 1.42; color: var(--on-tinta-mute);
+  }
+
+  /* ── El recorrido ─────────────────────────────────────────────────────── */
+  .ruta { position: absolute; left: 88px; right: 88px; bottom: 58px; height: 92px; }
+  .ficha {
+    font-family: 'Spline Sans Mono', monospace; font-weight: 600; font-size: 19px; letter-spacing: .02em;
+    display: grid; place-items: center; height: 40px; padding: 0 12px;
+    border: 1px solid var(--line-on-tinta); border-radius: 3px; background: var(--tinta-2); color: var(--on-tinta);
+  }
+  .origen { position: absolute; left: 0; top: 26px; width: 76px; }
+  .tramo { position: absolute; left: 76px; width: 528px; top: 44.5px; border-top: 3px solid var(--verde); }
+  .punto {
+    position: absolute; left: 196px; top: 46px; width: 16px; height: 16px; margin: -8px 0 0 -8px;
+    border-radius: 50%; background: var(--verde); box-shadow: 0 0 0 5px var(--tinta);
+  }
+  .frontera {
+    position: absolute; left: 360px; top: -6px; bottom: -6px; width: 1.25px;
+    background: repeating-linear-gradient(to bottom, var(--on-tinta-mute) 0 3px, transparent 3px 7px);
+  }
+  .cuna { position: absolute; left: 360px; top: 46px; width: 48px; height: 17px; margin: -8.5px 0 0 -24px; background: var(--tinta); color: var(--on-tinta-mute); }
+  .cuna svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .zona {
+    position: absolute; top: -6px;
+    font-family: 'Spline Sans Mono', monospace; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--on-tinta-mute);
+  }
+  .aca { right: calc(100% - 360px + 14px); }
+  .alla { left: calc(360px + 14px); }
+  .destino {
+    position: absolute; left: 604px; right: 0; top: 0;
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px 10px;
+  }
+  .destino .ficha { color: var(--on-tinta-mute); font-weight: 500; }
+</style>
+</head>
+<body>
+  <div class="cunas"></div>
+  <div class="lienzo">
+    <div class="marca">
+      <svg viewBox="0 0 100 75.11" fill="currentColor" fill-rule="evenodd" aria-hidden="true"><path d="M9.33 0 L72.89 0.44 L80.89 2.67 L87.11 5.78 L90.67 8.44 L95.56 14.22 L98.22 19.56 L100 26.67 L99.11 40 L95.11 48.44 L91.11 54.22 L84 60.44 L76.44 65.33 L69.33 68.44 L58.22 71.56 L45.78 73.33 L7.56 74.22 L36 56.89 L46.67 49.33 L54.22 49.33 L63.56 45.78 L69.78 40.44 L72.44 34.67 L72.44 29.78 L71.11 26.67 L68 24 L64 22.67 L17.78 22.22 L8.89 0.44 Z M19.56 35.11 L50.67 35.56 L0 75.11 L19.11 35.56 Z"/></svg>
+      <span>DLPay</span>
+    </div>
+    <h1><span>Envías en pesos.</span> <span>Llega en la moneda del destino.</span></h1>
+    <p class="bajada">Cambiamos al precio que aceptas y nos ocupamos de que llegue a destino, sin los horarios ni los días hábiles de una transferencia bancaria.</p>
+  </div>
+
+  <div class="ruta" aria-hidden="true">
+    <span class="zona aca">Chile</span>
+    <span class="zona alla">Destino</span>
+    <div class="ficha origen">CLP</div>
+    <div class="tramo"></div>
+    <div class="frontera"></div>
+    <span class="cuna"><svg viewBox="0 0 56 20" fill="none"><path d="M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4" stroke="currentColor" stroke-width="3" stroke-linejoin="miter" vector-effect="non-scaling-stroke"/></svg></span>
+    <span class="punto"></span>
+    <div class="destino">
+      <div class="ficha">ARS</div><div class="ficha">BOB</div><div class="ficha">BRL</div><div class="ficha">CNY</div><div class="ficha">COP</div><div class="ficha">EUR</div>
+      <div class="ficha">JPY</div><div class="ficha">PEN</div><div class="ficha">PYG</div><div class="ficha">USD</div><div class="ficha">UYU</div><div class="ficha">VES</div>
+    </div>
+  </div>
+</body>
+</html>
