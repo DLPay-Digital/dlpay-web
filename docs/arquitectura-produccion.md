@@ -21,7 +21,7 @@ Reverificado el 2026-09-08 — cero `fetch`, `XMLHttpRequest`, `WebSocket`, `Eve
 | Momento | Qué ocurre |
 |---|---|
 | **Build** | Se valida la configuración de despliegue (URL canónica y política de indexación), se resuelve el precio (`ConfigPriceSource`), se lee la configuración, se compone el HTML de las **diez** páginas —nueve rutas fijas más una por artículo del blog—, se genera el sitemap y el robots. Todo queda escrito en `dist/`. |
-| **Cliente** | Entre **0 y 53,5 KB** de JavaScript según la página (tabla abajo). Cinco scripts en la Home, cuatro en las otras siete con JavaScript, **ninguno** en las cinco restantes; el peso está concentrado en la Home. |
+| **Cliente** | Entre **0 y 53,8 KB** de JavaScript según la página (tabla abajo). Seis scripts en la Home, cuatro en las otras siete con JavaScript, **ninguno** en las cinco restantes; el peso está concentrado en la Home. |
 | **Fuera del sistema** | La conversación por WhatsApp, la verificación bancaria y la ejecución de la operación. Nada de eso pasa por la web. |
 
 ### 1.1 El JavaScript que se envía — inventario exacto
@@ -36,12 +36,18 @@ reloj del feed»). Ni eran dos páginas ni es un reloj.
 > Aparecen dos columnas nuevas y entran `/precio` y `/preguntas`, que faltaban desde el 2026-09-23.
 > Medido sobre el build: bytes de los `<script>` ejecutables, en línea y de módulo.
 
-| Página | `is:inline` | Motion | Marcador | Intro | Quoter | Globo | Total |
-|---|---|---|---|---|---|---|---|
-| `/` | 56 B | 489 B | 319 B | 6 293 B | 7 058 B | 40 525 B | **53,5 KB** |
-| `/como-funciona/`, `/confianza/`, `/empresas/`, `/precio/`, `/preguntas/`, `/blog/`, `/blog/<slug>/` | 56 B | 489 B | 319 B | — | — | — | **1,1 KB** |
-| `/terminos/`, `/privacidad/`, `/tarifas/`, `/canal-de-denuncias/` | — | — | — | — | — | — | **0 B** |
-| `404.html` | — | — | — | — | — | — | **0 B** |
+| Página | `is:inline` | Motion | Marcador | Intro | Quoter | Globo | Caminos | Total |
+|---|---|---|---|---|---|---|---|---|
+| `/` | 56 B | 489 B | 319 B | 6 293 B | 7 058 B | 40 525 B | 303 B | **53,8 KB** |
+| `/como-funciona/`, `/confianza/`, `/empresas/`, `/precio/`, `/preguntas/`, `/blog/`, `/blog/<slug>/` | 56 B | 489 B | 319 B | — | — | — | — | **1,1 KB** |
+| `/terminos/`, `/privacidad/`, `/tarifas/`, `/canal-de-denuncias/` | — | — | — | — | — | — | — | **0 B** |
+| `404.html` | — | — | — | — | — | — | — | **0 B** |
+
+**La columna «Caminos» entró el 2026-10-22** con ADR-0015: son los 303 bytes de «Ver de nuevo», el
+único JavaScript de «El mismo envío, por dos caminos». Todo el movimiento de esa sección es CSS;
+ese script sólo reinicia las animaciones con `getAnimations()`, y no aparece sin el motor ni con
+`prefers-reduced-motion`. Con él, **el CSP de la Home pasa de 6 a 7 scripts en línea y su cabecera
+de 542 a 596 caracteres**, lejos del límite de 2.000.
 
 **El cotizador subió de 4 528 a 7 058 bytes entre el 21 y el 22 de octubre** (ADR-0013 y las tasas
 de muestra), y la Home con él, de 50,3 a 53,5 KB. Los últimos 385 bytes son el selector llevando el

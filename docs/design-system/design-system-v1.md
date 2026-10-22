@@ -954,10 +954,27 @@ bisagra del portátil. Un filete `--ink-mute` significa «existe, es real, no es
 | Home y `/precio`, los puentes | `.limite` y `.corte` | los mismos dos, copiados a sus figuras |
 | `/empresas` ×2 | `.fc-frontera` de `FiguraCaso` | la frontera de Chile, en el cruce y en la cajonera |
 | `/confianza` y la Home, «Confianza que se comprueba» | `.fm-frontera` de `FiguraMecanismo` | cuándo la transferencia está **acreditada** — antes no movemos nada |
-| `/como-funciona`, «Dónde termina nuestra operación» | `.ea-limite` de `EjeDeAlcance` (en móvil, la franja superior de `.ea-tras-limite`, con `.punteado-h`) | antes de la tercera opción: lo que sigue es otro proceso, con otros servicios, y **no lo realiza DLPay** |
+| ~~`/como-funciona`, «Dónde termina nuestra operación»~~ | ~~`.ea-limite` de `EjeDeAlcance`~~ | **Retirada el 2026-10-22.** Marcaba la frontera antes de «lo conviertes a moneda local en destino», y ADR-0014 cruzó esa frontera: el servicio llega hasta ahí. Sin límite que marcar, no hay marca |
+| Home, «El mismo envío, por dos caminos» | `.frontera-v` (desde 1024) y `.frontera-h` (debajo) de `DosCaminos` | la frontera de Chile, en los dos carriles |
 
-**Las otras diez rutas no tienen ninguna**, y eso también se midió: `/preguntas`, `/blog` y sus
-**cuatro** artículos, las tres legales sin `/tarifas` y la 404.
+**Las otras rutas no tienen ninguna**, y eso también se midió.
+
+> *Quinta pasada, el 2026-10-22, sobre el build y no de memoria.* Dos cambios del mismo día, en
+> direcciones contrarias:
+>
+> · **`/como-funciona` se quedó sin ninguna.** Era la única marca de esa página, y la quitó
+>   ADR-0014. Lo único punteado que le queda al barrido son **cuatro `path` con
+>   `stroke-dasharray`**, y no son marcas: es el `--draw-len` con el que `Motion.astro` dibuja los
+>   trazos al entrar. Mismo píxel punteado, otro oficio — como `.et-torsion` en `/precio`, que es
+>   materia. **El barrido no distingue las tres cosas y esta tabla sí.**
+> · **La Home gana una**, la frontera de `DosCaminos`. Es la misma marca que `.fu-frontera` dos
+>   secciones más arriba: **una ruta más en una fila, no una fila nueva** — salvo que acá la fila
+>   sí es propia, porque la clase es otra y esta tabla cuenta por clase, que es lo que la pasada
+>   del 2026-10-05 dejó escrito.
+>
+> **Medido: diez marcas en cinco rutas** —`/`, `/precio`, `/empresas`, `/confianza` y `/tarifas`—,
+> contando clases distintas. Eran once en seis.
+
 
 > *Y una cuarta pasada el 2026-10-05, al pasar «Qué mueve el precio» de `/tarifas` a objetos:*
 > **siguen siendo once, en seis de DIECISÉIS rutas** —la decimosexta es el artículo de empleo, que no

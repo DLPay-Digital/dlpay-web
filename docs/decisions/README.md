@@ -19,6 +19,7 @@ evaluadas, decisión y consecuencias**. La documentación explica el *porqué*, 
 | [0012](0012-cero-js-e2-calculadora-spread.md) | Segunda excepción a «cero JS al cliente»: la calculadora del spread | Aceptada | 4 |
 | [0013](0013-envio-de-divisas.md) | De «dólar digital» a «envío de divisas» — el mensaje cambia de una divisa a varias; el límite del servicio no se mueve | Aceptada | 4 |
 | [0014](0014-entrega-en-moneda-local.md) | El servicio llega hasta la moneda local del destino — deroga la regla dura de §1 y supera el punto 2 de ADR-0013 | Aceptada | 4 |
+| [0015](0015-motion-e5-dos-caminos.md) | Motion V1, quinta excepción: «El mismo envío, por dos caminos», una animación narrativa de 4,8 s en la Home | Aceptada | 4 |
 
 **Convención:** numeración correlativa, un archivo por decisión, nunca se reescribe una decisión
 aceptada — se **enmienda** dejando visible lo anterior, o se supera con un ADR nuevo que la cite.

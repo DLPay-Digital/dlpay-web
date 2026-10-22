@@ -27,6 +27,11 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   **Una segunda, del 2026-09-15:** el globo, con **dos** movimientos infinitos —la rotación de la
   esfera y el pulso del marcador de Chile—. Ver ADR-0008. Con eso son tres en todo el sitio, y la
   regla dura 1 («una sola vez») sigue valiendo para todo lo demás.
+  **Una quinta, del 2026-10-22:** «El mismo envío, por dos caminos», una **animación narrativa de
+  4,8 s** en la Home que enseña los dos recorridos. Ver ADR-0015. **Con ella el umbral que el propio
+  Motion System se puso queda cruzado por segunda vez** —aquel documento decía que a la cuarta la
+  pregunta pasaba a ser si V1 necesita revisión, y la cuarta fue el Diario—. Las cinco están
+  razonadas y acotadas; la pregunta sigue sin hacerse, y está escrita en `motion-system-v1.md`.
   **Una tercera, del 2026-09-25:** la **intro de marca** de la Home —830 ms de telón en los que el
   isotipo se separa por su propio eje y se une—. Enmienda dos reglas a la vez: el techo de 280 ms y,
   sobre todo, la regla dura 2 («el cotizador no entra»), porque el telón lo **tapa** 937 ms. Se
@@ -81,10 +86,11 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   `npm run build` en verde, fuentes T-C auto-hospedadas, tokens del Design System en código, y la
   cadena `PriceSource → Quote` en pie. Ver `docs/development.md`.
   **Sobre el JavaScript, que ya no es cero:** el esqueleto se levantó sin una sola línea en el
-  cliente y así siguen las cuatro legales y la 404. Hoy la Home envía **53,5 KB**: el cotizador
+  cliente y así siguen las cuatro legales y la 404. Hoy la Home envía **53,8 KB**: el cotizador
   (6,9 KB, **2,5 más desde el 2026-10-21** porque el catálogo de divisas de ADR-0013 viaja con él),
-  el Motion System (0,5 KB), el globo (40,5 KB, casi todo coordenadas) y la intro de marca
-  (6,3 KB). Las excepciones están autorizadas y acotadas —ADR-0009, ADR-0008 y ADR-0010—; el
+  el Motion System (0,5 KB), el globo (40,5 KB, casi todo coordenadas), la intro de marca
+  (6,3 KB) y **«Ver de nuevo» de «El mismo envío, por dos caminos» (303 B, ADR-0015)**. Las
+  excepciones están autorizadas y acotadas —ADR-0009, ADR-0008, ADR-0010 y ADR-0015—; el
   inventario exacto, por página, está en `docs/arquitectura-produccion.md` §1.1.
   **Que las cinco páginas en cero sigan en cero ya no depende de la memoria de nadie:**
   `tests/zero-js.test.ts` lo comprueba sobre el build.
@@ -846,8 +852,12 @@ cualquier servidor estático.* Lo que rompa esa afirmación necesita una enmiend
 Ver ADR-0009: **primera** excepción a «cero JS al cliente», un runtime acotado al componente del
 globo. **Y ADR-0012, del 2026-10-13: la segunda**, la calculadora de `/cuanto-te-cobran` — 3,4 KB
 en línea, una sola cuenta en `lib/spread.ts` que comparten el build y el navegador, y que no
-conoce el precio de nadie ni envía nada. **El cotizador sigue siendo la única isla del producto:**
-ninguna de las dos excepciones participa de una operación.
+conoce el precio de nadie ni envía nada. **Y ADR-0015, del 2026-10-22, trae 303 B más a la Home**: «Ver de nuevo» de «El mismo envío, por
+dos caminos». No es una tercera excepción a «cero JS» —su movimiento es CSS entero y la figura se
+ve completa sin él—, es una excepción al **Motion System**: 4,8 s contra un techo de 280 ms.
+
+**El cotizador sigue siendo la única isla del producto:**
+ninguna de las excepciones participa de una operación.
 
 ---
 

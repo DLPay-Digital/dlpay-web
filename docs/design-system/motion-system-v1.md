@@ -206,6 +206,34 @@ propia**. Autoriza *la intro de marca*, no *las capas a pantalla completa*, y mu
 poner algo delante del cotizador. Con la franja y el globo son **tres** excepciones: si aparece una
 cuarta, la pregunta deja de ser si se aprueba y pasa a ser si V1 necesita revisión.
 
+### Enmienda externa — 2026-10-22
+
+La **quinta** excepción, razonada y aceptada en **ADR-0015** (`motion-e5`): «El mismo envío, por dos
+caminos», una **animación narrativa de 4,8 s** en la Home. Dos carriles que se ven recorrer —primero
+el del banco, parándose en cada corresponsal; después el de DLPay—, disparados por el motor de
+siempre. Mismo alcance acotado que las anteriores: **enmienda la pieza, no los seis movimientos ni
+el techo fuera de ella.**
+
+| Regla de este documento | Estado |
+|---|---|
+| §2c — techo de **280 ms** | **Enmendado, y sólo para esta pieza.** 4,8 s, diecisiete veces el techo y con diferencia lo más largo del sitio. Lo que lo justifica es que **el recorrido ES el contenido**: la sección compara dos caminos, y un camino se entiende viéndolo. En 280 ms son dos líneas que aparecen |
+| §4, regla dura 1 — **una sola vez** | **Intacto.** Una iteración al entrar en pantalla. «Ver de nuevo» la repite **a petición**, que es lo contrario de re-animarse solo |
+| §4, regla dura 3 — las cifras no entran | **Intacto.** La figura no lleva ninguna cifra, y es deliberado: una cifra acá sería un plazo de la entrega final (ADR-0014 §3) |
+| §4, regla dura 5 — sin JavaScript todo se ve | **Intacto.** El estado final es el de reposo: sin JS, sin el motor o antes de llegar, la figura está completa |
+| `prefers-reduced-motion` | **Intacto, y más estricto que el resto del sitio.** No se acorta a 0,01 ms: con la preferencia activa **no se declara ninguna animación** —medido: 0 sobre el subárbol— así que no hay ni un fotograma del estado inicial. «Ver de nuevo» tampoco aparece |
+
+**El umbral que este documento se puso ya se cruzó, y conviene decirlo sin rodeos.** El párrafo de
+arriba, del 2026-09-25, dice que a la cuarta excepción «la pregunta deja de ser si se aprueba y pasa
+a ser si V1 necesita revisión». **La cuarta llegó seis días después** —el Diario DLPay, ADR-0011— y
+nadie hizo esa pregunta; **ésta es la quinta.** Las cinco están razonadas, acotadas y aceptadas una
+por una, y aun así el patrón es el que ese párrafo quería detectar: un sistema de seis movimientos
+con techo de 280 ms que convive con una franja infinita, un globo, un telón de 830 ms, unas hojas
+que pasan solas y ahora una narración de 4,8 s.
+
+**No es una objeción a esta pieza.** Es la pregunta pendiente, escrita donde se vea: **¿sigue V1
+describiendo el movimiento de este sitio, o describe un sitio que ya no existe?** Contestarla es de
+Sebastián, y lo que la respuesta cambiaría no es ninguna pieza publicada sino el documento.
+
 ---
 
 ## 1. Estado actual, verificado
