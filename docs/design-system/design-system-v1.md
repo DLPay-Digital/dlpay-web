@@ -686,6 +686,16 @@ estiró: se fue.
 - Timestamp del precio siempre visible ("hace un momento" / "actualizado hace Ns").
 - Movimiento del precio (si se muestra): `--sube` / `--baja` + una flecha/triángulo pequeño, nunca
   color solo.
+- **Las cifras de ejemplo van con «$», no con «USD»** (Sebastián, 2026-10-22). Son las figuras de
+  uso y de caso y la calculadora del spread. Desde ADR-0013 se cambia a doce divisas, y el signo no
+  nombra ninguna. Donde hay una divisa concreta —el cotizador, las tarjetas de destino, el mensaje
+  de WhatsApp— va su código, y los pesos chilenos siguen siendo «CLP».
+  - **La excepción es lo que copia el cotizador al abrirse**, que sigue en USD: la tarjeta «Tu
+    cotización» de la Home, el puente de tarifas y «lo que ves al cotizar» de `/tarifas`. El
+    cotizador abre en Estados Unidos (`DEFAULT_DESTINO`); si cambia el destino con que abre, esas
+    tres piezas cambian con él. Lo decidió Sebastián en la segunda vuelta de la entrega `wise-`.
+  - **En Chile, «$» es el signo del peso**, y por eso nunca va junto a una cifra en pesos que
+    también lleve «$».
 
 ---
 
@@ -1374,7 +1384,7 @@ cada una, no qué significa.
 | **Abanico de etiquetas** | `/precio`: cinco etiquetas en un ojal, y sólo una cobra | `EtiquetasPrecio`. **Segunda pieza de la lista cerrada de ADR-0011**: cartulina con cuatro ruidos en `data:`, relieve y sombras de material. Plana y **quieta** — la excepción es de registro, no de movimiento. La forma va en un `span` propio y no en el `li` ni en un `::before`: en el `li` el `clip-path` recorta sus propias sombras, y en un `::before` el fondo deja de ser visible para una auditoría automática. **Los ruidos llevan su opacidad topada** con `feFuncA`; sin el tope el peor píxel de «Todo lo demás no tiene costo» caía a 3,07:1 |
 | ~~**Panel del precio**~~ | *Retirado el 2026-10-01.* `FiguraPrecio` enseñaba el mismo número al aceptar y al recibir. Lo sustituyó el abanico, y el componente se borró al quedarse sin consumidores. Está en el historial |
 | **Índice del blog** | `/blog` | Filas con filete y fecha tabular en columna propia. Se ve igual con un artículo que con cincuenta |
-| **Globo rotativo** | Chile como origen, en la Home | Tres excepciones autorizadas: ADR-0007, 0008 y 0009. **No va nunca solo**, porque sin nada que lo acote el dibujo afirma de más. Hasta el 2026-09-25 lo acotaba el eje de alcance; desde que Sebastián lo retiró, lo acota el titular de su banda —«Nuestro tramo llega hasta el destino» desde el 2026-10-22, antes «Nuestro tramo termina en tu billetera»— y la bajada. **Si algún día se cambia ese titular por uno que no nombre el límite, el globo se queda desnudo** | *2026-10-22.* Cada destino llevaba debajo «USD · 8.300 KM» y desde hoy lleva sólo su nombre, a pedido de Sebastián. El dólar dejó de ser la moneda de todos (ADR-0013), y la distancia no es un dato del servicio. **Los ocho países no coinciden con los trece destinos del cotizador**: México, España, Sudáfrica, India y Australia no son destinos, y faltan diez que sí lo son. Sebastián pidió dejarlo así; queda escrito para cuando se revise. |
+| **Globo rotativo** | Chile como origen, en la Home | Tres excepciones autorizadas: ADR-0007, 0008 y 0009. **No va nunca solo**, porque sin nada que lo acote el dibujo afirma de más. Hasta el 2026-09-25 lo acotaba el eje de alcance; desde que Sebastián lo retiró, lo acota el titular de su banda —«Nuestro tramo llega hasta el destino» desde el 2026-10-22, antes «Nuestro tramo termina en tu billetera»— y la bajada. **Si algún día se cambia ese titular por uno que no nombre el límite, el globo se queda desnudo** | *2026-10-22.* Cada destino llevaba debajo «USD · 8.300 KM» y desde hoy lleva sólo su nombre, a pedido de Sebastián. El dólar dejó de ser la moneda de todos (ADR-0013), y la distancia no es un dato del servicio. **Los ocho países no coinciden con los trece destinos del cotizador**: México, España, Sudáfrica, India y Australia no son destinos, y faltan diez que sí lo son. Sebastián decidió revisar el globo con más detalle en otra ocasión; queda escrito para entonces. |
 | **Franja de notificación** | Aviso a todo el ancho | ADR-0006. Se oculta sola en la página que enlaza |
 | **404** | Dirección inexistente | Reusa `PageHero`. `noindex`, fuera del sitemap y en cero bytes de JavaScript |
 | **Bloque institucional** | Los emblemas de FinteChile y la UAF, en el pie | `Alliances.astro`. El claim regulatorio se dice **con palabras**, no colgado de un emblema, y el dato declara el alcance de su propio claim |

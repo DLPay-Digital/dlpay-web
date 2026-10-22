@@ -437,7 +437,8 @@ que sigue el patrón *combobox* de la ARIA APG.
 - **Con VoiceOver en el iPhone**, la lectura del botón («¿A dónde envías? Estados Unidos USD») y del
   buscador mientras se escribe. Sustituye al pendiente de la enmienda anterior sobre la lista nativa,
   que ya no existe.
-- `PENDIENTE DE DECISIÓN` — **el destino con que abre el cotizador** sigue siendo Estados Unidos
-  (`DEFAULT_DESTINO`, «el de siempre, el dólar»). Es lo primero que se ve en la Home, y con él lo
-  primero que se lee es «USD». Es correcto, porque es la moneda de ese destino. Si no es el destino
-  más pedido, conviene que abra en el que sí lo sea.
+- **El destino con que abre el cotizador sigue siendo Estados Unidos** (`DEFAULT_DESTINO`).
+  Decidido por Sebastián el 2026-10-22. Tres piezas copian lo que el cotizador enseña al abrir, y
+  por eso siguen en USD: la tarjeta «Tu cotización» de la Home, el puente de tarifas y «lo que ves
+  al cotizar» de `/tarifas` (DS §5). **Si algún día cambia el destino con que abre, esas tres
+  cambian con él.**
