@@ -12,7 +12,7 @@
  * Es la ÚNICA isla interactiva del sitio (ADR-0002 §2). El precio se resuelve
  * en build desde ConfigPriceSource y viaja al cliente en data-attributes.
  */
-import { ConfigPriceSource, DEFAULT_USD_RATE } from '../lib/pricing/config-price-source.ts';
+import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import {
   DEFAULT_CURRENCY,
   availableCurrencies,
@@ -29,18 +29,19 @@ interface Props {
 const { variant = 'floating' } = Astro.props;
 
 /**
- * Las divisas que el sitio puede ofrecer HOY (ADR-0013).
+ * Las doce divisas del catálogo (ADR-0013, ampliado el 2026-10-22).
  *
- * Son las que tienen tasa de muestra definida. Mientras D7 siga abierta eso es
- * sólo el dólar, y entonces el cotizador se dibuja **exactamente como antes**:
- * sin selector, con «Convertir a dólares» en la intención. Un desplegable con
- * una sola opción no es una elección, es un adorno que no hace nada.
+ * Todas tienen tasa: la que Sebastián confirme en el entorno, o la de muestra
+ * mientras no la haya. Lo que impide que una muestra llegue al sitio público no
+ * es este archivo sino el build, que se detiene con la indexación abierta
+ * mientras quede alguna sin confirmar (`assertRatesConfirmed`).
  *
- * Cada divisa nueva entra definiendo su variable —`PUBLIC_QUOTE_RATE_EUR` y
- * compañía—, sin tocar una línea de este archivo. Es el mecanismo con el que se
- * cerró D21.
+ * `unaSola` se conserva aunque hoy sea siempre falso: si el catálogo se quedara
+ * con una divisa, el selector volvería a no dibujarse y la intención volvería a
+ * nombrarla. Es una línea, y la alternativa es que un día vuelva a aparecer un
+ * desplegable de una sola opción.
  */
-const divisas = availableCurrencies(import.meta.env, DEFAULT_USD_RATE);
+const divisas = availableCurrencies();
 const unaSola = divisas.length === 1;
 
 const price = await new ConfigPriceSource(DEFAULT_CURRENCY).getPrice();
@@ -49,7 +50,7 @@ const price = await new ConfigPriceSource(DEFAULT_CURRENCY).getPrice();
 const tasas = await Promise.all(
   divisas.map(async (d) => {
     const p = await new ConfigPriceSource(d.code).getPrice();
-    return { c: d.code, r: p.rate };
+    return { c: d.code, r: p.rate, n: d.name };
   })
 );
 
@@ -170,8 +171,14 @@ const intents = [
       cliente, así que lo que se pierde es la afirmación, no un dato vivo.
     */}
     <span class="price-label">Precio referencial</span>
+    {/*
+      **La unidad cambia con la divisa desde el 2026-10-22.** Era «CLP por
+      dólar» escrito a mano, y con una sola divisa daba igual; con doce, elegir
+      el euro dejaba «919,70 CLP por dólar» bajo una cifra en euros. El nombre
+      sale del catálogo, como el plural del mensaje de WhatsApp.
+    */}
     <span class="price-value num" data-rate-display>
-      {formatRate(price.rate)}<small>CLP por dólar</small>
+      <span data-rate-num>{formatRate(price.rate)}</span><small data-rate-unit>CLP por {currencyInfo(DEFAULT_CURRENCY).name}</small>
     </span>
   </div>
 
@@ -608,7 +615,7 @@ const intents = [
 </style>
 
 <script>
-  import { formatCLP, formatForeign, parseAmount } from '../lib/pricing/format.ts';
+  import { formatCLP, formatForeign, formatRate, parseAmount } from '../lib/pricing/format.ts';
   import {
     buildQuote,
     clpAmount,
@@ -623,7 +630,7 @@ const intents = [
   const root = document.querySelector<HTMLElement>('#cotizador');
   if (root) {
     const divisas: IslandCurrency[] = JSON.parse(root.dataset.divisas ?? '[]');
-    let divisa: IslandCurrency = divisas[0] ?? { c: 'USD', r: Number(root.dataset.rate) };
+    let divisa: IslandCurrency = divisas[0] ?? { c: 'USD', r: Number(root.dataset.rate), n: 'dólar' };
     let rate = divisa.r;
     const minPay = Number(root.dataset.min);
     const maxRaw = Number(root.dataset.max);
@@ -639,6 +646,8 @@ const intents = [
     const cta = root.querySelector<HTMLAnchorElement>('[data-cta]')!;
     const boxes = root.querySelectorAll<HTMLElement>('.input-box');
     const priceEl = root.querySelector<HTMLElement>('.price-value');
+    const rateNum = root.querySelector<HTMLElement>('[data-rate-num]');
+    const rateUnit = root.querySelector<HTMLElement>('[data-rate-unit]');
     const dock = document.querySelector<HTMLElement>('[data-dock]');
     const dockLabel = dock?.querySelector<HTMLElement>('[data-dock-label]');
     const dockAmount = dock?.querySelector<HTMLElement>('[data-dock-amount]');
@@ -773,6 +782,9 @@ const intents = [
       if (!elegida) return;
       divisa = elegida;
       rate = divisa.r;
+      // El precio referencial y su unidad son del par, no del cotizador.
+      if (rateNum) rateNum.textContent = formatRate(rate);
+      if (rateUnit) rateUnit.textContent = `CLP por ${divisa.n}`;
       price = { rate, currency: divisa.c, pair: `${divisa.c}/CLP` as const, source, asOf: new Date() };
       const { give, get } = currenciesFor(intent, divisa.c);
       giveAmount = give === 'CLP' ? clpBefore : rate > 0 ? clpBefore / rate : 0;

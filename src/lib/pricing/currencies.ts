@@ -70,7 +70,25 @@ export interface CurrencyInfo {
    */
   decimals: 0 | 2;
   /**
-   * La variable de entorno con su tasa de muestra, en CLP por 1 unidad.
+   * La tasa de MUESTRA, en CLP por 1 unidad. **Es un marcador de posición, no
+   * un precio.**
+   *
+   * Sebastián pidió el 2026-10-22 que el cotizador funcionara con tasas de
+   * muestra en vez de esperar a las definitivas, y esto es eso: números de
+   * orden de magnitud, calculados sobre la tasa de muestra del dólar, para que
+   * la herramienta se pueda ver y probar. **Ninguno está verificado contra el
+   * mercado**, y los de monedas que se mueven rápido —bolívar, peso argentino—
+   * envejecen en días.
+   *
+   * Lo que impide que esto se publique: `assertRatesConfirmed`, que detiene el
+   * build con `PUBLIC_ALLOW_INDEXING=true` mientras alguna divisa siga
+   * corriendo con su muestra. El sitio público necesita las doce confirmadas.
+   *
+   * REQUIERE VALIDACIÓN DE COMPLIANCE — las doce tasas (D7).
+   */
+  sample: number;
+  /**
+   * La variable de entorno que SUSTITUYE la muestra, en CLP por 1 unidad.
    *
    * El dólar conserva `PUBLIC_QUOTE_SAMPLE_RATE` y no estrena nombre: es la
    * variable que D7 nombra, que `.env.example` documenta y que media docena de
@@ -101,23 +119,25 @@ export interface CurrencyInfo {
 export interface IslandCurrency {
   c: ForeignCurrency;
   r: number;
+  /** El nombre, para la unidad del precio: «CLP por euro». */
+  n: string;
 }
 
 export const DEFAULT_CURRENCY: ForeignCurrency = 'USD';
 
 export const currencies: readonly CurrencyInfo[] = [
-  { code: 'USD', name: 'dólar',           plural: 'dólares',         destinations: ['Estados Unidos', 'Ecuador'], decimals: 2, envVar: 'PUBLIC_QUOTE_SAMPLE_RATE' },
-  { code: 'EUR', name: 'euro',            plural: 'euros',           destinations: ['Europa'],                    decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_EUR' },
-  { code: 'ARS', name: 'peso argentino',  plural: 'pesos argentinos', destinations: ['Argentina'],                 decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_ARS' },
-  { code: 'BOB', name: 'boliviano',       plural: 'bolivianos',      destinations: ['Bolivia'],                   decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_BOB' },
-  { code: 'BRL', name: 'real',            plural: 'reales',          destinations: ['Brasil'],                    decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_BRL' },
-  { code: 'CNY', name: 'yuan',            plural: 'yuanes',          destinations: ['China'],                     decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_CNY' },
-  { code: 'COP', name: 'peso colombiano', plural: 'pesos colombianos', destinations: ['Colombia'],                  decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_COP' },
-  { code: 'JPY', name: 'yen',             plural: 'yenes',           destinations: ['Japón'],                     decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_JPY' },
-  { code: 'PEN', name: 'sol',             plural: 'soles',           destinations: ['Perú'],                      decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_PEN' },
-  { code: 'PYG', name: 'guaraní',         plural: 'guaraníes',       destinations: ['Paraguay'],                  decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_PYG' },
-  { code: 'UYU', name: 'peso uruguayo',   plural: 'pesos uruguayos', destinations: ['Uruguay'],                   decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_UYU' },
-  { code: 'VES', name: 'bolívar',         plural: 'bolívares',       destinations: ['Venezuela'],                 decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_VES' },
+  { code: 'USD', name: 'dólar',           plural: 'dólares',         destinations: ['Estados Unidos', 'Ecuador'], sample: 919.70,  decimals: 2, envVar: 'PUBLIC_QUOTE_SAMPLE_RATE' },
+  { code: 'EUR', name: 'euro',            plural: 'euros',           destinations: ['Europa'],                    sample: 993,     decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_EUR' },
+  { code: 'ARS', name: 'peso argentino',  plural: 'pesos argentinos', destinations: ['Argentina'],                 sample: 0.92,    decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_ARS' },
+  { code: 'BOB', name: 'boliviano',       plural: 'bolivianos',      destinations: ['Bolivia'],                   sample: 133,     decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_BOB' },
+  { code: 'BRL', name: 'real',            plural: 'reales',          destinations: ['Brasil'],                    sample: 165,     decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_BRL' },
+  { code: 'CNY', name: 'yuan',            plural: 'yuanes',          destinations: ['China'],                     sample: 129,     decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_CNY' },
+  { code: 'COP', name: 'peso colombiano', plural: 'pesos colombianos', destinations: ['Colombia'],                  sample: 0.23,    decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_COP' },
+  { code: 'JPY', name: 'yen',             plural: 'yenes',           destinations: ['Japón'],                     sample: 5.98,    decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_JPY' },
+  { code: 'PEN', name: 'sol',             plural: 'soles',           destinations: ['Perú'],                      sample: 248,     decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_PEN' },
+  { code: 'PYG', name: 'guaraní',         plural: 'guaraníes',       destinations: ['Paraguay'],                  sample: 0.12,    decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_PYG' },
+  { code: 'UYU', name: 'peso uruguayo',   plural: 'pesos uruguayos', destinations: ['Uruguay'],                   sample: 23,      decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_UYU' },
+  { code: 'VES', name: 'bolívar',         plural: 'bolívares',       destinations: ['Venezuela'],                 sample: 25,      decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_VES' },
 ];
 
 const byCode = new Map(currencies.map((c) => [c.code, c]));
@@ -140,30 +160,82 @@ export function isForeignCurrency(value: unknown): value is ForeignCurrency {
  * `undefined` no es un fallo: es el estado normal de once de las doce mientras
  * D7 siga abierta, y es lo que mantiene esa divisa fuera del selector.
  */
-export function rateFor(
+export function rateFor(code: ForeignCurrency, env: Record<string, unknown>): number {
+  return confirmedRate(code, env) ?? currencyInfo(code).sample;
+}
+
+/** La tasa que alguien confirmó, o nada. Lo segundo es hoy el caso de las doce. */
+export function confirmedRate(
   code: ForeignCurrency,
-  env: Record<string, unknown>,
-  fallback?: number
+  env: Record<string, unknown>
 ): number | undefined {
   const raw = env[currencyInfo(code).envVar];
   const parsed = typeof raw === 'string' ? Number(raw) : Number.NaN;
-  if (Number.isFinite(parsed) && parsed > 0) return parsed;
-  return fallback;
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+/** Las que siguen corriendo con su marcador de posición. */
+export function unconfirmed(env: Record<string, unknown>): readonly ForeignCurrency[] {
+  return currencies.filter((c) => confirmedRate(c.code, env) === undefined).map((c) => c.code);
 }
 
 /**
- * Las divisas que el sitio puede ofrecer hoy: las que tienen tasa.
+ * Las divisas que el cotizador ofrece.
  *
- * El dólar lleva un valor por omisión —el que `ConfigPriceSource` ya usaba— así
- * que nunca desaparece del selector aunque nadie defina nada. Las otras once
- * aparecen una a una, en el orden del catálogo, a medida que Sebastián fije su
- * tasa.
+ * **Son las doce desde el 2026-10-22**, porque todas tienen tasa: la confirmada
+ * si alguien la puso, y si no, la de muestra. Hasta ese día sólo aparecían las
+ * que tuvieran variable de entorno, y eso dejaba el selector con una sola
+ * opción — correcto, y también invisible.
+ *
+ * **Lo que sustituye a aquel filtro es `assertRatesConfirmed`**, en el build:
+ * las muestras se pueden ver y probar en Staging, y no pueden salir al sitio
+ * público. El guardarraíl se movió de sitio, no desapareció.
  */
-export function availableCurrencies(
-  env: Record<string, unknown>,
-  defaultUsdRate: number
-): readonly CurrencyInfo[] {
-  return currencies.filter(
-    (c) => rateFor(c.code, env, c.code === DEFAULT_CURRENCY ? defaultUsdRate : undefined) !== undefined
+export function availableCurrencies(): readonly CurrencyInfo[] {
+  return currencies;
+}
+
+/**
+ * Detiene el build si el sitio va a indexarse con alguna tasa de muestra viva.
+ *
+ * ── Por qué existe ─────────────────────────────────────────────────────────
+ *
+ * Las doce tasas del catálogo son **marcadores de posición**: órdenes de
+ * magnitud sobre la tasa de muestra del dólar, no precios. Sirven para que el
+ * cotizador se pueda ver y probar mientras D7 sigue abierta, que es lo que
+ * Sebastián pidió el 2026-10-22.
+ *
+ * Lo que no pueden hacer es salir al sitio público. `CLAUDE.md` §3 y §7
+ * prohíben publicar datos comercialmente sensibles sin firma, y un precio de
+ * cambio lo es sin discusión. **El gesto de salir a producción es definir
+ * `PUBLIC_ALLOW_INDEXING`** (§0.1), así que es ahí donde se comprueba: con la
+ * indexación abierta, cada divisa necesita su variable.
+ *
+ * Es el mismo patrón que `assertPublishableSiteUrl`, y por el mismo motivo: una
+ * regla que depende de que alguien se acuerde no es una regla.
+ *
+ * **No basta con que la tasa exista: tiene que ser distinta de la muestra.**
+ * Copiar el número del catálogo a la variable pasaría la comprobación sin que
+ * nadie hubiera mirado un precio, y es justo lo que haría alguien con prisa.
+ *
+ * @throws si falta alguna, con la lista y qué hacer.
+ */
+export function assertRatesConfirmed(env: Record<string, unknown>): void {
+  const faltan = currencies.filter((c) => {
+    const r = confirmedRate(c.code, env);
+    return r === undefined || r === c.sample;
+  });
+  if (faltan.length === 0) return;
+
+  throw new Error(
+    'Indexación abierta con tasas de muestra sin confirmar.\n\n' +
+      `  Faltan ${faltan.length} de ${currencies.length}: ` +
+      faltan.map((c) => c.code).join(', ') +
+      '\n\n' +
+      '  Las tasas del catálogo son marcadores de posición, no precios, y el\n' +
+      '  sitio público no puede publicarlas (CLAUDE.md §3 y §7, D7). Defínelas\n' +
+      '  en el entorno de despliegue, con un valor distinto del de muestra:\n\n' +
+      faltan.map((c) => `      ${c.envVar}=   # ${c.name}`).join('\n') +
+      '\n'
   );
 }

@@ -618,6 +618,34 @@ número es un test.* Cuesta una línea y es la única forma de que la prosa no s
 silencio. El corolario incómodo: el error estaba en cuatro sitios **porque lo copié de mí mismo**,
 y copiar la propia afirmación se siente como confirmarla.
 
+### 4.20 Un guardarraíl se mueve de sitio, no se quita  ·  *2026-10-22*
+
+**El problema.** El 21 de octubre el catálogo de divisas no guardaba precios: una divisa sin
+variable de entorno **no existía para el sitio**, y `ConfigPriceSource` lanzaba antes que inventar
+un número. Era correcto, y tenía un efecto que no se podía defender mucho tiempo: con D7 abierta,
+el selector tenía una sola opción y **el trabajo entero era invisible**. Al día siguiente Sebastián
+pidió tasas de muestra para poder verlo y probarlo.
+
+**La tentación.** Poner las doce cifras y seguir. El riesgo es el de siempre: el sitio queda con
+doce precios que nadie aprobó y la etiqueta «referencial» no protege de que sean inverosímiles —es
+literalmente lo que D7 lleva meses diciendo del único que hay.
+
+**Lo que se hizo.** Las muestras entran, y la protección **se muda al build**: con
+`PUBLIC_ALLOW_INDEXING=true` —que es el gesto de salir a producción, no una bandera más— el build se
+detiene y nombra las divisas que siguen con su marcador. En Staging se ve y se prueba; al sitio
+público no llega. Y **repetir la cifra del catálogo en la variable no cuenta como confirmarla**,
+porque es exactamente lo que haría alguien con prisa.
+
+**Lo reutilizable.** *Cuando una restricción empieza a estorbar, la pregunta no es si quitarla sino
+dónde ponerla.* Acá bajó una barrera que estorbaba cada día —no poder ver la herramienta— y subió
+una que estorba una sola vez, el día de publicar, que es justo cuando conviene que alguien se
+detenga. Un guardarraíl que molesta a diario acaba desactivado; uno que molesta en el momento
+correcto, no.
+
+**Y queda dicho lo que esto NO resuelve.** Las doce cifras siguen siendo invención, y la primera
+que alguien mire en serio probablemente esté lejos. El guardarraíl impide publicarlas; no las
+mejora.
+
 ## 5. Errores propios, registrados
 
 Se anotan porque un registro que sólo cuenta aciertos no sirve para nada.
@@ -631,6 +659,7 @@ Se anotan porque un registro que sólo cuenta aciertos no sirve para nada.
 | La alternancia de superficies de `/empresas` rota al integrar el eje | Cowork, verificando mi integración |
 | «Catorce destinos» escrito en cuatro sitios cuando la lista tiene trece | Un test propio, al escribirlo (§4.19) |
 | Un comentario afirmaba que el catálogo de divisas no viajaba al navegador, y sí viajaba | Medir la isla antes y después: 4 528 → 6 673 B |
+| El precio referencial seguía diciendo «CLP por dólar» con el euro elegido | Mirar la captura del cotizador, no el código |
 | El bloque `PENDIENTE DE ASSET` del artículo de la Fed revivió en una actualización | Detectado al ir a ejecutarlo |
 | El recuento de marcas punteadas del DS §6.2 llevaba un día desfasado: `.et-torsion` entró con el abanico el 2026-10-01 | Al rehacer el barrido para integrar `/empresas` |
 | «Nada está roto» en el relevo de `/empresas`: el piso de 40 px SÍ se rompía, a 37,99 entre 417 y 419 px | Cowork, barriendo cada 1 px donde yo barrí cada 20 |

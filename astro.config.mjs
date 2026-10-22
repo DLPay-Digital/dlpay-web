@@ -10,6 +10,7 @@ import {
   assertPublishableSiteUrl,
   resolveSiteUrl,
 } from './src/lib/config/environment.ts';
+import { assertRatesConfirmed } from './src/lib/pricing/currencies.ts';
 
 /**
  * Configuración de Astro — deliberadamente mínima (ADR-0002, ADR-0005).
@@ -50,6 +51,11 @@ function deployGuard() {
         if (command !== 'build') return;
 
         const url = assertPublishableSiteUrl(env);
+
+        // Las tasas de muestra se pueden ver en Staging y no pueden salir al
+        // sitio público. Ver `assertRatesConfirmed`: la comprobación va atada a
+        // la indexación porque abrirla ES el gesto de publicar.
+        if (allowsIndexing(env)) assertRatesConfirmed(env);
 
         // La indexación se decide por omisión (cerrada), y una decisión por
         // omisión que nadie ve es la forma de publicar el sitio real con

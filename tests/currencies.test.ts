@@ -8,14 +8,18 @@
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 import {
   DEFAULT_CURRENCY,
+  assertRatesConfirmed,
   availableCurrencies,
+  confirmedRate,
   currencies,
   currencyInfo,
   isForeignCurrency,
   rateFor,
+  unconfirmed,
 } from '../src/lib/pricing/currencies.ts';
 import {
   buildQuote,
@@ -24,8 +28,6 @@ import {
   whatsappMessage,
 } from '../src/lib/pricing/quote.ts';
 import type { PriceReference } from '../src/lib/pricing/types.ts';
-
-const USD_RATE = 919.7;
 
 function precio(currency: Parameters<typeof currencyInfo>[0], rate: number): PriceReference {
   return {
@@ -79,36 +81,61 @@ describe('el catálogo', () => {
   });
 });
 
-describe('qué divisas puede ofrecer el sitio', () => {
-  test('sin ninguna variable, sólo el dólar', () => {
-    const disponibles = availableCurrencies({}, USD_RATE);
-    assert.deepEqual(disponibles.map((c) => c.code), ['USD']);
+describe('las tasas de muestra y el guardarraíl que impide publicarlas', () => {
+  /* Las doce aparecen en el selector: todas tienen tasa, la confirmada o la de
+     muestra. Lo que protege no es ocultarlas, es `assertRatesConfirmed`. */
+  test('el cotizador ofrece las doce', () => {
+    assert.equal(availableCurrencies().length, 12);
+    assert.equal(availableCurrencies()[0]!.code, DEFAULT_CURRENCY);
   });
 
-  test('una divisa aparece al definir su tasa, y sólo entonces', () => {
-    const sin = availableCurrencies({}, USD_RATE).map((c) => c.code);
-    const con = availableCurrencies({ PUBLIC_QUOTE_RATE_EUR: '1050.5' }, USD_RATE).map((c) => c.code);
-    assert.equal(sin.includes('EUR'), false);
-    assert.deepEqual(con, ['USD', 'EUR']);
-  });
-
-  /* Una tasa vacía, cero, negativa o con letras NO enciende la divisa. Es el
-     mismo criterio que `quoteLimits` aplica al mínimo: una cifra de dinero no
-     admite basura. */
-  test('una tasa inservible no enciende la divisa', () => {
-    for (const malo of ['', '0', '-3', 'mil', 'NaN']) {
-      assert.equal(rateFor('EUR', { PUBLIC_QUOTE_RATE_EUR: malo }), undefined, malo);
-    }
+  test('sin variable se usa la muestra; con variable, la variable', () => {
+    assert.equal(rateFor('EUR', {}), currencyInfo('EUR').sample);
     assert.equal(rateFor('EUR', { PUBLIC_QUOTE_RATE_EUR: '1050.5' }), 1050.5);
   });
 
-  test('el orden del catálogo manda, y el dólar va primero', () => {
-    const todas = availableCurrencies(
-      Object.fromEntries(currencies.map((c) => [c.envVar, '100'])),
-      USD_RATE
+  /* Una tasa vacía, cero, negativa o con letras NO cuenta como confirmada: es
+     el mismo criterio que `quoteLimits` aplica al mínimo. */
+  test('una tasa inservible no confirma nada', () => {
+    for (const malo of ['', '0', '-3', 'mil', 'NaN']) {
+      assert.equal(confirmedRate('EUR', { PUBLIC_QUOTE_RATE_EUR: malo }), undefined, malo);
+    }
+  });
+
+  test('hoy las doce están sin confirmar', () => {
+    assert.equal(unconfirmed({}).length, 12);
+  });
+
+  /* El guardarraíl de verdad: con la indexación abierta, un build con muestras
+     tiene que caerse. Si esto deja de ser cierto, el sitio público puede
+     publicar doce precios que nadie aprobó. */
+  test('el build se detiene si falta alguna, y dice cuáles', () => {
+    assert.throws(() => assertRatesConfirmed({}), /Faltan 12 de 12/);
+    const casi = Object.fromEntries(
+      currencies.filter((c) => c.code !== 'VES').map((c) => [c.envVar, '123'])
     );
-    assert.equal(todas.length, 12);
-    assert.equal(todas[0]!.code, DEFAULT_CURRENCY);
+    assert.throws(() => assertRatesConfirmed(casi), /Faltan 1 de 12: VES/);
+  });
+
+  /* Copiar el número del catálogo a la variable es lo que haría alguien con
+     prisa, y no es confirmar nada. */
+  test('repetir la cifra de muestra no cuenta como confirmarla', () => {
+    const copiado = Object.fromEntries(currencies.map((c) => [c.envVar, String(c.sample)]));
+    assert.throws(() => assertRatesConfirmed(copiado), /Faltan 12 de 12/);
+  });
+
+  test('con las doce confirmadas, no lanza', () => {
+    const todas = Object.fromEntries(currencies.map((c) => [c.envVar, String(c.sample + 1)]));
+    assert.doesNotThrow(() => assertRatesConfirmed(todas));
+  });
+
+  /* §4.19: un número escrito en una prosa sobre un dato que el código tiene es
+     un test. Acá el dato es el catálogo y la prosa es `.env.example`. */
+  test('`.env.example` documenta las doce variables', () => {
+    const ejemplo = readFileSync(new URL('../.env.example', import.meta.url), 'utf8');
+    for (const c of currencies) {
+      assert.ok(ejemplo.includes(c.envVar), `${c.envVar} no está en .env.example`);
+    }
   });
 });
 

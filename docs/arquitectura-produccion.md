@@ -21,7 +21,7 @@ Reverificado el 2026-09-08 — cero `fetch`, `XMLHttpRequest`, `WebSocket`, `Eve
 | Momento | Qué ocurre |
 |---|---|
 | **Build** | Se valida la configuración de despliegue (URL canónica y política de indexación), se resuelve el precio (`ConfigPriceSource`), se lee la configuración, se compone el HTML de las **diez** páginas —nueve rutas fijas más una por artículo del blog—, se genera el sitemap y el robots. Todo queda escrito en `dist/`. |
-| **Cliente** | Entre **0 y 53,1 KB** de JavaScript según la página (tabla abajo). Cinco scripts en la Home, cuatro en las otras siete con JavaScript, **ninguno** en las cinco restantes; el peso está concentrado en la Home. |
+| **Cliente** | Entre **0 y 53,5 KB** de JavaScript según la página (tabla abajo). Cinco scripts en la Home, cuatro en las otras siete con JavaScript, **ninguno** en las cinco restantes; el peso está concentrado en la Home. |
 | **Fuera del sistema** | La conversación por WhatsApp, la verificación bancaria y la ejecución de la operación. Nada de eso pasa por la web. |
 
 ### 1.1 El JavaScript que se envía — inventario exacto
@@ -38,13 +38,15 @@ reloj del feed»). Ni eran dos páginas ni es un reloj.
 
 | Página | `is:inline` | Motion | Marcador | Intro | Quoter | Globo | Total |
 |---|---|---|---|---|---|---|---|
-| `/` | 56 B | 489 B | 319 B | 6 293 B | 6 673 B | 40 525 B | **53,1 KB** |
+| `/` | 56 B | 489 B | 319 B | 6 293 B | 7 058 B | 40 525 B | **53,5 KB** |
 | `/como-funciona/`, `/confianza/`, `/empresas/`, `/precio/`, `/preguntas/`, `/blog/`, `/blog/<slug>/` | 56 B | 489 B | 319 B | — | — | — | **1,1 KB** |
 | `/terminos/`, `/privacidad/`, `/tarifas/`, `/canal-de-denuncias/` | — | — | — | — | — | — | **0 B** |
 | `404.html` | — | — | — | — | — | — | **0 B** |
 
-**El cotizador subió de 4 528 a 6 673 bytes el 2026-10-21** (ADR-0013), y la Home con él, de 50,3
-a 53,1 KB. Los 2,1 KB son el **catálogo de divisas**: `quote.ts` lo importa para redactar el
+**El cotizador subió de 4 528 a 7 058 bytes entre el 21 y el 22 de octubre** (ADR-0013 y las tasas
+de muestra), y la Home con él, de 50,3 a 53,5 KB. Los últimos 385 bytes son el selector llevando el
+nombre de la divisa al navegador, para que el precio referencial diga «CLP por euro» y no «CLP por
+dólar» bajo una cifra en euros. Los 2,1 KB son el **catálogo de divisas**: `quote.ts` lo importa para redactar el
 mensaje de WhatsApp con el nombre de la divisa en plural —«a guaraníes», no «a PYGs»— y por eso
 cruza al navegador. Se podría evitar sacando `currencyInfo` de `quote.ts`, y entonces la web y el
 chat podrían decir palabras distintas, que es justo lo que ese módulo existe para impedir. Lo que
