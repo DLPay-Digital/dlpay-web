@@ -1,0 +1,316 @@
+---
+/**
+ * TRECE DESTINOS, CADA UNO EN SU MONEDA (Cowork, entrega `wise-`, 2026-10-22).
+ *
+ * Lo que se trae de wise.com, pedido por Sebastián el 2026-10-22, y cómo se hizo
+ * nuestro:
+ *
+ * 1. **La banda que rueda las banderas al bajar.** En Wise una píldora verde con
+ *    una flecha empuja una fila de banderas que giran como ruedas. Acá la píldora
+ *    es el recorrido: una cápsula de tinta que sale de Chile —su bandera y
+ *    «CLP»—, lleva dentro el tramo verde (lo nuestro, de punta a punta desde
+ *    ADR-0014) y termina en el isotipo, que es el vector de movimiento del que
+ *    sale todo el sistema geométrico (ADR-0001). Al bajar, la cápsula crece y
+ *    las trece banderas ruedan delante de ella.
+ * 2. **El destino con su bandera**, como en el conversor de Wise, y **la tabla de
+ *    montos habituales** de sus páginas de cada par de monedas: acá cada destino
+ *    es una tarjeta que se despliega sin JavaScript (`<details>`) y enseña cuánto
+ *    llega de cinco montos, con el mismo precio y la misma aritmética que el
+ *    cotizador.
+ *
+ * **Lo que NO se trae de Wise**, porque el sitio no puede decirlo: «llega en 20
+ * segundos» (ADR-0014 §3, ningún plazo de la entrega final), las comisiones
+ * desglosadas (aquí el precio ya incluye el spread), las reseñas y las cifras de
+ * clientes (no las hay), y «regulado por» (§6).
+ *
+ * ── El movimiento: motion-e6 (ADR-0016) ─────────────────────────────────────
+ * Va ligado al desplazamiento (`animation-timeline: view()`), no al reloj: no
+ * arranca solo y se detiene cuando dejas de bajar. Sólo con
+ * `prefers-reduced-motion: no-preference` Y en un navegador que entienda esas
+ * líneas de tiempo; en cualquier otro caso la banda está quieta en su reposo,
+ * que se lee igual. Cero JavaScript.
+ *
+ * REQUIERE VALIDACIÓN DE COMPLIANCE — «cada uno en su moneda» y «cuánto llega»:
+ * que el dinero llega a destino en la moneda de ese destino (ADR-0014).
+ */
+import Bandera from './Bandera.astro';
+import Icon from './Icon.astro';
+import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
+import { currencyInfo, destinos } from '../lib/pricing/currencies.ts';
+import { convert, formatAmount, precioLegible } from '../lib/pricing/quote.ts';
+import { quoteLimits } from '../lib/config/site.ts';
+import { banderaDeDestino } from '../lib/banderas.ts';
+
+/* Cinco montos habituales, desde el mínimo real (D6: CLP 500.000). Wise empieza
+   en 1 peso; acá un monto bajo el mínimo enseñaría una operación que no se hace. */
+const MONTOS = [1, 2, 4, 10, 20].map((k) => k * quoteLimits.minPayClp);
+
+const lugares = await Promise.all(
+  destinos().map(async (l) => {
+    const { rate } = await new ConfigPriceSource(l.code).getPrice();
+    const info = currencyInfo(l.code);
+    return {
+      ...l,
+      bandera: banderaDeDestino(l.destino) ?? 'us',
+      moneda: info.name.charAt(0).toUpperCase() + info.name.slice(1),
+      precio: precioLegible(rate, l.code),
+      filas: MONTOS.map((clp) => ({
+        envias: formatAmount(clp, 'CLP'),
+        llega: formatAmount(convert('to_foreign', clp, rate), l.code),
+      })),
+    };
+  })
+);
+/* Tres columnas fijas desde 900 px —5, 4 y 4, en orden alfabético de arriba
+   abajo— en vez de `columns: 3`: así una tarjeta que se abre sólo empuja a las
+   de su columna. Con columnas de CSS el navegador las rebalanceaba al abrir, y
+   una tarjeta saltaba de una columna a otra. Bajo 900 px las tres listas van
+   una tras otra y el orden se lee seguido. */
+const columnas = [lugares.slice(0, 5), lugares.slice(5, 9), lugares.slice(9)];
+---
+<section class="destinos" aria-labelledby="destinos-title">
+  <div class="inner">
+    <header class="head">
+      <h2 id="destinos-title" data-enter>Trece destinos, cada uno en su moneda</h2>
+      <p data-enter>
+        Elige uno y mira cuánto llega. Son montos referenciales: el precio final te lo
+        confirma tu ejecutivo antes de que transfieras.
+      </p>
+    </header>
+  </div>
+
+  {/* La banda: decorativa entera. Lo que dice está escrito en las tarjetas. */}
+  <div class="banda" aria-hidden="true">
+    <div class="banda-fila">
+      <div class="capsula">
+        <Bandera code="cl" size={40} />
+        <span class="capsula-clp num">CLP</span>
+        <span class="capsula-tramo"></span>
+        <span class="capsula-cabeza">
+          <svg viewBox="0 0 100 75.11" fill="currentColor" fill-rule="evenodd"><path d="M9.33 0 L72.89 0.44 L80.89 2.67 L87.11 5.78 L90.67 8.44 L95.56 14.22 L98.22 19.56 L100 26.67 L99.11 40 L95.11 48.44 L91.11 54.22 L84 60.44 L76.44 65.33 L69.33 68.44 L58.22 71.56 L45.78 73.33 L7.56 74.22 L36 56.89 L46.67 49.33 L54.22 49.33 L63.56 45.78 L69.78 40.44 L72.44 34.67 L72.44 29.78 L71.11 26.67 L68 24 L64 22.67 L17.78 22.22 L8.89 0.44 Z M19.56 35.11 L50.67 35.56 L0 75.11 L19.11 35.56 Z" /></svg>
+        </span>
+      </div>
+      <div class="ruedas">
+        {lugares.map((l) => <span class="rueda"><Bandera code={l.bandera} size={56} /></span>)}
+      </div>
+    </div>
+  </div>
+
+  <div class="inner">
+    <div class="rejilla">
+      {columnas.map((col) => (
+      <ul class="columna" role="list">
+      {col.map((l) => (
+        <li>
+          <details class="destino">
+            <summary>
+              <Bandera code={l.bandera} size={32} />
+              <span class="d-texto">
+                <span class="d-pais">{l.destino}</span>
+                <span class="d-moneda">{l.moneda} · <span class="num">{l.code}</span></span>
+              </span>
+              <Icon name="chevron" size={20} class="d-ico" />
+            </summary>
+            <div class="d-cuerpo">
+              <p class="d-precio"><span>Precio referencial</span> <span class="num">{l.precio}</span></p>
+              <table class="d-tabla">
+                <caption class="sr-only">Cuánto llega a {l.destino}, aproximado</caption>
+                <thead>
+                  <tr><th scope="col">Envías</th><th scope="col">Llega aprox.</th></tr>
+                </thead>
+                <tbody>
+                  {l.filas.map((f) => (
+                    <tr><td class="num">{f.envias}</td><td class="num">{f.llega}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+              <a class="d-ir" href={`/?destino=${encodeURIComponent(l.destino)}#cotizador`} data-cotizar-destino={l.destino}>
+                Cotizar un envío a {l.destino}
+              </a>
+            </div>
+          </details>
+        </li>
+      ))}
+      </ul>
+      ))}
+    </div>
+    <p class="nota">Los montos usan el mismo precio referencial que el cotizador.</p>
+  </div>
+</section>
+
+<style>
+  .destinos { background: var(--papel); padding: var(--s-8) 0; }
+  .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
+  .head { max-width: 46rem; }
+  h2 { font-size: var(--t-h2-m); line-height: var(--lh-h2); letter-spacing: var(--ls-h2); }
+  .head p { margin-top: var(--s-3); color: var(--ink-mute); font-size: var(--t-body); line-height: var(--lh-body); }
+
+  /* ── La banda ─────────────────────────────────────────────────────────── */
+  /* Los anchos de la cápsula van en px y por tramo de pantalla, no en vw: el
+     giro de cada bandera se calcula con el crecimiento y una división de dos
+     longitudes en `calc()` todavía no la entienden todos los navegadores.
+     Giro = crecimiento ÷ (π · 56 px) × 360°. */
+  .banda {
+    --cap-ini: 210px; --cap-reposo: 240px; --cap-fin: 280px; --giro: 143deg;
+    margin: var(--s-6) 0;
+    overflow: hidden;
+  }
+  .banda-fila {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    /* Arranca en el borde del texto, no en el de la pantalla: el mismo margen
+       que `.inner`. El porcentaje es del ancho de la banda (la pantalla). */
+    padding-left: calc(max(0px, (100% - var(--container)) / 2) + var(--pad-section-m));
+    width: max-content;
+  }
+  .capsula {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    width: var(--cap-reposo);
+    min-width: min-content;
+    height: 72px;
+    padding: 0 8px 0 16px;
+    border-radius: var(--r-card);
+    background: var(--tinta);
+    color: var(--on-tinta);
+  }
+  .capsula-clp { font-size: var(--t-label); font-weight: 600; letter-spacing: .04em; }
+  .capsula-tramo { flex: 1; min-width: 12px; border-top: 3px solid var(--verde); }
+  .capsula-cabeza {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--verde);
+    color: var(--tinta);
+  }
+  .capsula-cabeza svg { width: 28px; height: auto; display: block; }
+  .ruedas { display: flex; gap: var(--s-3); }
+  .rueda { display: block; }
+
+  /* ── El movimiento: motion-e6 (ADR-0016) ─────────────────────────────────
+     La cápsula crece con el desplazamiento y empuja la fila: el empuje lo da
+     el propio flujo, porque las banderas van a su lado. Cada bandera gira lo
+     que rodaría una rueda de 56 px al avanzar lo que crece la cápsula, sin
+     resbalar: 360° por cada 176 px (π · 56). */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .banda { view-timeline: --banda block; }
+      .capsula {
+        animation: crece linear both;
+        animation-timeline: --banda;
+        animation-range: cover 5% cover 75%;
+      }
+      .rueda {
+        animation: rueda linear both;
+        animation-timeline: --banda;
+        animation-range: cover 5% cover 75%;
+      }
+    }
+  }
+  @keyframes crece {
+    from { width: var(--cap-ini); }
+    to   { width: var(--cap-fin); }
+  }
+  @keyframes rueda {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(var(--giro)); }
+  }
+
+  /* ── Las tarjetas ─────────────────────────────────────────────────────── */
+  .rejilla { display: grid; gap: var(--s-3); align-items: start; }
+  .columna { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  .destino {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-3);
+  }
+  .destino[open] { border-color: var(--ink-mute); }
+  summary {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    min-height: 64px;
+    padding: var(--s-3) var(--s-4);
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r-3); }
+  .d-texto { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .d-pais { font-weight: 600; font-size: var(--t-body); color: var(--ink); }
+  .d-moneda { font-size: var(--t-label); color: var(--ink-mute); }
+  .d-precio {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-3);
+    padding: var(--s-2) 0;
+    border-top: 1px solid var(--line);
+    font-size: var(--t-label);
+    color: var(--ink-mute);
+  }
+  .d-precio .num { font-weight: 600; color: var(--ink); white-space: nowrap; }
+  .destino :global(.d-ico) { flex: none; color: var(--ink-mute); transform: rotate(90deg); transition: transform var(--m-fast) var(--m-ease); }
+  .destino[open] :global(.d-ico) { transform: rotate(-90deg); }
+  @media (prefers-reduced-motion: reduce) { .destino :global(.d-ico) { transition: none; } }
+
+  .d-cuerpo { padding: 0 var(--s-4) var(--s-4); }
+  .d-tabla { width: 100%; border-collapse: collapse; font-size: var(--t-body-sm); }
+  .d-tabla th {
+    text-align: left;
+    font-size: var(--t-label);
+    font-weight: 600;
+    color: var(--ink-mute);
+    padding: var(--s-2) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .d-tabla th:last-child, .d-tabla td:last-child { text-align: right; }
+  .d-tabla td { padding: var(--s-2) 0; border-bottom: 1px solid var(--line); color: var(--ink); }
+  .d-tabla td:last-child { font-weight: 600; }
+  /* `d-ir` y no `d-cta`: es un enlace con borde, y en el DS «cta» es sólo el
+     primario relleno (§8, Botón). */
+  .d-ir {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin-top: var(--s-3);
+    border: 1px solid var(--line);
+    border-radius: var(--r-2);
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    color: var(--verde-deep);
+    text-decoration: none;
+  }
+  .d-ir:hover { border-color: var(--verde-deep); }
+  .nota { margin-top: var(--s-4); font-size: var(--t-label); color: var(--ink-mute); }
+
+  /* 210 px es lo mínimo que cabe dentro —bandera, «CLP» con el espaciado de
+     WCAG 1.4.12, un trozo de tramo y el isotipo— y el final no pasa del borde
+     derecho de la pantalla, para que el isotipo se vea siempre entero. */
+  @media (min-width: 390px) {
+    .banda { --cap-ini: 210px; --cap-reposo: 260px; --cap-fin: 340px; --giro: 266deg; }
+  }
+  @media (min-width: 600px) {
+    .banda { --cap-ini: 220px; --cap-reposo: 320px; --cap-fin: 520px; --giro: 614deg; }
+  }
+  @media (min-width: 900px) {
+    .inner { padding-inline: var(--pad-section); }
+    .banda { --cap-ini: 260px; --cap-reposo: 420px; --cap-fin: 760px; --giro: 1023deg; }
+    .banda-fila { padding-left: calc(max(0px, (100% - var(--container)) / 2) + var(--pad-section)); }
+    h2 { font-size: var(--t-h2); }
+    .rejilla { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  @media (forced-colors: active) {
+    .capsula { border: 1px solid CanvasText; }
+    .capsula-tramo { border-color: Highlight; }
+    .capsula-cabeza { border: 2px solid Highlight; }
+    .destino[open] { border-color: Highlight; }
+  }
+</style>

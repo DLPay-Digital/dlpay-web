@@ -47,6 +47,8 @@ import { formatCLP, formatForeign } from '../lib/pricing/format.ts';
 import { buildQuote, precioLegible, whatsappUrl } from '../lib/pricing/quote.ts';
 import { contact, platform, quoteLimits } from '../lib/config/site.ts';
 import Icon from './Icon.astro';
+import Bandera from './Bandera.astro';
+import { CODIGOS_BANDERA, banderaDeDestino, banderaDeDivisa } from '../lib/banderas.ts';
 
 interface Props {
   /** Sobre tinta flota con sombra; sobre papel va plano (spec §2). */
@@ -142,51 +144,147 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
   </fieldset>
 
   {/*
-    ── A dónde: el país, y la moneda sale sola ───────────────────────────────
+    ── A dónde: el país, con su bandera, y la moneda sale sola ──────────────
 
-    Era «¿A qué moneda?» con doce opciones del tipo «Dólar · USD (Estados
-    Unidos, Ecuador)». Un envío se piensa por destino, así que ahora son los
-    trece países y cada uno trae su divisa. La opción dice las dos cosas,
-    «Colombia · COP», para que nadie tenga que adivinar en qué llega.
+    Era «¿A qué moneda?» con doce opciones, y desde la entrega `cotizador-`
+    fue «¿A dónde envías?» con un `<select>` nativo de trece países. **Desde la
+    entrega `wise-` (2026-10-22) es un selector propio, con bandera y buscador**,
+    como el de Wise: una lista del sistema no puede dibujar una bandera, y la
+    bandera es lo que hace que el destino se encuentre de un vistazo.
 
-    El desplegable es el NATIVO (`<select>`), con su lista del sistema: en un
-    teléfono abre el selector del teléfono, y con teclado y lector funciona sin
-    una línea de ARIA propia. Lo único que se le cambia es la caja cerrada:
-    `appearance: none` y la flecha del set de iconos, girada, porque la del
-    sistema no hablaba la misma letra que el resto de la tarjeta.
+    **Cómo se usa sin ratón**, y por eso es más largo que un `<select>`:
+    - el botón dice lo elegido y abre el panel (`aria-haspopup="listbox"`);
+    - en el panel el foco va al buscador, que es un `combobox` y gobierna la
+      lista con `aria-activedescendant`: las flechas mueven, Intro elige,
+      Escape cierra y devuelve el foco al botón;
+    - escribir filtra por país, por código y por nombre de la moneda, con o
+      sin tildes;
+    - el foco que sale del selector lo cierra.
 
     En «Pasar a pesos» la pregunta es otra —qué divisa tienes, no a dónde va—,
-    así que se cambia de desplegable y no de texto: el de destinos se oculta y
-    aparece el de divisas, con su propia etiqueta. Sin JavaScript se ve sólo el
-    primero, que es el que corresponde a la opción marcada.
+    así que se cambia de selector y no de texto. Sin JavaScript se ve el
+    primero, con Estados Unidos elegido, y el botón no abre nada: sin la isla
+    tampoco hay cálculo, igual que antes con el nativo.
   */}
   <div class="field" data-campo-destino>
-    <label class="label" for="destino-select">¿A dónde envías?</label>
-    <div class="select-box">
-      <select id="destino-select" class="select" data-destino>
-        {lugares.map((l) => (
-          <option value={l.destino} data-c={l.code} selected={l.destino === DEFAULT_DESTINO}>
-            {l.destino} · {l.code}
-          </option>
-        ))}
-      </select>
-      <Icon name="chevron" size={20} class="select-ico" />
+    <span class="label" id="destino-rot">¿A dónde envías?</span>
+    <div class="selector" data-selector="destino">
+      <button
+        type="button"
+        class="selector-boton"
+        id="destino-boton"
+        aria-haspopup="listbox"
+        aria-expanded="false"
+        aria-controls="destino-panel"
+        aria-labelledby="destino-rot destino-boton"
+        data-boton
+      >
+        <span class="selector-actual" data-actual>
+          <Bandera code={banderaDeDestino(DEFAULT_DESTINO) ?? 'us'} size={24} />
+          <span class="selector-nombre">{DEFAULT_DESTINO}</span>
+          <span class="selector-codigo num">{DEFAULT_CURRENCY}</span>
+        </span>
+        <Icon name="chevron" size={20} class="selector-ico" />
+      </button>
+      <div class="selector-panel" id="destino-panel" data-panel hidden>
+        <input
+          class="selector-buscar"
+          type="text"
+          role="combobox"
+          aria-label="Busca un país o una moneda"
+          aria-autocomplete="list"
+          aria-expanded="true"
+          aria-controls="destino-lista"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Busca un país o una moneda"
+          data-buscar
+        />
+        <ul class="selector-lista" role="listbox" id="destino-lista" aria-label="Destinos" data-lista>
+          {lugares.map((l, i) => (
+            <li
+              role="option"
+              id={`dst-${i}`}
+              class="selector-op"
+              aria-selected={l.destino === DEFAULT_DESTINO ? 'true' : 'false'}
+              data-valor={l.destino}
+              data-c={l.code}
+              data-texto={`${l.destino} ${l.code} ${currencyInfo(l.code).name} ${currencyInfo(l.code).plural}`}
+            >
+              <Bandera code={banderaDeDestino(l.destino) ?? 'us'} size={24} />
+              <span class="op-nombre">{l.destino}</span>
+              <span class="op-codigo num">{l.code}</span>
+            </li>
+          ))}
+        </ul>
+        <p class="selector-vacio" data-vacio hidden>Ningún destino coincide.</p>
+        <p class="sr-only" role="status" data-estado data-uno="destino" data-varios="destinos" data-ninguno="Ningún destino coincide."></p>
+      </div>
     </div>
   </div>
 
   <div class="field" data-campo-divisa hidden>
-    <label class="label" for="divisa-select">¿Qué divisa tienes?</label>
-    <div class="select-box">
-      <select id="divisa-select" class="select" data-divisa>
-        {divisas.map((d) => (
-          <option value={d.code} selected={d.code === DEFAULT_CURRENCY}>
-            {mayuscula(d.name)} · {d.code}
-          </option>
-        ))}
-      </select>
-      <Icon name="chevron" size={20} class="select-ico" />
+    <span class="label" id="divisa-rot">¿Qué divisa tienes?</span>
+    <div class="selector" data-selector="divisa">
+      <button
+        type="button"
+        class="selector-boton"
+        id="divisa-boton"
+        aria-haspopup="listbox"
+        aria-expanded="false"
+        aria-controls="divisa-panel"
+        aria-labelledby="divisa-rot divisa-boton"
+        data-boton
+      >
+        <span class="selector-actual" data-actual>
+          <Bandera code={banderaDeDivisa(DEFAULT_CURRENCY) ?? 'us'} size={24} />
+          <span class="selector-nombre">{mayuscula(currencyInfo(DEFAULT_CURRENCY).name)}</span>
+          <span class="selector-codigo num">{DEFAULT_CURRENCY}</span>
+        </span>
+        <Icon name="chevron" size={20} class="selector-ico" />
+      </button>
+      <div class="selector-panel" id="divisa-panel" data-panel hidden>
+        <input
+          class="selector-buscar"
+          type="text"
+          role="combobox"
+          aria-label="Busca una moneda"
+          aria-autocomplete="list"
+          aria-expanded="true"
+          aria-controls="divisa-lista"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Busca una moneda"
+          data-buscar
+        />
+        <ul class="selector-lista" role="listbox" id="divisa-lista" aria-label="Divisas" data-lista>
+          {divisas.map((d, i) => (
+            <li
+              role="option"
+              id={`dvs-${i}`}
+              class="selector-op"
+              aria-selected={d.code === DEFAULT_CURRENCY ? 'true' : 'false'}
+              data-valor={d.code}
+              data-c={d.code}
+              data-texto={`${d.name} ${d.plural} ${d.code} ${d.destinations.join(' ')}`}
+            >
+              <Bandera code={banderaDeDivisa(d.code) ?? 'us'} size={24} />
+              <span class="op-nombre">{mayuscula(d.name)}</span>
+              <span class="op-codigo num">{d.code}</span>
+            </li>
+          ))}
+        </ul>
+        <p class="selector-vacio" data-vacio hidden>Ninguna moneda coincide.</p>
+        <p class="sr-only" role="status" data-estado data-uno="moneda" data-varios="monedas" data-ninguno="Ninguna moneda coincide."></p>
+      </div>
     </div>
   </div>
+
+  {/* Las banderas de las fichas de moneda, para que la isla las copie: el
+      dibujo se escribe una vez, en el servidor, y no viaja en el JavaScript. */}
+  <template id="cot-banderas">
+    {CODIGOS_BANDERA.map((c) => <Bandera code={c} size={16} />)}
+  </template>
 
   {/*
     ── Los dos montos y, entre ellos, el recorrido ───────────────────────────
@@ -218,7 +316,7 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     <div class="monto">
       <div class="monto-cabeza">
         <label class="monto-label" for="give-input" data-label-give>Envías</label>
-        <span class="moneda num" id="cur-give" data-cur-give>CLP</span>
+        <span class="moneda num" id="cur-give"><Bandera code="cl" size={16} /><span data-cur-give>CLP</span></span>
       </div>
       <input
         id="give-input"
@@ -250,7 +348,7 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     <div class="monto monto-llega">
       <div class="monto-cabeza">
         <label class="monto-label" for="get-input" data-label-get>Llega aprox.</label>
-        <span class="moneda num" id="cur-get" data-cur-get>USD</span>
+        <span class="moneda num" id="cur-get"><Bandera code={banderaDeDestino(DEFAULT_DESTINO) ?? 'us'} size={16} /><span data-cur-get>USD</span></span>
       </div>
       <input
         id="get-input"
@@ -297,7 +395,7 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 <div class="dock" data-dock hidden>
   <div class="dock-in">
     <span class="dock-fig">
-      <span class="dock-label" data-dock-label>Llega a {DEFAULT_DESTINO}</span>
+      <span class="dock-label"><Bandera code={banderaDeDestino(DEFAULT_DESTINO) ?? 'us'} size={16} /><span data-dock-label>Llega a {DEFAULT_DESTINO}</span></span>
       <span class="dock-amount num" data-dock-amount>{formatForeign(initialGet, currencyInfo(DEFAULT_CURRENCY).decimals)}</span>
     </span>
     <a class="dock-cta" href={wa} target="_blank" rel="noopener" data-dock-cta>
@@ -382,39 +480,122 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     color: var(--ink-mute);
     margin-bottom: var(--s-2);
   }
-  .select-box {
-    position: relative;
+  /* ── El selector con bandera (entrega `wise-`) ─────────────────────── */
+  .selector { position: relative; }
+  .selector-boton {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    width: 100%;
+    min-height: 52px;
+    padding: 0 var(--s-3);
     border: 1px solid var(--line);
     border-radius: var(--r-2);
     background: #fff;
+    font: inherit;
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
     transition: border-color var(--m-fast) var(--m-ease),
                 box-shadow var(--m-fast) var(--m-ease);
   }
-  .select {
-    appearance: none;
-    display: block;
-    width: 100%;
-    min-height: 48px;
-    border: 0;
-    background: transparent;
-    padding: 0 calc(var(--s-3) + 28px) 0 var(--s-3);
-    font: inherit;
+  .selector-boton:hover { border-color: var(--ink-mute); }
+  .selector-boton:focus { outline: none; }
+  .selector-boton:focus-visible,
+  .selector-boton[aria-expanded='true'] {
+    border-color: var(--verde-deep);
+    box-shadow: 0 0 0 3px rgba(10, 114, 80, 0.18);
+  }
+  .selector-actual { display: flex; align-items: center; gap: var(--s-3); min-width: 0; }
+  .selector-nombre {
     font-size: var(--t-body);
     font-weight: 600;
-    color: var(--ink);
-    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
     text-overflow: ellipsis;
   }
-  .select:focus { outline: none; }
-  /* La flecha del set apunta a la derecha; girada, dice «se despliega». */
-  .select-box :global(.select-ico) {
-    position: absolute;
-    right: var(--s-3);
-    top: 50%;
-    transform: translateY(-50%) rotate(90deg);
+  .selector-codigo { font-size: var(--t-label); font-weight: 500; color: var(--ink-mute); }
+  /* La flecha del set apunta a la derecha; girada, dice «se despliega», y de
+     cabeza, «se recoge». */
+  .selector-boton :global(.selector-ico) {
+    flex: none;
     color: var(--ink-mute);
-    pointer-events: none;
+    transform: rotate(90deg);
+    transition: transform var(--m-fast) var(--m-ease);
   }
+  .selector-boton[aria-expanded='true'] :global(.selector-ico) { transform: rotate(-90deg); }
+
+  /* El panel cuelga del botón y tapa lo que hay debajo dentro de la tarjeta.
+     Lleva la sombra de los menús, `--elev-pop`, que el DS reserva para esto. */
+  .selector-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 20;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-2);
+    box-shadow: var(--elev-pop);
+    padding: var(--s-2);
+  }
+  .selector-panel[hidden] { display: none; }
+  .selector-buscar {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 var(--s-3);
+    border: 1px solid var(--line);
+    border-radius: var(--r-1);
+    background: var(--papel);
+    font: inherit;
+    font-size: var(--t-body);
+    color: var(--ink);
+  }
+  .selector-buscar::placeholder { color: var(--ink-mute); opacity: 1; }
+  /* El mismo foco que el botón y las cajas de los montos: borde y anillo. Con
+     sólo el borde, el buscador era el único campo de la tarjeta sin anillo. */
+  .selector-buscar:focus {
+    outline: none;
+    border-color: var(--verde-deep);
+    box-shadow: 0 0 0 3px rgba(10, 114, 80, 0.18);
+  }
+  .selector-lista {
+    list-style: none;
+    margin: var(--s-2) 0 0;
+    padding: 0;
+    max-height: 288px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .selector-op {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    min-height: 44px;
+    padding: 0 var(--s-3);
+    border-radius: var(--r-1);
+    cursor: pointer;
+  }
+  .selector-op[hidden] { display: none; }
+  .op-nombre { flex: 1; min-width: 0; font-size: var(--t-body-sm); font-weight: 600; color: var(--ink); }
+  .op-codigo { font-size: var(--t-label); color: var(--ink-mute); }
+  /* La activa —la que eligen Intro o un clic— va en papel-2 y con un borde a
+     la izquierda; la elegida, con el verde oscuro en el código y un punto. */
+  .selector-op:hover,
+  .selector-op.activa { background: var(--papel-2); }
+  .selector-op.activa { box-shadow: inset 3px 0 0 var(--ink-mute); }
+  .selector-op[aria-selected='true'] .op-codigo { color: var(--verde-deep); font-weight: 600; }
+  .selector-op[aria-selected='true']::after {
+    content: '';
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 4px solid var(--verde-deep);
+  }
+  .selector-vacio { padding: var(--s-3); font-size: var(--t-body-sm); color: var(--ink-mute); }
 
   /* ── Los montos y el tramo ──────────────────────────────────────────── */
   .monto {
@@ -430,8 +611,7 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
      del campo. verde-deep da 4.9:1; el verde de marca sólo 1.9:1. El anillo es
      `--verde-deep` al 18%, a mano porque `color-mix()` está por debajo del
      `cssTarget` del proyecto. */
-  .monto:focus-within,
-  .select-box:focus-within {
+  .monto:focus-within {
     border-color: var(--verde-deep);
     box-shadow: 0 0 0 3px rgba(10, 114, 80, 0.18);
   }
@@ -478,7 +658,10 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
      papel de la tarjeta. Es dato, no adorno, y no se pulsa. */
   .moneda {
     flex: none;
-    padding: 3px var(--s-2);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px var(--s-2) 3px 4px;
     border-radius: var(--r-1);
     background: var(--papel-2);
     font-size: var(--t-label);
@@ -637,6 +820,9 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
   }
   .dock-fig { display: flex; flex-direction: column; min-width: 0; }
   .dock-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: var(--t-dato-sm);
     font-weight: 600;
     letter-spacing: var(--ls-label);
@@ -693,6 +879,9 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
      tramo y el punto ya son bordes, así que siguen. La ficha de la moneda y el
      interruptor elegido pierden su fondo y necesitan un borde que los diga. */
   @media (forced-colors: active) {
+    .selector-panel { border: 1px solid CanvasText; }
+    .selector-op.activa { outline: 2px solid Highlight; outline-offset: -2px; }
+    .selector-op[aria-selected='true']::after { border-color: Highlight; }
     .moneda { border: 1px solid CanvasText; }
     .modo { border: 1px solid CanvasText; }
     /* El borde transparente de la opción sin elegir se pintaría: se le da el
@@ -724,17 +913,159 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
   const root = document.querySelector<HTMLElement>('#cotizador');
   if (root) {
     const divisas: IslandCurrency[] = JSON.parse(root.dataset.divisas ?? '[]');
-    const destinoSel = root.querySelector<HTMLSelectElement>('[data-destino]');
-    const divisaSel = root.querySelector<HTMLSelectElement>('[data-divisa]');
     const campoDestino = root.querySelector<HTMLElement>('[data-campo-destino]');
     const campoDivisa = root.querySelector<HTMLElement>('[data-campo-divisa]');
+    const banderas = document.querySelector<HTMLTemplateElement>('#cot-banderas');
+
+    /** Una bandera de 16 px, copiada de la plantilla que dibujó el servidor. */
+    const bandera = (codigo: string | undefined): Node | null =>
+      (codigo && banderas?.content.querySelector(`[data-bandera="${codigo}"]`)?.cloneNode(true)) || null;
+    const ponerBandera = (caja: Element | null | undefined, codigo: string | undefined): void => {
+      const nueva = bandera(codigo);
+      const vieja = caja?.querySelector('[data-bandera]');
+      if (nueva && vieja) vieja.replaceWith(nueva);
+    };
+
+    /** Sin tildes ni mayúsculas: «peru» encuentra Perú y «japon», Japón. */
+    const normal = (t: string): string =>
+      t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+
+    /**
+     * El selector con bandera (entrega `wise-`). Un botón que abre un panel con
+     * un buscador y una lista. El buscador es el `combobox` y lleva la lista
+     * con `aria-activedescendant`, así que el foco no sale nunca de él.
+     */
+    const crearSelector = (cont: HTMLElement | null, alElegir: (op: HTMLElement) => void) => {
+      const boton = cont?.querySelector<HTMLButtonElement>('[data-boton]');
+      const panel = cont?.querySelector<HTMLElement>('[data-panel]');
+      const buscar = cont?.querySelector<HTMLInputElement>('[data-buscar]');
+      const lista = cont?.querySelector<HTMLElement>('[data-lista]');
+      const vacio = cont?.querySelector<HTMLElement>('[data-vacio]');
+      const estado = cont?.querySelector<HTMLElement>('[data-estado]');
+      let espera = 0;
+      const actual = cont?.querySelector<HTMLElement>('[data-actual]');
+      const ops = [...(lista?.querySelectorAll<HTMLElement>('[role="option"]') ?? [])];
+      let activa = -1;
+      const visibles = () => ops.filter((o) => !o.hidden);
+      const elegida = () => ops.find((o) => o.getAttribute('aria-selected') === 'true') ?? ops[0];
+
+      const activar = (op: HTMLElement | undefined): void => {
+        ops.forEach((o) => o.classList.remove('activa'));
+        if (!op || !buscar) { buscar?.removeAttribute('aria-activedescendant'); activa = -1; return; }
+        op.classList.add('activa');
+        buscar.setAttribute('aria-activedescendant', op.id);
+        activa = visibles().indexOf(op);
+        op.scrollIntoView({ block: 'nearest' });
+      };
+      const filtrar = (): void => {
+        const q = normal(buscar?.value ?? '');
+        ops.forEach((o) => { o.hidden = q !== '' && !normal(o.dataset.texto ?? '').includes(q); });
+        if (vacio) vacio.hidden = visibles().length > 0;
+        // La activa es la que EMPIEZA por lo escrito, si la hay: «pe» encuentra
+        // cuatro (Perú y tres pesos), e Intro debe elegir Perú.
+        const v = visibles();
+        activar(v.find((o) => normal(o.dataset.valor ?? '').startsWith(q) || normal(o.querySelector('.op-nombre')?.textContent ?? '').startsWith(q)) ?? v[0]);
+        /* Cuántas quedan, para quien no ve la lista (WCAG 4.1.3). Al dejar de
+           escribir y no en cada tecla, como la calculadora del spread; y nada
+           al abrir, que es cuando el lector ya lee la opción activa. Sin esto,
+           «Ningún destino coincide.» sólo se veía. */
+        window.clearTimeout(espera);
+        if (!estado) return;
+        if (q === '') { estado.textContent = ''; return; }
+        espera = window.setTimeout(() => {
+          const d = estado.dataset;
+          estado.textContent = v.length === 0 ? d.ninguno ?? '' : `${v.length} ${v.length === 1 ? d.uno : d.varios}`;
+        }, 500);
+      };
+      const abrir = (): void => {
+        if (!panel || !boton || !buscar) return;
+        panel.hidden = false;
+        boton.setAttribute('aria-expanded', 'true');
+        buscar.value = '';
+        filtrar();
+        activar(elegida());
+        buscar.focus();
+      };
+      const cerrar = (devolverFoco: boolean): void => {
+        if (!panel || panel.hidden) return;
+        panel.hidden = true;
+        boton?.setAttribute('aria-expanded', 'false');
+        if (devolverFoco) boton?.focus();
+      };
+      /** Marca una opción como elegida y copia su bandera, su nombre y su código al botón. */
+      const marcar = (op: HTMLElement): void => {
+        ops.forEach((o) => o.setAttribute('aria-selected', o === op ? 'true' : 'false'));
+        const flag = op.querySelector('[data-bandera]')?.cloneNode(true);
+        const nombre = op.querySelector('.op-nombre')?.textContent ?? '';
+        const codigo = op.querySelector('.op-codigo')?.textContent ?? '';
+        const vieja = actual?.querySelector('[data-bandera]');
+        if (flag && vieja) vieja.replaceWith(flag);
+        const n = actual?.querySelector('.selector-nombre');
+        const c = actual?.querySelector('.selector-codigo');
+        if (n) n.textContent = nombre;
+        if (c) c.textContent = codigo;
+      };
+      const elegir = (op: HTMLElement | undefined): void => {
+        if (!op) return;
+        marcar(op);
+        cerrar(true);
+        alElegir(op);
+      };
+
+      boton?.addEventListener('click', () => (panel?.hidden ? abrir() : cerrar(true)));
+      buscar?.addEventListener('input', filtrar);
+      buscar?.addEventListener('keydown', (e) => {
+        const v = visibles();
+        if (e.key === 'ArrowDown') { e.preventDefault(); activar(v[Math.min(activa + 1, v.length - 1)]); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); activar(v[Math.max(activa - 1, 0)]); }
+        else if (e.key === 'Home') { e.preventDefault(); activar(v[0]); }
+        else if (e.key === 'End') { e.preventDefault(); activar(v[v.length - 1]); }
+        else if (e.key === 'Enter') { e.preventDefault(); elegir(v[activa]); }
+        else if (e.key === 'Escape') { e.preventDefault(); cerrar(true); }
+        else if (e.key === 'Tab') cerrar(false);
+      });
+      // Con el ratón: `mousedown` evita que el buscador pierda el foco antes del clic.
+      lista?.addEventListener('mousedown', (e) => e.preventDefault());
+      lista?.addEventListener('click', (e) => {
+        const op = (e.target as HTMLElement).closest<HTMLElement>('[role="option"]');
+        if (op) elegir(op);
+      });
+      lista?.addEventListener('mousemove', (e) => {
+        const op = (e.target as HTMLElement).closest<HTMLElement>('[role="option"]');
+        if (op && !op.classList.contains('activa')) activar(op);
+      });
+      // El foco o un clic que salen del selector lo cierran.
+      cont?.addEventListener('focusout', (e) => {
+        if (!cont.contains(e.relatedTarget as Node | null)) cerrar(false);
+      });
+      document.addEventListener('pointerdown', (e) => {
+        if (cont && !cont.contains(e.target as Node)) cerrar(false);
+      });
+
+      return {
+        valor: (): string | undefined => elegida()?.dataset.valor,
+        codigo: (): string | undefined => elegida()?.dataset.c,
+        bandera: (): string | undefined =>
+          elegida()?.querySelector<HTMLElement>('[data-bandera]')?.dataset.bandera,
+        /** Elige sin avisar: para sincronizar un selector con el otro. */
+        poner: (pred: (op: HTMLElement) => boolean): boolean => {
+          const op = ops.find(pred);
+          if (op) marcar(op);
+          return !!op;
+        },
+      };
+    };
 
     /** La divisa del destino elegido: viaja en la opción, `data-c`. */
     const divisaDe = (codigo: string | undefined): IslandCurrency =>
       divisas.find((d) => d.c === codigo) ??
       divisas[0] ?? { c: 'USD', r: Number(root.dataset.rate), n: 'dólar' };
+
+    // Se crean más abajo, cuando ya existen las funciones a las que avisan.
+    let selDestino: ReturnType<typeof crearSelector>;
+    let selDivisa: ReturnType<typeof crearSelector>;
     const codigoDestino = (): string | undefined =>
-      destinoSel?.selectedOptions[0]?.dataset.c;
+      root.querySelector<HTMLElement>('[data-selector="destino"] [role="option"][aria-selected="true"]')?.dataset.c;
 
     let divisa: IslandCurrency = divisaDe(codigoDestino());
     let rate = divisa.r;
@@ -804,7 +1135,7 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     const render = (): void => {
       const { give, get } = currenciesFor(intent, divisa.c);
       const envio = intent === 'to_foreign';
-      const destino = envio ? destinoSel?.value : undefined;
+      const destino = envio ? selDestino.valor() : undefined;
       const quote = buildQuote({
         intent,
         giveAmount,
@@ -815,6 +1146,11 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 
       giveCur.textContent = give;
       getCur.textContent = get;
+      // Las banderas de las fichas: Chile para los pesos; para la otra, la del
+      // destino en un envío y la de la divisa de vuelta a pesos.
+      const otra = envio ? selDestino.bandera() : selDivisa.bandera();
+      ponerBandera(giveCur.parentElement, envio ? 'cl' : otra);
+      ponerBandera(getCur.parentElement, envio ? otra : 'cl');
       giveLabel.textContent = envio ? 'Envías' : 'Conviertes';
       getLabel.textContent = envio ? 'Llega aprox.' : 'Recibes aprox.';
       giveInput.inputMode = give === 'CLP' ? 'numeric' : 'decimal';
@@ -861,6 +1197,7 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
         dockCta.href = href;
         dockCta.textContent = fuera ? 'Escríbenos' : 'Continuar';
         dockLabel.textContent = fuera ? 'Fuera de rango' : envio ? `Llega a ${destino ?? ''}` : 'Recibes';
+        ponerBandera(dock, fuera ? undefined : envio ? selDestino.bandera() : 'cl');
         const dockShown = fuera ? '—' : formatAmount(received(), get);
         if (dockAmount.textContent !== dockShown) {
           dockAmount.textContent = dockShown;
@@ -909,12 +1246,12 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       ajustar();
     });
 
-    destinoSel?.addEventListener('change', () => {
-      usarDivisa(codigoDestino());
+    selDestino = crearSelector(root.querySelector('[data-selector="destino"]'), (op) => {
+      usarDivisa(op.dataset.c);
       render();
     });
-    divisaSel?.addEventListener('change', () => {
-      usarDivisa(divisaSel.value);
+    selDivisa = crearSelector(root.querySelector('[data-selector="divisa"]'), (op) => {
+      usarDivisa(op.dataset.c);
       render();
     });
 
@@ -929,11 +1266,8 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
         const envio = intent === 'to_foreign';
         if (campoDestino) campoDestino.hidden = !envio;
         if (campoDivisa) campoDivisa.hidden = envio;
-        if (envio && destinoSel && codigoDestino() !== divisa.c) {
-          const opcion = [...destinoSel.options].find((o) => o.dataset.c === divisa.c);
-          if (opcion) destinoSel.value = opcion.value;
-        }
-        if (!envio && divisaSel) divisaSel.value = divisa.c;
+        if (envio && selDestino.codigo() !== divisa.c) selDestino.poner((o) => o.dataset.c === divisa.c);
+        if (!envio) selDivisa.poner((o) => o.dataset.c === divisa.c);
         const { give, get } = currenciesFor(intent, divisa.c);
         giveAmount = give === 'CLP' ? clpBefore : rate > 0 ? clpBefore / rate : 0;
         giveInput.value = fmt(giveAmount, give);
@@ -943,6 +1277,39 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
         render();
       })
     );
+
+    /**
+     * Un destino que llega de fuera: `?destino=Colombia` en la dirección, o un
+     * enlace de esta misma página con `data-cotizar-destino` (las tarjetas de
+     * la sección de destinos). El primero se aplica al cargar; el segundo, sin
+     * recargar: elige el destino, vuelve al modo de envío, lleva la vista al
+     * cotizador y deja el foco en el selector.
+     */
+    const irADestino = (nombre: string | null | undefined): boolean => {
+      if (!nombre) return false;
+      const pedido = (o: HTMLElement): boolean => normal(o.dataset.valor ?? '') === normal(nombre);
+      const opciones = root.querySelectorAll<HTMLElement>('[data-selector="destino"] [role="option"]');
+      if (![...opciones].some(pedido)) return false;
+      // Primero el modo y después el destino. Al volver al envío, el cambio de
+      // modo elige el destino de la divisa que estaba —de dólares sale Ecuador—
+      // y, al revés, pisaba el destino pedido.
+      const envio = root.querySelector<HTMLInputElement>('input[name="intent"][value="to_foreign"]');
+      if (envio && !envio.checked) { envio.checked = true; envio.dispatchEvent(new Event('change')); }
+      selDestino.poner(pedido);
+      usarDivisa(selDestino.codigo());
+      return true;
+    };
+    irADestino(new URLSearchParams(location.search).get('destino'));
+    document.addEventListener('click', (e) => {
+      const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[data-cotizar-destino]');
+      if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      if (!irADestino(a.dataset.cotizarDestino)) return;
+      e.preventDefault();
+      render();
+      const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      root.scrollIntoView({ behavior: quieto ? 'auto' : 'smooth', block: 'start' });
+      root.querySelector<HTMLButtonElement>('[data-selector="destino"] [data-boton]')?.focus({ preventScroll: true });
+    });
 
     render();
 

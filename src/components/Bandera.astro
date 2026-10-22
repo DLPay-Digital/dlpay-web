@@ -1,0 +1,57 @@
+---
+/**
+ * Una bandera redonda (Cowork, entrega `wise-`, 2026-10-22).
+ *
+ * El dibujo vive en `lib/banderas.ts` y llega a la página una sola vez, en
+ * `BanderasSprite.astro`; acá se apunta a él con `<use>`, se recorta en círculo
+ * y se le pone un filete. **La página que use banderas tiene que llevar el
+ * sprite**: sin él, la bandera sale vacía (lo revisa `tests/banderas.test.ts`). **Es decorativa siempre** (`aria-hidden`): va junto al nombre
+ * del país o al código de la divisa, que es lo que se lee. Una bandera sola, sin
+ * su nombre al lado, no se usa (DS §7).
+ *
+ * El filete interior separa del fondo las banderas claras —Japón, Perú, Chile—
+ * sobre una superficie blanca o papel. Va en un pseudoelemento encima del
+ * dibujo, porque una sombra interior en la caja quedaría debajo del SVG.
+ *
+ * `size` sólo admite los tamaños que el sitio usa, para que no aparezcan
+ * banderas de 23 px.
+ */
+import type { CodigoBandera } from '../lib/banderas.ts';
+
+interface Props {
+  code: CodigoBandera;
+  size?: 16 | 20 | 24 | 32 | 40 | 56;
+  class?: string;
+}
+const { code, size = 24, class: className } = Astro.props;
+---
+<span class:list={['bandera', className]} style={`--b:${size}px`} data-bandera={code}>
+  <svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><use href={`#bandera-${code}`} /></svg>
+</span>
+
+<style>
+  .bandera {
+    position: relative;
+    display: inline-block;
+    flex: none;
+    width: var(--b);
+    height: var(--b);
+    border-radius: 50%;
+    overflow: hidden;
+    vertical-align: middle;
+  }
+  .bandera svg { display: block; width: 100%; height: 100%; }
+  .bandera::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(11, 19, 32, 0.16);
+    pointer-events: none;
+  }
+  /* En colores forzados el sistema no repinta los rellenos del SVG, así que la
+     bandera se sigue viendo; el filete pasa a un borde del sistema. */
+  @media (forced-colors: active) {
+    .bandera::after { box-shadow: none; border: 1px solid CanvasText; }
+  }
+</style>

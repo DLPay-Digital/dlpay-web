@@ -1,0 +1,31 @@
+---
+/**
+ * Las catorce banderas, una sola vez por página (Cowork, entrega `wise-`,
+ * 2026-10-22).
+ *
+ * Cada `<Bandera>` es un `<use>` que apunta a uno de estos `<symbol>`. **Va una
+ * vez en cada página que use banderas, y hoy es sólo la Home**: el cotizador y
+ * la sección de destinos.
+ *
+ * **Por qué un sprite.** La Home pinta 71 banderas: las listas del selector, la
+ * plantilla de la que clona el cotizador, las fichas, la banda y las tarjetas.
+ * Con el dibujo entero en cada una eran 54 KB de HTML, y las estrellas de
+ * Estados Unidos, la Unión Europea y Venezuela se repetían seis veces. Con el
+ * sprite el dibujo va una vez: −29 KB de HTML y −2,9 KB comprimidos (medido).
+ *
+ * Si una página pinta una bandera y no lleva esto, la bandera sale vacía y
+ * nadie se entera. Por eso `tests/banderas.test.ts` revisa el build: cada
+ * `#bandera-xx` que se usa tiene que estar definido en la misma página, y una
+ * sola vez.
+ */
+import { BANDERAS, CODIGOS_BANDERA } from '../lib/banderas.ts';
+---
+<svg class="banderas-sprite" aria-hidden="true" focusable="false">
+  {CODIGOS_BANDERA.map((c) => <symbol id={`bandera-${c}`} viewBox="0 0 40 40" set:html={BANDERAS[c]} />)}
+</svg>
+
+<style>
+  /* Fuera del flujo y sin caja, pero no `display: none`: con `display: none` en
+     el `<svg>` que los contiene, algunos navegadores no pintan los `<use>`. */
+  .banderas-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+</style>

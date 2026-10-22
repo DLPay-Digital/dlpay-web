@@ -9,6 +9,8 @@ import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import GloboRotativo from '../components/hero/GloboRotativo.astro';
 import UseCases from '../components/UseCases.astro';
+import Destinos from '../components/Destinos.astro';
+import BanderasSprite from '../components/BanderasSprite.astro';
 import DosCaminos from '../components/DosCaminos.astro';
 import Steps from '../components/Steps.astro';
 import Process from '../components/Process.astro';
@@ -37,6 +39,9 @@ import IntroDeMarca from '../components/IntroDeMarca.astro';
   <Motion />
   <Header />
   <main id="main">
+    {/* Las catorce banderas, una vez: las usan el cotizador y la sección de
+        destinos. Ver `BanderasSprite.astro`. */}
+    <BanderasSprite />
     <Hero />
 
     {/*
@@ -108,6 +113,13 @@ import IntroDeMarca from '../components/IntroDeMarca.astro';
         <GloboRotativo />
       </div>
     </section>
+    {/*
+      Trece destinos, cada uno en su moneda (Cowork, entrega `wise-`). Va justo
+      bajo el globo: el globo dice que el tramo llega hasta el destino, y esta
+      sección dice a cuáles, con su bandera, su moneda y cuánto llega. Sus
+      tarjetas abren el cotizador de arriba con el destino ya elegido.
+    */}
+    <Destinos />
 
     <UseCases />
     {/*
