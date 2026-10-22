@@ -123,9 +123,11 @@ const m = r.conMonto;
 
     <div class="resultado res-b">
       <dl class="detalle" data-detalle>
-        <div><dt>Recibes</dt><dd class="num"><span data-o="recibes">{formatUSD(m.recibes)}</span> USD</dd></div>
-        <div><dt>A la referencia, con todos tus pesos</dt><dd class="num"><span data-o="aLaReferencia">{formatUSD(m.aLaReferencia)}</span> USD</dd></div>
-        <div class="dif"><dt>La diferencia</dt><dd class="num"><span data-o="diferenciaUSD">{formatUSD(m.diferenciaUSD)}</span> USD · <span data-o="diferenciaCLP">{formatCLP(m.diferenciaCLP)}</span> CLP</dd></div>
+        {/* «$» delante y no «USD» detrás desde el 2026-10-22 (ver `formatSigno`).
+            El signo es fijo y la isla sólo reescribe la cifra. */}
+        <div><dt>Recibes</dt><dd class="num">$ <span data-o="recibes">{formatUSD(m.recibes)}</span></dd></div>
+        <div><dt>A la referencia, con todos tus pesos</dt><dd class="num">$ <span data-o="aLaReferencia">{formatUSD(m.aLaReferencia)}</span></dd></div>
+        <div class="dif"><dt>La diferencia</dt><dd class="num">$ <span data-o="diferenciaUSD">{formatUSD(m.diferenciaUSD)}</span> · <span data-o="diferenciaCLP">{formatCLP(m.diferenciaCLP)}</span> CLP</dd></div>
         <div data-efectivo hidden><dt>Con la comisión, el precio es</dt><dd class="num"><span data-o="precioEfectivo">{formatRate(m.precioEfectivo)}</span> · <span data-o="porcentajeEfectivo">{formatPorcentaje(m.porcentajeEfectivo)}</span></dd></div>
       </dl>
     </div>

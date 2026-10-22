@@ -43,7 +43,7 @@ export const businessUseCases: UseCase[] = [
   {
     title: 'Cambio de divisas por volumen',
     emblem: 'divisas',
-    body: 'CLP y USD como operación independiente, en montos donde el spread de un banco pesa de verdad y una app retail no alcanza.',
+    body: 'CLP y divisas como operación independiente, en montos donde el spread de un banco pesa de verdad y una app retail no alcanza.',
   },
 ];
 

@@ -9,6 +9,14 @@
 //
 // Bloque de datos (LAND, CHILE, BORDERS) es autogenerado por scripts/build-worldmap.py
 // desde Natural Earth 110m. Regenerar cuando cambien destinos o tolerancia.
+//
+// Cada destino lleva sólo su nombre (Cowork, entrega `wise-`, 2026-10-22, pedido
+// por Sebastián). Llevaba debajo «USD · 8.300 KM»: el dólar como LA moneda de
+// todos —desde ADR-0013 cada destino recibe la suya— y una distancia que no es
+// un dato del servicio. Se fueron el rótulo, su estilo y el campo `km` de DESTS.
+// El de Chile, «CLP · ORIGEN», se queda: ésa sí es la moneda de origen. La nota
+// va aquí y no junto a DESTS porque el script es en línea: lo que se escribe
+// allí viaja al navegador.
 ---
 
 {/*
@@ -112,7 +120,6 @@
     disco sobre fondo blanco y desaparecía.
   */
   .dlpay-globe-only :global(.dest-label),
-  .dlpay-globe-only :global(.dest-info),
   #chile-label text {
     paint-order: stroke fill;
     stroke: #0d1a30;
@@ -122,7 +129,6 @@
     stroke-linejoin: round;
   }
   .dlpay-globe-only :global(.dest-label) { font-family: var(--f-num); font-size: 10px; letter-spacing: 1.2px; fill: #22e88f; }
-  .dlpay-globe-only :global(.dest-info) { font-family: var(--f-num); font-size: 9px; letter-spacing: 0.5px; fill: #c8bea8; fill-opacity: 0.85; }
   #chile-label text { font-family: var(--f-num); letter-spacing: 1.4px; fill: #22e88f; }
   @keyframes chilePing { 0% { transform: scale(1); opacity: 0.7; } 65% { transform: scale(4); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
   @keyframes chilePingSlow { 0% { transform: scale(1); opacity: 0.4; } 70% { transform: scale(5.5); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
@@ -231,14 +237,14 @@
 
   // Data de negocio: destinos. NO se autogenera, editar acá cuando cambien los países.
   const DESTS=[
-    {name:"USA",lat:40.7,lon:-74,km:"8.300"},
-    {name:"MÉXICO",lat:19.4,lon:-99,km:"6.600"},
-    {name:"VENEZUELA",lat:10.5,lon:-66.9,km:"4.700"},
-    {name:"ESPAÑA",lat:40.4,lon:-3.7,km:"10.700"},
-    {name:"SUDÁFRICA",lat:-26.2,lon:28,km:"9.500"},
-    {name:"INDIA",lat:28.6,lon:77.2,km:"17.000"},
-    {name:"JAPÓN",lat:35.7,lon:139.7,km:"17.300"},
-    {name:"AUSTRALIA",lat:-33.9,lon:151.2,km:"11.300"}
+    {name:"USA",lat:40.7,lon:-74},
+    {name:"MÉXICO",lat:19.4,lon:-99},
+    {name:"VENEZUELA",lat:10.5,lon:-66.9},
+    {name:"ESPAÑA",lat:40.4,lon:-3.7},
+    {name:"SUDÁFRICA",lat:-26.2,lon:28},
+    {name:"INDIA",lat:28.6,lon:77.2},
+    {name:"JAPÓN",lat:35.7,lon:139.7},
+    {name:"AUSTRALIA",lat:-33.9,lon:151.2}
   ];
   const CHILE_ANCHOR={lat:-33.4,lon:-70.6};
 
@@ -370,7 +376,7 @@
   const destEls=DESTS.map((d,i)=>{
     const g=document.createElementNS('http://www.w3.org/2000/svg','g');
     g.setAttribute('class','dest');
-    g.innerHTML='<circle cx="0" cy="0" r="10" fill="#22e88f" opacity="0.1"/><circle cx="0" cy="0" r="6" fill="none" stroke="#22e88f" stroke-opacity="0.4" stroke-width="1"/><circle cx="0" cy="0" r="3.2" fill="#22e88f"/><text class="dest-label" x="12" y="-4">'+d.name+'</text><text class="dest-info" x="12" y="8">USD · '+d.km+' KM</text>';
+    g.innerHTML='<circle cx="0" cy="0" r="10" fill="#22e88f" opacity="0.1"/><circle cx="0" cy="0" r="6" fill="none" stroke="#22e88f" stroke-opacity="0.4" stroke-width="1"/><circle cx="0" cy="0" r="3.2" fill="#22e88f"/><text class="dest-label" x="12" y="3.5">'+d.name+'</text>';
     destsGroup.appendChild(g);
     return g;
   });
@@ -403,9 +409,9 @@
         const o=String(nitidez(d.c));
         destEls[i].style.opacity=o;
         destEls[i].setAttribute('transform','translate('+d.x+','+d.y+')');
-        const lbl=destEls[i].querySelector('.dest-label'),inf=destEls[i].querySelector('.dest-info');
-        if(d.x>CX){lbl.setAttribute('x','12');lbl.setAttribute('text-anchor','start');inf.setAttribute('x','12');inf.setAttribute('text-anchor','start');}
-        else{lbl.setAttribute('x','-12');lbl.setAttribute('text-anchor','end');inf.setAttribute('x','-12');inf.setAttribute('text-anchor','end');}
+        const lbl=destEls[i].querySelector('.dest-label');
+        if(d.x>CX){lbl.setAttribute('x','12');lbl.setAttribute('text-anchor','start');}
+        else{lbl.setAttribute('x','-12');lbl.setAttribute('text-anchor','end');}
         if(sVisible){const arcD=arcPath(s,d);if(arcD){arcEl.setAttribute('d',arcD);arcHaloEl.setAttribute('d',arcD);arcEl.style.opacity=o;arcHaloEl.style.opacity=o;}}
         else{arcEl.style.opacity='0';arcHaloEl.style.opacity='0';}
       }else{

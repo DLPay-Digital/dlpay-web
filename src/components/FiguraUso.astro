@@ -46,8 +46,10 @@
  *   este uso DLPay no hace ningún tramo que se pueda dibujar.
  *
  * Los rótulos son texto a 13 px: «Tu billetera», «A quien necesites», «Tu
- * empresa», CHILE, EXTERIOR, USD y CLP. Salen del texto de al lado o ya están
- * publicados. Ninguna cifra.
+ * empresa», CHILE, EXTERIOR, $ y CLP. Salen del texto de al lado o ya están
+ * publicados. Ninguna cifra. La moneda de enfrente decía «USD» hasta el
+ * 2026-10-22; ahora es el signo, porque se cambia a doce divisas (ADR-0013).
+ * Es un carácter en una moneda que da para tres: el círculo no cambia.
  *
  * ── La lámina ──────────────────────────────────────────────────────────────
  *
@@ -107,7 +109,7 @@ const CUNA = 'M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4';
   {kind === 'convierte' && (
     <>
       <span class="fu-moneda fu-clp">CLP</span>
-      <span class="fu-moneda fu-usd-m">USD</span>
+      <span class="fu-moneda fu-usd-m">$</span>
       <span class="fu-tramo fu-ida"></span>
       <span class="fu-tramo fu-vuelta"></span>
       <svg class="fu-cuna fu-cuna-ida" viewBox="0 0 56 20" fill="none">

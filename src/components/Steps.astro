@@ -27,8 +27,8 @@
  */
 import Icon from './Icon.astro';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
-import { convert, formatAmount } from '../lib/pricing/quote.ts';
-import { formatCLP, formatRate } from '../lib/pricing/format.ts';
+import { convert } from '../lib/pricing/quote.ts';
+import { formatCLP, formatRate, formatSigno } from '../lib/pricing/format.ts';
 import { quoteLimits } from '../lib/config/site.ts';
 
 const price = await new ConfigPriceSource().getPrice();
@@ -93,11 +93,14 @@ const received = convert('to_foreign', SAMPLE_PAY, price.rate);
 
         <div class="leg">
           <span class="leg-label">Recibes</span>
-          <span class="leg-amount num lead-amount">{formatAmount(received, 'USD')}</span>
+          {/* «$» y no «US$» desde el 2026-10-22: el ejemplo no es una divisa
+              concreta, y el dólar dejó de ser LA moneda del cambio (ADR-0013).
+              Ver `formatSigno`. La cifra sigue saliendo de `convert()`. */}
+          <span class="leg-amount num lead-amount">{formatSigno(received)}</span>
         </div>
 
         <p class="card-foot">
-          <span class="num">1 USD = {formatRate(price.rate)} CLP</span>
+          <span class="num">$ 1 = {formatRate(price.rate)} CLP</span>
           <span class="ref">Precio referencial. Lo confirma un ejecutivo.</span>
         </p>
       </div>

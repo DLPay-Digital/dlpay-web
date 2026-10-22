@@ -35,8 +35,11 @@
  *   valor no cambia, cambia la unidad. El alto es el argumento del volumen.
  *
  * Todas las marcas son las del Design System §6.2, con su significado, y
- * ninguna cifra. El texto de las figuras son rótulos: CHILE, EXTERIOR, USD,
- * CLP, los doce meses, «Tu empresa» y «Tu proveedor».
+ * ninguna cifra. El texto de las figuras son rótulos: CHILE, EXTERIOR, $,
+ * CLP, los doce meses, «Tu empresa» y «Tu proveedor». Donde hoy va «$» decía
+ * «USD» hasta el 2026-10-22: se cambia a doce divisas (ADR-0013) y el signo no
+ * nombra ninguna en particular. Las clases siguen llamándose `-usd`, para no
+ * mover reglas que no cambian.
  *
  * ── Cómo está hecho ────────────────────────────────────────────────────────
  *
@@ -90,7 +93,7 @@ const CUNA = 'M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4';
         <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
       </svg>
       <span class="fc-unidad"></span>
-      <span class="fc-rot fc-usd">USD</span>
+      <span class="fc-rot fc-usd">$</span>
       <span class="fc-pieza fc-tuya"><Icon name="empresa" size={24} /></span>
       <span class="fc-pieza fc-suya"><Icon name="empresa" size={24} /></span>
       <span class="fc-pie fc-pie-tuya">Tu empresa</span>
@@ -106,7 +109,7 @@ const CUNA = 'M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4';
       <span class="fc-mueble">
         <span class="fc-cajon fc-cajon-usd">
           <Icon name="wallet" size={20} />
-          <span class="fc-cajon-rot">USD</span>
+          <span class="fc-cajon-rot">$</span>
           <span class="fc-tirador"></span>
         </span>
         <span class="fc-cajon fc-cajon-clp">
@@ -147,7 +150,7 @@ const CUNA = 'M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4';
         <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
       </svg>
       <span class="fc-rot fc-bajo fc-bajo-clp">CLP</span>
-      <span class="fc-rot fc-bajo fc-bajo-usd">USD</span>
+      <span class="fc-rot fc-bajo fc-bajo-usd">$</span>
     </>
   )}
 </Lamina>

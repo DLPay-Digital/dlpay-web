@@ -22,6 +22,30 @@ export function formatUSD(value: number): string {
 }
 
 /**
+ * Una cifra de ejemplo con el signo `$` delante: «$ 2.174,80» (Cowork, entrega
+ * `wise-`, 2026-10-22, pedido por Sebastián).
+ *
+ * Es lo que el sitio escribe donde enseñaba «USD» o «US$» como LA moneda del
+ * cambio —la tarjeta de la Home, el puente de tarifas, la calculadora del
+ * spread—: desde ADR-0013 se cambia a doce divisas y el dólar es una de ellas.
+ *
+ * **El signo no nombra una divisa**, y por eso sólo va en ejemplos. En Chile es
+ * el del peso, y lo usan media docena de monedas de la región. Donde hay una
+ * divisa concreta —el cotizador, las tarjetas de cada destino, el mensaje de
+ * WhatsApp— se escribe su código con `formatAmount`, y eso no cambia. Los
+ * pesos chilenos siguen siendo «CLP», así que en una misma pieza nunca hay dos
+ * cifras con el mismo signo.
+ *
+ * **El espacio es el normal**, como en `formatAmount`. Con uno duro, «$ 2.174,62»
+ * era una pieza que no se parte, y la tarjeta «Tu cotización» de la Home salía
+ * 13 px de la pantalla a 320 con el espaciado de WCAG 1.4.12 (medido). Con el
+ * normal, en ese extremo el signo sube a su renglón, como subía «US$».
+ */
+export function formatSigno(value: number): string {
+  return `$ ${formatUSD(value)}`;
+}
+
+/**
  * Un monto en divisa extranjera, con los decimales que esa moneda usa.
  *
  * Generaliza a `formatUSD`, que se queda: es la que usan la calculadora del
