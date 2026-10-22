@@ -5,14 +5,27 @@
  *
  * Existe para no publicar nunca un texto inventado ocupando el lugar de uno que
  * requiere revisión legal.
+ *
+ * ── Por qué NO es un `<aside>`, desde el 2026-10-23 ────────────────────────
+ *
+ * Lo era, y `axe` lo marcaba en `/tarifas`, `/terminos`, `/privacidad` y
+ * `/canal-de-denuncias`: **`landmark-complementary-is-top-level`**. Un `<aside>`
+ * es una región de referencia del documento, y las regiones no se anidan dentro
+ * de `<main>` — quien navega por regiones con un lector de pantalla espera
+ * encontrarlas al mismo nivel, y una metida dentro de otra ensucia esa lista en
+ * las cuatro páginas legales a la vez.
+ *
+ * Lo que este aviso necesita no es una región sino **una nota destacada**, que
+ * es exactamente `role="note"`: se anuncia como nota, no compite con las
+ * regiones del documento y conserva su título. El dibujo no cambia ni un píxel.
  */
 interface Props { title: string }
 const { title } = Astro.props;
 ---
-<aside class="pending">
+<div class="pending" role="note">
   <h2>{title}</h2>
   <slot />
-</aside>
+</div>
 
 <style>
   .pending {

@@ -379,7 +379,14 @@ const carriles = [
     line-height: 1.25;
     color: var(--ink);
     /* Sólo con el espaciado de WCAG 1.4.12 a 320 px: «corresponsal» con
-       letras separadas no cabe en su columna, y se parte antes que desbordar. */
+       letras separadas no cabe en su columna, y se parte antes que desbordar.
+       **Con guion desde el 2026-10-23**: `overflow-wrap: anywhere` por sí solo
+       cortaba «correspons / al», sin guion y a mitad de sílaba. El documento
+       declara `lang="es-CL"`, así que `hyphens` parte por donde parte el
+       idioma. `anywhere` se queda detrás como último recurso: una palabra que
+       no admita guion sigue partiéndose antes que desbordar, porque 1.4.12
+       pide no perder contenido. */
+    hyphens: auto;
     overflow-wrap: anywhere;
   }
   .llega { display: block; margin-top: 2px; font-weight: 600; color: var(--ink-mute); }

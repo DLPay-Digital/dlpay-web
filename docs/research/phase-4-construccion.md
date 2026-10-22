@@ -646,6 +646,56 @@ correcto, no.
 que alguien mire en serio probablemente esté lejos. El guardarraíl impide publicarlas; no las
 mejora.
 
+### 4.21 Cambiar el texto de una figura es cambiar la figura  ·  *2026-10-23*
+
+**El fallo.** Al mover el sitio a ADR-0014 cambié los rótulos de `FiguraUso` —`USD` pasó a
+«Su moneda», «Tu billetera» a «Tu banco en Chile» y «A quien necesites» a «Quien recibe, en su
+país»— **sin tocar una línea de su CSS**. Esos rótulos no fluyen: están colocados en absoluto. «Su
+moneda» se centra en el 36 % del ancho, que es donde está el punto de valor, y el bloque del banco
+está en el 18 %: con tres caracteres sobraba sitio, con nueve la caja del rótulo llegaba hasta el
+bloque y **se metía debajo**. Medido: entre 12 y 21 px de solape a 320, 390, 768 y 1280 — es decir,
+en todos los anchos, en la primera figura de la Home.
+
+Lo vio Sebastián antes que ninguna de mis comprobaciones, y eso es lo peor del asunto: entre el 21
+y el 23 de octubre corrí `astro check`, el build, 117 pruebas, axe y el barrido de desbordamiento
+**sobre esa misma página**, y los seis dan verde con el rótulo partido por la mitad. Ninguno mira
+si dos cajas se pisan.
+
+**Lo reutilizable.** *Un rótulo colocado en absoluto tiene un largo máximo implícito, y ese número
+no está escrito en ninguna parte.* Quien cambie el texto de una figura está cambiando su geometría
+aunque sólo toque una cadena, y la única forma de saberlo es medir las cajas. Por eso el componente
+lleva ahora el motivo escrito junto a la regla que coloca el rótulo: el siguiente que pase por ahí
+lo lee antes de alargarlo.
+
+### 4.22 Cuatro detectores para el mismo defecto, y tres medían ruido  ·  *2026-10-23*
+
+Buscar «qué está encima de qué» en todo el sitio costó cuatro intentos, y el recorrido vale más que
+el resultado:
+
+| intento | qué hacía | qué devolvió |
+|---|---|---|
+| 1 | intersección de cajas, con el orden del DOM como «quién va delante» | **5.000**: capas decorativas que van DETRÁS y el menú móvil cerrado |
+| 2 | `elementFromPoint`, que respeta el pintado real | **969**: seguía contando el menú cerrado y los acordeones plegados |
+| 3 | + cajas de LÍNEA en vez de la envolvente | **48**, y sólo dos grupos |
+| 4 | + dejar de excluir lo `aria-hidden` | **10**, todos el mismo falso positivo |
+
+Tres aprendizajes, y ninguno es sobre solapes:
+
+1. **`getBoundingClientRect` miente con el texto en línea.** Un `<strong>` que parte en dos líneas
+   devuelve el rectángulo que une las dos **y el hueco de en medio**, así que dos en línea seguidos
+   se solapan siempre sin tocarse. Era la mitad del ruido. Lo correcto es `getClientRects()`.
+2. **Un elemento girado tampoco se describe con su caja.** El abanico de `/precio` salía como cuatro
+   choques en tres anchos y en la captura está perfecto: son cinco etiquetas en diagonal cuyas cajas
+   alineadas a los ejes se cruzan aunque el texto no.
+3. **`aria-hidden` no es invisible, y yo lo traté como si lo fuera.** Los objetos decorativos del
+   sitio son `aria-hidden` **por definición** —es lo que los hace decorativos—, así que excluirlos
+   era excluir justo lo que podía estar encima de un texto. El intento 3 dio 48 hallazgos limpios y
+   **ninguno era el defecto real**, que estaba en una figura `aria-hidden` entera.
+
+**Lo reutilizable.** *Un detector que no encuentra nada no dice que no haya nada: dice que no mira
+ahí.* Antes de creerse un cero conviene comprobar que el instrumento encuentra el defecto que ya se
+conoce — el de §4.21 sirvió de calibre, y los tres primeros intentos no lo veían.
+
 ## 5. Errores propios, registrados
 
 Se anotan porque un registro que sólo cuenta aciertos no sirve para nada.
@@ -660,6 +710,7 @@ Se anotan porque un registro que sólo cuenta aciertos no sirve para nada.
 | «Catorce destinos» escrito en cuatro sitios cuando la lista tiene trece | Un test propio, al escribirlo (§4.19) |
 | Un comentario afirmaba que el catálogo de divisas no viajaba al navegador, y sí viajaba | Medir la isla antes y después: 4 528 → 6 673 B |
 | El precio referencial seguía diciendo «CLP por dólar» con el euro elegido | Mirar la captura del cotizador, no el código |
+| Alargar tres rótulos de `FiguraUso` sin tocar el CSS que los coloca: «Su moneda» se metía bajo el bloque del banco en los cuatro anchos | **Sebastián**, mirando la Home. Seis comprobaciones automáticas lo dieron por bueno (§4.21) |
 | El bloque `PENDIENTE DE ASSET` del artículo de la Fed revivió en una actualización | Detectado al ir a ejecutarlo |
 | El recuento de marcas punteadas del DS §6.2 llevaba un día desfasado: `.et-torsion` entró con el abanico el 2026-10-01 | Al rehacer el barrido para integrar `/empresas` |
 | «Nada está roto» en el relevo de `/empresas`: el piso de 40 px SÍ se rompía, a 37,99 entre 417 y 419 px | Cowork, barriendo cada 1 px donde yo barrí cada 20 |

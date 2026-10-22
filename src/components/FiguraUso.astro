@@ -16,17 +16,23 @@
  * `/empresas` y `/confianza`:
  *
  * · **Cruza: tu banco, la frontera y quien recibe.** *Reescrita el 2026-10-22
- *   (ADR-0014): la pieza de la izquierda era tu billetera, y el tramo que
- *   cruzaba la frontera iba en gris porque ese envío lo hacías tú. Ahora el
- *   recorrido es nuestro de punta a punta.* Lo que viaja es una
- *   unidad de valor —el punto lleno, rotulado USD— y la cuña cae en la
- *   frontera, donde cambia de manos. **La línea es `--ink-mute` y no verde**,
- *   y desde ADR-0014 eso ya no describe el servicio — ver abajo. Antes: el
- *   envío lo haces tú desde tu billetera, no DLPay (`CLAUDE.md` §1). Y el USD
- *   va del lado de Chile, en tu billetera: la figura de antes rotulaba CLP en
- *   un extremo y USD en el otro, como si el cambio ocurriera al cruzar, y el
- *   texto dice lo contrario —«Recibes la divisa del destino y desde ahí la
- *   envías»—.
+ *   (ADR-0014): la pieza de la izquierda era tu billetera y el tramo de después
+ *   de la frontera iba en `--ink-mute`, porque ese envío lo hacías tú. Ahora el
+ *   recorrido es nuestro de punta a punta y **la línea va en verde entera**.*
+ *   Lo que viaja es una unidad de valor —el punto lleno, rotulado **CLP**— y la
+ *   cuña cae en la frontera, donde cambia de manos. El rótulo dice CLP y no la
+ *   divisa de destino a propósito: en ese punto el dinero **todavía no ha
+ *   cruzado**, y lo que llega al otro lado lo dice el texto de la tarjeta.
+ *
+ *   **Tres rótulos se acortaron el 2026-10-23, y el motivo es una medida.** El
+ *   2026-10-22 pasaron a «Su moneda», «Tu banco en Chile» y «Quien recibe, en
+ *   su país» sin tocar el CSS que los coloca, y eso rompió la figura: «Su
+ *   moneda» se centra en el 36 % —el del punto—, así que con nueve caracteres
+ *   su caja llegaba al 18 % y **se metía bajo el bloque del banco**, medido
+ *   entre 12 y 21 px de solape en los cuatro anchos probados. El pie derecho,
+ *   además, caía a tres líneas contra el borde de la lámina. **La lección es
+ *   del tipo que este registro guarda: cambiar el texto de una figura es
+ *   cambiar la figura**, porque su geometría está calculada para un largo.
  * · **Convierte: las dos monedas.** CLP y USD, el mismo tamaño porque el valor
  *   no cambia, y entre ellas dos tramos verdes con su cuña: ida y vuelta, que es
  *   lo nuestro. **Sin frontera, a propósito**, igual que en la figura de antes:
@@ -90,11 +96,11 @@ const CUNA = 'M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4';
         <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
       </svg>
       <span class="fu-unidad"></span>
-      <span class="fu-rot fu-usd">Su moneda</span>
+      <span class="fu-rot fu-unidad-rot">CLP</span>
       <span class="fu-pieza fu-tuya"><Icon name="bank" size={24} /></span>
       <span class="fu-pieza fu-suya"><Icon name="people" size={24} /></span>
-      <span class="fu-pie fu-pie-tuya">Tu banco en Chile</span>
-      <span class="fu-pie fu-pie-suya">Quien recibe, en su país</span>
+      <span class="fu-pie fu-pie-tuya">Tu banco</span>
+      <span class="fu-pie fu-pie-suya">Quien recibe</span>
     </>
   )}
 
@@ -208,7 +214,13 @@ const CUNA = 'M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4';
     background: var(--verde-deep);
     transform: translate(-50%, -50%);
   }
-  .fu-usd {
+  /*
+    El rótulo de la unidad. **Va centrado en el mismo 36 % que el punto**, así
+    que su ancho crece hacia los dos lados y la pieza de la izquierda está en
+    el 18 %: un rótulo largo se le mete debajo. Con tres caracteres sobra sitio;
+    con nueve no. Ver la nota del 2026-10-23 en la cabecera.
+  */
+  .fu-unidad-rot {
     left: 36%;
     bottom: calc(100% - var(--fu-y) + 2cqw + var(--s-1));
     transform: translateX(-50%);
