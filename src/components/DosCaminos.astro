@@ -1,0 +1,695 @@
+---
+/**
+ * «El mismo envío, por dos caminos»: el banco y DLPay, uno al lado del otro.
+ *
+ * Cowork, 2026-10-21, entrega `caminos-`. Sale del análisis de anyenk.com, que
+ * es el par más directo de DLPay (pagos internacionales en divisa digital para
+ * empresas chilenas): lo más fuerte de su página es comparar su camino con el
+ * del banco, y ahí es una tabla quieta. Acá la comparación **se ve correr**.
+ *
+ * ── Lo que dibuja (reescrito el 2026-10-22, ADR-0014) ──────────────────────
+ *
+ * Dos carriles con la misma frontera de Chile:
+ *
+ * · **Por el banco**: tu banco y, ya afuera, dos corresponsales y el banco de
+ *   quien recibe. La ficha (un anillo, «una transferencia en camino») se
+ *   detiene en cada corresponsal, y ahí aparece un reloj que se queda.
+ * · **Con DLPay**: cotizas, transfieres tus pesos en Chile y el dinero llega a
+ *   quien recibe, en la moneda de su país. La ficha sale como CLP, **se
+ *   convierte en el punto verde «su moneda»** en tu transferencia y deja **el
+ *   tramo verde dibujado detrás, de punta a punta**: desde ADR-0014 el
+ *   recorrido es nuestro entero. Sin paradas: un solo recorrido.
+ *
+ * Es la gramática del Design System §6.2 sin una marca nueva: punto verde =
+ * unidad de valor, tramo verde = lo nuestro, filete gris = real y no nuestro,
+ * cuña = cambia de manos (sobre la frontera, como «Mover dinero fuera de
+ * Chile»), punteado = límite.
+ *
+ * ── Lo que NO dibuja, también por ADR-0014 ────────────────────────────────
+ *
+ * **Una carrera.** La primera versión, del 2026-10-21, hacía correr los dos
+ * carriles a la vez y DLPay llegaba primero. Con el recorrido entero a nuestro
+ * cargo, «llega primero» es un plazo de la entrega final, y el §3 de ADR-0014
+ * no deja predicar ninguno. Ahora **corre primero el banco y después DLPay**, y
+ * el marcador de DLPay es «Sin días hábiles» —lo publicado en el héroe y en
+ * `Steps`—, no un tiempo. Tampoco nombra el canal de entrega: «en la moneda de
+ * su país», el resultado y no el medio.
+ *
+ * ── Cómo se mueve ──────────────────────────────────────────────────────────
+ *
+ * **Sin JavaScript propio para el movimiento.** El motor de siempre
+ * (`Motion.astro`) pone `.is-in` a la figura cuando entra en pantalla, y de ahí
+ * en adelante es CSS: una sola variable registrada con `@property`, `--dc-x`,
+ * la posición en el carril de 0 a 1, que animan a la vez la ficha y el tramo.
+ * Por eso van sincronizados sin medir nada.
+ *
+ * · **4,8 s en total**: bajo los 5 s de WCAG 2.2.2, así que no hace falta un
+ *   control para pausar. Sí hay uno para **verlo de nuevo**, y es el único
+ *   JavaScript que trae la pieza (unas 10 líneas, en línea).
+ * · **Excepción al Motion System, concedida por Sebastián el 2026-10-21**
+ *   (ADR-0015, `motion-e5`): su
+ *   techo es 280 ms por movimiento. Ésta es una animación narrativa, y su
+ *   ventaja es la de la sección: el argumento es el recorrido, y un recorrido
+ *   se entiende viéndolo.
+ * · **El estado sin movimiento es el final**: sin JavaScript, con
+ *   `prefers-reduced-motion` o antes de llegar, la figura se ve terminada —el
+ *   tramo verde entero, los dos relojes, «días hábiles después» y «en la
+ *   moneda de su país»—.
+ * · **Colores forzados**: líneas y piezas son bordes, que el modo pinta; el
+ *   tramo y la ficha verdes van a `Highlight`, para seguir siendo «lo nuestro».
+ *
+ * ── Dos dibujos, un DOM ───────────────────────────────────────────────────
+ *
+ * Bajo 1024 px los carriles son **dos columnas verticales** y la frontera es
+ * horizontal; desde 1024 px, dos filas horizontales. Es el mismo marcado: cada
+ * parada lleva su `--dc-x` y la regla decide si es `top` o `left`. 1024 y no
+ * 900: entre 900 y 1023, en horizontal, las etiquetas de los dos corresponsales
+ * se tocaban (medido: 85 px de separación para 112 de etiqueta).
+ */
+import Icon from './Icon.astro';
+import { dosCaminos as d } from '../content/home.ts';
+
+/* La cuña del Design System §6.2: 6:5, punta en ángulo, en su caja de 56×20. */
+const CUNA = 'M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4';
+
+const carriles = [
+  { id: 'banco', ...d.banco },
+  { id: 'dlpay', ...d.dlpay },
+] as const;
+---
+<section class="caminos" aria-labelledby="caminos-title">
+  <div class="inner">
+    <header class="head">
+      <h2 id="caminos-title" data-enter>{d.title}</h2>
+      <p data-enter>{d.body}</p>
+    </header>
+
+    <div class="fig" data-enter data-caminos style={`--dc-f:${d.frontera}`}>
+      <div class="cuerpo">
+        {/* La frontera y sus dos rótulos: una capa, para que cruce los dos carriles. */}
+        <div class="capa" aria-hidden="true">
+          <span class="frontera frontera-v punteado-v"></span>
+          <span class="frontera frontera-h punteado-h"></span>
+        </div>
+        <div class="zonas" aria-hidden="true">
+          <span class="zona aca">Chile</span>
+          <span class="zona alla">Exterior</span>
+        </div>
+
+        {carriles.map((c) => (
+          <div class:list={['carril', `carril-${c.id}`]}>
+            <h3 class="carril-head" id={`carril-${c.id}`}>
+              <span class="carril-nombre">{c.nombre}</span><span class="sr-only">: </span>
+              <span class="tiempo"><Icon name="clock" size={20} />{c.tiempo}</span>
+            </h3>
+            <div class="via">
+              <span class="linea" aria-hidden="true"></span>
+              {c.id === 'dlpay' && (
+                <>
+                  <span class="tramo" aria-hidden="true"></span>
+                  <span class="cuna" aria-hidden="true">
+                    <svg viewBox="0 0 56 20" fill="none">
+                      <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
+                    </svg>
+                  </span>
+                </>
+              )}
+              <ol class="paradas" aria-labelledby={`carril-${c.id}`}>
+                {c.paradas.map((p, i) => (
+                  <li
+                    class:list={['parada', { 'parada-tuya': 'tipo' in p && p.tipo === 'tuya', 'parada-fin': p.x === 1 }]}
+                    style={`--dc-x:${p.x}`}
+                  >
+                    <span class="pieza" aria-hidden="true">
+                      <Icon name={p.icon} size={20} />
+                      {/* El reloj de la espera: sólo en los corresponsales, y sólo
+                          mientras la ficha está detenida en ellos. */}
+                      {c.id === 'banco' && i > 0 && p.x < 1 && <span class="espera"><Icon name="clock" size={16} /></span>}
+                    </span>
+                    <span class="pie">
+                      {p.label}
+                      {'llega' in p && p.llega && (
+                        <><span class="sr-only">, </span><span class="llega">{p.llega}</span></>
+                      )}
+                      {/* La zona, salvo cuando la etiqueta ya la dice («…en Chile, en Chile»). */}
+                      {!p.label.endsWith(p.zona) && <span class="sr-only">, {p.zona}</span>}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+              {c.id === 'banco' ? (
+                <span class="ficha ficha-banco" aria-hidden="true"></span>
+              ) : (
+                <>
+                  <span class="ficha ficha-clp" aria-hidden="true"><span class="ficha-rot">CLP</span></span>
+                  <span class="ficha ficha-destino" aria-hidden="true"><span class="ficha-rot">su moneda</span></span>
+                </>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="fig-pie">
+        <p class="nota">{d.nota}</p>
+        <button class="repetir" type="button" hidden>{d.repetir}</button>
+      </div>
+    </div>
+
+    <table class="compara" data-enter>
+      <caption class="sr-only">{d.compara.caption}</caption>
+      <thead>
+        <tr>
+          <td></td>
+          <th scope="col" class="col-banco">{d.banco.nombre}</th>
+          <th scope="col" class="col-dlpay">{d.dlpay.nombre}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {d.compara.filas.map((f, i) => (
+          <tr>
+            <th scope="row"><span class="n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>{f.que}</th>
+            <td class="col-banco">{f.banco}</td>
+            <td class="col-dlpay">{f.dlpay}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+  /* «Ver de nuevo»: reinicia las animaciones CSS de la figura. Es lo único que
+     esta pieza ejecuta; el movimiento lo pone `.is-in`, del motor de siempre.
+     Sin el motor (`.js-motion`) no hay nada que repetir y el botón no aparece. */
+  const fig = document.querySelector<HTMLElement>('[data-caminos]');
+  const boton = fig?.querySelector<HTMLButtonElement>('.repetir');
+  if (fig && boton && 'getAnimations' in fig && document.documentElement.classList.contains('js-motion')) {
+    boton.hidden = false;
+    boton.addEventListener('click', () => {
+      for (const a of fig.getAnimations({ subtree: true })) {
+        if (a instanceof CSSAnimation) { a.cancel(); a.play(); }
+      }
+    });
+  }
+</script>
+
+<style>
+  /* La posición en el carril, de 0 a 1. Registrada para que se pueda animar:
+     sin `@property` saltaría de un valor al siguiente. */
+  @property --dc-x {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+  }
+
+  .caminos { background: var(--papel); padding: var(--s-9) 0; }
+  .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
+
+  .head { max-width: 50ch; margin: 0 auto var(--s-7); text-align: center; }
+  h2 {
+    font-size: var(--t-h2-m);
+    font-weight: 700;
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    margin-bottom: var(--s-3);
+  }
+  .head p { color: var(--ink-mute); }
+
+  /* ── La figura ───────────────────────────────────────────────────────── */
+  .fig {
+    background: var(--papel-2);
+    border-radius: var(--r-3);
+    /* Transparente a propósito: en colores forzados el fondo desaparece y el
+       borde dibuja el contorno, como en la lámina. */
+    border: 1px solid transparent;
+    padding: var(--s-5) var(--s-4) var(--s-4);
+  }
+
+  /* Base (bajo 1024): dos columnas verticales que comparten las filas, para
+     que la frontera horizontal caiga a la misma altura en las dos. */
+  .cuerpo {
+    --pad: 20px;
+    /* El centro de la pieza, que es donde corre la línea en vertical. */
+    --c: 20px;
+    /* El alto del carril. La capa de la frontera lo usa también: si tomara el
+       alto de la fila, el margen del carril la correría hacia abajo. */
+    --via-h: 500px;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: var(--s-3);
+  }
+  .carril {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: 1 / span 2;
+    min-width: 0;
+  }
+  .carril-banco { grid-column: 1; }
+  .carril-dlpay { grid-column: 2; }
+  .capa, .zonas { grid-column: 1 / -1; grid-row: 2; position: relative; pointer-events: none; height: var(--via-h); align-self: start; }
+
+  .carril-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+    margin-bottom: var(--s-4);
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  /* El marcador: lo que tarda cada camino, grande. Es lo que se lee primero
+     con la figura quieta, y durante el movimiento se enciende al llegar. */
+  .tiempo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: var(--t-h3-m);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: var(--ls-h2);
+    color: var(--ink-mute);
+  }
+  .tiempo :global(svg) { flex: none; }
+  .carril-dlpay .tiempo { color: var(--verde-deep); }
+
+  /* La frontera: horizontal bajo 1024, vertical desde 1024. */
+  .frontera { position: absolute; }
+  .frontera-v { display: none; }
+  .frontera-h {
+    left: 0;
+    right: 0;
+    top: calc(var(--pad) + (100% - 2 * var(--pad)) * var(--dc-f));
+    height: 1.25px;
+    --punteado-color: var(--ink-mute);
+  }
+  .zona {
+    position: absolute;
+    left: calc(2 * var(--c) + var(--s-2));
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--ink-mute);
+  }
+  .aca { bottom: calc(100% - var(--pad) - (100% - 2 * var(--pad)) * var(--dc-f) + 6px); }
+  .alla { top: calc(var(--pad) + (100% - 2 * var(--pad)) * var(--dc-f) + 6px); }
+
+  /* ── El carril ───────────────────────────────────────────────────────── */
+  /* El margen de abajo es para la última etiqueta, que se centra en su pieza
+     y con texto espaciado baja más allá del carril. */
+  .via { position: relative; height: var(--via-h); margin-bottom: var(--s-6); }
+  .linea, .tramo { position: absolute; }
+  .linea {
+    left: calc(var(--c) - 1.5px);
+    top: var(--pad);
+    bottom: var(--pad);
+    border-left: 3px solid var(--ink-mute);
+  }
+  /* Lo nuestro: crece con la ficha, de punta a punta (ADR-0014). */
+  .tramo {
+    --dc-x: 1;
+    left: calc(var(--c) - 1.5px);
+    top: var(--pad);
+    height: calc((100% - 2 * var(--pad)) * var(--dc-x));
+    border-left: 3px solid var(--verde-deep);
+    z-index: 1;
+  }
+  .cuna {
+    position: absolute;
+    left: var(--c);
+    top: calc(var(--pad) + (100% - 2 * var(--pad)) * var(--dc-f));
+    width: 40px;
+    height: 14.3px;
+    transform: translate(-50%, -50%) rotate(90deg);
+    color: var(--ink-mute);
+    /* Con el fondo de la figura, para que la frontera no la tache. */
+    background: var(--papel-2);
+    z-index: 1;
+  }
+  .cuna svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+  .paradas { list-style: none; margin: 0; padding: 0; position: absolute; inset: 0; }
+  .parada {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(var(--pad) + (100% - 2 * var(--pad)) * var(--dc-x));
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    z-index: 2;
+  }
+  /* Las piezas: la tuya en tinta, las demás con borde, como en las láminas. */
+  .pieza {
+    flex: none;
+    width: calc(2 * var(--c));
+    height: calc(2 * var(--c));
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-3);
+    background: var(--papel);
+    border: 1.5px solid var(--ink-mute);
+    color: var(--ink);
+  }
+  .parada-tuya .pieza { background: var(--tinta); border-color: var(--tinta); color: var(--on-tinta); }
+  .pieza { position: relative; }
+  .espera {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--papel);
+    border: 1.5px solid var(--ink-mute);
+    color: var(--ink-mute);
+  }
+  /* Las etiquetas, en la letra del texto y no en mono: son frases, no
+     rótulos, y en una columna de 80 px «corresponsal» en mono no cabía. */
+  .pie {
+    min-width: 0;
+    font-size: var(--t-label);
+    line-height: 1.25;
+    color: var(--ink);
+    /* Sólo con el espaciado de WCAG 1.4.12 a 320 px: «corresponsal» con
+       letras separadas no cabe en su columna, y se parte antes que desbordar. */
+    overflow-wrap: anywhere;
+  }
+  .llega { display: block; margin-top: 2px; font-weight: 600; color: var(--ink-mute); }
+  .carril-dlpay .llega { color: var(--verde-deep); }
+
+  /* ── Las fichas ──────────────────────────────────────────────────────────
+     Por DEBAJO de las piezas: al llegar a una parada se meten en ella, y la
+     pieza tapa la ficha. Por eso el estado final no tiene fichas a la vista. */
+  .ficha {
+    position: absolute;
+    left: var(--c);
+    top: calc(var(--pad) + (100% - 2 * var(--pad)) * var(--dc-x));
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+  }
+  .ficha-banco { --dc-x: 1; background: var(--papel-2); border: 3px solid var(--ink); }
+  .ficha-clp { --dc-x: .3; background: var(--papel-2); border: 3px solid var(--ink); opacity: 0; }
+  .ficha-destino { --dc-x: 1; background: var(--verde-deep); }
+  .ficha-rot {
+    position: absolute;
+    left: calc(100% + 6px);
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    line-height: 1;
+    padding: 1px 2px;
+    white-space: nowrap;
+    background: var(--papel-2);
+    color: var(--ink);
+    opacity: 0;
+  }
+  .ficha-destino .ficha-rot { color: var(--verde-deep); }
+
+  .fig-pie {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3) var(--s-5);
+    margin-top: var(--s-5);
+  }
+  .nota { max-width: 72ch; font-size: var(--t-label); line-height: 1.45; color: var(--ink-mute); }
+  .repetir {
+    font: inherit;
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    color: var(--verde-deep);
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: var(--r-2);
+    padding: 0 var(--s-4);
+    cursor: pointer;
+  }
+  .repetir:hover { border-color: var(--verde-deep); }
+  @media (prefers-reduced-motion: reduce) { .repetir { display: none; } }
+
+  /* Teléfonos estrechos: más alto y piezas más chicas, para que cada etiqueta
+     tenga sus 80 px y no se pise con la de al lado. 680 de alto: con el
+     espaciado de WCAG 1.4.12 a 320 px, «Banco de quien recibe» y «días hábiles
+     después» suman seis renglones y con 600 tocaban «Otro corresponsal». */
+  @media (max-width: 419px) {
+    .fig { padding: var(--s-4) var(--s-3) var(--s-3); }
+    .cuerpo { --c: 18px; --via-h: 680px; column-gap: var(--s-2); }
+    .pieza :global(svg) { width: 16px; height: 16px; }
+  }
+
+  /* ── La comparación ──────────────────────────────────────────────────── */
+  .compara {
+    width: 100%;
+    margin-top: var(--s-7);
+    border-collapse: collapse;
+    font-size: var(--t-body-sm);
+    line-height: 1.4;
+    table-layout: fixed;
+  }
+  .compara th, .compara td {
+    text-align: left;
+    vertical-align: top;
+    padding: var(--s-3) var(--s-2);
+    border-bottom: 1px solid var(--line);
+  }
+  .compara thead th {
+    font-size: var(--t-body-sm);
+    font-weight: 600;
+    padding-top: 0;
+    border-bottom: 1px solid var(--ink-mute);
+  }
+  .compara thead td { border-bottom: 1px solid var(--ink-mute); }
+  .compara thead .col-dlpay { color: var(--verde-deep); }
+  .compara tbody th { font-weight: 600; color: var(--ink); width: 30%; }
+  .compara .n {
+    display: block;
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    font-weight: 400;
+    color: var(--ink-mute);
+    margin-bottom: 2px;
+  }
+  .compara td.col-banco { color: var(--ink-mute); }
+  .compara td.col-dlpay { color: var(--ink); font-weight: 600; }
+
+  /* ── Desde 1024: los carriles en horizontal ──────────────────────────── */
+  @media (min-width: 1024px) {
+    .fig { padding: var(--s-6) var(--s-7) var(--s-6); }
+    .cuerpo {
+      --pad: 52px;
+      /* 140 y no menos: con el espaciado de WCAG 1.4.12, «Banco de destino» y
+         «días hábiles después» suman cinco renglones a 1024 px, y con menos
+         alto bajaban sobre el carril de DLPay. */
+      --via-h: 140px;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto auto auto auto auto;
+    }
+    .carril-banco { grid-column: 1; grid-row: 2 / span 2; }
+    .carril-dlpay { grid-column: 1; grid-row: 4 / span 2; }
+    .capa { grid-column: 1; grid-row: 2 / -1; height: auto; align-self: stretch; }
+    .zonas { grid-column: 1; grid-row: 1; height: 20px; }
+
+    .carril-head {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--s-3);
+      margin: var(--s-5) 0 var(--s-4);
+      font-size: var(--t-body);
+    }
+    .tiempo { font-size: var(--t-h3); }
+    .carril-banco .carril-head { margin-top: var(--s-2); }
+
+    .frontera-h { display: none; }
+    .frontera-v {
+      display: block;
+      top: 0;
+      bottom: 0;
+      left: calc(var(--pad) + (100% - 2 * var(--pad)) * var(--dc-f));
+      width: 1.25px;
+      --punteado-color: var(--ink-mute);
+    }
+    .zona { top: 0; bottom: auto; }
+    .aca { left: auto; right: calc(100% - var(--pad) - (100% - 2 * var(--pad)) * var(--dc-f) + var(--s-2)); }
+    .alla { left: calc(var(--pad) + (100% - 2 * var(--pad)) * var(--dc-f) + var(--s-2)); }
+
+    .via { margin-bottom: 0; }
+    .linea {
+      left: var(--pad);
+      right: var(--pad);
+      top: 22.5px;
+      bottom: auto;
+      border-left: 0;
+      border-top: 3px solid var(--ink-mute);
+    }
+    .tramo {
+      left: var(--pad);
+      top: 22.5px;
+      height: 0;
+      width: calc((100% - 2 * var(--pad)) * var(--dc-x));
+      border-left: 0;
+      border-top: 3px solid var(--verde-deep);
+    }
+    .cuna {
+      left: calc(var(--pad) + (100% - 2 * var(--pad)) * var(--dc-f));
+      top: 24px;
+      transform: translate(-50%, -50%);
+    }
+    .parada {
+      top: 0;
+      right: auto;
+      left: calc(var(--pad) + (100% - 2 * var(--pad)) * var(--dc-x));
+      width: calc(2 * var(--pad));
+      transform: translateX(-50%);
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: var(--s-2);
+    }
+    .pieza { width: 48px; height: 48px; }
+    .pie { font-size: var(--t-body-sm); }
+    .ficha {
+      top: 24px;
+      left: calc(var(--pad) + (100% - 2 * var(--pad)) * var(--dc-x));
+    }
+    .ficha-rot {
+      left: 50%;
+      top: auto;
+      bottom: calc(100% + 5px);
+      transform: translateX(-50%);
+    }
+    .compara { font-size: var(--t-body); }
+    .compara th, .compara td { padding: var(--s-4) var(--s-4); }
+    .compara tbody th { width: 28%; }
+  }
+
+  @media (min-width: 900px) {
+    .inner { padding-inline: var(--pad-section); }
+    h2 { font-size: var(--t-h2); }
+  }
+
+  /* ── El movimiento ───────────────────────────────────────────────────────
+     Todo arranca con `.is-in` y dura 4,8 s. Los porcentajes son del total:
+     10 % = 0,48 s. `both`: antes de empezar cada pieza está en su primer
+     fotograma y al terminar se queda en el último, que es el estado de reposo
+     de arriba. */
+  /* Sólo sin `prefers-reduced-motion`. Con esa preferencia no se declara
+     ninguna animación, y no se acorta a 0,01 ms como el resto del sitio: así
+     no hay ni un fotograma del estado inicial antes del final. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js-motion) .fig.is-in .ficha-banco { animation: dc-banco 4.8s var(--m-ease) both; }
+    :global(.js-motion) .fig.is-in .carril-banco .parada:nth-child(2) .espera { animation: dc-espera-1 4.8s linear both; }
+    :global(.js-motion) .fig.is-in .carril-banco .parada:nth-child(3) .espera { animation: dc-espera-2 4.8s linear both; }
+    :global(.js-motion) .fig.is-in .carril-banco .parada-fin .pieza { animation: dc-llega-banco 4.8s linear both; }
+    :global(.js-motion) .fig.is-in .carril-banco .parada-fin .llega { animation: dc-aparece-banco 4.8s linear both; }
+    :global(.js-motion) .fig.is-in .carril-banco .tiempo { animation: dc-marca-banco 4.8s linear both; }
+
+    :global(.js-motion) .fig.is-in .ficha-clp { animation: dc-clp 4.8s var(--m-ease) both; }
+    :global(.js-motion) .fig.is-in .ficha-clp .ficha-rot { animation: dc-rot-clp 4.8s linear both; }
+    :global(.js-motion) .fig.is-in .ficha-destino { animation: dc-destino 4.8s var(--m-ease) both; }
+    :global(.js-motion) .fig.is-in .ficha-destino .ficha-rot { animation: dc-rot-destino 4.8s linear both; }
+    :global(.js-motion) .fig.is-in .tramo { animation: dc-tramo 4.8s var(--m-ease) both; }
+    :global(.js-motion) .fig.is-in .carril-dlpay .parada-fin .pieza { animation: dc-llega-dlpay 4.8s linear both; }
+    :global(.js-motion) .fig.is-in .carril-dlpay .parada-fin .llega { animation: dc-aparece-dlpay 4.8s linear both; }
+    :global(.js-motion) .fig.is-in .carril-dlpay .tiempo { animation: dc-marca-dlpay 4.8s linear both; }
+  }
+
+  /* ── El banco, primero (0–2,9 s) ───────────────────────────────────────
+     Sale enseguida, cruza la frontera y se detiene en cada corresponsal, donde
+     aparece su reloj. Llega a los 2,9 s y se enciende «Días hábiles». */
+  @keyframes dc-banco {
+    0%, 4% { --dc-x: 0; }
+    30% { --dc-x: .7; }
+    40% { --dc-x: .7; }
+    46% { --dc-x: .85; }
+    52% { --dc-x: .85; }
+    60%, 100% { --dc-x: 1; }
+  }
+  @keyframes dc-espera-1 {
+    0%, 29% { opacity: 0; transform: scale(.6); }
+    33%, 100% { opacity: 1; transform: none; }
+  }
+  @keyframes dc-espera-2 {
+    0%, 45% { opacity: 0; transform: scale(.6); }
+    49%, 100% { opacity: 1; transform: none; }
+  }
+  @keyframes dc-llega-banco {
+    0%, 59% { box-shadow: 0 0 0 0 rgba(90, 100, 114, .45); }
+    69%, 100% { box-shadow: 0 0 0 10px rgba(90, 100, 114, 0); }
+  }
+  @keyframes dc-aparece-banco {
+    0%, 60% { opacity: 0; }
+    65%, 100% { opacity: 1; }
+  }
+  @keyframes dc-marca-banco {
+    0%, 59% { opacity: .3; }
+    64%, 100% { opacity: 1; }
+  }
+
+  /* ── DLPay, después (2,4–4,8 s) ────────────────────────────────────────
+     Tus pesos van de la cotización a tu transferencia, se vuelven «su moneda»
+     y siguen sin una parada hasta quien recibe, con el tramo verde detrás. No
+     compite con el banco: arranca cuando el banco ya llegó a su segundo
+     corresponsal, y no hay un reloj que compare. */
+  @keyframes dc-clp {
+    0%, 50% { --dc-x: 0; opacity: 1; }
+    63% { --dc-x: .3; opacity: 1; }
+    64%, 100% { --dc-x: .3; opacity: 0; }
+  }
+  @keyframes dc-rot-clp {
+    0%, 51% { opacity: 0; }
+    52%, 61% { opacity: 1; }
+    62%, 100% { opacity: 0; }
+  }
+  @keyframes dc-destino {
+    0%, 63% { --dc-x: .3; opacity: 0; }
+    64% { --dc-x: .3; opacity: 1; }
+    92%, 100% { --dc-x: 1; opacity: 1; }
+  }
+  /* La etiqueta se apaga antes de la última pieza: si no, asomaba sobre ella. */
+  @keyframes dc-rot-destino {
+    0%, 66% { opacity: 0; }
+    68%, 80% { opacity: 1; }
+    82%, 100% { opacity: 0; }
+  }
+  @keyframes dc-tramo {
+    0%, 50% { --dc-x: 0; }
+    63% { --dc-x: .3; }
+    64% { --dc-x: .3; }
+    92%, 100% { --dc-x: 1; }
+  }
+  @keyframes dc-llega-dlpay {
+    0%, 91% { box-shadow: 0 0 0 0 rgba(10, 114, 80, .55); }
+    100% { box-shadow: 0 0 0 12px rgba(10, 114, 80, 0); }
+  }
+  @keyframes dc-aparece-dlpay {
+    0%, 92% { opacity: 0; }
+    97%, 100% { opacity: 1; }
+  }
+  @keyframes dc-marca-dlpay {
+    0%, 91% { opacity: .3; }
+    96%, 100% { opacity: 1; }
+  }
+
+  /* ── Colores forzados ────────────────────────────────────────────────── */
+  @media (forced-colors: active) {
+    .tramo { forced-color-adjust: none; border-color: Highlight; }
+    .ficha-destino { forced-color-adjust: none; background: Highlight; }
+    .ficha-banco, .ficha-clp { forced-color-adjust: none; background: Canvas; border-color: CanvasText; }
+    .cuna { forced-color-adjust: none; color: CanvasText; background: Canvas; }
+    .parada-tuya .pieza { border-color: CanvasText; }
+  }
+</style>

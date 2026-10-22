@@ -9,6 +9,7 @@ import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import GloboRotativo from '../components/hero/GloboRotativo.astro';
 import UseCases from '../components/UseCases.astro';
+import DosCaminos from '../components/DosCaminos.astro';
 import Steps from '../components/Steps.astro';
 import Process from '../components/Process.astro';
 import Puente from '../components/Puente.astro';
@@ -109,6 +110,13 @@ import IntroDeMarca from '../components/IntroDeMarca.astro';
     </section>
 
     <UseCases />
+    {/*
+      El banco y DLPay, lado a lado (Cowork, entrega `caminos-`). Va justo
+      después de «Tres formas de usarlo»: ahí la persona ya sabe para qué le
+      sirve, y la pregunta viva es «¿y por qué no por el banco?». Antes de la
+      tarjeta de cotización, que es la acción.
+    */}
+    <DosCaminos />
     <Steps />
     <Process />
     {/*
