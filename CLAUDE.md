@@ -86,8 +86,9 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   `npm run build` en verde, fuentes T-C auto-hospedadas, tokens del Design System en código, y la
   cadena `PriceSource → Quote` en pie. Ver `docs/development.md`.
   **Sobre el JavaScript, que ya no es cero:** el esqueleto se levantó sin una sola línea en el
-  cliente y así siguen las cuatro legales y la 404. Hoy la Home envía **53,8 KB**: el cotizador
-  (6,9 KB, **2,5 más desde el 2026-10-21** porque el catálogo de divisas de ADR-0013 viaja con él),
+  cliente y así siguen las cuatro legales y la 404. Hoy la Home envía **54,6 KB**: el cotizador
+  (7,8 KB — 2,5 más desde el 2026-10-21 porque el catálogo de divisas de ADR-0013 viaja con él, y
+  0,9 más desde el 2026-10-22 por el rediseño de la tarjeta),
   el Motion System (0,5 KB), el globo (40,5 KB, casi todo coordenadas), la intro de marca
   (6,3 KB) y **«Ver de nuevo» de «El mismo envío, por dos caminos» (303 B, ADR-0015)**. Las
   excepciones están autorizadas y acotadas —ADR-0009, ADR-0008, ADR-0010 y ADR-0015—; el
@@ -807,9 +808,9 @@ contenido real porque describen el servicio, no obligaciones contractuales. `/te
 `/privacidad` son páginas de estado hasta que Compliance entregue el texto — ver
 `docs/legal-brief.md`.
 
-**El cotizador:** modelo `qué quieres hacer → monto → cuánto recibes → precio referencial →
+**El cotizador:** modelo `qué quieres hacer → a dónde → monto → cuánto llega → precio referencial →
 WhatsApp prellenado → el ejecutivo confirma el precio final y coordina el destino`. La intención
-—convertir a dólares, convertir a pesos— es el primer paso. **Eran tres hasta el 2026-09-14:**
+—enviar al extranjero, pasar a pesos— es el primer paso. **Eran tres hasta el 2026-09-14:**
 «enviar al extranjero» se retiró por hacer la misma aritmética que «convertir a dólares» y leerse
 como un camino duplicado. Lo que se pierde está razonado en `cotizador-spec.md`. Especificación completa en `docs/design-system/cotizador-spec.md`. No ejecuta
 operaciones, no bloquea precios, no promete cotizaciones cerradas.
@@ -823,6 +824,13 @@ destino. Es un cambio de la pieza central del sitio, así que `cotizador-spec.md
 el motivo de aquella retirada deja de existir. No se repone automáticamente —la intención y la
 divisa de destino pueden ser el mismo control o dos— pero quien lea aquel párrafo debe saber que su
 razón caducó.
+
+**Enmendado otra vez el 2026-10-22: la tarjeta pregunta como un envío, no como una casa de
+cambio.** Se elige **el destino y no la moneda** —trece países, «Colombia · COP»—, porque así se
+piensa un envío y porque con dólares la moneda no basta: Estados Unidos o Ecuador. La vuelta a
+pesos se queda en un interruptor chico. El precio se escribe para leerse —«1 USD = 919,70 CLP» y,
+con la tasa bajo 1, «1 CLP = 4,35 COP»— y baja de jerarquía: la cifra que manda es la que llega.
+La enmienda completa, con la anatomía nueva, está al final de `cotizador-spec.md`.
 
 **Las cifras siguen siendo referenciales, y ahora son varias.** Una tasa de muestra por divisa, con
 la reserva que el sitio ya publica: el precio que se aplica es el que confirma el ejecutivo. Una

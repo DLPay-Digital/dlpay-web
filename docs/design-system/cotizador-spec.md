@@ -269,3 +269,85 @@ de `/como-funciona`.
 **Qué queda del cotizador en texto:** las dos etiquetas de campo, la etiqueta del precio, «Sin
 comisiones ocultas: el precio ya incluye el spread», la nota del riel en una línea y el botón. **De
 seis bloques de prosa a tres, y los tres que quedan caben en una línea cada uno.**
+
+---
+
+## Enmienda — 2026-10-22 · el cotizador pregunta como un envío
+
+*Cowork, entrega `cotizador-`. Pedida por Sebastián: «ponerlo más bonito y acorde al servicio que
+ofrecemos». Las tres decisiones de fondo son suyas, del mismo día.*
+
+**Por qué.** Desde ADR-0014 el servicio no termina en una divisa: **el dinero llega a destino en la
+moneda de ese destino.** La tarjeta seguía preguntando como una casa de cambio: dos botones negros
+de «convertir», un desplegable de monedas y el precio aparte, al pie. Ahora pregunta como un envío.
+
+### Lo que cambia
+
+| | hasta hoy | desde esta enmienda | quién |
+|---|---|---|---|
+| **La intención** | dos botones a lo ancho, rellenos de tinta el elegido: «Convertir a otra moneda» y «Convertir a pesos» | un **interruptor chico**: «Enviar» y «Pasar a pesos». Siguen siendo dos radios con 44 px de área cada uno | Sebastián: la vuelta se queda, más discreta |
+| **El destino** | «¿A qué moneda?», doce opciones del tipo «Dólar · USD (Estados Unidos, Ecuador)» | **«¿A dónde envías?»**, trece países, «Colombia · COP». La moneda sale sola. En «Pasar a pesos» es otro desplegable, «¿Qué divisa tienes?» | Sebastián: por país |
+| **Los montos** | «Conviertes» / «Recibo aprox.», con la moneda al lado de la cifra | **«Envías» / «Llega aprox.»** (de vuelta: «Conviertes» / «Recibes aprox.»). La moneda va en una ficha arriba y la cifra tiene todo el ancho | Cowork |
+| **El precio** | segunda cifra grande, al pie: «919,70 CLP por dólar»; en las débiles, «0,23 CLP por peso colombiano» | **en el tramo entre los dos montos**, a 17–20 px: «1 USD = 919,70 CLP» y, con la tasa bajo 1, «1 CLP = 4,35 COP» | Sebastián: legible |
+| **El mensaje de WhatsApp** | «Hola, quiero convertir CLP 2.000.000 a dólares (recibo aprox. US$ 2.174,62 al precio referencial 919,70).» | «Hola, quiero **enviar** CLP 2.000.000 **a Estados Unidos, en dólares** (**llegan** aprox. US$ 2.174,62 al precio referencial **1 USD = 919,70 CLP**).» De vuelta a pesos sigue siendo «convertir … a pesos» | Cowork |
+| **La barra móvil** | «Recibes · US$ 2.174,62» | «**Llega a Estados Unidos** · US$ 2.174,62» | Cowork |
+| **Fuera de rango** | rojo en las dos cajas | rojo **sólo en la de los pesos**, que es donde vive el mínimo | Cowork |
+
+**Lo que no cambia:** la aritmética y el tipo `Quote`; el monto de partida y sus cifras (las que
+citan `/tarifas` y el puente siguen coincidiendo); «Precio referencial», con esas dos palabras
+(§48); «Sin comisiones ocultas: el precio ya incluye el spread.», letra por letra; la nota del riel,
+«Llega en la moneda del destino. El plazo te lo confirma tu ejecutivo.»; el botón, el enlace
+secundario, el fallback a WhatsApp de cada estado y el comportamiento bidireccional del §3.
+
+### Anatomía nueva (reemplaza el esquema del §2)
+
+```
+┌───────────────────────────────────────────────┐
+│  [ Enviar ] Pasar a pesos                     │  ← interruptor chico (radios)
+│                                               │
+│  ¿A dónde envías?                             │
+│  [ Estados Unidos · USD                  ⌄ ]  │  ← select nativo, 13 países
+│                                               │
+│  ┌ Envías                          [CLP] ┐    │
+│  │ 2.000.000                             │    │  ← cifra mono, todo el ancho
+│  └───────────────────────────────────────┘    │
+│   │  Precio referencial                       │
+│   ●  1 USD = 919,70 CLP                       │  ← tramo verde y punto (§6.2)
+│   │  Sin comisiones ocultas: el precio ya…    │
+│  ┌ Llega aprox.                    [USD] ┐    │
+│  │ 2.174,62                              │    │
+│  └───────────────────────────────────────┘    │
+│  Llega en la moneda del destino. El plazo…    │  ← nota del riel (§42)
+│  [      Continuar por WhatsApp      ]         │
+│      o crea tu cuenta para operar en línea    │
+└───────────────────────────────────────────────┘
+```
+
+**Jerarquía (reemplaza la del §2):** 1. **la cifra que llega**, que responde la pregunta; 2. el
+**CTA**; 3. **el precio**, que es la explicación de esa cifra y se lee junto a ella, en el tramo;
+4. todo lo demás. *El precio deja de ser «cifra grande»: era la segunda de la tarjeta y competía con
+la respuesta.*
+
+**El tramo no estrena ninguna marca** (DS §6.2): el tramo verde es lo nuestro, de punta a punta
+desde ADR-0014, y el punto es la unidad de valor, la misma que el precio cotiza.
+
+### Comportamiento nuevo (se suma al §3)
+
+- **Cambiar de modo cambia de desplegable y conserva lo elegido.** De un envío a Colombia se pasa a
+  «tienes pesos colombianos»; si de vuelta a pesos se eligen euros, al volver el destino es Europa.
+  El monto en pesos se conserva, como siempre.
+- **Una cifra que no cabe baja un escalón**, y si tampoco cabe, otro: de 26 a 20 y a 16 px en el
+  teléfono, de 32 a 26 y a 20 en escritorio. Se mide la cifra, no se cuentan dígitos. Bajo 360 px
+  la tarjeta pasa de 24 a 16 px de relleno.
+- **El foco de dentro de la tarjeta es `--verde-deep`.** Heredaba `--verde` de la tinta del héroe,
+  2:1 sobre el papel.
+
+### Pendientes que deja
+
+- `PENDIENTE DE DECISIÓN` — **que el equipo cotice así por WhatsApp.** Si el ejecutivo dice «0,23»
+  y la web «4,35», el cliente compara dos números que no se parecen. Vive junto a `precioLegible`.
+- `REQUIERE VALIDACIÓN DE COMPLIANCE` — las etiquetas «Envías» y «Llega aprox.» y el mensaje con
+  «enviar … a {país}» afirman lo mismo que la nota del riel, que ya lleva ese marcador: que el
+  dinero llega a destino. No afirman plazo ni canal.
+- **Con VoiceOver**, cómo se lee «Colombia · COP» (el punto medio) y si la lista nativa del iPhone
+  enseña los trece destinos sin cortar.

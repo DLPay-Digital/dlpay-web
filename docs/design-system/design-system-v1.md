@@ -901,6 +901,12 @@ cajonera.
 
 **El eje de alcance corto (2026-10-02) tampoco estrena ninguna.**
 
+> *Lo de abajo describe el eje de ANTES de ADR-0014 y se conserva fechado, no corregido: explica
+> por qué estaba dibujado así. Desde el 2026-10-22 ese eje **no tiene filete gris, ni cuña en una
+> billetera, ni trazo punteado** —el recorrido llega hasta el destino, así que no hay tramo ajeno
+> que dibujar— y su punto y su tramo verde van hasta la pieza de quien recibe. Sigue sin estrenar
+> ninguna marca.*
+
 - **Punto lleno verde:** el dólar digital que te enviamos.
 - **Tramo verde:** lo nuestro, y sólo hasta tu billetera.
 - **Cuña:** en la entrada de la billetera, donde cambia de manos.
@@ -913,13 +919,23 @@ dibujando lo que no hacemos.
 
 **Las figuras de uso de la Home del 2026-10-02 tampoco estrenan ninguna.**
 
-- **Cruza:** punto lleno verde (la unidad de valor, USD, del lado de Chile), filete `--ink-mute`
-  (el envío lo haces tú), cuña y trazo punteado.
+> *«Cruza» cambió con ADR-0014 y se corrige acá, porque lo que decía dejó de ser cierto: su rótulo
+> es **CLP** y no USD —en ese punto el dinero no ha cruzado—, la pieza de la izquierda es un banco
+> y no una billetera, y **el tramo va en verde entero**, porque el envío ya no lo haces tú. El
+> punteado de la frontera se queda. (2026-10-22.)*
+
+- **Cruza:** punto lleno verde (la unidad de valor, CLP, del lado de Chile), tramo verde de punta
+  a punta (el recorrido es nuestro), cuña y trazo punteado.
 - **Convierte:** dos tramos verdes con su cuña —la conversión, ida y vuelta, que es lo nuestro— y
   ninguna frontera.
 - **Reparte:** filete `--ink-mute` (el pago lo hace la empresa), cuña y trazo punteado.
 
-Las monedas, la billetera y las piezas son **partes del objeto**.
+Las monedas y las piezas son **partes del objeto**.
+
+**El cotizador (2026-10-22) tampoco estrena ninguna.** Tramo verde (lo nuestro, de punta a punta
+desde ADR-0014, entre lo que envías y lo que llega) y punto lleno verde (la unidad de valor, la
+misma que el precio cotiza: «1 USD»). Va **dentro** del instrumento, así que no es la «geometría
+que compita con el cotizador» que el §6 prohíbe: es el cotizador.
 
 **Las figuras de caso del 2026-10-02 no estrenan ninguna marca, y se comprobó una por una.** El
 cruce usa punto lleno verde (la unidad de valor que viaja), cuña, filete `--ink-mute` —el pago al
