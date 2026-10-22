@@ -695,8 +695,12 @@ y pensará que se olvidaron:
 | `.user-chip`, «Mi cuenta» | **3,13:1** | blanco al 18 % sobre ese verde |
 | `.on`, «Retirar», el ítem activo | **3,3:1** | `#19A071`, la entrada abierta |
 
-**Diez, y ocho cuelgan del mismo color.** La razón de dejarlos es la que el propio componente
-escribe: **esos verdes están muestreados de una captura real de la plataforma**, no elegidos. Subir
+**Diez, y ocho cuelgan del mismo color.** Los otros dos —el chip y el ítem activo— se le
+presentaron a Sebastián por separado, porque están sobre otros dos fondos y no se habrían movido al
+tocar la barra; **los confirmó el mismo día, con las mismas palabras: se quedan igual.** Así que la
+decisión cubre los diez y no ocho, y nadie tiene que deducirlo de una tabla.
+
+La razón de dejarlos es la que el propio componente escribe: **esos verdes están muestreados de una captura real de la plataforma**, no elegidos. Subir
 el contraste no es ajustar un token del sitio, es dibujar un producto que no se parece al producto.
 El día que la plataforma cambie sus colores, esto cambia con ella.
 
