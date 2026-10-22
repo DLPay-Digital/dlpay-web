@@ -605,7 +605,13 @@ Generados, no escritos a mano:
 - **`og:image`** (`public/og-image.png`, 1200×630) se compuso con la tipografía real del proyecto
   incrustada en un SVG y se rasterizó con el motor de macOS. Importa más de lo habitual: este
   producto vive de enlaces compartidos por WhatsApp, y esa previsualización es lo primero que ve
-  quien recibe el enlace. Para regenerarla hay un guion en el historial del commit correspondiente.
+  quien recibe el enlace.
+
+  **Lo que esta línea decía y era falso:** «para regenerarla hay un guion en el historial del
+  commit correspondiente». *Comprobado el 2026-10-22, en todos los commits de todas las ramas: ese
+  guion no está.* El commit que añadió la imagen (`0d7eeb8`) trae el PNG y ningún fuente, así que
+  se compuso fuera del repositorio y se perdió. Quien tenga que rehacerla **empieza de cero**, y
+  conviene que esa vez sí deje el fuente versionado.
 - **Datos estructurados** (`Organization`): sólo nombre, razón social, sitio y logo. Nada de
   fundación, cobertura ni valoraciones — el mismo criterio que rige el resto del contenido.
 - **Favicon** SVG derivado del isotipo, más `apple-touch-icon.png`.
