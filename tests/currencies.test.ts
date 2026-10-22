@@ -12,11 +12,13 @@ import { readFileSync } from 'node:fs';
 
 import {
   DEFAULT_CURRENCY,
+  DEFAULT_DESTINO,
   assertRatesConfirmed,
   availableCurrencies,
   confirmedRate,
   currencies,
   currencyInfo,
+  destinos,
   isForeignCurrency,
   rateFor,
   unconfirmed,
@@ -25,6 +27,7 @@ import {
   buildQuote,
   currenciesFor,
   formatAmount,
+  precioLegible,
   whatsappMessage,
 } from '../src/lib/pricing/quote.ts';
 import type { PriceReference } from '../src/lib/pricing/types.ts';
@@ -192,5 +195,86 @@ describe('el cotizador con una divisa que no es el dólar', () => {
     });
     const msg = whatsappMessage(quote, 1000);
     assert.match(msg, /convertir EUR 1\.000,00 a pesos/);
+  });
+});
+
+/* Entrega `cotizador-` (Cowork, 2026-10-22): el cotizador elige por país, el
+   precio se escribe para que se lea y el mensaje dice a dónde va el dinero. */
+describe('el cotizador por destino', () => {
+  test('trece destinos, uno por país, en orden alfabético', () => {
+    const lista = destinos();
+    assert.equal(lista.length, 13);
+    assert.equal(new Set(lista.map((l) => l.destino)).size, 13);
+    const nombres = lista.map((l) => l.destino);
+    assert.deepEqual(nombres, [...nombres].sort((a, b) => a.localeCompare(b, 'es')));
+  });
+
+  test('cada destino llega en una divisa del catálogo, y el dólar sirve a dos', () => {
+    for (const l of destinos()) assert.ok(isForeignCurrency(l.code), l.destino);
+    const enDolares = destinos().filter((l) => l.code === 'USD').map((l) => l.destino);
+    assert.deepEqual(enDolares.sort(), ['Ecuador', 'Estados Unidos']);
+  });
+
+  test('el destino de partida existe y es el del dólar', () => {
+    const inicial = destinos().find((l) => l.destino === DEFAULT_DESTINO);
+    assert.equal(inicial?.code, DEFAULT_CURRENCY);
+  });
+});
+
+describe('el precio, escrito para que se lea', () => {
+  test('con la tasa sobre 1, cuántos pesos vale una unidad', () => {
+    assert.equal(precioLegible(919.7, 'USD'), '1 USD = 919,70 CLP');
+    assert.equal(precioLegible(5.98, 'JPY'), '1 JPY = 5,98 CLP');
+  });
+
+  test('con la tasa bajo 1, cuántas unidades da un peso', () => {
+    assert.equal(precioLegible(0.23, 'COP'), '1 CLP = 4,35 COP');
+    assert.equal(precioLegible(0.12, 'PYG'), '1 CLP = 8,33 PYG');
+  });
+
+  test('una tasa inservible no produce un precio', () => {
+    assert.equal(precioLegible(0, 'USD'), '—');
+    assert.equal(precioLegible(Number.NaN, 'EUR'), '—');
+    assert.equal(precioLegible(Number.POSITIVE_INFINITY, 'EUR'), '—');
+  });
+});
+
+describe('el mensaje al ejecutivo con destino', () => {
+  const quote = buildQuote({
+    intent: 'to_foreign',
+    giveAmount: 2_000_000,
+    price: precio('COP', 0.23),
+    minPay: 500_000,
+  });
+
+  test('dice a dónde va, en qué llega y el precio como lo ve la web', () => {
+    const msg = whatsappMessage(quote, 2_000_000, 'Colombia');
+    assert.match(msg, /enviar CLP 2\.000\.000 a Colombia, en pesos colombianos/);
+    assert.match(msg, /llegan aprox\. COP 8\.695\.652/);
+    assert.match(msg, /1 CLP = 4,35 COP/);
+    assert.match(msg, /precio final/);
+  });
+
+  test('con dólares, el país es lo que distingue Estados Unidos de Ecuador', () => {
+    const usd = buildQuote({ intent: 'to_foreign', giveAmount: 2_000_000, price: precio('USD', 919.7), minPay: 500_000 });
+    assert.match(whatsappMessage(usd, 2_000_000, 'Ecuador'), /a Ecuador, en dólares/);
+  });
+
+  test('bajo el mínimo pregunta, con el destino y sin precio', () => {
+    const bajo = buildQuote({ intent: 'to_foreign', giveAmount: 100_000, price: precio('COP', 0.23), minPay: 500_000 });
+    const msg = whatsappMessage(bajo, 100_000, 'Colombia');
+    assert.match(msg, /enviar CLP 100\.000 a Colombia, en pesos colombianos\. ¿Pueden operar ese monto\?/);
+    assert.doesNotMatch(msg, /precio referencial/);
+  });
+
+  test('de vuelta a pesos el destino no se nombra', () => {
+    const vuelta = buildQuote({ intent: 'to_clp', giveAmount: 1000, price: precio('EUR', 1050), minPay: 500_000 });
+    const msg = whatsappMessage(vuelta, 1000, 'Europa');
+    assert.match(msg, /convertir EUR 1\.000,00 a pesos/);
+    assert.doesNotMatch(msg, /Europa|enviar/);
+  });
+
+  test('sin destino, el mensaje es el de siempre', () => {
+    assert.match(whatsappMessage(quote, 2_000_000), /convertir CLP 2\.000\.000 a pesos colombianos \(recibo aprox\./);
   });
 });

@@ -195,6 +195,31 @@ export function availableCurrencies(): readonly CurrencyInfo[] {
   return currencies;
 }
 
+/** Un destino del cotizador: el país, y la divisa en que llega. */
+export interface Destino {
+  destino: string;
+  code: ForeignCurrency;
+}
+
+/** El destino que el cotizador trae elegido al abrir: el de siempre, el dólar. */
+export const DEFAULT_DESTINO = 'Estados Unidos';
+
+/**
+ * Los destinos del cotizador, por país y en orden alfabético (entrega
+ * `cotizador-`, 2026-10-22).
+ *
+ * El cotizador dejó de preguntar «¿a qué moneda?» y pregunta «¿a dónde
+ * envías?»: así se piensa un envío, y la moneda sale sola. Son trece, uno más
+ * que las divisas, porque el dólar sirve a dos —Estados Unidos y Ecuador—.
+ * **Se derivan del catálogo y no se escriben aparte**: una divisa nueva trae
+ * sus destinos consigo y aparece acá sin tocar nada más.
+ */
+export function destinos(): readonly Destino[] {
+  return availableCurrencies()
+    .flatMap((c) => c.destinations.map((destino) => ({ destino, code: c.code })))
+    .sort((a, b) => a.destino.localeCompare(b.destino, 'es'));
+}
+
 /**
  * Detiene el build si el sitio va a indexarse con alguna tasa de muestra viva.
  *

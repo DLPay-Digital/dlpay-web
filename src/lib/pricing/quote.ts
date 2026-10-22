@@ -17,7 +17,7 @@ import type {
   QuoteState,
 } from './types.ts';
 import { DEFAULT_CURRENCY, currencyInfo } from './currencies.ts';
-import { formatCLP, formatForeign, formatUSD } from './format.ts';
+import { formatCLP, formatForeign, formatRate, formatUSD } from './format.ts';
 
 /**
  * Qué se entrega y qué se recibe, según lo que la persona quiere hacer.
@@ -101,13 +101,50 @@ export function formatAmount(value: number, currency: Currency): string {
 }
 
 /**
+ * El precio referencial, escrito para que se lea (Cowork, entrega `cotizador-`).
+ *
+ * El catálogo guarda cada tasa como **CLP por una unidad**, y así se escribía
+ * siempre: «919,70 CLP por dólar» se lee bien, pero «0,23 CLP por peso
+ * colombiano» obliga a hacer una división de cabeza para saber qué compran tus
+ * pesos. Con la tasa bajo 1 la frase se da vuelta y dice cuántas unidades da un
+ * peso chileno: **1 CLP = 4,35 COP**. Es la misma tasa, invertida; no es una
+ * fórmula de precio ni un redondeo distinto del que ya se publica.
+ *
+ * El cotizador y el mensaje de WhatsApp usan esta misma función, para que la
+ * web y el chat digan el número de la misma forma (cotizador-spec §5).
+ *
+ * PENDIENTE DE DECISIÓN — que el equipo cotice así por WhatsApp. Si el
+ * ejecutivo dice «0,23» y la web «4,35», el cliente compara dos números que no
+ * se parecen. Sebastián eligió esta forma el 2026-10-22; falta que el equipo
+ * la confirme.
+ */
+export function precioLegible(rate: number, currency: ForeignCurrency): string {
+  if (!(rate > 0) || !Number.isFinite(rate)) return '—';
+  return rate >= 1
+    ? `1 ${currency} = ${formatRate(rate)} CLP`
+    : `1 CLP = ${formatRate(1 / rate)} ${currency}`;
+}
+
+/**
  * Mensaje prellenado de WhatsApp (cotizador-spec §5).
  *
  * Siempre incluye el monto y qué quiere hacer la persona. El vocabulario y los
  * decimales coinciden con los que usa el equipo en el chat: la web y WhatsApp
  * deben decir el mismo número de la misma forma (principio UX 3).
+ *
+ * **Con destino, el mensaje dice a dónde va** (entrega `cotizador-`): el
+ * cotizador elige por país desde el 2026-10-22, y el ejecutivo es quien
+ * «coordina el destino» (spec §1). Con dólares la moneda no basta para saberlo
+ * —Estados Unidos o Ecuador—, y el país es lo primero que va a preguntar. El
+ * verbo pasa a ser «enviar», que es lo que la persona está haciendo y lo que
+ * decía la intención `send_abroad` hasta el 2026-09-14. Sin destino el mensaje
+ * es el de siempre, salvo la forma del precio.
+ *
+ * REQUIERE VALIDACIÓN DE COMPLIANCE — «enviar … a {país}» y «llegan aprox.»
+ * afirman que el dinero llega a destino, igual que la nota del riel del
+ * cotizador. No afirman plazo ni canal (ADR-0014 §3).
  */
-export function whatsappMessage(quote: Quote, giveAmount: number): string {
+export function whatsappMessage(quote: Quote, giveAmount: number, destino?: string): string {
   const { intent, state, price } = quote;
   const { give, get } = currenciesFor(intent, price.currency);
 
@@ -125,12 +162,16 @@ export function whatsappMessage(quote: Quote, giveAmount: number): string {
   // El nombre en plural sale del catálogo y no de una regla: «guaraníes» y
   // «bolívares» no se derivan con un sufijo, y el ejecutivo lee este mensaje
   // tal como llega.
-  const destino = currencyInfo(
+  const plural = currencyInfo(
     (intent === 'to_clp' ? give : get) as ForeignCurrency
   ).plural;
 
+  const envio = intent === 'to_foreign' && destino !== undefined && destino !== '';
+
   const what: Record<Intent, string> = {
-    to_foreign: `convertir ${formatAmount(giveAmount, give)} a ${destino}`,
+    to_foreign: envio
+      ? `enviar ${formatAmount(giveAmount, give)} a ${destino}, en ${plural}`
+      : `convertir ${formatAmount(giveAmount, give)} a ${plural}`,
     to_clp: `convertir ${formatAmount(giveAmount, give)} a pesos`,
   };
 
@@ -139,11 +180,16 @@ export function whatsappMessage(quote: Quote, giveAmount: number): string {
   }
 
   return (
-    `Hola, quiero ${what[intent]} (recibo aprox. ${formatAmount(quote.getAmount, get)} ` +
-    `al precio referencial ${formatUSD(price.rate)}). ¿Me confirman el precio final?`
+    `Hola, quiero ${what[intent]} (${envio ? 'llegan' : 'recibo'} aprox. ${formatAmount(quote.getAmount, get)} ` +
+    `al precio referencial ${precioLegible(price.rate, price.currency)}). ¿Me confirman el precio final?`
   );
 }
 
-export function whatsappUrl(number: string, quote: Quote, giveAmount: number): string {
-  return `https://wa.me/${number}?text=${encodeURIComponent(whatsappMessage(quote, giveAmount))}`;
+export function whatsappUrl(
+  number: string,
+  quote: Quote,
+  giveAmount: number,
+  destino?: string
+): string {
+  return `https://wa.me/${number}?text=${encodeURIComponent(whatsappMessage(quote, giveAmount, destino))}`;
 }

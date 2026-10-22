@@ -3,24 +3,50 @@
  * COTIZADOR — el elemento central de la web.
  * Especificación: docs/design-system/cotizador-spec.md
  *
- * Flujo: qué quieres hacer -> cuánto -> cuánto recibes -> precio referencial ->
- * WhatsApp con todo prellenado -> un ejecutivo confirma el precio final.
+ * Flujo: qué quieres hacer -> a dónde -> cuánto -> cuánto llega -> precio
+ * referencial -> WhatsApp con todo prellenado -> un ejecutivo confirma el
+ * precio final y coordina el destino.
  *
  * Lo que NO hace: ejecutar una operación, bloquear un precio, prometer un
  * precio final. El tipo `Quote` lo impide (`isReferential: true` es literal).
  *
- * Es la ÚNICA isla interactiva del sitio (ADR-0002 §2). El precio se resuelve
- * en build desde ConfigPriceSource y viaja al cliente en data-attributes.
+ * Es la ÚNICA isla interactiva del producto (ADR-0002 §2). El precio se
+ * resuelve en build desde ConfigPriceSource y viaja al cliente en
+ * data-attributes.
+ *
+ * ── Rediseñado el 2026-10-22 (Cowork, entrega `cotizador-`) ────────────────
+ *
+ * Desde ADR-0014 el servicio no termina en una divisa: **el dinero llega a
+ * destino en la moneda de ese destino.** La tarjeta seguía preguntando como una
+ * casa de cambio —dos botones negros de «convertir», un desplegable de monedas
+ * y el precio aparte, al pie— y ahora pregunta como un envío. Decisiones de
+ * Sebastián del 2026-10-22, una por una:
+ *
+ * 1. **El destino se elige por país**, «¿A dónde envías?», y la moneda sale
+ *    sola. Trece destinos para doce divisas: el dólar sirve a dos.
+ * 2. **La vuelta a pesos se queda, más discreta**: un interruptor chico arriba,
+ *    no dos botones del mismo peso que el resto de la tarjeta.
+ * 3. **El precio se escribe para que se lea**: 1 USD = 919,70 CLP en las
+ *    fuertes y 1 CLP = 4,35 COP en las débiles (`precioLegible`).
+ *
+ * Y una de forma, que no es una decisión sino la gramática del sitio: **entre
+ * lo que envías y lo que llega va el recorrido**, el tramo verde que en todas
+ * las figuras significa «lo nuestro» (DS §6.2). Desde ADR-0014 es de punta a
+ * punta, así que acá también. El precio y la nota del spread viven en ese
+ * tramo, que es donde ocurren: entre un monto y el otro.
  */
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import {
   DEFAULT_CURRENCY,
+  DEFAULT_DESTINO,
   availableCurrencies,
   currencyInfo,
+  destinos,
 } from '../lib/pricing/currencies.ts';
-import { formatCLP, formatForeign, formatRate } from '../lib/pricing/format.ts';
-import { buildQuote, whatsappUrl } from '../lib/pricing/quote.ts';
+import { formatCLP, formatForeign } from '../lib/pricing/format.ts';
+import { buildQuote, precioLegible, whatsappUrl } from '../lib/pricing/quote.ts';
 import { contact, platform, quoteLimits } from '../lib/config/site.ts';
+import Icon from './Icon.astro';
 
 interface Props {
   /** Sobre tinta flota con sombra; sobre papel va plano (spec §2). */
@@ -35,14 +61,9 @@ const { variant = 'floating' } = Astro.props;
  * mientras no la haya. Lo que impide que una muestra llegue al sitio público no
  * es este archivo sino el build, que se detiene con la indexación abierta
  * mientras quede alguna sin confirmar (`assertRatesConfirmed`).
- *
- * `unaSola` se conserva aunque hoy sea siempre falso: si el catálogo se quedara
- * con una divisa, el selector volvería a no dibujarse y la intención volvería a
- * nombrarla. Es una línea, y la alternativa es que un día vuelva a aparecer un
- * desplegable de una sola opción.
  */
 const divisas = availableCurrencies();
-const unaSola = divisas.length === 1;
+const lugares = destinos();
 
 const price = await new ConfigPriceSource(DEFAULT_CURRENCY).getPrice();
 
@@ -62,7 +83,8 @@ const initialGet = initialPay / price.rate;
 /**
  * El enlace se arma también en el servidor, con la MISMA función que usa el
  * cliente. Sin JavaScript el CTA sigue llevando a WhatsApp con el monto de
- * ejemplo escrito; con JavaScript se actualiza a medida que el usuario tipea.
+ * ejemplo y el destino escritos; con JavaScript se actualiza a medida que el
+ * usuario tipea.
  */
 const initialQuote = buildQuote({
   intent: 'to_foreign',
@@ -71,18 +93,9 @@ const initialQuote = buildQuote({
   minPay,
   ...(maxPay !== undefined ? { maxPay } : {}),
 });
-const wa = whatsappUrl(contact.whatsappNumber, initialQuote, initialPay);
+const wa = whatsappUrl(contact.whatsappNumber, initialQuote, initialPay, DEFAULT_DESTINO);
 
-/* Con una sola divisa la intención la nombra —«Convertir a dólares»—, que es
-   lo que esta tarjeta dice desde que existe. Con varias no puede nombrarla,
-   porque la elige el visitante dos campos más abajo. */
-const intents = [
-  {
-    value: 'to_foreign',
-    label: unaSola ? `Convertir a ${divisas[0]!.plural}` : 'Convertir a otra moneda',
-  },
-  { value: 'to_clp', label: 'Convertir a pesos' },
-];
+const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 ---
 
 <section
@@ -96,38 +109,117 @@ const intents = [
   data-divisas={JSON.stringify(tasas)}
   aria-labelledby="quoter-title"
 >
-  <h2 class="sr-only" id="quoter-title">Cotizador de divisas</h2>
+  <h2 class="sr-only" id="quoter-title">Cotizador de envíos y divisas</h2>
 
-  <fieldset class="intent">
-    <legend class="intent-legend">¿Qué quieres hacer?</legend>
-    <div class="intent-options">
-      {intents.map((option, i) => (
-        <label class="intent-option">
-          <input type="radio" name="intent" value={option.value} checked={i === 0} />
-          <span>{option.label}</span>
-        </label>
-      ))}
-    </div>
+  {/*
+    ── El interruptor: el envío manda, la vuelta a pesos se queda chica ──────
+
+    Hasta el 2026-10-22 eran dos botones a lo ancho de la tarjeta, rellenos de
+    tinta el elegido: lo primero que se veía era una elección entre dos cosas
+    del mismo peso. Desde ADR-0014 no lo son —el envío es el servicio, la vuelta
+    es la otra mitad de una casa de cambio— y Sebastián pidió que la vuelta
+    siguiera pero más discreta.
+
+    **Sigue siendo un grupo de dos radios**, que es lo que es: una elección
+    entre dos, no pestañas que cambian de panel. El área que se pulsa es la
+    `label` entera, de 44 px de alto (DS §10); lo que se ve más chico es la
+    ficha de dentro.
+
+    «Enviar» se lee completo como «Enviar al extranjero»: el resto va en
+    `sr-only` porque a 320 px las dos opciones enteras no caben en una fila, y
+    a la vista la pregunta de abajo, «¿A dónde envías?», ya lo completa.
+  */}
+  <fieldset class="modo">
+    <legend class="sr-only">¿Qué quieres hacer?</legend>
+    <label class="modo-op">
+      <input type="radio" name="intent" value="to_foreign" checked />
+      <span>Enviar<span class="sr-only"> al extranjero</span></span>
+    </label>
+    <label class="modo-op">
+      <input type="radio" name="intent" value="to_clp" />
+      <span>Pasar a pesos</span>
+    </label>
   </fieldset>
 
-  {!unaSola && (
-    <div class="field">
-      <label class="label" for="divisa-select">¿A qué moneda?</label>
-      <div class="input-box">
-        <select id="divisa-select" class="divisa" data-divisa>
-          {divisas.map((d) => (
-            <option value={d.code} selected={d.code === DEFAULT_CURRENCY}>
-              {d.name.charAt(0).toUpperCase() + d.name.slice(1)} · {d.code} ({d.destinations.join(', ')})
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
-  )}
+  {/*
+    ── A dónde: el país, y la moneda sale sola ───────────────────────────────
 
-  <div class="field">
-    <label class="label" for="give-input">Conviertes</label>
-    <div class="input-box">
+    Era «¿A qué moneda?» con doce opciones del tipo «Dólar · USD (Estados
+    Unidos, Ecuador)». Un envío se piensa por destino, así que ahora son los
+    trece países y cada uno trae su divisa. La opción dice las dos cosas,
+    «Colombia · COP», para que nadie tenga que adivinar en qué llega.
+
+    El desplegable es el NATIVO (`<select>`), con su lista del sistema: en un
+    teléfono abre el selector del teléfono, y con teclado y lector funciona sin
+    una línea de ARIA propia. Lo único que se le cambia es la caja cerrada:
+    `appearance: none` y la flecha del set de iconos, girada, porque la del
+    sistema no hablaba la misma letra que el resto de la tarjeta.
+
+    En «Pasar a pesos» la pregunta es otra —qué divisa tienes, no a dónde va—,
+    así que se cambia de desplegable y no de texto: el de destinos se oculta y
+    aparece el de divisas, con su propia etiqueta. Sin JavaScript se ve sólo el
+    primero, que es el que corresponde a la opción marcada.
+  */}
+  <div class="field" data-campo-destino>
+    <label class="label" for="destino-select">¿A dónde envías?</label>
+    <div class="select-box">
+      <select id="destino-select" class="select" data-destino>
+        {lugares.map((l) => (
+          <option value={l.destino} data-c={l.code} selected={l.destino === DEFAULT_DESTINO}>
+            {l.destino} · {l.code}
+          </option>
+        ))}
+      </select>
+      <Icon name="chevron" size={20} class="select-ico" />
+    </div>
+  </div>
+
+  <div class="field" data-campo-divisa hidden>
+    <label class="label" for="divisa-select">¿Qué divisa tienes?</label>
+    <div class="select-box">
+      <select id="divisa-select" class="select" data-divisa>
+        {divisas.map((d) => (
+          <option value={d.code} selected={d.code === DEFAULT_CURRENCY}>
+            {mayuscula(d.name)} · {d.code}
+          </option>
+        ))}
+      </select>
+      <Icon name="chevron" size={20} class="select-ico" />
+    </div>
+  </div>
+
+  {/*
+    ── Los dos montos y, entre ellos, el recorrido ───────────────────────────
+
+    Cada monto es una caja con su etiqueta y su moneda arriba, en una fila, y la
+    cifra debajo a todo el ancho: así la cifra gana el espacio de la ficha, que
+    a 320 px es lo que decide si «2.000.000» cabe. La moneda se lee también con
+    lector de pantalla, porque el campo la tiene en `aria-describedby`; antes
+    el campo decía «Conviertes, 2.000.000» y no en qué.
+
+    Entre las dos corre el tramo verde: lo nuestro, de punta a punta desde
+    ADR-0014 (DS §6.2). Sobre él, el punto —la unidad de valor, la misma que el
+    precio cotiza: «1 USD»— marca dónde está el precio, y el precio y la nota
+    del spread van al lado, que es donde pasan: entre lo que pones y lo que
+    llega. **No estrena ninguna marca**: son las dos del §6.2 con el
+    significado que ya tienen.
+
+    **Lo que esto cambia del spec §2:** el precio referencial deja de ser la
+    segunda cifra grande de la tarjeta, al pie, con su propia fila. La cifra que
+    responde la pregunta es la que llega; el precio es la explicación de esa
+    cifra y se lee junto a ella. Sigue diciendo «Precio referencial» con esas
+    dos palabras (spec §48).
+
+    REQUIERE VALIDACIÓN DE COMPLIANCE — «Envías» y «Llega aprox.» afirman lo
+    mismo que la nota del riel, más abajo: que el dinero llega a destino. No
+    afirman plazo ni canal (ADR-0014 §3).
+  */}
+  <div class="montos">
+    <div class="monto">
+      <div class="monto-cabeza">
+        <label class="monto-label" for="give-input" data-label-give>Envías</label>
+        <span class="moneda num" id="cur-give" data-cur-give>CLP</span>
+      </div>
       <input
         id="give-input"
         class="amount num"
@@ -135,15 +227,31 @@ const intents = [
         inputmode="numeric"
         autocomplete="off"
         value={formatCLP(initialPay)}
-        aria-describedby="quoter-note"
+        aria-describedby="cur-give quoter-note"
       />
-      <span class="currency" data-cur-give>CLP</span>
     </div>
-  </div>
 
-  <div class="field">
-    <label class="label" for="get-input" data-label-get>Recibo aprox.</label>
-    <div class="input-box">
+    <div class="tramo">
+      <p class="tramo-precio">
+        <span class="tramo-rot">Precio referencial</span>
+        {/*
+          **La forma del precio cambió el 2026-10-22.** Era «919,70 CLP por
+          dólar», con la unidad escrita a mano y luego derivada del catálogo; en
+          las monedas débiles daba «0,23 CLP por peso colombiano». Ahora sale de
+          `precioLegible`, la misma función que escribe el mensaje de WhatsApp.
+        */}
+        <span class="tramo-valor num" data-rate-display>{precioLegible(price.rate, DEFAULT_CURRENCY)}</span>
+      </p>
+      <p class="tramo-nota" id="quoter-note">
+        <strong>Sin comisiones ocultas:</strong> el precio ya incluye el spread.
+      </p>
+    </div>
+
+    <div class="monto monto-llega">
+      <div class="monto-cabeza">
+        <label class="monto-label" for="get-input" data-label-get>Llega aprox.</label>
+        <span class="moneda num" id="cur-get" data-cur-get>USD</span>
+      </div>
       <input
         id="get-input"
         class="amount num"
@@ -151,92 +259,18 @@ const intents = [
         inputmode="decimal"
         autocomplete="off"
         value={formatForeign(initialGet, currencyInfo(DEFAULT_CURRENCY).decimals)}
+        aria-describedby="cur-get"
       />
-      <span class="currency" data-cur-get>USD</span>
     </div>
   </div>
 
   <p class="alert" data-alert hidden aria-live="polite"></p>
 
-  <div class="price-row">
-    {/*
-      **Sin el «hace un momento», retirado el 2026-09-28 por Sebastián** para
-      aligerar el cotizador. El `cotizador-spec` lo pedía en dos sitios —su
-      esquema §62 y la jerarquía §75, «cifra grande, tabular, con timestamp»— y
-      queda enmendado ahí.
-
-      Lo que decía y ya no dice: **cuán fresco** es el precio. La frescura sigue
-      implícita en que el precio se resuelve en cada build, pero dejó de
-      afirmarse. Era una frase estática, no un reloj: nunca se recalculó en el
-      cliente, así que lo que se pierde es la afirmación, no un dato vivo.
-    */}
-    <span class="price-label">Precio referencial</span>
-    {/*
-      **La unidad cambia con la divisa desde el 2026-10-22.** Era «CLP por
-      dólar» escrito a mano, y con una sola divisa daba igual; con doce, elegir
-      el euro dejaba «919,70 CLP por dólar» bajo una cifra en euros. El nombre
-      sale del catálogo, como el plural del mensaje de WhatsApp.
-    */}
-    <span class="price-value num" data-rate-display>
-      <span data-rate-num>{formatRate(price.rate)}</span><small data-rate-unit>CLP por {currencyInfo(DEFAULT_CURRENCY).name}</small>
-    </span>
-  </div>
-
   {/*
-    **Sin la glosa de «referencial», retirada el 2026-09-28 por Sebastián**:
-    «El precio del dólar que ves es un valor referencial de mercado, no un precio
-    cerrado: lo confirma tu ejecutivo antes de operar.»
-
-    **Lo que la sostiene, y por eso el cambio no rompe el spec:** su §48 exige
-    que el cotizador «diga explícitamente que es referencial», y **lo sigue
-    diciendo** — la etiqueta de arriba es literalmente «Precio referencial». Lo
-    que se va es la explicación de qué significa esa palabra.
-
-    Dónde vive ahora: en el glosario de `/preguntas` («Precio referencial»), en
-    la respuesta de la FAQ que la Home publica más abajo, y en `/tarifas` y
-    `/precio` enteras. Lo que ya no está es **a la vista de quien está a punto de
-    pulsar el botón de WhatsApp**, y eso queda dicho acá porque es lo que un
-    revisor querrá saber.
-  */}
-  <p class="note" id="quoter-note">
-    <strong>Sin comisiones ocultas:</strong> el precio ya incluye el spread.
-  </p>
-  {/*
-    ── La nota del riel: acortada el 2026-09-28, NO retirada ─────────────────
-
-    Sebastián pidió quitarla entera con las otras dos y aquí se defendió, porque
-    ésta no está en el mismo caso: **es la mitigación de un claim marcado, y el
-    spec la exige donde está.**
-
-    **ADR-0013 (2026-10-21) no deroga esta nota, la amplía:** el sitio pasa de
-    una divisa a doce, así que la nota dice «la divisa en forma digital» en vez
-    de «dólar digital», y sigue haciendo exactamente lo que el spec le pide. La
-    cita de abajo es la del spec tal como está escrito hoy; el spec se enmienda
-    con el cotizador multidivisa.
-
-    `cotizador-spec` §42, literal: «El dólar digital es el riel y se explica en
-    una nota permanente **dentro del propio cotizador**». Y la línea siguiente de
-    ese mismo párrafo es el motivo: `REQUIERE VALIDACIÓN DE COMPLIANCE — mostrar
-    "USD" cuando lo que se entrega es dólar digital`. Sin nota, el cotizador dice
-    «USD» junto a una cifra y un botón de WhatsApp, y nada explica que no es un
-    dólar en un banco — que es **sugerir** un depósito bancario en el extranjero,
-    lo que `CLAUDE.md` §1 prohíbe con esa palabra exacta.
-
-    Decía 215 caracteres en tres líneas. Ahora dice ~70 en una, y conserva las
-    dos únicas afirmaciones que cargan peso: **qué recibes** y **qué no es**.
-
-    Lo que se fue, y dónde sigue: la equivalencia 1:1 está en el glosario de
-    `/preguntas` («Divisa digital»), y «en minutos, a cualquier hora» era la
-    bajada del héroe de esta misma página — que las perdió el 2026-10-22, ver
-    `Hero.astro`. Ninguna de las dos era la que mitigaba nada.
-
-    **Cambió de objeto el 2026-10-22 (ADR-0014).** Decía «Recibes la divisa en
-    forma digital, no un depósito en un banco del extranjero»: mitigaba que el
-    cotizador enseñara «USD» junto a un botón de WhatsApp cuando lo que se
-    entregaba no era un dólar en un banco. Ahora el dinero SÍ llega a destino,
-    así que esa negación dejó de ser cierta y la nota pasa a mitigar lo que
-    queda sin respaldo: **el plazo**. El spec §42 pedía una nota permanente
-    dentro del cotizador y la sigue habiendo; lo que cambió es qué contiene.
+    La nota del riel, **sin cambios** desde ADR-0014: el spec §42 pide una nota
+    permanente dentro del cotizador, y lo que mitiga hoy es el plazo. El largo
+    historial de esta nota —de «Recibes dólar digital en tu billetera…» a esta
+    línea— está en `cotizador-spec.md`, en la enmienda del 2026-09-28.
 
     REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega a destino en la
     moneda de ese destino.
@@ -254,17 +288,16 @@ const intents = [
 </section>
 
 <!--
-  Barra fija móvil (Fase 1, patrón 13 · cotizador-spec §7). Estaba especificada
-  y no se había construido: en móvil, al bajar a leer, el CTA desaparecía.
-
-  Lleva la cifra viva porque así el movimiento es información: el número te
-  acompaña. Arranca `hidden`, así que no existe para un lector de pantalla
-  mientras la tarjeta está a la vista y no duplica el CTA.
+  Barra fija móvil (Fase 1, patrón 13 · cotizador-spec §7). Lleva la cifra viva
+  porque así el movimiento es información: el número te acompaña. Desde el
+  2026-10-22 dice también a dónde llega: «Llega a Colombia». Arranca `hidden`,
+  así que no existe para un lector de pantalla mientras la tarjeta está a la
+  vista y no duplica el CTA.
 -->
 <div class="dock" data-dock hidden>
   <div class="dock-in">
     <span class="dock-fig">
-      <span class="dock-label" data-dock-label>Recibes</span>
+      <span class="dock-label" data-dock-label>Llega a {DEFAULT_DESTINO}</span>
       <span class="dock-amount num" data-dock-amount>{formatForeign(initialGet, currencyInfo(DEFAULT_CURRENCY).decimals)}</span>
     </span>
     <a class="dock-cta" href={wa} target="_blank" rel="noopener" data-dock-cta>
@@ -274,8 +307,12 @@ const intents = [
 </div>
 
 <style>
-
   .quoter {
+    /* El foco de dentro de la tarjeta es el verde oscuro, no el de la tinta.
+       La tarjeta es papel sobre la banda oscura del héroe, y `.on-tinta-surface`
+       pone `--focus` en `--verde`: sobre papel da 2:1, bajo el 3:1 que pide un
+       indicador. Pasaba en los dos botones de intención y en el de WhatsApp. */
+    --focus: var(--verde-deep);
     background: var(--papel);
     color: var(--ink);
     padding: var(--s-5);
@@ -287,61 +324,56 @@ const intents = [
     border: 1px solid var(--line);
   }
 
-  /* El primer paso de la conversación: qué quieres hacer. Dos opciones desde el
-     2026-09-14, cuando se retiró «Enviar al extranjero» por hacer la misma
-     aritmética que «Convertir a dólares». Ver cotizador-spec.md. */
-  .intent { border: 0; padding: 0; margin: 0 0 var(--s-5); }
-  .intent-legend {
-    font-size: var(--t-label);
-    font-weight: 600;
-    letter-spacing: var(--ls-label);
-    color: var(--ink-mute);
+  /* ── El interruptor ──────────────────────────────────────────────────── */
+  .modo {
+    display: inline-flex;
+    border: 0;
+    margin: 0 0 var(--s-4);
     padding: 0;
-    margin-bottom: var(--s-2);
+    background: var(--papel-2);
+    border-radius: var(--r-2);
   }
-  .intent-options {
-    display: grid;
-    gap: var(--s-1);
-  }
-  /* La etiqueta es el elemento de la rejilla y se estira sola; el recuadro
-     visible va dentro, así que hay que decirle que llene su celda. Sin esto,
-     una opción que envuelve a dos líneas queda más alta que las demás. */
-  .intent-option { display: flex; position: relative; }
-  .intent-option input {
+  .modo-op { position: relative; display: flex; min-height: 44px; cursor: pointer; }
+  .modo-op input {
     position: absolute;
     opacity: 0;
     width: 1px;
     height: 1px;
     min-height: 0;
   }
-  .intent-option span {
+  /* La ficha visible va a 4 px del borde del área que se pulsa: se ve chica y
+     el blanco de 44 px es la etiqueta entera. */
+  .modo-op > span {
+    display: flex;
+    align-items: center;
+    margin: 4px;
+    padding: 0 var(--s-3);
+    border: 1px solid transparent;
+    border-radius: var(--r-1);
+    font-size: var(--t-label);
+    font-weight: 600;
+    color: var(--ink-mute);
     transition: background-color var(--m-fast) var(--m-ease),
                 border-color var(--m-fast) var(--m-ease),
                 color var(--m-fast) var(--m-ease);
-    flex: 1;
-    display: flex;
-    align-items: center;
-    padding: var(--s-3);
-    border: 1px solid var(--line);
-    border-radius: var(--r-2);
-    font-size: var(--t-body-sm);
-    font-weight: 600;
-    color: var(--ink-mute);
-    cursor: pointer;
-    min-height: 44px;
-    line-height: 1.4;
   }
-  .intent-option input:checked + span {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--papel);
+  /* La elegida se dice con un borde de 4,98:1 contra el papel-2 que la rodea
+     (WCAG 1.4.11): el blanco sobre papel-2 sólo da 1,2:1, y el cambio de gris a
+     tinta en el texto, 2,9:1. Con `--line` el estado no llegaba al 3:1. */
+  .modo-op input:checked + span {
+    background: #fff;
+    border-color: var(--ink-mute);
+    color: var(--ink);
   }
-  .intent-option input:focus-visible + span {
+  .modo-op:hover input:not(:checked) + span { color: var(--ink); }
+  .modo-op input:focus-visible + span {
     outline: 2px solid var(--focus);
-    outline-offset: 2px;
+    outline-offset: 1px;
   }
 
-  .field { margin-bottom: var(--s-3); }
+  /* ── Los desplegables ───────────────────────────────────────────────── */
+  .field { margin-bottom: var(--s-4); }
+  .field[hidden] { display: none; }
   .label {
     display: block;
     font-size: var(--t-label);
@@ -350,68 +382,183 @@ const intents = [
     color: var(--ink-mute);
     margin-bottom: var(--s-2);
   }
-  .input-box {
-    display: flex;
-    align-items: center;
-    gap: var(--s-3);
+  .select-box {
+    position: relative;
     border: 1px solid var(--line);
     border-radius: var(--r-2);
-    padding: 0 var(--s-3);
     background: #fff;
-  }
-  /* El borde de foco es un indicador de interfaz: necesita 3:1 contra el blanco
-     del campo. verde-deep da 4.9:1; el verde de marca sólo 1.9:1. */
-  .input-box {
     transition: border-color var(--m-fast) var(--m-ease),
                 box-shadow var(--m-fast) var(--m-ease);
   }
-  .input-box:focus-within {
-    border-color: var(--verde-deep);
-    /* `--verde-deep` al 18%, a mano por la misma razón que en `IconBadge`:
-       `color-mix()` está por debajo del `cssTarget` del proyecto. */
-    box-shadow: 0 0 0 3px rgba(10, 114, 80, 0.18);
-  }
-  .input-box.invalid { border-color: var(--baja); }
-
-  .amount {
-    flex: 1;
-    min-width: 0;
+  .select {
+    appearance: none;
+    display: block;
+    width: 100%;
+    min-height: 48px;
     border: 0;
     background: transparent;
-    padding: var(--s-3) 0;
-    font-size: var(--t-dato-m);
-    font-weight: 500;
-    line-height: 1.1;
-    color: var(--ink);
-    width: 100%;
-  }
-  .amount:focus { outline: none; }
-
-  /* El selector de divisa (ADR-0013). Reutiliza la caja de los montos para que
-     los tres campos se lean como la misma familia, y nada más: el alto de 44 px
-     lo da el `padding`, que es el mismo de `.amount`, y así cumple el mínimo de
-     target táctil del Design System §4.7 sin una regla propia.
-
-     `appearance: none` quitaría la flecha nativa y obligaría a dibujar una:
-     se deja la del sistema a propósito — es la señal de que esto se despliega,
-     y dibujarla sería tocar un control que el navegador ya resuelve. */
-  .divisa {
-    flex: 1;
-    min-width: 0;
-    width: 100%;
-    border: 0;
-    background: transparent;
-    padding: var(--s-3) 0;
+    padding: 0 calc(var(--s-3) + 28px) 0 var(--s-3);
     font: inherit;
     font-size: var(--t-body);
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    text-overflow: ellipsis;
+  }
+  .select:focus { outline: none; }
+  /* La flecha del set apunta a la derecha; girada, dice «se despliega». */
+  .select-box :global(.select-ico) {
+    position: absolute;
+    right: var(--s-3);
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    color: var(--ink-mute);
+    pointer-events: none;
+  }
+
+  /* ── Los montos y el tramo ──────────────────────────────────────────── */
+  .monto {
+    border: 1px solid var(--line);
+    border-radius: var(--r-2);
+    background: #fff;
+    padding: var(--s-2) var(--s-3) var(--s-2);
+    cursor: text;
+    transition: border-color var(--m-fast) var(--m-ease),
+                box-shadow var(--m-fast) var(--m-ease);
+  }
+  /* El borde de foco es un indicador de interfaz: necesita 3:1 contra el blanco
+     del campo. verde-deep da 4.9:1; el verde de marca sólo 1.9:1. El anillo es
+     `--verde-deep` al 18%, a mano porque `color-mix()` está por debajo del
+     `cssTarget` del proyecto. */
+  .monto:focus-within,
+  .select-box:focus-within {
+    border-color: var(--verde-deep);
+    box-shadow: 0 0 0 3px rgba(10, 114, 80, 0.18);
+  }
+  /* Fuera de rango se marca la caja de los PESOS, que es donde vive el mínimo:
+     la que envías en un envío, la que recibes de vuelta a pesos. Antes se
+     ponían rojas las dos, y la que llega no tenía nada mal. */
+  .monto.invalid { border-color: var(--baja); }
+
+  .monto-cabeza {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+  }
+  .monto-label {
+    display: block;
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: var(--ls-label);
+    color: var(--ink-mute);
+    line-height: 1.3;
+  }
+  .amount {
+    display: block;
+    min-width: 0;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    padding: 2px 0 var(--s-1);
+    font-size: var(--t-dato-m);
+    font-weight: 500;
+    line-height: 1.15;
     color: var(--ink);
   }
-  .divisa:focus { outline: none; }
-  .currency {
+  .amount:focus { outline: none; }
+  .monto-llega .amount { font-weight: 600; }
+  /* Una cifra que no cabe baja un escalón en vez de cortarse, y si tampoco
+     cabe, otro: «1.086.956.520,65» pesos argentinos a 320 px, o cualquier monto
+     con el espaciado de WCAG 1.4.12. La clase la pone la isla midiendo la
+     cifra, no contando dígitos (ver `ajustar`). */
+  .amount.largo { font-size: var(--t-h3); }
+  .amount.muy-largo { font-size: var(--t-body); }
+  /* La moneda, en una ficha: el código en la letra de las cifras, sobre el
+     papel de la tarjeta. Es dato, no adorno, y no se pulsa. */
+  .moneda {
     flex: none;
-    font-size: var(--t-body-sm);
+    padding: 3px var(--s-2);
+    border-radius: var(--r-1);
+    background: var(--papel-2);
+    font-size: var(--t-label);
     font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--ink);
+  }
+
+  /* El tramo: 3 px de verde de una caja a la otra, a la altura de las cifras.
+     El punto (`.tramo-valor::before`) es un borde y no un fondo, para que en
+     colores forzados siga ahí. */
+  /* El tramo cae en el eje de las cifras: 12 px de relleno de la caja más su
+     borde, así que baja desde debajo del primer dígito de lo que envías hasta
+     la etiqueta de lo que llega. */
+  .tramo {
+    position: relative;
+    padding: var(--s-3) 0 var(--s-3) 40px;
+  }
+  .tramo::before {
+    content: '';
+    position: absolute;
+    left: 13px;
+    top: 0;
+    bottom: 0;
+    border-left: 3px solid var(--verde-deep);
+  }
+  .tramo-precio {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .tramo-rot {
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: var(--ls-label);
     color: var(--ink-mute);
+    line-height: 1.3;
+  }
+  .tramo-valor {
+    position: relative;
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+  /* El punto va colgado de la cifra del precio y no de la caja del tramo: así
+     cae a la altura de esa línea sea cual sea el tamaño de letra. Su centro
+     es el del tramo: 40 − 13 − 1,5 + 6,5 = 32 px a la izquierda del texto. */
+  .tramo-valor::before {
+    content: '';
+    position: absolute;
+    left: -32px;
+    top: 50%;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 6.5px solid var(--verde-deep);
+    box-shadow: 0 0 0 3px var(--papel);
+    transform: translateY(-50%);
+  }
+  .tramo-nota {
+    margin-top: var(--s-2);
+    font-size: var(--t-label);
+    line-height: 1.45;
+    color: var(--ink-mute);
+  }
+  .tramo-nota strong { color: var(--ink); font-weight: 600; }
+
+  /* M2 · el dato acusa que cambió. 160ms, sólo sobre el valor nuevo. No es un
+     conteo desde cero: eso mostraría precios falsos. NO al teclear: mientras
+     escribes, la cifra tiene que seguirte sin latencia. */
+  .tramo-valor.is-set,
+  .amount.is-set { animation: settle 160ms var(--m-ease) both; }
+  @keyframes settle {
+    from { opacity: 0; transform: translateY(2px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tramo-valor.is-set,
+    .amount.is-set { animation: none; }
   }
 
   .alert {
@@ -425,84 +572,14 @@ const intents = [
     margin: var(--s-3) 0 0;
   }
 
-  .price-row {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: var(--s-4);
-    border-top: 1px solid var(--line);
-    margin-top: var(--s-5);
-    padding-top: var(--s-4);
-  }
-  /* Bajo ~430px la etiqueta y la cifra no caben en una fila: la etiqueta se
-     partía en cuatro líneas y "919,70 CLP por dólar" (nowrap) llegaba pegada
-     al borde de la tarjeta. Apiladas, cada una tiene el ancho completo. */
-  @media (max-width: 430px) {
-    .price-row {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--s-2);
-    }
-  }
-  .price-label {
-    font-size: var(--t-label);
-    font-weight: 600;
-    color: var(--ink-mute);
-    line-height: 1.35;
-  }
-  .price-value {
-    font-size: var(--t-dato-m);
-    font-weight: 500;
-    line-height: var(--lh-dato);
-    white-space: nowrap;
-  }
-  /* M2 · el precio acusa que cambió. 160ms, sólo sobre el valor nuevo.
-     No es un conteo desde cero: eso mostraría precios falsos. */
-  .price-value.is-set { animation: settle 160ms var(--m-ease) both; }
-  @keyframes settle {
-    from { opacity: 0; transform: translateY(2px); }
-    to   { opacity: 1; transform: none; }
-  }
-  /* M2 también en los campos. NO al teclear: mientras escribes, la cifra tiene
-     que seguirte sin latencia — animar cada pulsación añadiría el retardo
-     percibido que este cotizador existe para no tener. Se aplica al cambiar de
-     intención, donde las dos cifras saltan sin que hayas tecleado nada. */
-  .amount.is-set { animation: settle 160ms var(--m-ease) both; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .price-value.is-set,
-    .amount.is-set { animation: none; }
-  }
-
-  .price-value small {
-    font-family: var(--f-text);
-    font-size: var(--t-dato-sm);
-    font-weight: 600;
-    color: var(--ink-mute);
-    margin-left: var(--s-1);
-    letter-spacing: 0;
-  }
-
-  .note {
-    font-size: var(--t-body-sm);
-    line-height: 1.45;
-    color: var(--ink-mute);
-    margin: var(--s-4) 0 var(--s-5);
-  }
-  .note strong { color: var(--ink); font-weight: 600; }
-  /* Antes mostraba una etiqueta de dato y por eso iba en la tipografía de
-     cifras. Ahora es una frase: va en la tipografía de texto. */
-
   /* El riel se explica, pero en el peso que le corresponde: no es el titular */
-  .rail strong { color: var(--ink); font-weight: 600; }
   .rail {
-    font-size: var(--t-dato-sm);
+    font-size: var(--t-label);
     line-height: 1.45;
     color: var(--ink-mute);
-    padding-top: var(--s-3);
-    border-top: 1px solid var(--line);
-    margin: 0 0 var(--s-5);
+    margin: var(--s-4) 0;
   }
+  .rail strong { color: var(--ink); font-weight: 600; }
 
   .cta {
     display: flex;
@@ -516,8 +593,8 @@ const intents = [
     padding: var(--s-4);
     border-radius: var(--r-2);
     text-decoration: none;
+    transition: background-color var(--m-fast) var(--m-ease);
   }
-  .cta { transition: background-color var(--m-fast) var(--m-ease); }
   .cta:hover { background: var(--verde-hi); }
 
   .secondary {
@@ -550,7 +627,6 @@ const intents = [
     transition: transform var(--m-base) var(--m-ease);
   }
   .dock.is-up { transform: none; }
-
   .dock-in {
     display: flex;
     align-items: center;
@@ -565,6 +641,9 @@ const intents = [
     font-weight: 600;
     letter-spacing: var(--ls-label);
     color: var(--on-tinta-mute);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .dock-amount {
     font-size: var(--t-h3-m);
@@ -575,7 +654,6 @@ const intents = [
   }
   /* M2 también acá: la cifra acusa que cambió mientras te acompaña. */
   .dock-amount.is-set { animation: settle 160ms var(--m-ease) both; }
-
   .dock-cta {
     flex: none;
     display: flex;
@@ -591,37 +669,53 @@ const intents = [
     transition: background-color var(--m-fast) var(--m-ease);
   }
   .dock-cta:hover { background: var(--verde-hi); }
-
   @media (prefers-reduced-motion: reduce) {
     .dock { transition: none; }
     .dock-amount.is-set { animation: none; }
   }
 
+  /* Bajo 360 px la tarjeta gana 16 px de ancho útil: con 24 de relleno, la
+     cifra de partida no cabía en su caja con el espaciado de WCAG 1.4.12. */
+  @media (max-width: 359px) {
+    .quoter { padding: var(--s-4); }
+  }
+
   @media (min-width: 900px) {
     /* En escritorio el cotizador nunca se pierde de vista: la barra no aplica. */
     .dock { display: none; }
-    .price-value { font-size: var(--t-dato); }
-    /* DOS columnas, no tres: al retirar «Enviar al extranjero» esta regla se
-       quedó en 3 y la tercera columna vacía empujaba las dos opciones contra el
-       borde izquierdo. Con `1fr 1fr` reparten el ancho de la tarjeta y quedan
-       centradas respecto de ella. */
-    .intent-options { grid-template-columns: repeat(2, 1fr); }
-    .intent-option span {
-      justify-content: center;
-      text-align: center;
-      padding: var(--s-3) var(--s-2);
-    }
+    .amount { font-size: var(--t-dato); }
+    .amount.largo { font-size: var(--t-dato-m); }
+    .amount.muy-largo { font-size: var(--t-h3); }
+    .tramo-valor { font-size: var(--t-h3); }
+  }
+
+  /* En colores forzados el sistema pinta los bordes y quita los fondos: el
+     tramo y el punto ya son bordes, así que siguen. La ficha de la moneda y el
+     interruptor elegido pierden su fondo y necesitan un borde que los diga. */
+  @media (forced-colors: active) {
+    .moneda { border: 1px solid CanvasText; }
+    .modo { border: 1px solid CanvasText; }
+    /* El borde transparente de la opción sin elegir se pintaría: se le da el
+       color del fondo para que sólo la elegida tenga caja. */
+    .modo-op > span { border-color: Canvas; }
+    .modo-op input:checked + span { border-color: Highlight; color: Highlight; }
+    /* El botón de WhatsApp es un relleno, y el relleno se va: sin borde quedaba
+       como un enlace suelto. Pasaba también antes del rediseño. */
+    .cta { border: 1px solid LinkText; }
+    .tramo::before, .tramo-valor::before { border-color: Highlight; }
+    .tramo-valor::before { box-shadow: none; }
   }
 </style>
 
 <script>
-  import { formatCLP, formatForeign, formatRate, parseAmount } from '../lib/pricing/format.ts';
+  import { formatCLP, formatForeign, parseAmount } from '../lib/pricing/format.ts';
   import {
     buildQuote,
     clpAmount,
     convert,
     currenciesFor,
     formatAmount,
+    precioLegible,
     whatsappUrl,
   } from '../lib/pricing/quote.ts';
   import type { Currency, Intent } from '../lib/pricing/types.ts';
@@ -630,7 +724,19 @@ const intents = [
   const root = document.querySelector<HTMLElement>('#cotizador');
   if (root) {
     const divisas: IslandCurrency[] = JSON.parse(root.dataset.divisas ?? '[]');
-    let divisa: IslandCurrency = divisas[0] ?? { c: 'USD', r: Number(root.dataset.rate), n: 'dólar' };
+    const destinoSel = root.querySelector<HTMLSelectElement>('[data-destino]');
+    const divisaSel = root.querySelector<HTMLSelectElement>('[data-divisa]');
+    const campoDestino = root.querySelector<HTMLElement>('[data-campo-destino]');
+    const campoDivisa = root.querySelector<HTMLElement>('[data-campo-divisa]');
+
+    /** La divisa del destino elegido: viaja en la opción, `data-c`. */
+    const divisaDe = (codigo: string | undefined): IslandCurrency =>
+      divisas.find((d) => d.c === codigo) ??
+      divisas[0] ?? { c: 'USD', r: Number(root.dataset.rate), n: 'dólar' };
+    const codigoDestino = (): string | undefined =>
+      destinoSel?.selectedOptions[0]?.dataset.c;
+
+    let divisa: IslandCurrency = divisaDe(codigoDestino());
     let rate = divisa.r;
     const minPay = Number(root.dataset.min);
     const maxRaw = Number(root.dataset.max);
@@ -640,20 +746,20 @@ const intents = [
 
     const giveInput = root.querySelector<HTMLInputElement>('#give-input')!;
     const getInput = root.querySelector<HTMLInputElement>('#get-input')!;
+    const giveLabel = root.querySelector<HTMLElement>('[data-label-give]')!;
+    const getLabel = root.querySelector<HTMLElement>('[data-label-get]')!;
     const giveCur = root.querySelector<HTMLElement>('[data-cur-give]')!;
     const getCur = root.querySelector<HTMLElement>('[data-cur-get]')!;
+    const giveBox = giveInput.closest<HTMLElement>('.monto')!;
+    const getBox = getInput.closest<HTMLElement>('.monto')!;
     const alertEl = root.querySelector<HTMLElement>('[data-alert]')!;
     const cta = root.querySelector<HTMLAnchorElement>('[data-cta]')!;
-    const boxes = root.querySelectorAll<HTMLElement>('.input-box');
-    const priceEl = root.querySelector<HTMLElement>('.price-value');
-    const rateNum = root.querySelector<HTMLElement>('[data-rate-num]');
-    const rateUnit = root.querySelector<HTMLElement>('[data-rate-unit]');
+    const rateEl = root.querySelector<HTMLElement>('[data-rate-display]');
     const dock = document.querySelector<HTMLElement>('[data-dock]');
     const dockLabel = dock?.querySelector<HTMLElement>('[data-dock-label]');
     const dockAmount = dock?.querySelector<HTMLElement>('[data-dock-amount]');
     const dockCta = dock?.querySelector<HTMLAnchorElement>('[data-dock-cta]');
     const intentInputs = root.querySelectorAll<HTMLInputElement>('input[name="intent"]');
-    const divisaSel = root.querySelector<HTMLSelectElement>('[data-divisa]');
 
     /* Los decimales los trae la divisa elegida: «1.250,00 yenes» escribiría una
        fracción que esa moneda no usa, y en dinero eso se lee como precisión
@@ -661,34 +767,71 @@ const intents = [
     const fmt = (value: number, currency: Currency): string =>
       currency === 'CLP' ? formatCLP(value) : formatForeign(value, currencyInfo(divisa.c).decimals);
 
-    let price = { rate, currency: divisa.c, pair: `${divisa.c}/CLP` as const, source, asOf: new Date() };
+    const precio = () =>
+      ({ rate, currency: divisa.c, pair: `${divisa.c}/CLP` as const, source, asOf: new Date() });
 
     let intent: Intent = 'to_foreign';
     let giveAmount = parseAmount(giveInput.value);
-    let lastShown = '';
+    let lastRate = '';
 
     // La pantalla y el mensaje calculan con la MISMA función. Antes el
     // componente tenía su propia aritmética, sin la guarda de tasa del módulo:
     // con una tasa corrupta la pantalla habría mostrado Infinity y el mensaje 0.
     const received = (): number => convert(intent, giveAmount, rate);
 
+    /** M2 sobre un elemento: reinicia la animación leyendo offsetWidth. Nunca
+        sobre el campo enfocado: animar lo que alguien escribe es pelear con su
+        cursor. */
+    const settle = (el: HTMLElement): void => {
+      if (document.activeElement === el) return;
+      el.classList.remove('is-set');
+      void el.offsetWidth;
+      el.classList.add('is-set');
+    };
+
+    /** Una cifra que no cabe en su caja baja un escalón (`.largo`). Se mide,
+        no se cuentan dígitos: lo que cabe depende del ancho, de la letra y del
+        espaciado que el visitante haya puesto. */
+    const ajustar = (): void => {
+      for (const el of [giveInput, getInput]) {
+        el.classList.remove('largo', 'muy-largo');
+        if (el.scrollWidth > el.clientWidth + 1) el.classList.add('largo');
+        if (el.scrollWidth > el.clientWidth + 1) el.classList.replace('largo', 'muy-largo');
+      }
+    };
+    window.addEventListener('resize', ajustar, { passive: true });
+
     const render = (): void => {
       const { give, get } = currenciesFor(intent, divisa.c);
+      const envio = intent === 'to_foreign';
+      const destino = envio ? destinoSel?.value : undefined;
       const quote = buildQuote({
         intent,
         giveAmount,
-        price,
+        price: precio(),
         minPay,
         ...(maxPay !== undefined ? { maxPay } : {}),
       });
 
       giveCur.textContent = give;
       getCur.textContent = get;
+      giveLabel.textContent = envio ? 'Envías' : 'Conviertes';
+      getLabel.textContent = envio ? 'Llega aprox.' : 'Recibes aprox.';
       giveInput.inputMode = give === 'CLP' ? 'numeric' : 'decimal';
       getInput.inputMode = get === 'CLP' ? 'numeric' : 'decimal';
 
+      // El precio y su forma son del par, no del cotizador. M2 sólo cuando
+      // cambia de verdad: si se reanimara en cada tecleo sería ruido.
+      const legible = precioLegible(rate, divisa.c);
+      if (rateEl && legible !== lastRate) {
+        lastRate = legible;
+        rateEl.textContent = legible;
+        settle(rateEl);
+      }
+
       const fuera = quote.state === 'below_min' || quote.state === 'above_max';
-      boxes.forEach((b) => b.classList.toggle('invalid', fuera));
+      giveBox.classList.toggle('invalid', fuera && give === 'CLP');
+      getBox.classList.toggle('invalid', fuera && get === 'CLP');
       // Se muestra la región ANTES de escribirle. Un lector de pantalla no
       // vigila regiones ocultas: escribiendo primero, el aviso no se anunciaba.
       const aviso =
@@ -697,7 +840,6 @@ const intents = [
           : quote.state === 'above_max' && maxPay !== undefined
             ? `Para montos sobre CLP ${formatCLP(maxPay)} te atiende un ejecutivo. Escríbenos.`
             : '';
-
       if (aviso) {
         alertEl.hidden = false;
         alertEl.textContent = aviso;
@@ -706,18 +848,10 @@ const intents = [
         alertEl.hidden = true;
       }
 
-      // M2 · el dato acusa el cambio. Sólo cuando el valor recibido cambia de
-      // verdad: si se reanimara en cada tecleo sería ruido, no información.
-      const shown = formatAmount(received(), get);
-      if (priceEl && shown !== lastShown) {
-        lastShown = shown;
-        priceEl.classList.remove('is-set');
-        void priceEl.offsetWidth;
-        priceEl.classList.add('is-set');
-      }
+      ajustar();
 
       // El fallback de cualquier problema es WhatsApp, nunca un error seco
-      const href = whatsappUrl(waNumber, quote, giveAmount);
+      const href = whatsappUrl(waNumber, quote, giveAmount, destino);
       cta.href = href;
       cta.textContent = fuera ? 'Escríbenos por WhatsApp' : 'Continuar por WhatsApp';
 
@@ -726,8 +860,8 @@ const intents = [
       if (dock && dockLabel && dockAmount && dockCta) {
         dockCta.href = href;
         dockCta.textContent = fuera ? 'Escríbenos' : 'Continuar';
-        dockLabel.textContent = fuera ? 'Fuera de rango' : 'Recibes';
-        const dockShown = fuera ? '—' : shown;
+        dockLabel.textContent = fuera ? 'Fuera de rango' : envio ? `Llega a ${destino ?? ''}` : 'Recibes';
+        const dockShown = fuera ? '—' : formatAmount(received(), get);
         if (dockAmount.textContent !== dockShown) {
           dockAmount.textContent = dockShown;
           dockAmount.classList.remove('is-set');
@@ -737,21 +871,22 @@ const intents = [
       }
     };
 
-    // El campo que se edita NO se reformatea bajo el cursor (spec §3): se
-    // actualiza el otro, y el propio se formatea recién al salir.
-    /**
-     * M2 sobre un campo: reinicia la animación leyendo offsetWidth.
-     *
-     * Nunca la aplica al campo enfocado. Animar lo que alguien está escribiendo
-     * es pelear con su cursor, y además el navegador ya reposiciona el caret.
-     */
-    const settle = (el: HTMLElement): void => {
-      if (document.activeElement === el) return;
-      el.classList.remove('is-set');
-      void el.offsetWidth;
-      el.classList.add('is-set');
+    /** Cambia de divisa conservando el monto en PESOS: el cliente piensa la
+        operación en lo que pone, no en lo que recibe. */
+    const usarDivisa = (codigo: string | undefined): void => {
+      const clpBefore = clpAmount(intent, giveAmount, rate);
+      divisa = divisaDe(codigo);
+      rate = divisa.r;
+      const { give, get } = currenciesFor(intent, divisa.c);
+      giveAmount = give === 'CLP' ? clpBefore : rate > 0 ? clpBefore / rate : 0;
+      giveInput.value = fmt(giveAmount, give);
+      getInput.value = fmt(received(), get);
+      settle(giveInput);
+      settle(getInput);
     };
 
+    // El campo que se edita NO se reformatea bajo el cursor (spec §3): se
+    // actualiza el otro, y el propio se formatea recién al salir.
     giveInput.addEventListener('input', () => {
       giveAmount = parseAmount(giveInput.value);
       getInput.value = fmt(received(), currenciesFor(intent, divisa.c).get);
@@ -759,8 +894,8 @@ const intents = [
     });
     giveInput.addEventListener('blur', () => {
       giveInput.value = fmt(giveAmount, currenciesFor(intent, divisa.c).give);
+      ajustar();
     });
-
     getInput.addEventListener('input', () => {
       const { give } = currenciesFor(intent, divisa.c);
       const target = parseAmount(getInput.value);
@@ -771,36 +906,34 @@ const intents = [
     });
     getInput.addEventListener('blur', () => {
       getInput.value = fmt(received(), currenciesFor(intent, divisa.c).get);
+      ajustar();
     });
 
-    /* Al cambiar de divisa se conserva el monto en PESOS, igual que al cambiar
-       de intención y por el mismo motivo: el cliente piensa la operación en lo
-       que pone, no en lo que recibe. */
+    destinoSel?.addEventListener('change', () => {
+      usarDivisa(codigoDestino());
+      render();
+    });
     divisaSel?.addEventListener('change', () => {
-      const clpBefore = clpAmount(intent, giveAmount, rate);
-      const elegida = divisas.find((d) => d.c === divisaSel.value);
-      if (!elegida) return;
-      divisa = elegida;
-      rate = divisa.r;
-      // El precio referencial y su unidad son del par, no del cotizador.
-      if (rateNum) rateNum.textContent = formatRate(rate);
-      if (rateUnit) rateUnit.textContent = `CLP por ${divisa.n}`;
-      price = { rate, currency: divisa.c, pair: `${divisa.c}/CLP` as const, source, asOf: new Date() };
-      const { give, get } = currenciesFor(intent, divisa.c);
-      giveAmount = give === 'CLP' ? clpBefore : rate > 0 ? clpBefore / rate : 0;
-      giveInput.value = fmt(giveAmount, give);
-      getInput.value = fmt(received(), get);
-      settle(giveInput);
-      settle(getInput);
+      usarDivisa(divisaSel.value);
       render();
     });
 
-    // Al cambiar de intención se conserva el monto en PESOS, que es como el
-    // cliente piensa la operación.
+    /* Al cambiar de modo se cambia de desplegable y se conserva lo elegido: de
+       un envío a Colombia se pasa a «tienes pesos colombianos», y de vuelta, si
+       entretanto elegiste euros, el destino pasa a Europa. El monto en pesos
+       se conserva, como siempre. */
     intentInputs.forEach((input) =>
       input.addEventListener('change', () => {
         const clpBefore = clpAmount(intent, giveAmount, rate);
         intent = input.value as Intent;
+        const envio = intent === 'to_foreign';
+        if (campoDestino) campoDestino.hidden = !envio;
+        if (campoDivisa) campoDivisa.hidden = envio;
+        if (envio && destinoSel && codigoDestino() !== divisa.c) {
+          const opcion = [...destinoSel.options].find((o) => o.dataset.c === divisa.c);
+          if (opcion) destinoSel.value = opcion.value;
+        }
+        if (!envio && divisaSel) divisaSel.value = divisa.c;
         const { give, get } = currenciesFor(intent, divisa.c);
         giveAmount = give === 'CLP' ? clpBefore : rate > 0 ? clpBefore / rate : 0;
         giveInput.value = fmt(giveAmount, give);
