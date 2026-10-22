@@ -287,7 +287,11 @@ const carriles = [
   }
   .zona {
     position: absolute;
-    left: calc(2 * var(--c) + var(--s-2));
+    /* `--s-3` y no `--s-2`: es el mismo hueco que separa la pieza de su
+       etiqueta en el carril del banco, así que CHILE y EXTERIOR caen en la
+       misma vertical que «Banco corresponsal». Con `--s-2` quedaban 4 px a la
+       izquierda y se leía como un escalón. *Cowork, 2026-10-23.* */
+    left: calc(2 * var(--c) + var(--s-3));
     font-family: var(--f-num);
     font-size: var(--t-label);
     line-height: 1;
@@ -344,6 +348,9 @@ const carriles = [
     gap: var(--s-2);
     z-index: 2;
   }
+  /* El reloj de la espera sobresale 8,5 px de su pieza: el carril del banco
+     separa sus etiquetas 12 px y no 8, para que no las toque. */
+  .carril-banco .parada { gap: var(--s-3); }
   /* Las piezas: la tuya en tinta, las demás con borde, como en las láminas. */
   .pieza {
     flex: none;
@@ -387,6 +394,9 @@ const carriles = [
        no admita guion sigue partiéndose antes que desbordar, porque 1.4.12
        pide no perder contenido. */
     hyphens: auto;
+    /* Guion sólo en palabras de 10 letras o más («corresponsal»,
+       «Transfieres»): sin esto, Chromium parte «pe-sos» entre 326 y 354 px. */
+    hyphenate-limit-chars: 10 4 4;
     overflow-wrap: anywhere;
   }
   .llega { display: block; margin-top: 2px; font-weight: 600; color: var(--ink-mute); }
@@ -566,6 +576,10 @@ const carriles = [
       text-align: center;
       gap: var(--s-2);
     }
+    /* De lado la etiqueta va debajo de la pieza, no al costado, así que el
+       reloj no la alcanza: vuelve el hueco de siempre y el escritorio no
+       cambia ni un píxel. */
+    .carril-banco .parada { gap: var(--s-2); }
     .pieza { width: 48px; height: 48px; }
     .pie { font-size: var(--t-body-sm); }
     .ficha {
