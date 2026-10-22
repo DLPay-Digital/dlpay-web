@@ -234,6 +234,24 @@ que pasan solas y ahora una narración de 4,8 s.
 describiendo el movimiento de este sitio, o describe un sitio que ya no existe?** Contestarla es de
 Sebastián, y lo que la respuesta cambiaría no es ninguna pieza publicada sino el documento.
 
+
+### Enmienda externa — 2026-10-22 (b)
+
+La **sexta** excepción, razonada y aceptada en **ADR-0016** (`motion-e6`): la banda de los
+destinos, en la Home bajo el globo. Una cápsula que crece y trece banderas que ruedan delante,
+**ligadas al desplazamiento y no al reloj**, sólo con CSS (`animation-timeline: view()`). Mismo
+alcance acotado que las anteriores: **enmienda la pieza, no los seis movimientos.**
+
+| Regla de este documento | Estado |
+|---|---|
+| §4, regla dura 1 — **una sola vez** | **Enmendada, y sólo para esta pieza.** Es la primera que vuelve a moverse al volver a pasar. No se re-anima: se arrastra con la página, y quieta la página, quieta la banda. Pero es decorativa, y ADR-0016 lo dice así |
+| §2c — techo de **280 ms** | **No aplica.** No tiene duración |
+| §4, reglas duras 3 y 5 | **Intactas.** Ninguna cifra, cero JavaScript |
+| `prefers-reduced-motion` | **Intacto, y más estricto que el resto del sitio.** Con la preferencia no se declara ninguna animación, y la banda queda en su reposo |
+
+**La pregunta de la enmienda anterior sigue abierta**, y esta pieza la hace más urgente: es la
+primera excepción que rompe la regla con que el catálogo separa el movimiento que sirve del que
+decora.
 ---
 
 ## 1. Estado actual, verificado

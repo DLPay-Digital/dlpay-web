@@ -21,7 +21,7 @@ Reverificado el 2026-09-08 — cero `fetch`, `XMLHttpRequest`, `WebSocket`, `Eve
 | Momento | Qué ocurre |
 |---|---|
 | **Build** | Se valida la configuración de despliegue (URL canónica y política de indexación), se resuelve el precio (`ConfigPriceSource`), se lee la configuración, se compone el HTML de las **diez** páginas —nueve rutas fijas más una por artículo del blog—, se genera el sitemap y el robots. Todo queda escrito en `dist/`. |
-| **Cliente** | Entre **0 y 54,6 KB** de JavaScript según la página (tabla abajo). Seis scripts en la Home, cuatro en las otras siete con JavaScript, **ninguno** en las cinco restantes; el peso está concentrado en la Home. |
+| **Cliente** | Entre **0 y 58,2 KB** de JavaScript según la página (tabla abajo). Seis scripts en la Home, cuatro en las otras siete con JavaScript, **ninguno** en las cinco restantes; el peso está concentrado en la Home. |
 | **Fuera del sistema** | La conversación por WhatsApp, la verificación bancaria y la ejecución de la operación. Nada de eso pasa por la web. |
 
 ### 1.1 El JavaScript que se envía — inventario exacto
@@ -38,10 +38,17 @@ reloj del feed»). Ni eran dos páginas ni es un reloj.
 
 | Página | `is:inline` | Motion | Marcador | Intro | Quoter | Globo | Caminos | Total |
 |---|---|---|---|---|---|---|---|---|
-| `/` | 56 B | 489 B | 319 B | 6 293 B | 7 968 B | 40 525 B | 303 B | **54,6 KB** |
+| `/` | 56 B | 489 B | 319 B | 6 293 B | 11 976 B | 40 196 B | 303 B | **58,2 KB** |
 | `/como-funciona/`, `/confianza/`, `/empresas/`, `/precio/`, `/preguntas/`, `/blog/`, `/blog/<slug>/` | 56 B | 489 B | 319 B | — | — | — | — | **1,1 KB** |
 | `/terminos/`, `/privacidad/`, `/tarifas/`, `/canal-de-denuncias/` | — | — | — | — | — | — | — | **0 B** |
 | `404.html` | — | — | — | — | — | — | — | **0 B** |
+
+> **Ojo con la columna del globo, que se mide en otra base.** La entrega `wise-` dio «44.247 B»
+> para esa casilla, y ése es el tamaño **en crudo** del script dentro del HTML; esta tabla cuenta
+> con el mismo criterio que las demás columnas, que da **40.196**. Los dos números son correctos y
+> no se pueden mezclar: con 44.247 el total daría 62,2 KB y no los 58,2 que la propia entrega
+> calcula. Lo que sí coincide en las dos bases es la bajada de **329 B** al quitar «USD · KM» de
+> los rótulos (44.576 → 44.247 en crudo), medida acá. *2026-10-22.*
 
 **La columna «Caminos» entró el 2026-10-22** con ADR-0015: son los 303 bytes de «Ver de nuevo», el
 único JavaScript de «El mismo envío, por dos caminos». Todo el movimiento de esa sección es CSS;
@@ -101,7 +108,7 @@ mitigó, desapareció.
 
 Los tres scripts y qué hace cada uno:
 
-1. **Cotizador** (`Quoter.astro`, chunk externo de **7 968 B / 3,1 KB gzip**) — la isla
+1. **Cotizador** (`Quoter.astro`, chunk externo de **11 976 B / 4,5 KB gzip**) — la isla
    interactiva original. *La cifra decía 4 528 B / 2,0 KB gzip, y ya era falsa antes del rediseño
    del 2026-10-22: ADR-0013 la había subido a 6 673 y luego a 7 058 al entrar el multidivisa, y
    esta línea no se tocó. Lo detectó Cowork. Medido de nuevo el 2026-10-22.* Interpreta lo que el usuario escribe, convierte con la **misma** función que arma

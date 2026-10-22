@@ -1290,6 +1290,39 @@ borde superior del pie se conserva porque no estorba y salva los casos futuros.
   reglas del padre no alcanzan a un `<svg>` que está dentro de un componente hijo. Ver
   `docs/development.md`.
 
+### 7.1 Banderas  ·  *añadido el 2026-10-22*
+
+**Las banderas no son iconos**: no siguen el trazo de 1.6 ni la grilla 16/20/24, y no cuentan en
+los nueve. Son **una familia gráfica aparte, cerrada a catorce**: los trece destinos del cotizador y
+Chile. Las pidió Sebastián el 2026-10-22 («SVG propias, redondas»), a partir del cotizador de
+wise.com.
+
+- **Dónde viven:**
+  - el dibujo, en `lib/banderas.ts`, en un `viewBox` de 40 × 40;
+  - el recorte, en `Bandera.astro`: un círculo con un filete interior de 1 px a
+    `rgba(11,19,32,.16)`, que separa del papel las banderas claras (Japón, Perú, Chile). En colores
+    forzados el filete pasa a `CanvasText`.
+- **Tamaños:** 16, 20, 24, 32, 40 y 56, y ningún otro; el componente no acepta otro.
+  - **16** en las fichas de moneda y la barra móvil.
+  - **24** en el selector.
+  - **32** en las tarjetas de destino.
+  - **40 y 56** en la banda.
+- **Simplificadas: franjas, campos y una figura, sin escudos**, que a 16 px son ruido. Hay dos
+  excepciones, porque sin ellas dos banderas se confunden:
+  - Ecuador lleva el óvalo con el cóndor, que lo separa de Colombia;
+  - Paraguay lleva el sello.
+- **Siempre decorativas** (`aria-hidden`) y **siempre junto a su nombre o su código.** Una bandera
+  sola no dice nada a un lector de pantalla, y a la vista dice menos de lo que parece: Ecuador y
+  Colombia son la misma a 16 px si se les quita el óvalo.
+- **La del dólar es la de Estados Unidos**, aunque el dólar también llegue a Ecuador: es la bandera
+  de quien emite la moneda. **La del euro es la de la Unión Europea**, y su destino se llama
+  «Europa».
+- **No entran en ninguna figura del §6.2.** Allí las monedas son una unidad de valor —el punto
+  verde— y no un país. Una bandera en una lámina diría a qué país va el dinero, y eso es el canal y
+  el destino, no el mecanismo.
+- `tests/banderas.test.ts` falla si un destino o una divisa del catálogo se queda sin bandera, o si
+  un dibujo trae un script, un manejador o un recurso externo: van con `set:html`.
+
 ---
 
 ## 8. Componentes V1 (inventario — no implementación)
@@ -1341,13 +1374,16 @@ cada una, no qué significa.
 | **Abanico de etiquetas** | `/precio`: cinco etiquetas en un ojal, y sólo una cobra | `EtiquetasPrecio`. **Segunda pieza de la lista cerrada de ADR-0011**: cartulina con cuatro ruidos en `data:`, relieve y sombras de material. Plana y **quieta** — la excepción es de registro, no de movimiento. La forma va en un `span` propio y no en el `li` ni en un `::before`: en el `li` el `clip-path` recorta sus propias sombras, y en un `::before` el fondo deja de ser visible para una auditoría automática. **Los ruidos llevan su opacidad topada** con `feFuncA`; sin el tope el peor píxel de «Todo lo demás no tiene costo» caía a 3,07:1 |
 | ~~**Panel del precio**~~ | *Retirado el 2026-10-01.* `FiguraPrecio` enseñaba el mismo número al aceptar y al recibir. Lo sustituyó el abanico, y el componente se borró al quedarse sin consumidores. Está en el historial |
 | **Índice del blog** | `/blog` | Filas con filete y fecha tabular en columna propia. Se ve igual con un artículo que con cincuenta |
-| **Globo rotativo** | El alcance del dólar digital, en la Home | Tres excepciones autorizadas: ADR-0007, 0008 y 0009. **No va nunca solo**, porque sin nada que lo acote el dibujo afirma de más. Hasta el 2026-09-25 lo acotaba el eje de alcance; desde que Sebastián lo retiró, lo acota el titular de su banda —«Nuestro tramo termina en tu billetera»— y la bajada. **Si algún día se cambia ese titular por uno que no nombre el límite, el globo se queda desnudo** |
+| **Globo rotativo** | Chile como origen, en la Home | Tres excepciones autorizadas: ADR-0007, 0008 y 0009. **No va nunca solo**, porque sin nada que lo acote el dibujo afirma de más. Hasta el 2026-09-25 lo acotaba el eje de alcance; desde que Sebastián lo retiró, lo acota el titular de su banda —«Nuestro tramo llega hasta el destino» desde el 2026-10-22, antes «Nuestro tramo termina en tu billetera»— y la bajada. **Si algún día se cambia ese titular por uno que no nombre el límite, el globo se queda desnudo** | *2026-10-22.* Cada destino llevaba debajo «USD · 8.300 KM» y desde hoy lleva sólo su nombre, a pedido de Sebastián. El dólar dejó de ser la moneda de todos (ADR-0013), y la distancia no es un dato del servicio. **Los ocho países no coinciden con los trece destinos del cotizador**: México, España, Sudáfrica, India y Australia no son destinos, y faltan diez que sí lo son. Sebastián pidió dejarlo así; queda escrito para cuando se revise. |
 | **Franja de notificación** | Aviso a todo el ancho | ADR-0006. Se oculta sola en la página que enlaza |
 | **404** | Dirección inexistente | Reusa `PageHero`. `noindex`, fuera del sitemap y en cero bytes de JavaScript |
 | **Bloque institucional** | Los emblemas de FinteChile y la UAF, en el pie | `Alliances.astro`. El claim regulatorio se dice **con palabras**, no colgado de un emblema, y el dato declara el alcance de su propio claim |
 | **Motor de movimiento** | Encender el Motion System en las páginas que lo usan | `Motion.astro`. No es una pieza visual: es el `IntersectionObserver` y su interruptor. Las cuatro legales y la 404 no lo llevan y siguen en cero JavaScript |
 | **Fila de artículo** | Una entrada de artículo en una lista | `FilaArticulo`. Marca y texto en un solo enlace. La usan el índice del blog y «Sigue leyendo». *2026-10-13.* |
 | **Ruta de guías** | Los pasos de «Tu primera operación», en `/blog` | `RutaGuias`. Pasos numerados con la gramática de «Cómo empezamos». Cuenta sólo lo publicado. *2026-10-13.* |
+| **Bandera** | El país junto a su nombre o su código | `Bandera.astro`. Ver §7.1. *2026-10-22.* |
+| **Selector con banderas** | Elegir destino o divisa en el cotizador | Sigue el patrón *combobox* de la ARIA APG: un botón de 52 px que abre un panel con buscador y la lista. La opción activa lleva `--papel-2` y un filete; la elegida, el código en `--verde-deep` y el punto. Spec: `cotizador-spec.md`, enmienda del 2026-10-22 (b). **Sustituye al `<select>` nativo, y no se usa fuera del cotizador**: un desplegable de verdad, con pocas opciones y sin banderas, sigue siendo un `<select>`. *2026-10-22.* |
+| **Destinos** | Trece destinos, cada uno en su moneda, en la Home bajo el globo | `Destinos.astro`. **Una banda decorativa** —la cápsula de Chile con el tramo verde y el isotipo, y las trece banderas— que se mueve al bajar (**ADR-0016, `motion-e6`**). Debajo, **trece tarjetas `<details>`**: bandera, país y moneda; al abrirse, el precio referencial legible, una tabla de cinco montos desde el mínimo y un enlace que lleva al cotizador con ese destino elegido. Sin JavaScript propio. Tres listas fijas en tres columnas desde 900 px, en orden alfabético de arriba abajo, **y no `columns: 3`**: con columnas de CSS, al abrir una tarjeta el navegador las rebalanceaba y saltaban de columna. **Las cifras salen de `convert()` y `formatAmount()`**, las del cotizador. *2026-10-22.* |
 
 > **Cómo se mantiene esta tabla.** Se escribió midiendo `src/components/` contra el build, no de
 > memoria. Si aparece un componente que no está acá, la tabla está vieja — y eso ha pasado: entre

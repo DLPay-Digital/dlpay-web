@@ -351,3 +351,93 @@ desde ADR-0014, y el punto es la unidad de valor, la misma que el precio cotiza.
   dinero llega a destino. No afirman plazo ni canal.
 - **Con VoiceOver**, cómo se lee «Colombia · COP» (el punto medio) y si la lista nativa del iPhone
   enseña los trece destinos sin cortar.
+
+## Enmienda — 2026-10-22 (b) · el destino con su bandera
+
+*Cowork, entrega `wise-`. Pedida por Sebastián al traer cosas de wise.com: «tienen su propio
+cotizador en donde uno puede cambiar de moneda y la moneda viene acompañada de su bandera
+correspondiente al país». Las banderas, «SVG propias, redondas», son decisión suya, del mismo día.*
+
+**Por qué.** El cotizador pregunta «¿A dónde envías?» desde la enmienda de arriba, pero la respuesta
+era un `<select>` nativo, y un `<select>` no puede dibujar una bandera. En una lista de trece países,
+la bandera es lo que se reconoce antes de leer. Se sustituye por un selector propio, con búsqueda,
+que sigue el patrón *combobox* de la ARIA APG.
+
+### Lo que cambia
+
+| | hasta hoy | desde esta enmienda |
+|---|---|---|
+| **El destino** | `<select>` nativo, «Estados Unidos · USD» | **un botón** con la bandera, el país y el código; al abrirse, **un panel** con un buscador y la lista de los trece |
+| **La divisa** (en «Pasar a pesos») | otro `<select>` | el mismo selector, con la bandera de quien emite la moneda: la de Estados Unidos para el dólar, aunque también llegue a Ecuador |
+| **Las fichas de moneda** de los montos | «CLP», «USD» | **la bandera a 16 px y el código.** En un envío, Chile arriba y el destino abajo; al pasar a pesos, al revés |
+| **La barra móvil** | «Llega a Colombia» | **la bandera a 16 px y** «Llega a Colombia» |
+| **Desde fuera** | — | `?destino=Perú` en la dirección elige ese destino al cargar. Un enlace de la misma página con `data-cotizar-destino` hace lo mismo sin recargar: es el de las tarjetas de destinos |
+
+### Anatomía del selector (reemplaza la línea del `select` en el esquema de arriba)
+
+```
+  ¿A dónde envías?
+  [ (●) Estados Unidos  USD                 ⌄ ]   ← botón, 52 px
+  ┌─────────────────────────────────────────┐
+  │ [ Busca un país o una moneda          ] │     ← buscador, combobox
+  │  (●) Argentina                      ARS │     ← opciones de 44 px
+  │  (●) Bolivia                        BOB │
+  │  (●) Brasil                         BRL │     ← la activa: papel-2 y filete
+  │  …                               (13)   │     ← hasta 288 px y luego scroll
+  └─────────────────────────────────────────┘
+```
+
+**La elegida** lleva su código en `--verde-deep` y un punto: **el punto es la unidad de valor del
+§6.2**, y aquí marca la moneda en que llega el dinero.
+
+### Comportamiento
+
+- **El botón abre y cierra.** Al abrirse, el foco pasa al buscador. La lista lleva el foco por
+  `aria-activedescendant`, así que se escribe y se navega a la vez.
+- **Teclado:**
+  - ↑ ↓ mueven la opción activa, e Inicio y Fin van a la primera y la última.
+  - Intro elige.
+  - Escape cierra y devuelve el foco al botón.
+  - Tab cierra.
+- **Ratón:** un clic elige. Un clic fuera, o que el foco salga del selector, cierra.
+- **La búsqueda no distingue tildes ni mayúsculas:** «peru» encuentra Perú y «japon», Japón. Busca en
+  el país, el código, el nombre de la moneda y su plural, así que «euros» lleva a Europa. Entre
+  varias coincidencias, la activa es **la primera cuyo nombre empieza por lo escrito**.
+- **Sin coincidencias:** «Ningún destino coincide.» o «Ninguna moneda coincide.».
+- **Lo de la enmienda anterior se conserva:**
+  - al cambiar de modo se cambia de selector y se mantiene lo elegido;
+  - el monto en pesos no se mueve.
+- **Al llegar desde fuera** (`data-cotizar-destino`), el orden es:
+  1. se pasa primero a «Enviar»;
+  2. se elige el destino;
+  3. la vista va al cotizador, suave salvo con `prefers-reduced-motion`;
+  4. el foco queda en el botón.
+
+  **Primero el modo y después el destino:** al revés, el cambio de modo elegía el destino de la
+  divisa que estaba (de dólares sale Ecuador) y pisaba el pedido. Pasó y se corrigió antes de
+  entregar.
+
+### Las banderas
+
+**Son catorce, SVG propias**: los trece destinos y Chile. Viven en `lib/banderas.ts`, y
+`Bandera.astro` las recorta en círculo y les pone un filete interior.
+
+- **Simplificadas:** franjas, campos y una figura. **Sin escudos**, porque a 16 px son ruido.
+- **Dos excepciones**, porque sin ellas dos banderas se confunden:
+  - Ecuador lleva un óvalo con el cóndor, que lo separa de Colombia;
+  - Paraguay lleva el sello.
+- **Siempre decorativas** (`aria-hidden`) y **siempre junto a su nombre o su código**: una bandera
+  sola no se usa.
+- **Ningún JavaScript las dibuja.** El selector clona las que el servidor ya dejó en un `<template>`:
+  el dibujo no viaja en el `.js`.
+- `tests/banderas.test.ts` falla si un destino o una divisa del catálogo se queda sin bandera.
+
+### Pendientes que deja
+
+- **Con VoiceOver en el iPhone**, la lectura del botón («¿A dónde envías? Estados Unidos USD») y del
+  buscador mientras se escribe. Sustituye al pendiente de la enmienda anterior sobre la lista nativa,
+  que ya no existe.
+- `PENDIENTE DE DECISIÓN` — **el destino con que abre el cotizador** sigue siendo Estados Unidos
+  (`DEFAULT_DESTINO`, «el de siempre, el dólar»). Es lo primero que se ve en la Home, y con él lo
+  primero que se lee es «USD». Es correcto, porque es la moneda de ese destino. Si no es el destino
+  más pedido, conviene que abra en el que sí lo sea.

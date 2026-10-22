@@ -32,6 +32,11 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   Motion System se puso queda cruzado por segunda vez** —aquel documento decía que a la cuarta la
   pregunta pasaba a ser si V1 necesita revisión, y la cuarta fue el Diario—. Las cinco están
   razonadas y acotadas; la pregunta sigue sin hacerse, y está escrita en `motion-system-v1.md`.
+  **Una sexta, del 2026-10-22:** la banda de los destinos, bajo el globo. La cápsula de Chile
+  crece y las trece banderas ruedan **mientras bajas**: ligada al desplazamiento y no al reloj, CSS
+  entero y cero JavaScript. Ver ADR-0016. **Es la primera que rompe la regla dura 1** («una sola
+  vez»), porque se mueve otra vez al volver a pasar. Con movimiento reducido no se declara nada. La
+  pregunta de la quinta sigue abierta, y ahora es más urgente.
   **Una tercera, del 2026-09-25:** la **intro de marca** de la Home —830 ms de telón en los que el
   isotipo se separa por su propio eje y se une—. Enmienda dos reglas a la vez: el techo de 280 ms y,
   sobre todo, la regla dura 2 («el cotizador no entra»), porque el telón lo **tapa** 937 ms. Se
@@ -86,10 +91,11 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   `npm run build` en verde, fuentes T-C auto-hospedadas, tokens del Design System en código, y la
   cadena `PriceSource → Quote` en pie. Ver `docs/development.md`.
   **Sobre el JavaScript, que ya no es cero:** el esqueleto se levantó sin una sola línea en el
-  cliente y así siguen las cuatro legales y la 404. Hoy la Home envía **54,6 KB**: el cotizador
-  (7,8 KB — 2,5 más desde el 2026-10-21 porque el catálogo de divisas de ADR-0013 viaja con él, y
-  0,9 más desde el 2026-10-22 por el rediseño de la tarjeta),
-  el Motion System (0,5 KB), el globo (40,5 KB, casi todo coordenadas), la intro de marca
+  cliente y así siguen las cuatro legales y la 404. Hoy la Home envía **58,2 KB**: el cotizador
+  (11,7 KB — 2,5 más desde el 2026-10-21 porque el catálogo de divisas de ADR-0013 viaja con él,
+  0,9 más desde el 2026-10-22 por el rediseño de la tarjeta y 3,9 más ese mismo día por el selector
+  con banderas),
+  el Motion System (0,5 KB), el globo (40,2 KB, casi todo coordenadas), la intro de marca
   (6,3 KB) y **«Ver de nuevo» de «El mismo envío, por dos caminos» (303 B, ADR-0015)**. Las
   excepciones están autorizadas y acotadas —ADR-0009, ADR-0008, ADR-0010 y ADR-0015—; el
   inventario exacto, por página, está en `docs/arquitectura-produccion.md` §1.1.
@@ -831,6 +837,9 @@ piensa un envío y porque con dólares la moneda no basta: Estados Unidos o Ecua
 pesos se queda en un interruptor chico. El precio se escribe para leerse —«1 USD = 919,70 CLP» y,
 con la tasa bajo 1, «1 CLP = 4,35 COP»— y baja de jerarquía: la cifra que manda es la que llega.
 La enmienda completa, con la anatomía nueva, está al final de `cotizador-spec.md`.
+
+**Y el mismo día, el destino con su bandera:** el `<select>` pasó a un selector con buscador y
+banderas redondas propias. Ver la enmienda (b) de `cotizador-spec.md`.
 
 **Las cifras siguen siendo referenciales, y ahora son varias.** Una tasa de muestra por divisa, con
 la reserva que el sitio ya publica: el precio que se aplica es el que confirma el ejecutivo. Una
