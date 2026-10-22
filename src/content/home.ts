@@ -197,15 +197,21 @@ export const faq: FaqItem[] = [
     a: 'No. Es un precio referencial de mercado. Tu ejecutivo te confirma el precio final al momento de cerrar, porque el mercado se mueve. Preferimos decírtelo antes que después.',
   },
   {
-    // PENDIENTE DE DECISIÓN — qué llega exactamente, por divisa (ADR-0013).
-    // Esta respuesta es deliberadamente la del QUÉ y no la del CÓMO: el
-    // mecanismo —stablecoin, USDT, redes— sale del mensaje comercial el
-    // 2026-10-21 y se queda en el blog y el glosario. Y no afirma que exista
-    // una versión digital de las doce divisas, porque no la hay: mientras eso
-    // no se cierre, quien lo concreta es el ejecutivo, no la página.
-    q: '¿Qué es la "divisa digital" que recibo?',
+    // **Esta pregunta cambió de oficio el 2026-10-22.** Era «¿Qué es la
+    // "divisa digital" que recibo?» y era la del QUÉ: el cliente recibía una
+    // divisa digital, así que la pregunta tenía sentido. ADR-0014 cambió eso
+    // —lo que llega a destino es la moneda de ese país— y la pregunta pasó a
+    // afirmar algo falso en su propio enunciado, en la palabra «recibo».
+    //
+    // Ahora es la del CÓMO, que es donde el mecanismo puede vivir: `CLAUDE.md`
+    // §1 autoriza explícitamente explicarlo «en una respuesta de la FAQ». La
+    // respuesta dice que es el riel y no lo que se recibe, que es la
+    // distinción que ADR-0013 y ADR-0014 obligan a mantener.
+    //
+    // El glosario ya no la cita: su entrada pasó a ser «Divisa», a secas.
+    q: '¿Cómo se mueve el dinero si no pasa por la cadena de bancos?',
     concern: 'recibo',
-    a: 'Es una versión digital de la moneda, pensada para conservar su valor y moverse por redes propias en minutos, sin depender de horarios bancarios. Es lo que permite que la operación no espere días hábiles. Cuál se usa en tu caso te lo confirma tu ejecutivo: no necesitas saber de esto para operar.',
+    a: 'Por detrás usamos divisas en formato digital, que se transfieren por redes propias y no dependen de horarios bancarios. Es el riel, no lo que recibe quien recibe: a destino llega la moneda de ese país. No necesitas saber de esto para operar.',
   },
   {
     q: '¿Necesito registrarme?',

@@ -15,7 +15,26 @@ import Icon from './Icon.astro';
  * nota larga en `PageHero.astro`: mismo mecanismo, desfase estándar por
  * palabra, y los bloques de abajo arrancan cuando la última empieza a entrar.
  */
-const title = 'Cambia pesos por dólares. Muévelos donde necesites.';
+/*
+  REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega a destino en la
+  moneda de ese destino (ADR-0014).
+
+  **Decía «Cambia pesos por dólares. Muévelos donde necesites.»** hasta el
+  2026-10-22, y las dos mitades habían dejado de ser ciertas: ADR-0013 sacó el
+  dólar de ser el producto —son doce divisas— y ADR-0014 quitó el «muévelos
+  tú», porque el recorrido es nuestro de punta a punta. Lo detectó Cowork al
+  revisar staging; la decisión del titular nuevo es de Sebastián.
+
+  Dice lo que hace el servicio en ocho palabras, y **no dice** ninguna de las
+  tres cosas que ADR-0014 §3 prohíbe: ni plazo de la entrega final, ni canal,
+  ni nada regulatorio. Tampoco «remesa», que sigue fuera por posicionamiento.
+
+  Es a propósito el mismo par de verbos que rotula el cotizador dos bloques más
+  abajo —«Envías» y «Llega aprox.»— y los dos carriles de «El mismo envío, por
+  dos caminos». El titular, el instrumento y la figura dicen lo mismo con las
+  mismas palabras.
+*/
+const title = 'Envías en pesos. Llega en la moneda del destino.';
 const titleWords = title.split(' ');
 const seqSub = titleWords.length - 1;
 const seqStrip = seqSub + 1;

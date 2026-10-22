@@ -90,10 +90,24 @@ const steps: readonly Step[] = [
     ],
   },
   {
-    // Cumple la regla dura del §1: la rapidez se predica de NUESTRA operación
-    // —la entrega de la divisa en la billetera— y no de una recepción
-    // bancaria en destino, que DLPay no presta.
-    title: '4. Recibes en minutos',
+    // REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega a destino
+    // (ADR-0014).
+    //
+    // **Decía «4. Recibes en minutos» hasta el 2026-10-22, y era el hallazgo
+    // más serio de la revisión de Cowork.** Aquel título cumplía la regla del
+    // §1 que regía al escribirlo: la rapidez se predicaba de NUESTRA
+    // operación, que entonces terminaba al entregar en una billetera, así que
+    // los minutos tenían sujeto. **ADR-0014 metió la entrega en destino dentro
+    // de nuestra operación**, y con eso el mismo texto pasó a prometer un
+    // plazo de la entrega final — justo lo que su §3 prohíbe, y lo que el
+    // héroe y `Steps` ya habían perdido ese día. Esta pieza se quedó atrás
+    // porque nadie la buscó: el comentario de arriba seguía citando la regla
+    // de la billetera.
+    //
+    // «Sin esperar días hábiles» se queda: no es un plazo, es no depender del
+    // calendario bancario, y es lo que publican la franja de confianza del
+    // héroe y `Steps`.
+    title: '4. Llega a destino',
     body: 'Sin esperar días hábiles ni lidiar con bancos intermediarios.',
     thread: [
       { sender: 'dlpay', text: chat.entregado },

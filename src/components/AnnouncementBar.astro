@@ -52,7 +52,20 @@ interface Props {
 
 const OFFICIAL: readonly Message[] = [
   {
-    text: 'Convierte tus pesos en dólares en minutos.',
+    /*
+      REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega a destino en la
+      moneda de ese destino (ADR-0014).
+
+      Decía «Convierte tus pesos en dólares en minutos.» hasta el 2026-10-22, y
+      chocaba dos veces: el dólar dejó de ser el producto (ADR-0013) y «en
+      minutos», leído junto a un envío, es un plazo de la entrega final, que
+      ADR-0014 §3 no deja publicar. Lo detectó Cowork.
+
+      No repite el titular del héroe palabra por palabra a propósito: la franja
+      se lee en todas las páginas y lleva a `/como-funciona`, así que nombra el
+      destino en vez del origen.
+    */
+    text: 'Envía dinero a otro país y llega en su moneda.',
     href: '/como-funciona/',
     cta: 'Ver más',
   },

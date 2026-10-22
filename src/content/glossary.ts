@@ -42,22 +42,33 @@ export interface Term {
 
 export const glossary: readonly Term[] = [
   {
-    // Palabras de `home.ts`, respuesta «¿Qué es la "divisa digital" que recibo?».
-    // Cambió de término el 2026-10-21 con ADR-0013: el sitio pasa de una divisa
-    // a doce, así que la entrada que nombraba el producto deja de ser «dólar».
-    // El mecanismo no se pierde — baja a la entrada «Stablecoin», que es donde
-    // el ADR lo deja: fuera del mensaje comercial, dentro de lo educativo.
-    term: 'Divisa digital',
+    // ── Tres nombres en tres días, y el último es el bueno ──────────────
+    //
+    // Fue «Dólar digital» hasta el 2026-10-21 y «Divisa digital» hasta el 22.
+    // Hoy es **«Divisa», a secas**, por decisión de Sebastián.
+    //
+    // El motivo no es de estilo: la definición terminaba en «Es lo que te
+    // entregamos», y desde ADR-0014 **eso dejó de ser cierto** — lo que se
+    // entrega es la moneda local del destino, no una versión digital de nada.
+    // Lo detectó Cowork revisando staging. Con el claim fuera, lo que queda es
+    // la palabra que el sitio usa de verdad en todas sus páginas.
+    //
+    // **El mecanismo no se pierde ni se esconde:** vive en la entrada
+    // «Stablecoin», justo debajo, que es donde ADR-0013 lo deja — fuera del
+    // mensaje comercial y dentro de lo educativo. Por eso esta entrada deja de
+    // apuntar al artículo de activos tokenizados, que explica el riel y no la
+    // palabra, y apunta a donde se explica la operación.
+    term: 'Divisa',
     definition:
-      'Una versión digital de la moneda, pensada para conservar su valor y moverse por redes propias en minutos, sin depender de horarios bancarios. Es lo que te entregamos.',
-    href: '/blog/activos-tokenizados-que-son-y-quien-los-construye/',
-    linkLabel: 'En el blog',
+      'La moneda de otro país. Cambiar divisas es pasar de una a otra —de tus pesos a la moneda del destino— al precio de ese momento.',
+    href: '/como-funciona/',
+    linkLabel: 'Cómo funciona',
   },
   {
     // Copy nuevo, aprobado el 2026-09-23. Sin nombrar redes.
     term: 'Stablecoin',
     definition:
-      'Una moneda digital diseñada para mantener su valor pegado al de otra moneda. Es la forma en que viaja lo que te entregamos.',
+      'Una moneda digital diseñada para mantener su valor pegado al de otra moneda. Es por donde viaja el dinero mientras cruza, no lo que recibe quien recibe.',
     href: '/blog/activos-tokenizados-que-son-y-quien-los-construye/',
     linkLabel: 'En el blog',
   },

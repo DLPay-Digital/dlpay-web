@@ -166,6 +166,23 @@ const organization = {
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    {/*
+      PENDIENTE DE ASSET — `public/og-image.png` lleva el titular retirado.
+
+      **Es la imagen que se ve al compartir CUALQUIER página del sitio**, y
+      tiene dibujado «Cambia pesos por dólares. Muévelos donde necesites.», que
+      el héroe dejó de decir el 2026-10-22: ADR-0013 sacó el dólar de ser el
+      producto y ADR-0014 quitó el «muévelos tú».
+
+      **El `alt` NO se actualiza al titular nuevo, a propósito.** Describe la
+      imagen, y la imagen dice lo de antes: ponerle el texto nuevo haría que el
+      texto alternativo mintiera sobre lo que acompaña — y a quien usa lector
+      de pantalla le llegaría una cosa distinta de la que ven los demás. Se
+      corrigen los dos juntos o ninguno.
+
+      Rehacer el PNG es trabajo de Cowork. Mientras tanto queda marcado acá,
+      que es donde lo encuentra quien busque `PENDIENTE DE ASSET`.
+    */}
     <meta property="og:image:alt" content="DLPay. Cambia pesos por dólares y muévelos donde necesites." />
 
     <meta name="twitter:card" content="summary_large_image" />
