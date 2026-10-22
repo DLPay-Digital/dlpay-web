@@ -37,17 +37,25 @@ const trustStrip = [
         ))}
       </h1>
       {/*
-        El sujeto de "en minutos" NO se puede soltar. D17 (CLAUDE.md §1) reformuló
-        esta frase justamente para que la rapidez se prediquara de NUESTRA
-        operación —la conversión y la entrega de la divisa— y nunca de una
-        recepción bancaria en destino: "sin esperar días" jamás debe poder leerse
-        como "el destinatario recibe dinero en su cuenta en minutos". Por eso
-        "Recibes la divisa que necesites:" encabeza la frase y ancla a qué se
-        refiere. El sujeto cambió con ADR-0013; la función de la frase, no.
+        **Esta frase perdió sus minutos el 2026-10-22, y es la consecuencia más
+        incómoda de ADR-0014.** Decía "Recibes la divisa que necesites: en
+        minutos, a cualquier hora". Funcionaba porque D17 exigía que la rapidez
+        se predicara de NUESTRA operación, y nuestra operación terminaba al
+        entregar: el sujeto de "en minutos" estaba anclado y no podía leerse
+        como "el destinatario recibe en su cuenta en minutos".
+
+        Ahora nuestra operación INCLUYE la entrega en destino, así que ese
+        anclaje desapareció: cualquier plazo en esta línea se lee como el plazo
+        de la entrega final, y ése es justo el que nadie puede respaldar. La
+        regla de D17 no se relajó — se volvió más estricta por cubrir más.
+
+        Lo que queda es el diferencial sin el número: no depender de los
+        horarios ni de los días hábiles de la cadena bancaria. Recuperar un
+        plazo pide un dato que Compliance firme, no una redacción mejor.
       */}
       <p class="sub seq" style={`--seq:${seqSub}`}>
-        Recibes la divisa que necesites: en minutos, a cualquier hora, sin los tiempos de
-        una operación bancaria tradicional.
+        Cambiamos al precio que aceptas y nos ocupamos de que llegue a destino, sin los
+        horarios ni los días hábiles de una transferencia bancaria.
       </p>
       <ul class="strip seq" role="list" style={`--seq:${seqStrip}`}>
         {trustStrip.map((item) => (

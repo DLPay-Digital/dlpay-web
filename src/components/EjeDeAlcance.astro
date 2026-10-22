@@ -27,31 +27,39 @@
  * de la alternativa —tres copias de una figura que afirma algo— es mayor que el
  * de un componente.
  *
- * ── La forma corta, desde el 2026-10-02: la billetera y sus tres salidas ──
+ * ── La forma corta, reescrita el 2026-10-22: el recorrido completo ───────
  *
- * Es la que usa `/como-funciona` (sin `milestones`), y hasta hoy era una línea
- * de 1 px con la cuña en su arranque, la bisagra en mono y las tres opciones
- * en texto con un guion de 9 px: el límite del servicio, que `CLAUDE.md` pide
- * declarar «de frente» en esa página, era lo más tenue de la página. Y en
- * móvil la cuña girada pisaba el titular de la sección 9,7 px.
+ * Es la que usa `/como-funciona` (sin `milestones`).
  *
- * Ahora dibuja **dónde termina lo nuestro**, con las marcas del §6.2 y
- * ninguna nueva:
+ * **Dibujaba la billetera y sus tres salidas, con una frontera punteada antes
+ * de la tercera** —«lo conviertes a moneda local en destino»—, porque hasta el
+ * 2026-10-22 ahí terminaba el servicio y la regla dura de §1 prohibía incluso
+ * sugerir lo contrario. **ADR-0014 cruzó esa frontera**: el servicio llega a la
+ * moneda local del destino, así que la frontera dejó de existir y con ella las
+ * tres salidas, que eran lo que el cliente hacía *después* de nosotros.
  *
- * · el **tramo verde** con la **unidad de valor** —la divisa digital que te
- *   enviamos— llega a **tu billetera** (pieza en tinta, tuya, como en
- *   `FiguraUso`), y la **cuña** cae justo en la entrada: ahí cambia de manos.
- *   No repite los seis pasos: es sólo el final del último.
- * · desde la billetera sale el **filete `--ink-mute`** —real, y ya no
- *   nuestro— y se abre en las tres opciones, cada una colgada de él.
- * · antes de la tercera hay una **frontera punteada**, y la salvedad va debajo
- *   de ella: «Ese último paso es un proceso distinto, con otros servicios, y no
- *   lo realiza DLPay». **Nada del otro lado es verde**, y no hay ningún banco
- *   dibujado: la regla dura de §1 se dice con el vacío y con la frase, no con
- *   un dibujo de lo que no hacemos.
+ * Hoy dibuja **hasta dónde llegamos**, con las marcas del §6.2 y ninguna nueva:
  *
- * Los textos son los mismos de siempre, de `scope.ts` y de la página: ni una
- * palabra nueva. La forma con `milestones` no cambia.
+ * · el **tramo verde** con la **unidad de valor** recorre la figura entera y
+ *   llega al **destino** (pieza en tinta), con la **cuña** en la entrada: ahí
+ *   el dinero cambia de manos, que es lo único que esta figura marcaba antes y
+ *   lo único que marca ahora. No repite los seis pasos: es el final del último.
+ * · ya **no hay filete gris ni frontera punteada**, porque no hay un tramo
+ *   ajeno que dibujar. Quitar el límite es el cambio, no un descuido.
+ * · debajo van las **dos salvedades** de `scope.ts`: el plazo de la entrega
+ *   final y cómo recibe quien recibe. **Son el límite que queda**, y por eso
+ *   ocupan el sitio donde estaban las opciones.
+ *
+ * **Sigue sin dibujarse ningún banco**, y ahora por un motivo distinto: antes
+ * porque no lo hacíamos, hoy porque no sabemos por qué canal llega (D16 está
+ * reabierta). El dibujo dice el resultado, no el medio.
+ *
+ * Los textos son los mismos de `scope.ts` y de la página: ni una palabra que
+ * no viva en un archivo de contenido. La forma con `milestones` no cambia.
+ *
+ * **Esta figura merece una pasada de Cowork.** Lo que se hizo acá es quitar lo
+ * que había dejado de ser cierto, que es urgente; rediseñarla para lo que el
+ * servicio es ahora es otra cosa, y es trabajo de quien dibuja.
  *
  * ── Accesibilidad ──────────────────────────────────────────────────────────
  *
@@ -60,8 +68,8 @@
  * con palabras, así que no hace falta ninguna etiqueta oculta. Las dos listas
  * llevan `role="list"`, porque con `list-style: none` WebKit deja de anunciarlas
  * y acá el número de opciones es parte del contenido. La cuña va `aria-hidden`,
- * y en la forma corta también la billetera, la línea y la frontera: el orden de
- * lectura es bisagra, opciones y salvedad, el mismo de antes.
+ * y en la forma corta también el destino: el orden de lectura es bisagra,
+ * salvedades y nota, el mismo de antes.
  */
 import Icon from './Icon.astro';
 import type { Hinge, Milestone } from '../content/scope.ts';
@@ -74,9 +82,11 @@ interface Props {
    */
   milestones?: readonly Milestone[] | undefined;
   hinge: Hinge;
-  options: readonly string[];
+  /** Lo que el sitio NO promete. Hasta el 2026-10-22 eran `options`: las tres
+      salidas desde la billetera, cuando el servicio terminaba ahí. */
+  caveats: readonly string[];
 }
-const { milestones, hinge, options } = Astro.props;
+const { milestones, hinge, caveats } = Astro.props;
 const alone = milestones === undefined;
 ---
 <div class:list={['eje', { alone }]}>
@@ -114,19 +124,16 @@ const alone = milestones === undefined;
             <path d="M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4" stroke="currentColor" stroke-width="3" stroke-linejoin="miter" data-draw />
           </svg>
         </span>
-        <span class="ea-billetera"><Icon name="wallet" size={24} /></span>
+        <span class="ea-destino"><Icon name="people" size={24} /></span>
       </div>
-      {/* Lo tuyo: la línea sigue, ya no verde, y antes de la tercera salida, el límite. */}
-      <span class="ea-linea" aria-hidden="true"></span>
-      <span class="ea-limite punteado-v" aria-hidden="true"></span>
       <p class="hinge">
         <span class="until">{hinge.until}</span>
         <span class="from">{hinge.from}</span>
       </p>
-      {/* La última opción es la que cruza el límite: lo dice `scope.ts` («El
-          tercero es el límite»). En móvil la frontera es su borde de arriba. */}
+      {/* El límite que queda: lo que no prometemos. Ya no hay nada «del otro
+          lado», así que ninguna lleva frontera. */}
       <ul class="options" role="list">
-        {options.map((o, i) => <li class:list={{ 'ea-tras-limite': i === options.length - 1, 'punteado-h': i === options.length - 1 }}>{o}</li>)}
+        {caveats.map((c) => <li>{c}</li>)}
       </ul>
       <p class="caveat"><slot name="caveat" /></p>
     </div>
@@ -141,7 +148,7 @@ const alone = milestones === undefined;
         <span class="from">{hinge.from}</span>
       </p>
       <ul class="options" role="list">
-        {options.map((o) => <li>{o}</li>)}
+        {caveats.map((c) => <li>{c}</li>)}
       </ul>
       <p class="caveat"><slot name="caveat" /></p>
     </div>
@@ -276,7 +283,7 @@ const alone = milestones === undefined;
     height: 20px;
     transform: rotate(90deg);
   }
-  .ea-billetera {
+  .ea-destino {
     display: grid;
     place-items: center;
     width: var(--ea-pieza);
@@ -285,10 +292,7 @@ const alone = milestones === undefined;
     background: var(--tinta);
     color: var(--on-tinta);
   }
-  .ea-billetera :global(svg) { width: 24px; height: 24px; }
-
-  /* En móvil la línea y la frontera las dibujan las propias opciones. */
-  .ea-linea, .ea-limite { display: none; }
+  .ea-destino :global(svg) { width: 24px; height: 24px; }
 
   .corto .hinge {
     grid-column: 2;
@@ -301,163 +305,76 @@ const alone = milestones === undefined;
     column-gap: .55em;
     margin: 0;
   }
+
+  /*
+    Las salvedades, sin carril. **Y es el cambio de fondo del 2026-10-22**: el
+    carril gris y la frontera punteada existían para decir «desde acá ya no es
+    nuestro», y desde ADR-0014 lo es hasta el final. Colgar estas dos frases de
+    una línea las haría parecer estaciones del recorrido, y no lo son: son lo
+    que el sitio NO promete. Van como lista, con la marca del §6.2 que ya usa
+    la forma larga, y nada más.
+  */
   .corto .options {
     grid-column: 1 / -1;
     grid-row: 2;
-    gap: 0;
-    padding: var(--ea-paso) 0 0 calc(var(--ea-pieza) + var(--s-4));
-  }
-  .corto .options li {
-    position: relative;
-    padding: 0 0 var(--ea-paso);
-    color: var(--ink-mute);
-  }
-  /* El carril, de una opción a la siguiente, y el ramal hasta cada texto. */
-  .corto .options li::after {
-    content: '';
-    position: absolute;
-    left: calc(-1 * (var(--ea-pieza) / 2 + var(--s-4)) - 1.5px);
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: var(--ink-mute);
-  }
-  .corto .options li:first-child::after { top: calc(-1 * var(--ea-paso)); }
-  .corto .options .ea-tras-limite::after { bottom: auto; height: calc(.775em + 1.5px); }
-  .corto .options li::before {
-    content: '';
-    position: absolute;
-    left: calc(-1 * (var(--ea-pieza) / 2 + var(--s-4)));
-    top: .775em;
-    width: calc(var(--ea-pieza) / 2 + var(--s-4) - var(--s-2));
-    height: 1.5px;
-    background: var(--ink-mute);
-  }
-  /* La frontera, de borde a borde, antes de la tercera. */
-  .corto .options .ea-tras-limite {
-    margin-left: calc(-1 * (var(--ea-pieza) + var(--s-4)));
+    padding-top: var(--s-5);
     padding-left: calc(var(--ea-pieza) + var(--s-4));
-    padding-top: var(--ea-paso);
-    /* El borde se queda, transparente, para que la caja no se mueva; el
-       trazo lo pinta `.punteado-h` (tokens.css) encima: 3 · 4 · 1,25. */
-    border-top: 1.5px solid transparent;
-    --punteado-color: var(--ink-mute);
-  }
-  .corto .options .ea-tras-limite::before {
-    left: calc(var(--ea-pieza) / 2);
-    top: calc(var(--ea-paso) + .775em);
-  }
-  .corto .options .ea-tras-limite::after {
-    left: calc(var(--ea-pieza) / 2 - 1.5px);
-    top: calc(-1 * var(--ea-paso) - 1.5px);
-    height: calc(2 * var(--ea-paso) + .775em + 3px);
   }
   .corto .caveat {
-    grid-column: 2;
+    grid-column: 1 / -1;
     grid-row: 3;
-    margin-top: 0;
+    padding-left: calc(var(--ea-pieza) + var(--s-4));
   }
 
   @media (min-width: 900px) {
     /*
-      De lado: lo nuestro y la billetera en la primera columna; la línea sigue
-      por las otras tres, y de ella cuelgan las opciones. La frontera baja
-      entre la segunda y la tercera hasta el final de la salvedad, que va bajo
-      la opción a la que se refiere.
+      De lado: el tramo recorre el ancho entero y termina en el destino. Antes
+      ocupaba una columna y la línea gris seguía por las otras tres; ya no hay
+      tramo ajeno que dibujar, así que lo nuestro ocupa la fila.
     */
     .corto {
       --ea-gap: var(--s-7);
-      /* La última, más ancha: lleva la salvedad, que es lo que más importa
-         de la sección, y así baja en cinco renglones y no en ocho. */
-      grid-template-columns: minmax(0, .8fr) minmax(0, .8fr) minmax(0, .9fr) minmax(0, 1.5fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
       column-gap: var(--ea-gap);
       row-gap: var(--ea-paso);
       margin-top: var(--s-7);
     }
-    .ea-nuestro { flex-direction: row; height: var(--ea-pieza); }
+    .ea-nuestro {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      height: var(--ea-pieza);
+    }
     .ea-tramo { flex: 1; width: auto; height: 20px; margin-left: -1px; }
     .ea-tramo-v { display: none; }
     .ea-tramo-h { display: inline; }
     .ea-cuna { width: 56px; height: 20px; }
     .ea-cuna svg { left: 0; top: 0; transform: none; }
 
-    .ea-linea {
-      display: block;
-      grid-column: 2 / -1;
-      grid-row: 1;
-      align-self: center;
-      height: 3px;
-      margin-left: calc(-1 * var(--ea-gap));
-      background: var(--ink-mute);
-    }
-    .ea-limite {
-      display: block;
-      grid-column: 4;
-      grid-row: 1 / 4;
-      justify-self: start;
-      /* El trazo, de `.punteado-v` (tokens.css): 3 · 4 · 1,25. */
-      width: 1.25px;
-      margin-left: calc(var(--ea-gap) / -2);
-      --punteado-color: var(--ink-mute);
-    }
-
-    /* La bisagra baja por las dos filas de abajo: así la salvedad queda
-       pegada a su opción y no espera a que termine la bisagra. */
     .corto .hinge {
       grid-column: 1;
-      grid-row: 2 / 4;
+      grid-row: 2;
       align-self: start;
       min-height: 0;
       display: block;
+      margin-top: var(--s-5);
     }
     .corto .options {
-      grid-column: 2 / -1;
+      grid-column: 2;
       grid-row: 2;
-      display: grid;
-      /* Las columnas de la rejilla de arriba, para que cada ramal caiga donde
-         empieza su columna. La primera línea es para un navegador sin
-         `subgrid`: las mismas proporciones, casi alineadas. */
-      grid-template-columns: minmax(0, .8fr) minmax(0, .9fr) minmax(0, 1.5fr);
-      grid-template-columns: subgrid;
-      column-gap: var(--ea-gap);
-      padding: 0;
+      padding-left: 0;
+      padding-top: var(--s-5);
     }
-    .corto .options li,
-    .corto .options .ea-tras-limite {
-      margin: 0;
-      padding: 0;
-      border: 0;
-    }
-    /* En escritorio el límite es la vertical `.ea-limite`: la horizontal de
-       la tercera opción no se pinta, ni en colores forzados (abajo). */
-    .corto .options .ea-tras-limite { background: none; }
-    /* Cada opción cuelga de la línea: el ramal baja desde ella hasta 6 px
-       antes del texto. */
-    .corto .options li::before,
-    .corto .options .ea-tras-limite::before {
-      left: 0;
-      top: calc(-1 * (var(--ea-paso) + var(--ea-pieza) / 2 - 1.5px));
-      width: 1.5px;
-      height: calc(var(--ea-paso) + var(--ea-pieza) / 2 - 1.5px - 6px);
-      margin: 0;
-    }
-    .corto .options li::after { content: none; }
-    .corto .caveat { grid-column: 4; grid-row: 3; }
+    .corto .caveat { grid-column: 2; grid-row: 3; padding-left: 0; }
   }
 
   /* Colores forzados: lo que es fondo pasa a `CanvasText`. */
   @media (forced-colors: active) {
-    .ea-unidad, .ea-linea,
-    .corto .options li::before, .corto .options li::after {
+    .ea-unidad,
+    .options li::before {
       forced-color-adjust: none;
       background: CanvasText;
     }
-    .ea-billetera { forced-color-adjust: none; background: CanvasText; color: Canvas; }
+    .ea-destino { forced-color-adjust: none; background: CanvasText; color: Canvas; }
     .ea-tramo, .ea-cuna { forced-color-adjust: none; color: CanvasText; }
-  }
-  /* La utilidad `.punteado-h` pinta su borde en colores forzados con
-     `!important`; en escritorio esta opción no es el límite y no lo lleva. */
-  @media (forced-colors: active) and (min-width: 900px) {
-    .corto .options .ea-tras-limite { border-top: 0 !important; }
   }
 </style>

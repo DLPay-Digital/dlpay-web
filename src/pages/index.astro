@@ -23,7 +23,7 @@ import IntroDeMarca from '../components/IntroDeMarca.astro';
 ---
 <Base
   title="DLPay"
-  description="Cambia pesos por la divisa que necesites al precio real del mercado y recíbela en forma digital, lista para moverse en minutos y a cualquier hora. Con una persona que cierra tu operación."
+  description="Envía dinero desde Chile al precio real del mercado y que llegue en la moneda del país de destino. Sin los días hábiles de la cadena bancaria, y con una persona que cierra tu operación."
   path="/"
   hasQuoter
 >
@@ -60,14 +60,21 @@ import IntroDeMarca from '../components/IntroDeMarca.astro';
             la misma cosa. */}
         <header class="globo-head">
           {/*
-            El titular nombra el límite en vez de prometer alcance. La bajada ya
-            traía el encuadre correcto —«desde ahí lo mueves»—, sólo que quedaba
-            300 px por encima del globo y con dos botones en medio.
+            REQUIERE VALIDACIÓN DE COMPLIANCE — que el recorrido llega hasta la
+            moneda local del destino (ADR-0014, 2026-10-22).
+
+            **Decía «Nuestro tramo termina en tu billetera»**, y el titular
+            existía para ACOTAR: ocho arcos saliendo de Chile sin nada que los
+            frene sugieren «entregamos en ocho países», que es justo lo que la
+            regla dura de §1 prohibía sugerir. Ahora sí llegamos, así que el
+            titular deja de acotar el destino — y sigue acotando, porque lo que
+            el sitio no promete pasó a ser el plazo y la vía, y eso es lo que
+            dice la bajada.
           */}
-          <h2 id="globo-title" data-enter>Nuestro tramo termina en tu billetera</h2>
+          <h2 id="globo-title" data-enter>Nuestro tramo llega hasta el destino</h2>
           <p data-enter>
-            Recibes la divisa en tu billetera y desde ahí la mueves en minutos, a
-            cualquier hora y sin depender de días hábiles.
+            Envías desde Chile y el dinero llega en la moneda de ese país. Cuándo y
+            por qué vía llega te lo confirma tu ejecutivo, porque cambia según el destino.
           </p>
         </header>
 
@@ -83,18 +90,16 @@ import IntroDeMarca from '../components/IntroDeMarca.astro';
           hacía ya antes de que el eje existiera.
 
           **Lo que se perdió de esta página, y dónde está ahora.** Se fueron la
-          bisagra —«ahí termina nuestra operación: desde ese punto decides tú»—
-          y la tercera salida —«lo conviertes a moneda local en destino»— con su
-          salvedad «no lo realiza DLPay». Las dos siguen publicadas en
-          `/como-funciona`, en la sección «Dónde termina nuestra operación», que
-          es la página que CLAUDE.md §1 nombra para declarar el límite de frente.
-          **Comprobado sobre el build, no supuesto:** ninguna de las dos aparecía
-          en otro sitio de esta Home, así que el sitio ya no las dice acá.
+          bisagra y la tercera salida con su salvedad «no lo realiza DLPay». Las
+          dos siguen en `/como-funciona`, en la sección que CLAUDE.md §1 nombra
+          para declarar el límite de frente. **Comprobado sobre el build, no
+          supuesto:** ninguna de las dos aparecía en otro sitio de esta Home.
 
-          Lo que la Home **sí** sigue diciendo, además del titular, es la nota
-          del cotizador: «no depositamos en cuentas bancarias en el extranjero».
-          Es la frase más literal de §1 y está sobre el pliegue, antes que esta
-          banda.
+          *Anotado el 2026-10-22:* aquellos textos ya no existen en ninguna
+          página —ADR-0014 movió el límite—, así que este párrafo cuenta de
+          dónde viene la banda, no dónde buscar su contenido. La nota del
+          cotizador que se citaba acá, «no depositamos en cuentas bancarias en
+          el extranjero», también cambió por el mismo motivo.
 
           Si algún día vuelve, vuelve entero: el eje sin su salvedad es la lista
           con adornos que el Design System §6 describe.

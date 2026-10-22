@@ -15,9 +15,13 @@
  * la dibujan objetos que se reconocen, con la gramática de las figuras de
  * `/empresas` y `/confianza`:
  *
- * · **Cruza: tu billetera, la frontera y quien recibe.** Lo que viaja es una
+ * · **Cruza: tu banco, la frontera y quien recibe.** *Reescrita el 2026-10-22
+ *   (ADR-0014): la pieza de la izquierda era tu billetera, y el tramo que
+ *   cruzaba la frontera iba en gris porque ese envío lo hacías tú. Ahora el
+ *   recorrido es nuestro de punta a punta.* Lo que viaja es una
  *   unidad de valor —el punto lleno, rotulado USD— y la cuña cae en la
- *   frontera, donde cambia de manos. **La línea es `--ink-mute`, no verde**: el
+ *   frontera, donde cambia de manos. **La línea es `--ink-mute` y no verde**,
+ *   y desde ADR-0014 eso ya no describe el servicio — ver abajo. Antes: el
  *   envío lo haces tú desde tu billetera, no DLPay (`CLAUDE.md` §1). Y el USD
  *   va del lado de Chile, en tu billetera: la figura de antes rotulaba CLP en
  *   un extremo y USD en el otro, como si el cambio ocurriera al cruzar, y el
@@ -86,11 +90,11 @@ const CUNA = 'M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4';
         <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
       </svg>
       <span class="fu-unidad"></span>
-      <span class="fu-rot fu-usd">USD</span>
-      <span class="fu-pieza fu-tuya"><Icon name="wallet" size={24} /></span>
+      <span class="fu-rot fu-usd">Su moneda</span>
+      <span class="fu-pieza fu-tuya"><Icon name="bank" size={24} /></span>
       <span class="fu-pieza fu-suya"><Icon name="people" size={24} /></span>
-      <span class="fu-pie fu-pie-tuya">Tu billetera</span>
-      <span class="fu-pie fu-pie-suya">A quien necesites</span>
+      <span class="fu-pie fu-pie-tuya">Tu banco en Chile</span>
+      <span class="fu-pie fu-pie-suya">Quien recibe, en su país</span>
     </>
   )}
 
@@ -161,7 +165,11 @@ const CUNA = 'M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4';
 
   .fu-cuna { width: 14cqw; height: 5cqw; overflow: visible; }
   .fu { --fu-tx: 18%; }
-  .fu-linea { height: 3px; margin-top: -1.5px; top: var(--fu-y); background: var(--ink-mute); }
+  /* El tramo. **Era gris de la frontera en adelante** porque ese envío lo
+     hacía el cliente desde su billetera; con ADR-0014 el recorrido es nuestro
+     de punta a punta, así que va en verde entero — es el color que el Design
+     System §6.2 reserva para «el tramo que es nuestro». */
+  .fu-linea { height: 3px; margin-top: -1.5px; top: var(--fu-y); background: var(--verde-deep); }
 
   /* Las piezas: la tuya en tinta, la del otro lado con borde. */
   .fu-pieza {

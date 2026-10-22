@@ -14,7 +14,7 @@ import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
 import EjeDeAlcance from '../components/EjeDeAlcance.astro';
 import Carpeta from '../components/Carpeta.astro';
-import { hinge, options } from '../content/scope.ts';
+import { caveats, hinge } from '../content/scope.ts';
 import Puente from '../components/Puente.astro';
 import FiguraRiel from '../components/FiguraRiel.astro';
 import WhatsAppMockup from '../components/WhatsAppMockup.astro';
@@ -53,7 +53,7 @@ const hilo = [
 ---
 <Base
   title="Cómo funciona"
-  description="El recorrido completo de una operación en DLPay: cotizas en la web, confirmas con un ejecutivo por WhatsApp, transfieres, verificamos y recibes la divisa en tu billetera."
+  description="El recorrido completo de una operación en DLPay: cotizas en la web, confirmas con un ejecutivo por WhatsApp, transfieres, verificamos y el dinero llega en la moneda del país de destino."
   path="/como-funciona/"
 >
   <Motion />
@@ -179,7 +179,7 @@ const hilo = [
 
     <section class="scope" aria-labelledby="scope-title">
       <div class="inner">
-        <h2 id="scope-title">Dónde termina nuestra operación</h2>
+        <h2 id="scope-title">Hasta dónde llega nuestra operación</h2>
         {/*
           El eje de alcance en su forma corta. **Desde el 2026-10-02 dibuja la
           billetera y sus tres salidas**: el tramo verde con el dólar digital
@@ -198,12 +198,14 @@ const hilo = [
           mismo texto, una vez dentro del recorrido y otra como conclusión. No
           son dos versiones que puedan desincronizarse.
         */}
-        <EjeDeAlcance hinge={hinge} options={options}>
+        <EjeDeAlcance hinge={hinge} caveats={caveats}>
           <Fragment slot="caveat">
-            Ese último paso es un proceso distinto, con otros servicios, y
-            <strong>no lo realiza DLPay</strong>. Nosotros hacemos el cambio de divisas y te la
-            entregamos en forma digital en tu billetera:
-            <strong>no depositamos dinero en cuentas bancarias en el extranjero</strong>.
+            {/* REQUIERE VALIDACIÓN DE COMPLIANCE — que el recorrido llega hasta
+                la moneda local del destino (ADR-0014, 2026-10-22). */}
+            Nos ocupamos del cambio y de que el dinero llegue, y
+            <strong>llega en la moneda del país de destino</strong>. Lo que no te decimos acá es
+            <strong>cuándo</strong> ni <strong>por qué vía</strong>: eso te lo confirma tu
+            ejecutivo, porque cambia según el destino.
           </Fragment>
         </EjeDeAlcance>
       </div>

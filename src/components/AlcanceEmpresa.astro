@@ -54,22 +54,25 @@ import type { Hinge, Milestone } from '../content/scope.ts';
 interface Props {
   milestones: readonly Milestone[];
   hinge: Hinge;
-  options: readonly string[];
+  /** Lo que el sitio NO promete. Hasta el 2026-10-22 eran `options`: las tres
+      salidas desde la billetera, cuando el servicio terminaba ahí. */
+  caveats: readonly string[];
 }
-const { milestones, hinge, options } = Astro.props;
+const { milestones, hinge, caveats } = Astro.props;
 
 /*
-  El icono de cada estación y de cada salida va por posición, así que si el
-  dato cambia de largo el build para en vez de dibujar una billetera junto a
-  otra cosa.
+  El icono de cada estación va por posición, así que si el dato cambia de largo
+  el build para en vez de dibujar un banco junto a otra cosa.
+
+  **El tercero era `wallet` hasta el 2026-10-22**: la empresa recibía en una
+  billetera y ahí terminaba lo nuestro. Con ADR-0014 el tramo llega a quien
+  recibe, así que el icono es `people` — y no `bank`, que nombraría un canal
+  que nadie ha decidido (D16, reabierta).
 */
-const ICONOS_HITOS: readonly (IconName | 'marca')[] = ['bank', 'marca', 'wallet'];
-const ICONOS_SALIDAS: readonly IconName[] = ['empresa', 'wallet', 'bank'];
-if (milestones.length !== ICONOS_HITOS.length || options.length !== ICONOS_SALIDAS.length) {
-  throw new Error('AlcanceEmpresa: los hitos o las salidas de scope.ts cambiaron de número; revisa sus iconos.');
+const ICONOS_HITOS: readonly (IconName | 'marca')[] = ['bank', 'marca', 'people'];
+if (milestones.length !== ICONOS_HITOS.length) {
+  throw new Error('AlcanceEmpresa: los hitos de scope.ts cambiaron de número; revisa sus iconos.');
 }
-/* La salida que no es ni nuestra ni sólo de la empresa: la hacen otros servicios. */
-const FUERA = 2;
 ---
 <div class="al">
   <div class="al-tramo">
@@ -79,6 +82,18 @@ const FUERA = 2;
       <ol class="al-hitos" role="list" aria-labelledby="alcance-nuestra-parte">
         {milestones.map((m, i) => (
           <li class="al-hito">
+            {/* El tramo hasta la estación siguiente, y en el penúltimo la cuña:
+                el dinero cambia de manos al llegar a la última. Cuelgan de cada
+                hito y no de la figura entera para que la geometría salga de las
+                piezas reales — ver el comentario de `.al-via`. */}
+            {i < milestones.length - 1 && <span class="al-via" aria-hidden="true"></span>}
+            {i === milestones.length - 2 && (
+              <svg class="al-cuna" viewBox="0 0 56 20" fill="none" aria-hidden="true">
+                {/* `data-draw`: se dibuja al entrar (Motion.astro). Con
+                    movimiento reducido, quieta. */}
+                <path d="M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4" stroke="currentColor" stroke-width="3" stroke-linejoin="miter" data-draw />
+              </svg>
+            )}
             <span class="al-nodo" aria-hidden="true">
               {ICONOS_HITOS[i] === 'marca' ? <Logo class="al-marca" /> : <Icon name={ICONOS_HITOS[i] as IconName} size={24} />}
             </span>
@@ -93,28 +108,19 @@ const FUERA = 2;
         <span class="al-hasta">{hinge.until}</span>
         <span class="al-desde">{hinge.from}</span>
       </p>
-      {/* El tramo nuestro, de la primera estación al corte. */}
-      <span class="al-pista" aria-hidden="true"></span>
-      {/* La cuña: donde el valor cambia de manos. Único punto de la figura. */}
-      <svg class="al-cuna" viewBox="0 0 56 20" fill="none" aria-hidden="true">
-        {/* `data-draw`: se dibuja al entrar, como la costura del eje al que
-            sustituye (Motion.astro). Con movimiento reducido, quieta. */}
-        <path d="M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4" stroke="currentColor" stroke-width="3" stroke-linejoin="miter" data-draw />
-      </svg>
     </div>
-    {/* Fuera del corte la línea sigue, en el gris de lo que no es nuestro. */}
-    <span class="al-salida" aria-hidden="true"></span>
   </div>
 
+  {/*
+    Las salvedades. **Eran las tres salidas de la empresa**, cada una con su
+    icono, y la tercera marcada «no lo realiza DLPay» porque cruzaba el límite.
+    ADR-0014 cruzó ese límite, así que las salidas se quedaron sin sujeto: lo
+    que queda por decir no es a dónde va el dinero después —va a destino—, sino
+    lo que el sitio no promete. Van sin icono: no son estaciones.
+  */}
   <ul class="al-salidas" role="list">
-    {options.map((o, i) => (
-      <li class:list={['al-opcion', { fuera: i === FUERA }]}>
-        <span class="al-nodo2" aria-hidden="true"><Icon name={ICONOS_SALIDAS[i]!} size={20} /></span>
-        <span class="al-texto">
-          {o}
-          {i === FUERA && <span class="al-aviso"><span class="sr-only">, </span>no lo realiza DLPay</span>}
-        </span>
-      </li>
+    {caveats.map((c) => (
+      <li class="al-opcion"><span class="al-texto">{c}</span></li>
     ))}
   </ul>
   <p class="al-salvedad"><slot name="caveat" /></p>
@@ -209,90 +215,65 @@ const FUERA = 2;
   .al-hasta { display: block; font-weight: 700; color: var(--on-tinta); }
   .al-desde { display: block; color: var(--on-tinta-mute); }
 
-  /* El tramo verde, por el centro de los nodos y hasta el corte. */
-  .al-pista {
+  /*
+    ── El tramo y la cuña, reescritos el 2026-10-22 (ADR-0014) ─────────────
+
+    **Eran dos piezas sueltas que cruzaban la figura entera**: un tramo desde
+    la primera estación hasta el corte de la marca y, cayendo en el corte, la
+    cuña. Funcionaba porque ahí el dinero salía de nuestras manos y seguía en
+    gris por fuera del bloque. Al quitar esa continuación gris —el recorrido es
+    nuestro de punta a punta— la cuña se quedaba marcando un cambio de manos
+    hacia nada, y el tramo moría contra el borde.
+
+    Ahora **cada hito dibuja su tramo hasta el siguiente**, y la cuña va en el
+    penúltimo: el dinero cambia de manos al LLEGAR a la última estación, que es
+    quien recibe. Es lo mismo que hace `EjeDeAlcance`, donde la cuña cae en la
+    entrada de la pieza de destino.
+
+    Colgarlo de cada `li` y no de la figura no es un capricho de implementación:
+    la geometría sale de las piezas reales —una columna, un medianil, un nodo—
+    en vez de reconstruirse con porcentajes sobre un ancho que esta caja no
+    conoce. El primer intento lo reconstruyó, y la cuña cayó 100 px pasada su
+    estación.
+  */
+  .al-hito { position: relative; }
+  .al-via {
     position: absolute;
-    top: calc(var(--al-y) - 1.5px);
-    left: calc(var(--s-6) + var(--al-nodo) / 2);
-    right: calc(var(--al-d) * var(--al-r) + 56px + 14px);
+    top: calc(var(--al-nodo) / 2 - 1.5px);
+    left: var(--al-nodo);
+    width: calc(100% + var(--s-5) - var(--al-nodo));
     height: 3px;
     background: var(--verde);
   }
-  /* Entera dentro de la tinta, a 14 px del corte: lo que la recorta es el
-     cambio de manos, no el borde. */
   .al-cuna {
     position: absolute;
-    top: calc(var(--al-y) - 10px);
-    right: calc(var(--al-d) * var(--al-r) + 14px);
+    top: calc(var(--al-nodo) / 2 - 10px);
+    left: calc(100% + var(--s-5) - 56px);
     width: 56px;
     height: 20px;
     color: var(--verde);
   }
 
-  /*
-    La salida: del corte hacia la derecha y hacia abajo, hasta la línea de la
-    que cuelgan las tres opciones. Va en `.al-tramo` y no en la banda porque la
-    banda recorta todo lo que sale de su forma. Llega al fondo del tramo más
-    `--al-gap`, así que la encuentra aunque la banda crezca.
-  */
-  .al-salida {
-    position: absolute;
-    top: calc(var(--al-y) - .75px);
-    right: 0;
-    bottom: calc(-1 * var(--al-gap));
-    width: calc(var(--al-d) * var(--al-r) + 14px);
-    border-top: 1.5px solid var(--ink-mute);
-    border-right: 1.5px solid var(--ink-mute);
-    border-top-right-radius: var(--r-3);
-  }
-
+  /* Las salvedades: una lista, sin nodos y sin línea de la que colgar. Ver el
+     comentario del marcado — no son estaciones del recorrido. */
   .al-salidas {
-    position: relative;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--s-6);
+    gap: var(--s-4);
     margin: var(--al-gap) 0 0;
     padding: var(--s-6) 0 0;
     list-style: none;
   }
-  /* La línea de la que cuelgan: del primer nodo al borde derecho. */
-  .al-salidas::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 22px;
-    right: 0;
-    border-top: 1.5px solid var(--ink-mute);
-  }
-  .al-opcion { position: relative; display: flex; gap: var(--s-3); align-items: flex-start; }
+  .al-opcion { position: relative; padding-left: var(--s-5); }
   .al-opcion::before {
     content: '';
     position: absolute;
-    top: calc(-1 * var(--s-6));
-    left: 21.25px;
-    height: var(--s-6);
-    border-left: 1.5px solid var(--ink-mute);
+    left: 0;
+    top: 11px;
+    width: 9px;
+    height: 1px;
+    background: var(--ink-mute);
   }
-  .al-nodo2 {
-    flex: none;
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: var(--papel);
-    border: 1.5px solid var(--ink-mute);
-    color: var(--ink);
-  }
-  .al-nodo2 :global(svg) { width: 20px; height: 20px; }
-  .al-texto { padding-top: 10px; font-size: var(--t-body); color: var(--ink); max-width: 26ch; }
-  .al-aviso {
-    display: block;
-    margin-top: var(--s-2);
-    font-family: var(--f-num);
-    font-size: var(--t-dato-sm);
-    color: var(--ink-mute);
-  }
+  .al-texto { font-size: var(--t-body); color: var(--ink-mute); max-width: 48ch; }
   .al-salvedad {
     margin: var(--s-6) 0 0;
     color: var(--ink-mute);
@@ -345,49 +326,31 @@ const FUERA = 2;
       font-size: var(--t-h3-m);
       max-width: none;
     }
-    .al-pista {
-      top: calc(var(--s-5) + 13px * 1.55 + var(--s-3) + var(--al-nodo) / 2);
-      bottom: 64px;
-      left: calc(var(--s-5) + var(--al-nodo) / 2 - 1.5px);
-      right: auto;
+    /* De pie: el tramo baja de una estación a la siguiente y la cuña, girada,
+       cae justo antes de la última. */
+    .al-via {
+      top: var(--al-nodo);
+      left: calc(var(--al-nodo) / 2 - 1.5px);
       width: 3px;
-      height: auto;
+      height: calc(100% + var(--s-5) - var(--al-nodo));
     }
+    /* Centrada en su tramo: el tramo va del pie del nodo al nodo siguiente,
+       así que su mitad es `(nodo + alto del hito + medianil) / 2`. Girada, la
+       caja de 56×20 se ve de 20×56 sobre el mismo centro, de ahí los 28 y los
+       10 de corrección. */
+    /* **Y más chica, 40×14 en vez de 56×20.** De pie el tramo mide poco más de
+       40 px —lo que dan el nodo y el medianil—, y la cuña de escritorio, girada,
+       ocupa 56: se montaba sobre el nodo de arriba. Se reduce en vez de
+       recortarla, que es lo que el `viewBox` permite sin tocar el trazo. */
     .al-cuna {
-      top: auto;
-      bottom: 26px;
-      right: auto;
-      left: calc(var(--s-5) + var(--al-nodo) / 2 - 28px);
+      top: calc((var(--al-nodo) + 100% + var(--s-5)) / 2 - 7px);
+      bottom: auto;
+      left: calc(var(--al-nodo) / 2 - 20px);
+      width: 40px;
+      height: 14px;
       transform: rotate(90deg);
     }
-    .al-salida { display: none; }
-    .al-salidas {
-      grid-template-columns: 1fr;
-      gap: var(--s-5);
-      margin: 0;
-      padding: var(--s-6) 0 0 calc(var(--s-5) + var(--al-nodo) / 2 + var(--s-4));
-    }
-    /* La línea gris baja por tramos y termina en la última salida: así no
-       sigue de largo junto al aviso. El primero sube hasta donde termina la
-       cuña, dentro de la tinta, como en escritorio: la línea no se interrumpe
-       al salir del bloque. Cada salida, menos la última, la lleva hasta la
-       siguiente, mida lo que mida su texto. */
-    .al-salidas::before {
-      top: -8px;
-      left: calc(var(--s-5) + var(--al-nodo) / 2 - .75px);
-      right: auto;
-      height: calc(var(--s-6) + 8px + 22px);
-      border-top: 0;
-      border-left: 1.5px solid var(--ink-mute);
-    }
-    .al-opcion::before {
-      top: 21.25px;
-      left: calc(-1 * var(--s-4));
-      width: var(--s-4);
-      height: 0;
-      border-left: 0;
-      border-top: 1.5px solid var(--ink-mute);
-    }
+    .al-salidas { padding: var(--s-6) 0 0; }
     .al-opcion:not(:last-child)::after {
       content: '';
       position: absolute;
@@ -401,7 +364,7 @@ const FUERA = 2;
      navegador quitaría o dejaría sin contraste; pasan al color de texto de
      quien mira. Los nodos ya llevan borde. */
   @media (forced-colors: active) {
-    .al-pista { forced-color-adjust: none; background: CanvasText; }
+    .al-via { forced-color-adjust: none; background: CanvasText; }
     .al-cuna { forced-color-adjust: none; color: CanvasText; }
     .al-banda { border: 1px solid CanvasText; }
   }

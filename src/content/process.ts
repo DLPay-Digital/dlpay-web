@@ -25,7 +25,7 @@ export const flow: FlowNode[] = [
   { label: 'Tú', detail: 'Transfieres en pesos desde tu banco' },
   { label: 'El banco', detail: 'Confirmamos que el dinero llegó' },
   { label: 'DLPay', detail: 'Cambiamos al precio acordado' },
-  { label: 'Tu billetera', detail: 'Recibes la divisa digital y decides qué hacer' },
+  { label: 'El destino', detail: 'Llega en la moneda de ese país' },
 ];
 
 export const detailedSteps: DetailedStep[] = [
@@ -33,7 +33,7 @@ export const detailedSteps: DetailedStep[] = [
     n: 1,
     who: 'tú',
     title: 'Dices qué necesitas',
-    body: 'Pasar pesos a la divisa que necesites, o volver a pesos. Eliges el destino, escribes el monto y ves al instante el precio referencial y cuánto llega. No necesitas cuenta para esto.',
+    body: 'Enviar a otro país, o volver a pesos. Eliges el destino, escribes el monto y ves al instante el precio referencial y cuánto llega. No necesitas cuenta para esto.',
     time: 'ahora mismo',
   },
   {
@@ -47,7 +47,7 @@ export const detailedSteps: DetailedStep[] = [
     n: 3,
     who: 'DLPay',
     title: 'Un ejecutivo confirma el precio',
-    body: 'El precio de la web es referencial porque el mercado se mueve. Una persona te confirma el precio final, te pide la billetera de destino y te da los datos para transferir.',
+    body: 'El precio de la web es referencial porque el mercado se mueve. Una persona te confirma el precio final, te pide los datos de quien recibe y te da los datos para transferir.',
     time: 'minutos',
   },
   {
@@ -67,19 +67,30 @@ export const detailedSteps: DetailedStep[] = [
   {
     n: 6,
     who: 'DLPay',
-    // REQUIERE VALIDACIÓN DE COMPLIANCE — el tiempo de ~5 minutos
-    title: 'Recibes la divisa',
-    // Cerrado el 2026-09-04: DLPay entrega en la billetera. NO realiza depósito
-    // en cuenta bancaria en destino. El tiempo es el de nuestra operación, no el
-    // de una liquidación bancaria.
+    // REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega a destino en la
+    // moneda de ese destino (ADR-0014, 2026-10-22).
+    title: 'Llega a destino',
+    // ── Historia de este paso, porque explica dos cosas que parecen raras ──
     //
-    // Enmendado el 2026-10-21 (ADR-0013): la divisa ya no es siempre el dólar,
-    // y el límite no se mueve ni una palabra. La frase «Ahí termina nuestra
-    // operación: desde ese punto decides tú» la REPITE `content/scope.ts` como
-    // dato: si se toca acá, hay que tocarla allá o el sitio deja de coincidir
-    // consigo mismo sobre hasta dónde llega el servicio.
-    body: 'Enviamos la divisa, en forma digital, a la billetera que nos indicaste, y te confirmamos por el mismo chat. Ahí termina nuestra operación: desde ese punto decides tú.',
-    time: '~5 min desde el pago',
+    // Hasta el 2026-10-22 decía «Recibes el dólar digital» y terminaba en la
+    // billetera del cliente, porque hasta ese día el servicio terminaba ahí:
+    // la regla dura de §1 prohibía incluso SUGERIR que el destinatario recibía
+    // moneda local. ADR-0014 derogó esa regla y el paso pasa a contar el
+    // recorrido entero.
+    //
+    // 1. **El tiempo deja de ser un número.** Decía «~5 min desde el pago», y
+    //    ese número medía NUESTRA operación, que entonces era todo. Ahora hay
+    //    un tramo más y nadie ha dado un plazo que se pueda respaldar, así que
+    //    ponerlo otra vez sería prometer lo que D17 lleva un año evitando.
+    // 2. **No se nombra el canal.** Ni cuenta bancaria, ni efectivo, ni
+    //    billetera local: cambia por país y D16 está reabierta por eso. Se dice
+    //    el resultado, no el medio.
+    //
+    // La frase de la bisagra la REPITE `content/scope.ts` como dato: si se
+    // toca acá, hay que tocarla allá, o el sitio deja de coincidir consigo
+    // mismo sobre hasta dónde llega el servicio.
+    body: 'Te confirmamos por el mismo chat cuando está entregado. Nos ocupamos del recorrido completo: hasta que el dinero llega a destino.',
+    time: 'te lo confirma tu ejecutivo',
   },
 ];
 
@@ -101,7 +112,7 @@ export interface ChecklistItem {
 export const checklist: readonly ChecklistItem[] = [
   { icon: 'documento', text: 'Tu cédula de identidad vigente' },
   { icon: 'bank', text: 'Una cuenta bancaria a tu nombre' },
-  { icon: 'wallet', text: 'La dirección de la billetera donde quieres recibir' },
+  { icon: 'people', text: 'Los datos de quien recibe en el país de destino' },
 ];
 
 /**
@@ -132,6 +143,6 @@ export function chatLines(monto: string, tasa: string) {
     acepta: 'Sí, acepto.',
     transfiere: 'Transferencia enviada.',
     recibido: 'Fondos recibidos. Procesando...',
-    entregado: '¡Listo! Enviado a tu billetera.',
+    entregado: '¡Listo! El dinero ya está en destino.',
   } as const;
 }

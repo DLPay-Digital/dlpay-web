@@ -14,7 +14,7 @@ import FiguraCaso from '../components/FiguraCaso.astro';
 import AlcanceEmpresa from '../components/AlcanceEmpresa.astro';
 import ComparaEmpresa from '../components/ComparaEmpresa.astro';
 import ComoEmpezamos from '../components/ComoEmpezamos.astro';
-import { hingeBusiness, optionsBusiness, ourLegBusiness } from '../content/scope.ts';
+import { caveatsBusiness, hingeBusiness, ourLegBusiness } from '../content/scope.ts';
 import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
 import Faq from '../components/Faq.astro';
@@ -156,11 +156,13 @@ const waPlain = contact.whatsappUrl(
     <section class="scope" aria-labelledby="scope-title">
       <div class="inner">
         <h2 id="scope-title">Hasta dónde llega nuestra parte</h2>
-        <AlcanceEmpresa milestones={ourLegBusiness} hinge={hingeBusiness} options={optionsBusiness}>
+        <AlcanceEmpresa milestones={ourLegBusiness} hinge={hingeBusiness} caveats={caveatsBusiness}>
           <Fragment slot="caveat">
-            Convertir esa divisa a moneda local en destino es un proceso distinto, con
-            otros servicios, y <strong>no lo realiza DLPay</strong>. Si tu proveedor sólo
-            recibe por banco, conversémoslo antes.
+            {/* REQUIERE VALIDACIÓN DE COMPLIANCE — que el recorrido llega hasta
+                la moneda local del destino (ADR-0014, 2026-10-22). */}
+            El dinero <strong>llega en la moneda del país de tu proveedor</strong>. Lo que no
+            afirmamos acá es <strong>cuándo</strong> ni <strong>por qué vía</strong>: cambia
+            según el destino y te lo confirma tu ejecutivo antes de operar.
           </Fragment>
         </AlcanceEmpresa>
       </div>

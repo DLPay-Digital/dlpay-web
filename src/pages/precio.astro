@@ -65,7 +65,7 @@ const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
   { what: 'Cotizar, las veces que quieras', cost: 'Sin costo · sin cuenta' },
   { what: 'Hablar con tu ejecutivo', cost: 'Sin costo' },
   { what: 'Cancelar antes de transferir', cost: 'Sin costo · basta con no transferir' },
-  { what: 'Recibir la divisa en tu billetera', cost: 'Sin costo' },
+  { what: 'Que el dinero llegue a destino', cost: 'Sin costo' },
   { what: 'El costo de red del traspaso', cost: 'Sin costo · lo asumimos nosotros' },
   { what: 'Convertir', cost: 'El spread, ya incluido en el precio que ves', isCharge: true },
 ];
@@ -161,9 +161,10 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
         </dl>
         {/* La misma salvedad que ya publica `/tarifas` sobre servicios ajenos. */}
         <p class="nota">
-          Lo que hagas después con esa divisa, moverla a otra billetera o convertirla a
-          moneda local en otro país, puede tener costos de los servicios que uses para eso, que son
-          ajenos a DLPay.
+          {/* REQUIERE VALIDACIÓN DE COMPLIANCE — ver la nota gemela de
+              `/tarifas`, de donde sale esta salvedad (ADR-0014). */}
+          Si el banco o el servicio con el que recibe quien recibe aplica algún cobro propio,
+          ése es ajeno a DLPay. Tu ejecutivo te lo advierte si lo hay.
         </p>
       </div>
     </section>

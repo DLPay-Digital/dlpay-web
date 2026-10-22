@@ -219,12 +219,23 @@ const intents = [
     dos únicas afirmaciones que cargan peso: **qué recibes** y **qué no es**.
 
     Lo que se fue, y dónde sigue: la equivalencia 1:1 está en el glosario de
-    `/preguntas` («Divisa digital»), y «en minutos, a cualquier hora» es la bajada
-    del héroe de esta misma página y el paso 06 de `/como-funciona`. Ninguna de
-    las dos era la que mitigaba nada.
+    `/preguntas` («Divisa digital»), y «en minutos, a cualquier hora» era la
+    bajada del héroe de esta misma página — que las perdió el 2026-10-22, ver
+    `Hero.astro`. Ninguna de las dos era la que mitigaba nada.
+
+    **Cambió de objeto el 2026-10-22 (ADR-0014).** Decía «Recibes la divisa en
+    forma digital, no un depósito en un banco del extranjero»: mitigaba que el
+    cotizador enseñara «USD» junto a un botón de WhatsApp cuando lo que se
+    entregaba no era un dólar en un banco. Ahora el dinero SÍ llega a destino,
+    así que esa negación dejó de ser cierta y la nota pasa a mitigar lo que
+    queda sin respaldo: **el plazo**. El spec §42 pedía una nota permanente
+    dentro del cotizador y la sigue habiendo; lo que cambió es qué contiene.
+
+    REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega a destino en la
+    moneda de ese destino.
   */}
   <p class="rail">
-    Recibes <strong>la divisa en forma digital</strong>, no un depósito en un banco del extranjero.
+    Llega <strong>en la moneda del destino</strong>. El plazo te lo confirma tu ejecutivo.
   </p>
 
   <a class="cta" href={wa} target="_blank" rel="noopener" data-cta>

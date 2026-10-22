@@ -78,11 +78,14 @@ export const glossary: readonly Term[] = [
     linkLabel: 'Tarifas',
   },
   {
-    // Copy nuevo, aprobado el 2026-09-23. «Es tuya, tú la controlas» es la
-    // misma frontera que declara `content/scope.ts`.
+    // Copy nuevo, aprobado el 2026-09-23. **Reescrito el 2026-10-22**: decía
+    // «es donde termina nuestra operación», que era la frontera de
+    // `content/scope.ts`, y ADR-0014 la movió. El término se queda porque el
+    // blog lo usa y porque el autoservicio sí opera con una; lo que ya no es
+    // cierto es que haga falta para que te enviemos dinero.
     term: 'Billetera',
     definition:
-      'La aplicación o cuenta digital donde recibes y guardas la divisa digital. Es tuya, tú la controlas, y es donde termina nuestra operación.',
+      'La aplicación o cuenta digital donde se guardan monedas digitales. Para enviar con nosotros no necesitas una: el dinero llega a destino en la moneda de ese país.',
     href: '/como-funciona/',
     linkLabel: 'Cómo funciona',
   },

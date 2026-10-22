@@ -13,7 +13,7 @@
  *
  * Lo que sí se comprueba, y lo comprueba el propio cliente, son **tres avisos
  * que le llegan de tres remitentes distintos**: su banco le dice que la
- * transferencia salió y a quién; nosotros le decimos que llegó; su billetera le
+ * transferencia salió y a quién; nosotros le decimos que llegó; quien recibe le
  * dice que recibió los dólares. **Dos de los tres no los escribimos nosotros.**
  * Es la línea de tenencia contada por quien tiene el dinero en cada momento, y
  * por eso las tres fases del dato siguen ahí, en el mismo orden.
@@ -29,20 +29,13 @@
  *   modos de operar»). **Este recorrido es sólo el asistido**, igual que el de
  *   la línea de tenencia: la bajada lo acota con «cuando operas con un
  *   ejecutivo» y no se puede quitar.
- * · **La cifra de la billetera es la misma que envía el ejecutivo**, porque el
- *   costo de red lo asume DLPay (`/precio`, «sin costo de red»). Las dos salen
- *   de `lib/pricing`, una sola variable (D24).
- * · **La billetera y nuestro aviso dicen los dos «USD»** desde el 2026-10-21.
- *   Decían «USDT» y «USD» respectivamente, y era deliberado: la billetera
- *   enseñaba el activo que recibe y nosotros hablábamos como habla el sitio,
- *   que entonces publicaba en su FAQ que el activo es USDT.
- *
- *   **ADR-0013 sacó el mecanismo del mensaje comercial**, así que la Home ya no
- *   publica ese nombre y dejarlo acá lo repondría por la puerta de atrás, en una
- *   figura de `/confianza`. Se pierde algo real y conviene saberlo: la distinción
- *   enseñaba que el activo tiene un nombre propio y que nosotros no lo
- *   disfrazamos. Si vuelve, vuelve con el nombre que el sitio publique entonces,
- *   no con uno elegido acá.
+ * · **Una sola cifra desde el 2026-10-22**, la del banco. Eran tres, todas de
+ *   `lib/pricing` y de una sola variable (D24); las otras dos iban en USD
+ *   porque era lo que el cliente recibía. Ver el comentario de `montoCLP`.
+ * · **El tercer aviso dejó de llevar cifra el 2026-10-22** (ADR-0014). Decía
+ *   «USDT» hasta el 2026-10-21 y «USD» un día; hoy lo que llega es moneda
+ *   local y el sitio no tiene tasa de ninguna, así que no hay número honesto
+ *   que poner. Ver el comentario de `avisos`.
  * · **Sin horas.** Un aviso real lleva hora, y tres horas afirmarían cuánto
  *   tarda una operación. No hay un dato aprobado para eso.
  *
@@ -100,15 +93,13 @@
  * hoy en los siete anchos; quien toque `.aviso` tiene que mirar las dos.
  *
  * El cromo es el de la tableta —aluminio claro, bisel negro— en tonos locales,
- * sin copiar ningún teléfono ni ninguna app: el banco y la billetera son
- * «tu banco» y «tu billetera», con iconos del sitio. Cero imágenes, cero
+ * sin copiar ningún teléfono ni ninguna app: el banco y quien recibe son
+ * «tu banco» y «quien recibe», con iconos del sitio. Cero imágenes, cero
  * JavaScript.
  */
 import Icon from './Icon.astro';
 import Logo from './Logo.astro';
-import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
-import { convert } from '../lib/pricing/quote.ts';
-import { formatCLP, formatUSD } from '../lib/pricing/format.ts';
+import { formatCLP } from '../lib/pricing/format.ts';
 import { quoteLimits } from '../lib/config/site.ts';
 
 interface Props {
@@ -118,9 +109,20 @@ interface Props {
 }
 const { forma = 'telefono' } = Astro.props;
 
-const precio = await new ConfigPriceSource().getPrice();
 const montoCLP = quoteLimits.samplePayClp;
-const cifra = formatUSD(convert('to_foreign', montoCLP, precio.rate));
+/*
+  **La figura se quedó con una sola cifra el 2026-10-22** (ADR-0014), y es la
+  del banco: los pesos que el cliente transfiere.
+
+  Las otras dos las tenía en USD, porque el cliente recibía dólar digital y ésa
+  era la cifra que veía. Ahora lo que llega es moneda local del destino, y el
+  sitio no tiene tasa de ninguna (D7): cualquier número en los otros dos avisos
+  sería inventado. Con eso se va también la cadena `ConfigPriceSource →
+  convert` de este componente, que existía sólo para esa conversión.
+
+  No se pierde nada de lo que la figura demuestra: el dato comprobable es el de
+  la cartola del banco, y sigue ahí.
+*/
 /* **No es `site.legalName`, y es a propósito: D9.** Ver la cabecera. */
 const titular = 'la cuenta de DLPay';
 
@@ -141,16 +143,34 @@ const avisos = [
     de: 'DLPay · tu ejecutivo',
     nuestro: true,
     titulo: 'Llegó tu transferencia',
-    texto: 'Ya está acreditada. Ahora te enviamos ',
-    entero: `${cifra} USD`,
+    texto: 'Ya está acreditada. Vamos con el envío a ',
+    entero: 'destino',
     despues: '.',
   },
+  /*
+    ── El tercero, reescrito el 2026-10-22 (ADR-0014) ──────────────────────
+    Era «tu billetera · Depósito recibido», con la cifra en USD: el cliente
+    recibía en su billetera y ahí terminaba todo. Ahora el dinero llega a
+    destino, así que a su teléfono no le llega ninguna notificación de una
+    billetera — le llega **quien recibe**, diciéndole que ya está.
+
+    **Eso conserva lo único que esta figura no podía perder**: que de los tres
+    avisos **dos no los escribe DLPay**. Es la prueba del titular de
+    `/confianza`, «confianza que se comprueba».
+
+    **Y va sin cifra, a propósito.** Lo que llega es moneda local, y el sitio
+    no tiene tasa de ninguna (D7). Inventar un número acá sería publicar un
+    precio que nadie aprobó, justo lo que el catálogo de divisas se construyó
+    para impedir. Un «ya me llegó» es además lo que una persona escribe.
+
+    REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega a destino.
+  */
   {
-    de: 'tu billetera',
-    icono: 'wallet' as const,
-    titulo: 'Depósito recibido',
+    de: 'quien recibe',
+    icono: 'people' as const,
+    titulo: 'Ya me llegó',
     texto: '',
-    entero: `${cifra} USD`,
+    entero: '¡Gracias!',
   },
 ];
 ---
@@ -158,7 +178,7 @@ const avisos = [
   {/* El pie no se ve: la figura no necesita que le expliquen lo que enseña.
       Lo lee el lector de pantalla, que no ve los iconos. */}
   <figcaption class="sr-only">
-    Los tres avisos de una operación: el de tu banco, el nuestro y el de tu billetera.
+    Los tres avisos de una operación: el de tu banco, el nuestro y el de quien recibe.
   </figcaption>
   <div class="tel-chasis">
     {/* Los botones del canto: partes del aparato, no efectos. */}
@@ -394,7 +414,7 @@ const avisos = [
     **Es lo último que probé y es lo que hace que quepa, pero no entra por eso.**
     Entra porque un puente promete y el destino paga: lo que este puente tiene
     que decir es que en una operación te llegan **tres avisos de tres
-    remitentes** —tu banco, nosotros, tu billetera— y que sólo uno es nuestro.
+    remitentes** —tu banco, nosotros, quien recibe— y que sólo uno es nuestro.
     Eso se lee entero sin las cifras. Las cifras son el pago, y están a un clic.
 
     *Lo que costó llegar acá, para que nadie lo repita:* con el cuerpo puesto el

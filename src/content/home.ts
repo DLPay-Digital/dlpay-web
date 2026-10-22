@@ -51,7 +51,7 @@ export const useCases: UseCase[] = [
   {
     figure: 'cruza',
     title: 'Mover dinero fuera de Chile',
-    body: 'Recibes la divisa del destino y desde ahí la envías a quien necesites, en otro país o a tu propia billetera. Se mueve en minutos, sin cadena de bancos corresponsales.',
+    body: 'Dices a qué país y cuánto, y el dinero llega allá en la moneda de ese país. Sin la cadena de bancos corresponsales ni sus horarios.',
   },
   {
     figure: 'convierte',
@@ -88,12 +88,20 @@ export const faq: FaqItem[] = [
   {
     q: '¿Por qué es más rápido que un banco?',
     concern: 'recibo',
-    a: 'Porque la divisa digital se transfiere en minutos y a cualquier hora, sin pasar por la cadena de bancos corresponsales. Lo que sí depende de tu banco es el momento en que tu transferencia en pesos nos llega. Y si después conviertes esa divisa a moneda local en otro país, ese último paso es un proceso aparte.',
+    a: 'Porque por detrás el valor no viaja por la cadena de bancos corresponsales, que es la que impone los días hábiles y los horarios. Lo que sí depende de tu banco es el momento en que tu transferencia en pesos nos llega. El plazo de la entrega en destino te lo confirma tu ejecutivo: cambia según el país.',
   },
   {
-    q: '¿DLPay deposita el dinero en una cuenta bancaria en el extranjero?',
+    // REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega a destino en la
+    // moneda de ese destino (ADR-0014, 2026-10-22).
+    //
+    // Esta pregunta era, hasta el 2026-10-22, «¿DLPay deposita el dinero en
+    // una cuenta bancaria en el extranjero?», y la respuesta empezaba por
+    // «No». Era la pregunta que el límite anterior obligaba a responder. Ahora
+    // la que la gente se hace es la de abajo, y la respuesta **no nombra el
+    // canal** porque cambia por país y D16 está reabierta.
+    q: '¿Qué recibe la persona a la que le envío?',
     concern: 'alcance',
-    a: 'No. Lo que hacemos es el cambio de divisas: recibes la divisa, en forma digital, en tu billetera. Desde ahí puedes mantenerla, enviarla a otra persona o convertirla a moneda local en destino, que es un servicio distinto y lo resuelves tú. Preferimos ser exactos en esto.',
+    a: 'Recibe en la moneda de su país. Nos ocupamos del recorrido completo: tú transfieres en pesos acá y el dinero llega allá. Cómo lo recibe y en cuánto tiempo depende del destino, y te lo confirma tu ejecutivo antes de que transfieras.',
   },
   {
     q: '¿El precio de la web es el precio final?',

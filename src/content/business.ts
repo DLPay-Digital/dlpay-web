@@ -125,7 +125,7 @@ export const faq: readonly FaqItem[] = [
   {
     q: '¿Qué pasa si mi proveedor sólo recibe por banco?',
     concern: 'alcance',
-    a: 'Conversémoslo antes. Nosotros entregamos la divisa, en forma digital, en la billetera que nos indiques, y no depositamos dinero en cuentas bancarias en el extranjero. Si tu proveedor sólo opera con su banco, esa última conversión es un proceso distinto que DLPay no realiza.',
+    a: 'Conversémoslo antes. El dinero llega en la moneda del país de tu proveedor; cómo lo recibe y en cuánto tiempo depende del destino, y tu ejecutivo te lo confirma antes de que transfieras. Si tu proveedor tiene un requisito particular, es justo lo que conviene revisar en ese primer mensaje.',
   },
   {
     q: '¿Desde qué volumen conviene?',

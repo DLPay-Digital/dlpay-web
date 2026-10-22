@@ -7,12 +7,31 @@
  * Si una derivara, el sitio dejaría de coincidir consigo mismo sobre hasta dónde
  * llega el servicio, que es justo lo que no puede pasar.
  *
- * ── Enmendado el 2026-10-21 (ADR-0013) ─────────────────────────────────────
+ * ── Reescrito el 2026-10-22 (ADR-0014): el límite se movió ─────────────────
  *
- * El servicio pasa de una divisa a doce. **El límite no se mueve**: se sigue
- * entregando en una billetera, así que la bisagra, las tres opciones y la
- * tercera como frontera se quedan exactamente donde estaban. Lo único que
- * cambia es de qué moneda habla este archivo.
+ * Este archivo nació para que tres páginas no pudieran contradecirse sobre
+ * dónde TERMINA el servicio, cuando terminaba en una billetera. **Ahora el
+ * servicio llega hasta la moneda local del destino**, así que lo que hay que
+ * mantener coherente es lo contrario: hasta dónde LLEGA.
+ *
+ * Lo que eso se llevó por delante, y conviene saberlo antes de buscarlo:
+ *
+ * · **`options` y `optionsBusiness` se retiran.** Eran las tres cosas que el
+ *   cliente podía hacer *desde su billetera*, y la tercera —«lo conviertes a
+ *   moneda local en destino»— era la frontera del servicio. Esa frontera es
+ *   justo la que se cruzó: lo que era el límite pasó a ser el final del
+ *   recorrido, así que las tres opciones se quedaron sin sujeto.
+ * · **`ourLeg` vuelve.** Se había retirado el 2026-09-25 por quedarse sin
+ *   consumidor, con la nota de que estaba en el historial «si vuelve a hacer
+ *   falta». Hizo falta: con el recorrido entero contado, los hitos del tramo
+ *   son otra vez el dato de la figura.
+ * · **La bisagra cambia de oficio.** Decía dónde soltábamos; dice hasta dónde
+ *   llegamos.
+ *
+ * ── El escalón de ADR-0013, del día anterior ───────────────────────────────
+ *
+ * Pasó de una divisa a doce y dejó el límite donde estaba. De aquella enmienda
+ * sobrevive todo menos eso.
  *
  * ── Nada de esto es copy nuevo ──────────────────────────────────────────────
  *
@@ -39,53 +58,72 @@ export interface Hinge {
 }
 
 /**
- * La bisagra, palabra por palabra como la escribe `process.ts` en el paso 06:
- * «Ahí termina nuestra operación: desde ese punto decides tú».
+ * La bisagra, palabra por palabra como la escribe `process.ts` en el paso 06.
+ *
+ * Se REPITE a propósito: una vez dentro del recorrido y otra como conclusión.
+ * No son dos versiones que puedan desincronizarse — es el mismo texto, y si se
+ * toca acá hay que tocarlo allá.
+ *
+ * REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega a destino en la
+ * moneda de ese destino (ADR-0014).
  */
 export const hinge: Hinge = {
-  until: 'Ahí termina nuestra operación:',
-  from: 'desde ese punto decides tú',
+  until: 'Nos ocupamos del recorrido completo:',
+  from: 'hasta que el dinero llega a destino',
 };
 
-/** Lo que el cliente puede hacer desde su billetera. El tercero es el límite. */
-export const options: readonly string[] = [
-  'Lo mantienes',
-  'Se lo envías a otra persona',
-  'Lo conviertes a moneda local en destino',
+/**
+ * Los hitos del recorrido, del banco del cliente al destino.
+ *
+ * El tercero es el que ADR-0014 habilita y el que lleva el marcador de arriba.
+ * **No nombra el canal** —cuenta bancaria, efectivo, billetera local— porque
+ * cambia según el país y nadie lo ha decidido: `CLAUDE.md` §1 pide decir el
+ * resultado y no el medio, y D16 está reabierta justo por eso.
+ */
+export const ourLeg: readonly Milestone[] = [
+  { what: 'Tus pesos, en tu banco en Chile', data: 'CLP' },
+  { what: 'Cambiamos y verificamos', data: 'tu ejecutivo cierra' },
+  { what: 'Llega en la moneda del destino', data: 'quien recibe, cobra' },
 ];
 
 /**
- * El tramo que sí hacemos, en vocabulario de empresa.
+ * Lo que el sitio NO promete, y es el límite que queda.
  *
- * **Su gemelo para personas —`ourLeg`— se retiró el 2026-09-25**, cuando
- * Sebastián sacó el eje de alcance de la banda del globo y esa Home se quedó
- * con titular, bajada y globo. Era su único consumidor, así que el dato quedaba
- * sin nadie que lo leyera: un `export` que nadie importa es código muerto con
- * apariencia de contenido, y el día que alguien lo vuelva a usar no sabría si
- * sigue siendo lo que el sitio afirma.
+ * Un servicio que cubre el recorrido entero sigue teniendo bordes; lo que pasa
+ * es que son otros. Estos dos son los que `CLAUDE.md` §1 declara prohibidos
+ * mientras nadie los cierre, así que se publican como lo que son: lo que te
+ * confirma una persona, no lo que afirma una página.
+ */
+export const caveats: readonly string[] = [
+  'El plazo de la entrega final te lo confirma tu ejecutivo',
+  'Cómo recibe quien recibe depende del país de destino',
+];
+
+/**
+ * Lo mismo en vocabulario de empresa.
  *
- * Decía, palabra por palabra, «tus pesos, en tu banco en Chile» · «cambiamos y
- * verificamos» · «dólar digital en tu billetera», y está en el historial si
- * vuelve a hacer falta. La asimetría de este archivo —bisagra y opciones para
- * los dos públicos, hitos sólo para empresas— es esa decisión y no un olvido.
+ * **La asimetría de este archivo desapareció el 2026-10-22.** Tenía bisagra y
+ * opciones para los dos públicos y hitos sólo para empresas, porque `ourLeg`
+ * se había retirado el 2026-09-25 al quedarse sin consumidor. Ahora los dos
+ * públicos tienen las tres cosas, y es más fácil de leer.
  *
  * La bisagra cambia de posesivo —«nuestra parte» y no «nuestra operación»—
  * porque en /empresas el interlocutor es la sociedad y no la persona.
+ *
+ * REQUIERE VALIDACIÓN DE COMPLIANCE — el tercer hito (ADR-0014).
  */
 export const ourLegBusiness: readonly Milestone[] = [
   { what: 'Los pesos de tu empresa', data: 'CLP' },
   { what: 'Cambiamos y verificamos', data: 'tu ejecutivo cierra' },
-  { what: 'La divisa en la billetera que indiques', data: 'la moneda del destino' },
+  { what: 'Llega en la moneda del destino', data: 'a quien indiques' },
 ];
 
 export const hingeBusiness: Hinge = {
-  until: 'Ahí termina nuestra parte:',
-  from: 'desde ese punto decide tu empresa',
+  until: 'Nos ocupamos del recorrido completo:',
+  from: 'hasta que el dinero llega a destino',
 };
 
-/** Las tres salidas de una empresa, sacadas de los casos de `business.ts`. */
-export const optionsBusiness: readonly string[] = [
-  'Pagas a un proveedor que opera con divisa digital',
-  'Lo mantienes como tesorería en dólares',
-  'Lo conviertes a moneda local en destino',
+export const caveatsBusiness: readonly string[] = [
+  'El plazo de la entrega final lo confirma tu ejecutivo',
+  'Cómo recibe tu proveedor depende de su país',
 ];

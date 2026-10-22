@@ -105,8 +105,13 @@ export const honesty: { claim: string; reality: string }[] = [
     reality: 'Hasta poder verificarlos y contar con el consentimiento de quien los da.',
   },
   {
-    claim: 'No decimos que depositamos en cuentas bancarias en el extranjero',
-    reality: 'Nuestro servicio es el cambio de divisas: te entregamos la divisa, en forma digital, en tu billetera. Convertirla a moneda local en destino es un proceso distinto que no realizamos.',
+    // Hasta el 2026-10-22 esta fila decía «No decimos que depositamos en
+    // cuentas bancarias en el extranjero», porque no lo hacíamos. ADR-0014
+    // cambió el servicio, y la fila con él: lo que el sitio sigue sin afirmar
+    // no es el destino, es el PLAZO y la VÍA. Ésa es la contención que queda,
+    // y es la que esta sección existe para publicar.
+    claim: 'No prometemos un plazo para la entrega en destino',
+    reality: 'Nos ocupamos del recorrido completo y el dinero llega en la moneda del país de destino. Cuánto tarda y por qué vía llega cambia según el país, y eso te lo confirma una persona antes de que transfieras, no esta página.',
   },
   {
     claim: 'No prometemos rentabilidad ni protección del capital',

@@ -47,10 +47,15 @@ const received = convert('to_foreign', SAMPLE_PAY, price.rate);
     */}
     <div class="block on-tinta-surface">
     <div class="copy" data-enter>
-      <h2 id="feature-title">De la cotización al dinero movido en minutos.</h2>
+      {/* REQUIERE VALIDACIÓN DE COMPLIANCE — que el recorrido llega a destino
+          (ADR-0014). El titular decía «al dinero movido en minutos» hasta el
+          2026-10-22: ese plazo medía nuestra operación cuando terminaba al
+          entregar, y ahora incluye la entrega en destino, que nadie ha
+          cuantificado. Ver la nota larga de `Hero.astro`. */}
+      <h2 id="feature-title">De la cotización al dinero en destino.</h2>
       <p class="lead">
-        Sin esperar días hábiles. Tú cotizas en la web y nuestro equipo cierra la
-        conversión por chat, entregando la divisa digital directo a tu billetera.
+        Sin los días hábiles de la cadena bancaria. Tú cotizas en la web, nuestro equipo
+        cierra la conversión por chat y el dinero llega en la moneda del país de destino.
       </p>
 
       <div class="actions">

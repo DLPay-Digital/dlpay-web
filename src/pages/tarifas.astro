@@ -415,9 +415,13 @@ const wa = contact.whatsappUrl(
           <div class="ajeno">
             <h2 id="ajeno-t">Qué no está incluido acá</h2>
             <p class="mute">
-              DLPay entrega la divisa, en forma digital, en tu billetera. Lo que hagas después
-              con ella (moverla a otra billetera, convertirla a moneda local en otro país) puede
-              tener costos de los servicios que uses para eso, que son ajenos a DLPay.
+              {/* REQUIERE VALIDACIÓN DE COMPLIANCE — qué cobros puede aplicar
+                  el servicio de quien recibe (ADR-0014, 2026-10-22). Hasta esa
+                  fecha esta nota hablaba de lo que el cliente hacía DESPUÉS de
+                  nosotros, y ya no hay un después: el recorrido es nuestro. */}
+              Nuestro precio cubre el cambio y el envío a destino. Si el banco o el servicio
+              con el que recibe quien recibe aplica algún cobro propio, ése es ajeno a DLPay.
+              Tu ejecutivo te lo advierte si lo hay.
             </p>
           </div>
         </section>
