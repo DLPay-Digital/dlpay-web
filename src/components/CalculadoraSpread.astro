@@ -123,8 +123,11 @@ const m = r.conMonto;
 
     <div class="resultado res-b">
       <dl class="detalle" data-detalle>
-        {/* «$» delante y no «USD» detrás desde el 2026-10-22 (ver `formatSigno`).
-            El signo es fijo y la isla sólo reescribe la cifra. */}
+        {/* «$» delante y no «USD» detrás desde el 2026-10-22, a pedido de
+            Sebastián: las cifras de ejemplo van con el signo (DS §5). El signo
+            es fijo y la isla sólo reescribe la cifra. El anuncio para el lector
+            de pantalla sigue diciendo «dólares»: esta calculadora mide el
+            precio del dólar, y «$» se lee distinto según el idioma del lector. */}
         <div><dt>Recibes</dt><dd class="num">$ <span data-o="recibes">{formatUSD(m.recibes)}</span></dd></div>
         <div><dt>A la referencia, con todos tus pesos</dt><dd class="num">$ <span data-o="aLaReferencia">{formatUSD(m.aLaReferencia)}</span></dd></div>
         <div class="dif"><dt>La diferencia</dt><dd class="num">$ <span data-o="diferenciaUSD">{formatUSD(m.diferenciaUSD)}</span> · <span data-o="diferenciaCLP">{formatCLP(m.diferenciaCLP)}</span> CLP</dd></div>

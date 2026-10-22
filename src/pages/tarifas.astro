@@ -153,8 +153,8 @@ import Puente from '../components/Puente.astro';
 import TelefonoAvisos from '../components/TelefonoAvisos.astro';
 import FiguraMecanismo from '../components/FiguraMecanismo.astro';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
-import { convert } from '../lib/pricing/quote.ts';
-import { formatCLP, formatUSD } from '../lib/pricing/format.ts';
+import { convert, formatAmount } from '../lib/pricing/quote.ts';
+import { formatCLP } from '../lib/pricing/format.ts';
 import { contact, quoteLimits, site } from '../lib/config/site.ts';
 
 const price = await new ConfigPriceSource().getPrice();
@@ -203,16 +203,19 @@ const wa = contact.whatsappUrl(
         <p class="eyebrow">lo que ves al cotizar</p>
 
         {/* El producto, no un diagrama del producto: las dos filas que el
-            cotizador enseña al abrirse, con sus cifras de verdad. */}
+            cotizador enseña al abrirse, con sus cifras de verdad. Por eso
+            «Recibes» sigue en USD (Sebastián, 2026-10-22): el cotizador abre
+            en Estados Unidos (`DEFAULT_DESTINO`), y si cambia el destino con
+            que abre, esto cambia con él. Las demás cifras de ejemplo del sitio
+            van con «$» (DS §5). */}
         <div class="cotiza">
           <div class="fila">
             <span class="rot">Das</span>
-            <span class="num"><span class="div">CLP </span><span class="cifra">{formatCLP(samplePay)}</span></span>
+            <span class="num"><span class="cifra">{formatCLP(samplePay)}</span><span class="div"> CLP</span></span>
           </div>
           <div class="fila destacada">
             <span class="rot">Recibes</span>
-            {/* «$» y no «USD» desde el 2026-10-22 (ver `formatSigno`). */}
-            <span class="num"><span class="div">$ </span><span class="cifra">{formatUSD(sampleGet)}</span></span>
+            <span class="num"><span class="cifra">{formatAmount(sampleGet, 'USD').replace('US$ ', '')}</span><span class="div"> USD</span></span>
           </div>
         </div>
 
@@ -289,7 +292,9 @@ const wa = contact.whatsappUrl(
             <div class="mini">
               <dt><div class="mini-fig"><FiguraMecanismo kind="clock" /></div>El mercado</dt>
               <dd>
-                El valor del dólar cambia durante el día. Por eso el precio de la web es
+                {/* «de cada divisa» y no «del dólar» desde el 2026-10-22: se cambia a
+                    doce (ADR-0013). Validado por Sebastián (Compliance) ese día. */}
+                El valor de cada divisa cambia durante el día. Por eso el precio de la web es
                 <strong>referencial</strong> y el precio final te lo confirma tu ejecutivo en el
                 momento de cerrar.
               </dd>
@@ -330,7 +335,9 @@ const wa = contact.whatsappUrl(
             <div class="dato">
               <span class="n">CLP {formatCLP(minPay)}</span>
               <span class="u">
-                Aplica en las dos direcciones, así que en dólares el mínimo se mueve con el precio
+                {/* «en divisas» y no «en dólares» desde el 2026-10-22 (ADR-0013).
+                    Validado por Sebastián (Compliance) ese día. */}
+                Aplica en las dos direcciones, así que en divisas el mínimo se mueve con el precio
                 del día. Bajo ese monto puedes escribirnos igual y te orientamos.
               </span>
             </div>
@@ -531,22 +538,8 @@ const wa = contact.whatsappUrl(
   /* `.num` es una utilidad global del sitio y ya trae la familia, las cifras
      tabulares y el interletraje. No se vuelve a declarar acá.
 
-     **La divisa va DELANTE desde el 2026-10-22**: «CLP 2.000.000» y
-     «$ 2.174,62», como las escribe el resto del sitio (`formatAmount`) y como
-     se escribe el signo en Chile. Antes iba detrás, «2.174,62 USD». Con las
-     dos delante las cifras vuelven a terminar en el mismo borde; con «CLP»
-     detrás y «$» delante no terminaban. El espacio va ahora al FINAL de la
-     divisa, con `pre-wrap`: si la divisa sube a su propio renglón, el espacio
-     cuelga ahí y la cifra no arranca corrida.
-     **Y la fila puede partirse** (`flex-wrap`): bajo 340 px con el espaciado
-     de 1.4.12 la cifra ya no cabía junto a «Das» y se salía 7 px de su caja
-     (medido sobre 04fc363, antes de este cambio). Ahora el rótulo queda
-     arriba y la cifra debajo, a la derecha; y si además la divisa sube a su
-     renglón, también va a la derecha (`justify-content: flex-end`).
-
-     Lo que sigue es la historia de antes del cambio:
      **Si la divisa baja de renglón, ocupa el suyo y no el de la cifra**
-     (2026-10-05). Bajo unos 350 px de pantalla «CLP» y «USD» bajaban bajo su
+     (2026-10-05). Bajo unos 350 px de pantalla «CLP» y «USD» bajan bajo su
      cifra, y en texto corrido ese renglón medía lo que uno de la cifra: 26 px,
      39 con el espaciado de 1.4.12, para una palabra de 14. Es la regla que ya
      lleva el puente de la Home (`FiguraTarifas`), que copia esta tarjeta: la
@@ -558,10 +551,23 @@ const wa = contact.whatsappUrl(
      rótulo, la fila salía 9 px de la pantalla a 320 con el espaciado de
      1.4.12 (medido). Con `pre-wrap` cuelga y no cuenta. Si la divisa no baja,
      todo queda donde estaba, al píxel.
+     **Y la fila puede partirse** (Cowork, 2026-10-22): bajo 340 px con el
+     espaciado de 1.4.12 la cifra ya no cabía junto a «Das» o «Recibes» y se
+     salía hasta 7 px de su caja, en 31 anchos (medido sobre 04fc363). Ahora
+     el rótulo sube y la cifra queda debajo, a la derecha; si además la divisa
+     baja, también va a la derecha (`justify-content: flex-end`). **Por eso el
+     espacio pasó del final de la cifra al principio de la divisa**, también
+     con `pre-wrap`: al final de la cifra, alineada a la derecha, el espacio
+     colgaba y la cifra quedaba corrida a la izquierda cuando la divisa bajaba.
+     Al principio de «USD» queda a su izquierda, donde no se ve, y sigue siendo
+     un espacio de texto, con el espaciado de quien lee. Como ese espacio es
+     del cuerpo chico, `column-gap: .3em` le devuelve a la separación lo que
+     medía con el espacio grande; un `gap` sólo existe entre piezas del mismo
+     renglón, así que cuando la divisa baja no se suma.
      **Y 4 px entre los dos renglones**, que el puente no necesita: aquí la
      cifra va a interlineado 1 y, sin ellos, «CLP» quedaba a 2 px del pie de
      los dígitos. Sólo existen cuando la divisa baja. */
-  .fila .num { font-size: var(--t-dato-m); line-height: var(--lh-dato); display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: baseline; row-gap: var(--s-1); margin-left: auto; }
+  .fila .num { font-size: var(--t-dato-m); line-height: var(--lh-dato); display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: baseline; row-gap: var(--s-1); column-gap: .3em; margin-left: auto; }
   .fila .div { font-size: var(--t-body-sm); color: var(--ink-mute); white-space: pre-wrap; }
   .destacada { background: var(--tinta); color: var(--on-tinta); }
   .destacada .rot { color: var(--on-tinta-mute); }

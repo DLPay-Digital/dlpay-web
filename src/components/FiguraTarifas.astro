@@ -73,21 +73,22 @@
  * era. Si alguien «simplifica» ese fondo, rompe la pieza.
  */
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
-import { convert } from '../lib/pricing/quote.ts';
-import { formatUSD } from '../lib/pricing/format.ts';
+import { convert, formatAmount } from '../lib/pricing/quote.ts';
 import { quoteLimits } from '../lib/config/site.ts';
 
 const price = await new ConfigPriceSource().getPrice();
-/* «$ 2.174,62» y no «2.174,62 USD» desde el 2026-10-22 (ver `formatSigno`):
-   el signo va delante, como se escribe en Chile. */
-const recibes = formatUSD(convert('to_foreign', quoteLimits.samplePayClp, price.rate));
+/* Sigue en USD a propósito (Sebastián, 2026-10-22): el puente enseña la cifra
+   que el cotizador da al abrir, y el cotizador abre en Estados Unidos
+   (`DEFAULT_DESTINO`). Si cambia el destino con que abre, esto cambia con él.
+   Las demás cifras de ejemplo van con «$» (DS §5). */
+const recibes = formatAmount(convert('to_foreign', quoteLimits.samplePayClp, price.rate), 'USD').replace('US$ ', '');
 ---
 <div class="ft">
   <div class="llave" data-enter></div>
   <div class="tramo" data-enter>
     <div class="fila">
       <span class="rot">Recibes</span>
-      <span class="num"><span class="div">$ </span><span class="cifra">{recibes}</span></span>
+      <span class="num"><span class="cifra">{recibes} </span><span class="div">USD</span></span>
     </div>
     <div class="limite punteado-v"></div>
     <p class="pie">el precio que ves</p>
@@ -170,13 +171,6 @@ const recibes = formatUSD(convert('to_foreign', quoteLimits.samplePayClp, price.
     donde la divisa baja por 1,5 px (2026-10-05). Por eso la cifra y la divisa
     son dos piezas de una rejilla flexible: si la divisa baja, el renglón es el
     suyo (19,5). Si no baja, todo queda donde estaba, al píxel.
-    **Desde el 2026-10-22 la divisa va DELANTE**: «$ 2.174,62», como se
-    escribe el signo en Chile, y no «2.174,62 USD». La rejilla es la misma; el
-    espacio pasa al final de la divisa, con `pre-wrap`, para que si el signo
-    sube a su propio renglón el espacio cuelgue ahí y la cifra no arranque
-    corrida. Un «$» de un carácter y un espacio duro dentro de la cifra hacían
-    una pieza que no se partía y salía 12 px de la pantalla a 321 con el
-    espaciado de 1.4.12 (medido): por eso no se hizo así.
     El espacio entre las dos va DENTRO de la cifra, y `pre-wrap` lo conserva:
     así sigue siendo un espacio de texto, al que el espaciado de quien lee se
     aplica igual que antes. Un `gap` no lo haría.
@@ -198,7 +192,7 @@ const recibes = formatUSD(convert('to_foreign', quoteLimits.samplePayClp, price.
     letter-spacing: var(--ls-dato);
   }
   .cifra { white-space: pre-wrap; }
-  .div { font-size: var(--t-label); color: var(--ink-mute); white-space: pre-wrap; }
+  .div { font-size: var(--t-label); color: var(--ink-mute); }
   @media (min-width: 960px) {
     .num { font-size: 24px; }
   }

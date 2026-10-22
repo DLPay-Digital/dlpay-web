@@ -1,6 +1,5 @@
 /**
- * Tests de las banderas y del signo de los ejemplos (Cowork, entrega `wise-`,
- * 2026-10-22).
+ * Tests de las banderas (Cowork, entrega `wise-`, 2026-10-22).
  *
  * **Una bandera que falta no rompe el build**: el selector del cotizador la
  * clona de una plantilla y, si no está, deja el hueco sin avisar; la tarjeta de
@@ -19,7 +18,6 @@ import { fileURLToPath } from 'node:url';
 
 import { BANDERAS, CODIGOS_BANDERA, banderaDeDestino, banderaDeDivisa } from '../src/lib/banderas.ts';
 import { DEFAULT_DESTINO, currencies, destinos } from '../src/lib/pricing/currencies.ts';
-import { formatSigno } from '../src/lib/pricing/format.ts';
 
 describe('banderas', () => {
   test('cada destino del catálogo tiene su bandera', () => {
@@ -56,13 +54,6 @@ describe('banderas', () => {
       assert.doesNotMatch(svg, /(href|src)\s*=|url\(/i, `«${codigo}» pide un recurso`);
       assert.doesNotMatch(svg, /<\s*svg\b/i, `«${codigo}» trae su propio <svg>: el contenedor lo pone Bandera.astro`);
     }
-  });
-});
-
-describe('formatSigno', () => {
-  test('el signo, un espacio y la cifra con dos decimales', () => {
-    assert.equal(formatSigno(2174.62), '$ 2.174,62');
-    assert.equal(formatSigno(0.5), '$ 0,50');
   });
 });
 
