@@ -682,7 +682,7 @@ eran de esta reforma —una región desplazable sin foco a 390 (WCAG) y un encab
 (buena práctica)—, y los dos desaparecen. Lo único que `axe` sigue marcando en la página es el
 contraste dentro del portátil dibujado del encabezado, **idéntico a antes** y ajeno a esto.
 
-**Y el 2026-10-23 ese resto deja de ser un pendiente y pasa a ser una decisión: se queda como
+**Y el 2026-10-22 ese resto deja de ser un pendiente y pasa a ser una decisión: se queda como
 está.** *Sebastián, ese día: «la maqueta del portátil dejémosla tal cual, es parte de nuestra
 interfaz interna».* Conviene tener los números delante, porque quien vuelva a correr `axe` los verá
 y pensará que se olvidaron:

@@ -14,10 +14,17 @@
 //
 // **No rompe ADR-0005.** La regla vinculante es que el sitio pueda publicarse
 // copiando la carpeta de build a cualquier servidor estático, y eso sigue
-// siendo cierto: `dist/` son **47 archivos y 1,3 MB** de HTML, CSS, fuentes e
-// imágenes —eran 43 y 1,1 MB al escribir esto el 2026-10-06; medido de nuevo
-// el 2026-10-23—. Este archivo no entra en el build ni lo condiciona; si
-// mañana el proveedor cambia, se borra y no queda rastro.
+// siendo cierto: `dist/` son **47 archivos y 1.181.735 bytes**, 1,2 MB contando
+// en miles —eran 43 y 1,1 MB al escribir esto el 2026-10-06; vuelto a medir el
+// 2026-10-22—. Este archivo no entra en el build ni lo condiciona; si mañana el
+// proveedor cambia, se borra y no queda rastro.
+//
+// *La cifra va en bytes a propósito.* La primera medición de ese día dijo
+// «1,3 MB» porque salió de `du`, que cuenta **bloques de disco** y no el
+// tamaño de los archivos: redondea cada uno hacia arriba, así que infla tanto
+// más cuanto más archivos pequeños haya — y acá son 47. Lo detectó Cowork. El
+// número de bytes no admite esa ambigüedad ni la de si «MB» son 1.000 o 1.024
+// kilobytes.
 //
 // **No añade dependencias.** `wrangler` lo ejecuta Cloudflare con `npx` en su
 // propio entorno de build: `package.json` sigue declarando cuatro paquetes y
@@ -48,7 +55,7 @@
 // lee variables al servir.
 //
 // **Las cabeceras de seguridad tampoco, y ya no por estar pendientes.**
-// *Corregido el 2026-10-23: este párrafo daba D27 por abierta y se cerró el
+// *Corregido el 2026-10-22: este párrafo daba D27 por abierta y se cerró el
 // 2026-10-10.* Las escribe una integración del build en **`dist/_headers`**,
 // que es un archivo del propio despliegue de assets: Cloudflare lo lee de la
 // carpeta que este archivo le señala, así que la configuración está dentro de

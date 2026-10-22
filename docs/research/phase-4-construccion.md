@@ -646,7 +646,7 @@ correcto, no.
 que alguien mire en serio probablemente esté lejos. El guardarraíl impide publicarlas; no las
 mejora.
 
-### 4.21 Cambiar el texto de una figura es cambiar la figura  ·  *2026-10-23*
+### 4.21 Cambiar el texto de una figura es cambiar la figura  ·  *2026-10-22*
 
 **El fallo.** Al mover el sitio a ADR-0014 cambié los rótulos de `FiguraUso` —`USD` pasó a
 «Su moneda», «Tu billetera» a «Tu banco en Chile» y «A quien necesites» a «Quien recibe, en su
@@ -667,7 +667,7 @@ aunque sólo toque una cadena, y la única forma de saberlo es medir las cajas. 
 lleva ahora el motivo escrito junto a la regla que coloca el rótulo: el siguiente que pase por ahí
 lo lee antes de alargarlo.
 
-### 4.22 Cuatro detectores para el mismo defecto, y tres medían ruido  ·  *2026-10-23*
+### 4.22 Cuatro detectores para el mismo defecto, y tres medían ruido  ·  *2026-10-22*
 
 Buscar «qué está encima de qué» en todo el sitio costó cuatro intentos, y el recorrido vale más que
 el resultado:
@@ -711,6 +711,8 @@ Se anotan porque un registro que sólo cuenta aciertos no sirve para nada.
 | Un comentario afirmaba que el catálogo de divisas no viajaba al navegador, y sí viajaba | Medir la isla antes y después: 4 528 → 6 673 B |
 | El precio referencial seguía diciendo «CLP por dólar» con el euro elegido | Mirar la captura del cotizador, no el código |
 | Alargar tres rótulos de `FiguraUso` sin tocar el CSS que los coloca: «Su moneda» se metía bajo el bloque del banco en los cuatro anchos | **Sebastián**, mirando la Home. Seis comprobaciones automáticas lo dieron por bueno (§4.21) |
+| Fechar como 2026-10-23 once comentarios y dos documentos escritos el **22**, sin que hubiera cambiado el día | Cowork, revisando el texto. En un registro que se navega por fechas, una inventada vale menos que ninguna |
+| Medir `dist/` con `du` y publicar «1,3 MB»: `du` cuenta bloques de disco, no bytes, y con 47 archivos pequeños infla. Son 1.181.735 bytes, 1,2 MB | Cowork. La herramienta correcta para un tamaño es la que suma bytes |
 | El bloque `PENDIENTE DE ASSET` del artículo de la Fed revivió en una actualización | Detectado al ir a ejecutarlo |
 | El recuento de marcas punteadas del DS §6.2 llevaba un día desfasado: `.et-torsion` entró con el abanico el 2026-10-01 | Al rehacer el barrido para integrar `/empresas` |
 | «Nada está roto» en el relevo de `/empresas`: el piso de 40 px SÍ se rompía, a 37,99 entre 417 y 419 px | Cowork, barriendo cada 1 px donde yo barrí cada 20 |
