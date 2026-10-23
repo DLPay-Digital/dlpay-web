@@ -103,11 +103,24 @@ fila aquí.
    - el punto que cruza es una unidad de valor;
    - el tramo verde se traza después del límite, porque es el nuestro;
    - la línea del monto es `--ink-mute`, porque es tuya;
+   - el filete de cada paso de `/como-funciona` es `--ink-mute` si lo haces tú y verde si lo
+     hacemos nosotros;
    - la etiqueta final no se mueve nunca.
 5. **El cotizador no entra** (regla dura 2). La tarjeta de `/tarifas` llena su figura, no sus filas.
 6. **`/tarifas` sigue en cero bytes de JavaScript.** Las portadas son CSS.
 7. **La Home no cambia.** La forma `compacta` de `FiguraMecanismo`, que es la de la Home, queda
-   fuera de toda línea de tiempo; también lo vigila el test.
+   fuera de toda línea de tiempo; también lo vigila el test. *Desde la tanda 2, «no cambia» se
+   mide en el píxel y en las peticiones:* el build reparte de otro modo 0,6 KB de CSS de las
+   banderas —de la hoja compartida al HTML—, porque `/como-funciona` ahora también las pinta: el
+   HTML de la Home sube 112 B y la hoja compartida baja 114, o sea **−2 B**. Lo que la Home paga
+   de verdad son **+3 B** sobre 55.576, porque encima van los 5 B de la corrección de
+   `FiguraMecanismo`. Medido con `gzip -9` sobre el HTML y sus tres hojas.
+8. **Ningún texto se queda parado a media tinta donde se lee** (desde la tanda 2). Es una regla de
+   la familia C, porque ahí quien baja puede detenerse a mitad: la opacidad de una pieza con texto
+   termina en `entry 100%`, o mientras el texto está en el cuarto de abajo de la pantalla. Las
+   marcas, que son dibujo, sí pueden fundirse. Lo comprueba axe con la página parada cada 120 px,
+   que es como la deja quien deja de bajar. **En la familia A el texto sí entra con opacidad**,
+   como en M6: pasa solo y en menos de 300 ms.
 
 ## Lo que enmienda, y lo que no
 
@@ -117,7 +130,7 @@ fila aquí.
 | §0 bis, familia A — las narraciones largas salen del techo con un ADR | **Aplicada**: las piezas 1 a 4 y 14 son narraciones de una vez, de 1,8 a 2,6 s en total, con cada paso a `--m-slow` o menos |
 | §4, regla dura 1 — una sola vez, en las entradas | **Intacta** para las piezas A. Las C se arrastran con el desplazamiento, como manda su familia |
 | §4, reglas duras 2, 3 y 6 | **Intactas** |
-| §5 — dónde se aplica, página por página | **Se actualiza** con cada tanda: `/empresas`, `/confianza`, y dos tablas nuevas para `/tarifas` y `/preguntas` |
+| §5 — dónde se aplica, página por página | **Se actualiza** con cada tanda: `/empresas` y `/confianza`; tablas nuevas para `/tarifas`, `/preguntas` y `/precio`; en `/como-funciona`, el encabezado y los pasos |
 
 ## Lo que cuesta, medido en la tanda 1
 
@@ -135,6 +148,49 @@ Sobre `7b2f690`:
   | `/preguntas` | 1,7 KB | 1,9 KB |
 
 - **En reposo, todas las rutas idénticas al píxel** a 390 y 1280.
+
+## La tanda 2, integrada el 2026-10-23
+
+**Las piezas 14 a 16**, sobre `d55c464`. Sebastián vio la portada de `/como-funciona` antes de
+cerrar la entrega y la aprobó así.
+
+**La portada, «el salto»** (`SaltoAlChat.astro`), son tres piezas:
+
+1. la tarjeta del cotizador en pequeño, con sus dos cajas y su botón, rotulada «en la web»;
+2. la cuña del §6.2, porque el trabajo cambia de manos;
+3. el teléfono con el chat recién abierto y tu mensaje en la caja de texto, sin enviar, rotulado
+   «con tu ejecutivo».
+
+**No es el cotizador**: nada se enfoca ni se pulsa, y todo va `aria-hidden`. Lo dice con palabras
+el pie. Las cifras salen de `lib/pricing` y el mensaje es `mensajeInicial()`, comprobado en el
+build por `tests/telefono.test.ts`.
+
+**La caja de texto entra al teléfono por un slot** (`caja`) y no por una prop. Con la prop, la
+hoja de `WhatsAppMockup` pasaba de 4 KB, dejaba de ir en línea y la Home ganaba una petición.
+
+**Corrección a la tanda 1 (piezas 10 y 12).** En `FiguraMecanismo`, «acá se conversa» y «Tu
+ejecutivo» se fundían, y axe encontró el primero a media tinta en el tercio de arriba de la
+pantalla. Ahora:
+
+- los rótulos están desde el principio;
+- las placas se levantan con `scale`, enteras y opacas;
+- se funden sólo la persona, la mesa y las patas.
+
+De ahí sale la regla 8.
+
+### Lo que cuesta
+
+- **JavaScript: 0 B.** Los mismos archivos y el mismo CSP.
+- **CSS comprimido: +1,4 KB en total.**
+
+  | Hoja | Antes | Después |
+  |---|---|---|
+  | `/como-funciona` | 2,4 KB | 3,7 KB |
+  | `/precio` | 3,9 KB | 4,1 KB |
+
+- **HTML de `/como-funciona`: +1,1 KB comprimido.** La portada nueva y las seis piezas. Las
+  banderas van con `codigos`: dos de catorce.
+- **En reposo, todas las rutas idénticas al píxel** salvo `/como-funciona`, que añade sus piezas.
 
 ## Lo que este ADR NO concede
 

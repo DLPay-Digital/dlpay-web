@@ -287,13 +287,14 @@ desplazamiento», con sus reglas, en vez de una excepción por pieza.
 - las figuras de línea hacen su verbo al bajar (familia C);
 - cada página gana su pieza.
 
-Se integran por tandas; **la tanda 1 son las piezas 1 a 13**.
+Se integran por tandas; **la tanda 1 son las piezas 1 a 13**, y la **tanda 2, las 14 a 16**.
 
 | Regla de este documento | Estado |
 |---|---|
 | §0 bis, familia C, regla 1 — una por pieza, con su ADR | **Enmendada**: un ADR puede cubrir varias piezas si lleva una fila por pieza. ADR-0018 lleva veinte |
 | §4, reglas duras 2, 3 y 6 | **Intactas.** El cotizador no entra, ninguna cifra se mueve, y con movimiento reducido no se declara nada |
 | Guardas de la familia C | **Ahora las vigila un test**: `tests/movimiento.test.ts` falla si una `animation-timeline` del build queda fuera de `@supports` o de `prefers-reduced-motion: no-preference`, o si una regla con línea de tiempo alcanza a la forma `compacta` de la Home |
+| Texto a media tinta | **Regla nueva de ADR-0018 para la familia C, desde la tanda 2**: ningún texto se queda parado a media opacidad en la zona donde se lee. La opacidad de una pieza con texto termina en `entry 100%`, o mientras el texto está en el cuarto de abajo de la pantalla; las marcas, que son dibujo, sí pueden fundirse. Lo comprueba axe con la página parada cada 120 px. En la familia A no aplica: el texto entra solo y en menos de 300 ms, como en M6 |
 
 ---
 
@@ -557,10 +558,10 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 
 | Zona | Movimiento | Por qué |
 |---|---|---|
-| Encabezado | **M6** en titular y bajada | *Añadido el 2026-09-23.* Antes entraba de golpe mientras la Home y `/empresas` cascadeaban |
+| Encabezado | **M6** en titular, bajada y portada, y después **`vida` (ADR-0018, pieza 14)**: el botón del cotizador se hunde, la cuña se traza y el mensaje aparece en la caja de texto del chat. Termina a los 1,73 s | *Añadido el 2026-09-23.* Antes entraba de golpe mientras la Home y `/empresas` cascadeaban. *Añadido el 2026-10-23 (tanda 2):* la portada enseñaba dos burbujas que los pasos 02 y 03 repetían; ahora enseña el salto de la web a una persona, y la conversación va en los pasos |
 | ~~Diagrama de flujo~~ | *Retirado el 2026-09-17* | La banda entera salió de la página, y con ella `FlowDiagram.astro`. El motivo no fue densidad: su pie decía «Dónde está tu dinero en cada momento», que es el título exacto de la figura de `/confianza`. No era riesgo de duplicación, era una colisión ya ocurrida |
 | Cuñas de traspaso | **M3 en secuencia**: se dibujan las tres cuñas que marcan dónde el trabajo cambia de manos | **El momento de movimiento del sitio, trasladado, no perdido.** No hubo que inventar dónde ponerlo: la fila de M3 ya nombraba dos sitios, «cuñas del héroe, **cuñas de los pasos**, conectores del diagrama de flujo». Se retiró uno y quedó el otro. La secuencia sale gratis: el observador las dispara a alturas distintas, así que se dibujan 03 → 04 → 05 conforme se lee, y sin una línea de JavaScript nueva |
-| Pasos | **M4 sólo en el titular.** La lista **no** entra | *Corregido al implementar:* son **seis** pasos y el tope es cuatro. En dos columnas, escalonar seis se lee como el revelado de tarjetas de cualquier plantilla. El tope gana sobre el argumento de "es una secuencia real". **Sigue vigente con los carriles** (2026-09-17): lo que se dibuja son las tres cuñas, no los seis pasos |
+| Pasos | **M4 sólo en el titular**; la lista sigue sin escalonarse. Y **`vida` (pieza 15)**: cada paso traza su filete —`--ink-mute` si lo haces tú, verde si lo hacemos nosotros—, enciende su número y su pieza llega | *Corregido al implementar:* son **seis** pasos y el tope es cuatro. En dos columnas, escalonar seis se lee como el revelado de tarjetas de cualquier plantilla. El tope gana sobre el argumento de "es una secuencia real". **Sigue vigente con los carriles** (2026-09-17): lo que se dibuja son las tres cuñas, no los seis pasos. *Añadido el 2026-10-23 (tanda 2):* la pieza no es un escalonado —cada paso se mueve con su propio paso por la pantalla, como las figuras de `/confianza`—, y **está opaca en cuanto entra entera**; la subida sigue un poco más |
 | Límite del servicio | **Nada** | Su fuerza está en la quietud |
 | Cierre | **M1** | |
 
@@ -600,6 +601,13 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 |---|---|---|
 | Encabezado | **M6**, y **`vida` (pieza 4)**: sale la pregunta y entra la respuesta | Familia A, 1,8 s |
 | Grupos | **M4** en cada cabecera | Como estaba |
+
+### /precio  ·  *añadido el 2026-10-23*
+
+| Zona | Movimiento | Por qué |
+|---|---|---|
+| Qué cuesta y qué no | **`vida` (ADR-0018, pieza 16)**: cada «sin costo» se escribe en su fila al leerla, de izquierda a derecha, y la única fila que cobra traza su filete verde | Familia C. Lo que se revela es texto, no cifras: la tabla no tiene ninguna. Termina con la fila todavía en el cuarto de abajo de la pantalla. **No se desplaza**: un `translate` empujaba la columna fuera del contenedor a 320 px |
+| El resto | Como estaba | El abanico de «No cambia después de que lo aceptas» sigue con su enmienda del 2026-10-01 |
 
 ### /blog  ·  *añadido el 2026-09-23*
 
