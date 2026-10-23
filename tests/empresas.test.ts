@@ -13,10 +13,12 @@
  * · **La banda de contacto es la única clara**, y es la última. Una sección
  *   nueva que entre sin `noche` quedaría clara en medio de la página —una
  *   franja de día suelta— sin que nada fallara.
+ * · **Las cuñas que siguen bajo la portada caen sobre noche** (entrega
+ *   `vida4b-`), en cualquier página que las pida.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -46,5 +48,27 @@ describe('/empresas, de noche', { skip: !existsSync(dist) && 'sin dist/: corre `
     assert.ok(!ultima.includes('noche'), 'la banda de contacto no debería ir de noche');
     const dia = contenido.slice(0, -1).filter((c) => !c.includes('noche')).map((c) => c[0]);
     assert.deepEqual(dia, [], `secciones de día en medio de la noche: ${dia.join(', ')}`);
+  });
+
+  /*
+   * Entrega `vida4b-`: las cuñas de la portada siguen sobre la sección
+   * siguiente (`wedges="continue"`). Sobre tinta se leen como una sola pieza;
+   * sobre una sección clara serían dos franjas verdes sueltas sobre el papel.
+   * Así que en TODO el sitio, la portada que las prolonga tiene que ir seguida
+   * de una sección de noche.
+   */
+  test('las cuñas que siguen bajo la portada caen sobre una sección de noche', () => {
+    const paginas = readdirSync(dist, { recursive: true, encoding: 'utf8' }).filter((f) => f.endsWith('.html'));
+    const conCunas: string[] = [];
+    for (const pagina of paginas) {
+      const doc = leer(pagina);
+      const portada = doc.match(/<section class="page-hero[^"]*\bwedges-continue\b[^"]*"/);
+      if (!portada || portada.index === undefined) continue;
+      conCunas.push(pagina);
+      const resto = doc.slice(portada.index + portada[0].length);
+      const siguiente = resto.match(/<section class="([^"]+)"/)?.[1]?.split(/\s+/) ?? [];
+      assert.ok(siguiente.includes('noche'), `${pagina}: las cuñas siguen sobre «${siguiente[0] ?? 'nada'}», que no es de noche`);
+    }
+    assert.ok(conCunas.includes(join('empresas', 'index.html')), 'la portada de /empresas ya no prolonga sus cuñas');
   });
 });

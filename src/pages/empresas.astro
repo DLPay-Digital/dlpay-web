@@ -86,6 +86,7 @@ const waPlain = contact.whatsappUrl(
       titleSize="hero"
       sequence
       layout="stacked"
+      wedges="continue"
     >
       <Fragment slot="cta">
         <a class="cta" href={waPlain} target="_blank" rel="noopener">
@@ -280,6 +281,11 @@ const waPlain = contact.whatsappUrl(
     background: var(--papel);
     padding: calc(var(--montaje) + var(--s-9)) 0 var(--s-9);
   }
+  /* Las cuñas de la portada siguen sobre esta sección (`wedges="continue"`,
+     2026-10-23): de noche, cortadas en la costura se veían como un error. Se
+     pintan en la capa de lo posicionado, así que el contenido se posiciona
+     para quedar encima de ellas y no debajo de su 7% de verde. */
+  .cases > .inner { position: relative; }
 
   /* Una fila por caso, no una rejilla de tarjetas: cada operación pesa lo
      mismo que su figura. La regla de acento verde que llevaban los titulares

@@ -40,6 +40,22 @@ interface Props {
    * mantiene las tres exactamente como estaban.
    */
   layout?: 'split' | 'stacked';
+  /**
+   * Hasta dónde llegan las dos cuñas del fondo.
+   *
+   * · `contained` (por omisión) — terminan en el borde inferior de la banda.
+   *   Es lo que había: la sección siguiente es clara y las corta.
+   * · `continue` — siguen bajando con su misma diagonal, sobre la sección
+   *   siguiente, hasta salir por el borde izquierdo de la página. **Sólo
+   *   cuando la sección siguiente también es de tinta**: en `/empresas`, que
+   *   vive de noche (Design System §6.4), cortadas en la costura se veían como
+   *   un error. Lo pidió Sebastián el 2026-10-23, viéndolo en staging.
+   *
+   * Es OPT-IN, como `layout`: sobre una sección clara serían franjas verdes
+   * sobre papel. `tests/empresas.test.ts` comprueba que la sección siguiente
+   * va de noche.
+   */
+  wedges?: 'contained' | 'continue';
 }
 const {
   title,
@@ -47,6 +63,7 @@ const {
   titleSize = 'page',
   sequence = false,
   layout = 'split',
+  wedges = 'contained',
 } = Astro.props;
 const hasCta = Astro.slots.has('cta');
 const hasAside = Astro.slots.has('aside');
@@ -87,7 +104,7 @@ const seqLead = lead ? step++ : 0;
 const seqCta = hasCta ? step++ : 0;
 const seqAside = hasAside ? step++ : 0;
 ---
-<section class:list={['page-hero', 'on-tinta-surface', { stacked: hasAside && layout === 'stacked' }]}>
+<section class:list={['page-hero', 'on-tinta-surface', { stacked: hasAside && layout === 'stacked', 'wedges-continue': wedges === 'continue' }]}>
   <div class="wedges" aria-hidden="true"></div>
   <div class:list={['inner', { split: hasAside && layout === 'split', stacked: hasAside && layout === 'stacked' }]}>
     <div class="copy">
@@ -131,6 +148,44 @@ const seqAside = hasAside ? step++ : 0;
     opacity: 0.07;
     clip-path: polygon(0 100%, 46% 0, 60% 0, 15% 100%, 20% 100%, 66% 0, 71% 0, 26% 100%);
   }
+
+  /**
+   * ── Las cuñas que siguen (`wedges="continue"`) ───────────────────────────
+   *
+   * **Las mismas dos rectas, más largas.** La caja mide 1,6 veces la banda y
+   * el polígono es el de arriba con las alturas divididas por 1,6, así que cada
+   * borde sigue exactamente su recta más allá del borde inferior, hasta cruzar
+   * el borde izquierdo de la página.
+   *
+   * Dónde cruza cada borde, en altos de banda (H): una recta que va de x₀
+   * arriba a x₁ abajo llega a x = 0 en x₀ / (x₀ − x₁) · H.
+   *   · La primera cuña: el borde izquierdo ya llegaba en H (el `0 100%` de
+   *     arriba). El derecho, de 60% a 15%, llega en 60/45 = 1,333 H.
+   *   · La segunda: el izquierdo, de 66% a 20%, en 66/46 = 1,435 H. El
+   *     derecho, de 71% a 26%, en 71/45 = 1,578 H.
+   * En la caja de 1,6 H esos puntos son 62,5%, 83,333%, 89,674% y 98,611%. Los
+   * tramos que van de una cuña a la otra corren por el borde izquierdo y no
+   * tienen área.
+   *
+   * **El 160% es del alto de la banda, a cualquier ancho**: la caja es
+   * absoluta, así que su porcentaje se mide contra la banda, que es su bloque
+   * contenedor. Por eso la prolongación cuadra sin un número por breakpoint.
+   *
+   * La banda deja de recortar, o la caja más alta no se vería. Por los costados
+   * no se sale nada: las cuñas van de lado a lado (`inset` 0 a los dos lados).
+   *
+   * **Lo que le toca a la página:** las cuñas se pintan en la capa de lo
+   * posicionado, así que la sección siguiente tiene que posicionar su
+   * contenido —`position: relative`— para quedar encima. Si no, el 7% de verde
+   * caería también sobre el texto.
+   */
+  .page-hero.wedges-continue { overflow: visible; }
+  .page-hero.wedges-continue .wedges {
+    bottom: auto;
+    height: 160%;
+    clip-path: polygon(0 62.5%, 46% 0, 60% 0, 0 83.333%, 0 89.674%, 66% 0, 71% 0, 0 98.611%);
+  }
+
   .inner {
     position: relative;
     max-width: var(--container);
@@ -173,7 +228,8 @@ const seqAside = hasAside ? step++ : 0;
   .page-hero.stacked {
     /* El recorte es lo que cortaba la pieza justo en el borde de la banda.
        `.wedges` no se escapa al quitarlo: va en `position: absolute; inset: 0`
-       y además lleva su propio `clip-path`. */
+       y además lleva su propio `clip-path`. Sólo baja más allá cuando la
+       página lo pide con `wedges="continue"`, que es justo para eso. */
     overflow: visible;
     /* El relleno inferior lo sustituye el propio montaje. */
     padding-bottom: 0;
