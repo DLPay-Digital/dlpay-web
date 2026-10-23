@@ -249,21 +249,29 @@ describe('el mensaje al ejecutivo con destino', () => {
 
   test('dice a dónde va, en qué llega y el precio como lo ve la web', () => {
     const msg = whatsappMessage(quote, 2_000_000, 'Colombia');
-    assert.match(msg, /enviar CLP 2\.000\.000 a Colombia, en pesos colombianos/);
-    assert.match(msg, /llegan aprox\. COP 8\.695\.652/);
+    assert.match(msg, /enviar CLP 2\.000\.000 a Colombia\./);
+    assert.match(msg, /Llegan aprox\. COP 8\.695\.652/);
+    /* **La moneda ya no se nombra aparte desde el 2026-10-23.** Estaba dicha
+       dos veces —el destino y la cifra— y el mensaje se dibuja en el teléfono
+       de la Home, donde cada línea cuenta. Ver `whatsappMessage`. */
+    assert.doesNotMatch(msg, /en pesos colombianos/);
     assert.match(msg, /1 CLP = 4,35 COP/);
     assert.match(msg, /precio final/);
   });
 
+  /* Con el dólar la moneda NO identifica el destino —Estados Unidos y Ecuador
+     comparten USD—, así que el país es lo único que lo distingue. Por eso el
+     recorte del 2026-10-23 quitó la moneda y no el país. */
   test('con dólares, el país es lo que distingue Estados Unidos de Ecuador', () => {
     const usd = buildQuote({ intent: 'to_foreign', giveAmount: 2_000_000, price: precio('USD', 919.7), minPay: 500_000 });
-    assert.match(whatsappMessage(usd, 2_000_000, 'Ecuador'), /a Ecuador, en dólares/);
+    assert.match(whatsappMessage(usd, 2_000_000, 'Ecuador'), /a Ecuador\./);
+    assert.match(whatsappMessage(usd, 2_000_000, 'Estados Unidos'), /a Estados Unidos\./);
   });
 
   test('bajo el mínimo pregunta, con el destino y sin precio', () => {
     const bajo = buildQuote({ intent: 'to_foreign', giveAmount: 100_000, price: precio('COP', 0.23), minPay: 500_000 });
     const msg = whatsappMessage(bajo, 100_000, 'Colombia');
-    assert.match(msg, /enviar CLP 100\.000 a Colombia, en pesos colombianos\. ¿Pueden operar ese monto\?/);
+    assert.match(msg, /enviar CLP 100\.000 a Colombia\. ¿Pueden operar ese monto\?/);
     assert.doesNotMatch(msg, /precio referencial/);
   });
 
@@ -275,6 +283,6 @@ describe('el mensaje al ejecutivo con destino', () => {
   });
 
   test('sin destino, el mensaje es el de siempre', () => {
-    assert.match(whatsappMessage(quote, 2_000_000), /convertir CLP 2\.000\.000 a pesos colombianos \(recibo aprox\./);
+    assert.match(whatsappMessage(quote, 2_000_000), /convertir CLP 2\.000\.000 a pesos colombianos\. Recibo aprox\./);
   });
 });

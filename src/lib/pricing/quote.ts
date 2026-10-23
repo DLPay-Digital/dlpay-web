@@ -169,8 +169,14 @@ export function whatsappMessage(quote: Quote, giveAmount: number, destino?: stri
   const envio = intent === 'to_foreign' && destino !== undefined && destino !== '';
 
   const what: Record<Intent, string> = {
+    /* **Sin «, en {plural}» desde el 2026-10-23.** Era redundante por partida
+       doble: el destino ya dice la moneda —el selector enseña «Colombia · COP»—
+       y la cifra que sigue la lleva delante («COP 8.695.652»). Lo que se ganó
+       no es elegancia: el teléfono dibujado de la Home **muestra este mismo
+       texto**, y con doce caracteres menos la primera burbuja baja de 10
+       líneas a 9. Ver la nota del final de esta función. */
     to_foreign: envio
-      ? `enviar ${formatAmount(giveAmount, give)} a ${destino}, en ${plural}`
+      ? `enviar ${formatAmount(giveAmount, give)} a ${destino}`
       : `convertir ${formatAmount(giveAmount, give)} a ${plural}`,
     to_clp: `convertir ${formatAmount(giveAmount, give)} a pesos`,
   };
@@ -179,9 +185,37 @@ export function whatsappMessage(quote: Quote, giveAmount: number, destino?: stri
     return `Hola, quiero ${what[intent]}. ¿Pueden operar ese monto?`;
   }
 
+  /*
+    ── Por qué este texto es corto, y qué NO se le puede quitar ─────────────
+
+    **Lo lee un ejecutivo, y además se dibuja.** El teléfono de la Home y el de
+    `/como-funciona` enseñan esta misma cadena, letra por letra
+    (`lib/pricing/mensaje-inicial.ts`), y el de la Home la mete en una pantalla
+    de 511 px que **recorta por arriba a propósito**, como un chat. Con la
+    forma anterior la primera burbuja medía **10 líneas** y se quedaba cortada
+    a la mitad en cuanto llegaba el segundo mensaje; en Safari, que compone el
+    texto algo más alto, antes todavía. Lo vio Sebastián el 2026-10-23.
+
+    **Se quitó sólo lo que estaba dicho dos veces:**
+
+    · `, en {plural}` — el destino ya nombra la moneda y la cifra la lleva
+      delante;
+    · `al precio referencial` — la tasa pasa a un paréntesis. La palabra
+      «referencial» no se pierde del sitio: es una entrada del glosario y la
+      tarjeta del cotizador la dice encima de esta misma cifra.
+
+    **Lo que no se tocó, y conviene que siga así:** el monto, el destino,
+    «llegan aprox.» —que es la afirmación con marcador de Compliance—, la tasa
+    legible y «¿Me confirman el precio final?», que es como el sitio llama a lo
+    que el ejecutivo hace.
+
+    De 164 a 131 caracteres; la burbuja baja de 10 a 9 líneas a 390 px y de 10
+    a 8 a 1280.
+  */
   return (
-    `Hola, quiero ${what[intent]} (${envio ? 'llegan' : 'recibo'} aprox. ${formatAmount(quote.getAmount, get)} ` +
-    `al precio referencial ${precioLegible(price.rate, price.currency)}). ¿Me confirman el precio final?`
+    `Hola, quiero ${what[intent]}. ${envio ? 'Llegan' : 'Recibo'} aprox. ` +
+    `${formatAmount(quote.getAmount, get)} (${precioLegible(price.rate, price.currency)}). ` +
+    `¿Me confirman el precio final?`
   );
 }
 
