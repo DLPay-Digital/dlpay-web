@@ -304,8 +304,8 @@ los breakpoints **añaden**, nunca deshacen.
 Anchos mínimos puntuales (una tabla que no puede comprimirse más, un menú
 desplegable) **no** son breakpoints y no cuentan para esta regla.
 
-`1112px`, el riel del artículo: es el ancho en que caben riel, hueco y columna de lectura con los
-márgenes de sección. *(2026-10-13)*
+`1112px`, el riel: es el ancho en que caben riel, hueco y columna de lectura con los márgenes de
+sección. Lo usan el artículo *(2026-10-13)* y `/preguntas` *(2026-10-23)*.
 
 ### 4.3 Grid
 
@@ -874,7 +874,11 @@ No estrena ninguna marca; las que ya había hacen lo que dicen:
 - **el filete de cada paso de `/como-funciona` se traza** en `--ink-mute` si lo haces tú —existe,
   es real, no es nuestro— y en verde si lo hacemos nosotros, que es el tramo nuestro;
 - **el filete verde de la única fila que cobra, en `/precio`, se traza al final**, porque ése es
-  el cobro, y es nuestro.
+  el cobro, y es nuestro;
+- **la barra de lectura del artículo crece con el texto leído**, y **la regla de
+  `/cuanto-te-cobran` se llena hasta tu spread**: las dos son «barra llena verde», magnitudes. Los
+  tics de la regla van debajo de lo lleno. Encima lo partirían en tramos, y una barra partida es
+  el «canto dividido en unidades», que dice otra cosa.
 
 **La regla para la próxima:** si el movimiento de una marca no es su significado, la marca no se
 mueve.
@@ -1412,6 +1416,7 @@ cada una, no qué significa.
 | **Motor de movimiento** | Encender el Motion System en las páginas que lo usan | `Motion.astro`. No es una pieza visual: es el `IntersectionObserver` y su interruptor. Las cuatro legales y la 404 no lo llevan y siguen en cero JavaScript |
 | **Fila de artículo** | Una entrada de artículo en una lista | `FilaArticulo`. Marca y texto en un solo enlace. La usan el índice del blog y «Sigue leyendo». *2026-10-13.* |
 | **Ruta de guías** | Los pasos de «Tu primera operación», en `/blog` | `RutaGuias`. Pasos numerados con la gramática de «Cómo empezamos». Cuenta sólo lo publicado. *2026-10-13.* |
+| **El riel** | Navegar una página larga sabiendo dónde estás: el artículo y, desde el 2026-10-23, `/preguntas` | Desde 1112 px: 176 px de riel, 48 de hueco y 760 de lectura, pegado arriba a 32 px. Un rótulo en mono —«En esta página» en el artículo, «Las preguntas» en `/preguntas`, porque allí el glosario no está en la lista—, un filete `--line` a la izquierda y las entradas colgadas de él, de 44 px, en `--t-body-sm` y `--ink-mute`; en `/preguntas` con su recuento. **Marca dónde estás** (ADR-0018, piezas 17 y 19) con la marca del menú en claro: filete de 2 px en `--verde-deep` y texto en `--ink`, sin cambiar de grosor; en colores forzados, `Highlight` de 4 px. Sin JavaScript: ver el ADR. Un lector de pantalla no oye «actual», porque `aria-current` pediría JavaScript; el orden del documento no cambia. `tests/riel.test.ts` vigila que entradas y secciones estén en el mismo orden |
 | **Bandera** | El país junto a su nombre o su código | `Bandera.astro`. Ver §7.1. *2026-10-22.* |
 | **Selector con banderas** | Elegir destino o divisa en el cotizador | Sigue el patrón *combobox* de la ARIA APG: un botón de 52 px que abre un panel con buscador y la lista. La opción activa lleva `--papel-2` y un filete; la elegida, el código en `--verde-deep` y el punto. Spec: `cotizador-spec.md`, enmienda del 2026-10-22 (b). **Sustituye al `<select>` nativo, y no se usa fuera del cotizador**: un desplegable de verdad, con pocas opciones y sin banderas, sigue siendo un `<select>`. *2026-10-22.* |
 | **Destinos** | Trece destinos, cada uno en su moneda, en la Home bajo el globo | `Destinos.astro`. **Una banda decorativa** —la cápsula de Chile con el tramo verde y el isotipo, y las trece banderas— que se mueve al bajar (**ADR-0016, `motion-e6`**). Debajo, **trece tarjetas `<details>`**: bandera, país y moneda; al abrirse, el precio referencial legible, una tabla de cinco montos desde el mínimo y un enlace que lleva al cotizador con ese destino elegido. Sin JavaScript propio. Tres listas fijas en tres columnas desde 900 px, en orden alfabético de arriba abajo, **y no `columns: 3`**: con columnas de CSS, al abrir una tarjeta el navegador las rebalanceaba y saltaban de columna. **Las cifras salen de `convert()` y `formatAmount()`**, las del cotizador. *2026-10-22.* |

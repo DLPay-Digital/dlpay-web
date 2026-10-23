@@ -74,8 +74,8 @@ con su semántica y las cifras de `lib/pricing`. Lo hace en tres capas:
 | 14 | `/como-funciona` | Portada | Enseña el salto: el botón del cotizador abriendo el chat. La conversación va en los pasos | A | 2 |
 | 15 | `/como-funciona` | Los seis pasos | Cada paso enseña su pieza —el cotizador, tu mensaje, el ejecutivo…— y al bajar «se hace»: filete, número y pieza | C | 2 |
 | 16 | `/precio` | Qué cuesta y qué no | Cada «sin costo» se escribe al leer su fila; la que cobra traza su filete | C | 2 |
-| 17 | `/preguntas` | El índice | Desde 1100 px se pega a la izquierda y marca el grupo que lees | C | 3 |
-| 18 | Artículo | La barra de lectura | Crece con lo leído. Es una magnitud | C (`scroll()`) | 3 |
+| 17 | `/preguntas` | El índice | Desde 1112 px se pega a la izquierda y marca el grupo que lees | C | 3 |
+| 18 | Artículo | La barra de lectura | Crece con el texto leído. Es una magnitud | C (`view()` del texto) | 3 |
 | 19 | Artículo | El riel | Marca la sección que lees: dos líneas de tiempo por entrada | C | 3 |
 | 20 | `/cuanto-te-cobran` | La regla | De 0 a 5 %, se llena hasta tu spread; transición de 280 ms | ninguna (M2) | 3 |
 
@@ -105,9 +105,12 @@ fila aquí.
    - la línea del monto es `--ink-mute`, porque es tuya;
    - el filete de cada paso de `/como-funciona` es `--ink-mute` si lo haces tú y verde si lo
      hacemos nosotros;
+   - la barra de lectura y la regla de `/cuanto-te-cobran` son «barra llena verde», magnitudes; los
+     tics de la regla van debajo de lo lleno, para no partirla en el «canto dividido en unidades»;
    - la etiqueta final no se mueve nunca.
 5. **El cotizador no entra** (regla dura 2). La tarjeta de `/tarifas` llena su figura, no sus filas.
-6. **`/tarifas` sigue en cero bytes de JavaScript.** Las portadas son CSS.
+6. **`/tarifas` sigue en cero bytes de JavaScript.** Las portadas son CSS. *Desde la tanda 3,
+   `/preguntas` y el artículo también marcan dónde estás sin JavaScript.*
 7. **La Home no cambia.** La forma `compacta` de `FiguraMecanismo`, que es la de la Home, queda
    fuera de toda línea de tiempo; también lo vigila el test. *Desde la tanda 2, «no cambia» se
    mide en el píxel y en las peticiones:* el build reparte de otro modo 0,6 KB de CSS de las
@@ -130,7 +133,7 @@ fila aquí.
 | §0 bis, familia A — las narraciones largas salen del techo con un ADR | **Aplicada**: las piezas 1 a 4 y 14 son narraciones de una vez, de 1,8 a 2,6 s en total, con cada paso a `--m-slow` o menos |
 | §4, regla dura 1 — una sola vez, en las entradas | **Intacta** para las piezas A. Las C se arrastran con el desplazamiento, como manda su familia |
 | §4, reglas duras 2, 3 y 6 | **Intactas** |
-| §5 — dónde se aplica, página por página | **Se actualiza** con cada tanda: `/empresas` y `/confianza`; tablas nuevas para `/tarifas`, `/preguntas` y `/precio`; en `/como-funciona`, el encabezado y los pasos |
+| §5 — dónde se aplica, página por página | **Se actualiza** con cada tanda: `/empresas` y `/confianza`; tablas nuevas para `/tarifas`, `/preguntas`, `/precio` y `/cuanto-te-cobran`; en `/como-funciona`, el encabezado y los pasos; en el artículo, el riel y la barra de lectura |
 
 ## Lo que cuesta, medido en la tanda 1
 
@@ -191,6 +194,65 @@ De ahí sale la regla 8.
 - **HTML de `/como-funciona`: +1,1 KB comprimido.** La portada nueva y las seis piezas. Las
   banderas van con `codigos`: dos de catorce.
 - **En reposo, todas las rutas idénticas al píxel** salvo `/como-funciona`, que añade sus piezas.
+
+## La tanda 3, integrada el 2026-10-23
+
+**Las piezas 17 a 20**, sobre `2c75ee9`. Sebastián vio las cuatro antes de cerrar la entrega y
+las aprobó así.
+
+**La pieza 17 revierte una decisión suya, y la tomó sabiéndolo.** El 2026-09-24 Sebastián retiró
+por estética un índice pegajoso de `/preguntas`. El análisis que aprobó no lo advertía. Antes de
+construir la pieza, Cowork se lo dijo con una lámina que ponía la página de hoy al lado de la
+nueva, y Sebastián eligió que se pegue. Queda escrito en la cabecera de `preguntas.astro`, y
+`CLAUDE.md` §6 se corrigió con ella: decía de la banda de entrada que «ésta no se pega», y desde
+1112 px sí lo hace.
+
+**Un solo patrón para las piezas 17 y 19: el riel.**
+
+- **`/preguntas` usa el riel del artículo**: la misma rejilla —176 px de riel, 48 de hueco y 760
+  de lectura— y el mismo breakpoint, **1112 y no 1100**, porque 1112 es el ancho en que esa
+  rejilla cabe con los márgenes de sección.
+- **El glosario pasa a la misma rejilla**: el término en 176 y la definición en 760. Así las dos
+  columnas de lectura de la página arrancan en el mismo sitio.
+- **La marca de «dónde estás» es la del menú**, que señala la página actual con verde sobre la
+  tinta. Sobre claro, su par es `--verde-deep`: un filete de 2 px sobre el de `--line`, y el
+  texto en `--ink`. No cambia de grosor. En colores forzados, `Highlight` de 4 px.
+- **Cómo marca, sin JavaScript**: cada grupo o H2 es una línea de tiempo con nombre, y la vista se
+  reduce a una línea a un tercio de la pantalla. Cada entrada se enciende cuando su grupo cruza
+  esa línea y se apaga cuando la cruza el siguiente.
+- **`tests/riel.test.ts`** comprueba que las entradas y los grupos —o los H2— estén en el mismo
+  orden, y que los H2 sean hermanos. Si no lo son, el riel marcaría la sección equivocada.
+
+**La barra de lectura mide el texto, no la página** (pieza 18). Con `scroll()`, como estaba en la
+fila, contaba también «Sigue leyendo» y el pie. Ahora es la línea de tiempo del texto del artículo
+(`contain`): empieza cuando el texto llega arriba y se llena cuando su final asoma abajo.
+
+**La regla dice su escala y no juzga** (pieza 20): «0 %» y «5 % o más». Sobre 5 % queda llena;
+bajo la referencia, vacía. **La figura de la calculadora sigue sin escalar**: la regla es aparte y
+lleva su escala escrita.
+
+**Y un arreglo que no es pieza**: en el paso 06 de `/como-funciona`, a 390, la línea partida
+empezaba por «·». Ahora el punto va al final de «quién».
+
+### Lo que cuesta
+
+- **JavaScript: +121 B en línea**, en `/cuanto-te-cobran`: la isla de la calculadora pone el largo
+  de la regla. **Cambia un hash del CSP**, el de esa isla —sale `sha256-oyMK…`, entra
+  `sha256-XekN…`—, y ninguno más. Los archivos `.js` son los mismos.
+- **CSS comprimido: +1.595 B en total**, medido con `gzip -9`.
+
+  | Hoja | Antes | Después |
+  |---|---|---|
+  | Artículo | 3.097 B | 3.785 B |
+  | `/preguntas` | 1.855 B | 2.505 B |
+  | `/cuanto-te-cobran` | 1.541 B | 1.780 B |
+  | `/como-funciona` | 3.697 B | 3.715 B |
+
+- **La Home, idéntica byte a byte.**
+- **En reposo, todas las rutas idénticas al píxel** salvo:
+  - `/preguntas` desde 1112, por el riel —a 1280 queda **206 px más corta**—;
+  - `/cuanto-te-cobran`, por la regla: 50 px más alta a 390 y 49 a 1280;
+  - `/como-funciona` a 390, por el punto del paso 06.
 
 ## Lo que este ADR NO concede
 

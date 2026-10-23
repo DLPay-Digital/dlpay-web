@@ -606,7 +606,13 @@ sólo de sus páginas.
   que representaba una pregunta; ver §5.
 - **Banda de entrada**: los seis grupos con su recuento, enlazados. **Roza la decisión de Sebastián
   del 2026-09-24** —él retiró un índice pegajoso numerado 01–05— y **él la aprobó sabiéndolo**: ésta
-  no se pega y el número es cuántas preguntas hay, no el orden. Anclas nativas, cero JavaScript.
+  no se pegaba y el número es cuántas preguntas hay, no el orden. Anclas nativas, cero JavaScript.
+  **Desde el 2026-10-23 sí se pega, a partir de 1112 px** (ADR-0018, pieza 17): pasa a ser el riel
+  del artículo y marca el grupo que lees. **Eso ya no roza aquella decisión: la revierte**, y
+  Sebastián la tomó sabiéndolo —vio la página de hoy al lado de la nueva, con la advertencia
+  delante, y eligió que se pegue—. Lo que no vuelve es la numeración 01–05. Debajo de 1112 px la
+  banda sigue siendo la de siempre, y sigue sin JavaScript: marcar lo hacen líneas de tiempo de
+  CSS.
 - **Una salida al acabar las preguntas**, porque entre la última respuesta y «escríbenos» había
   1.563 px de glosario. La primera salida pasa del **85 % al 63 %** del scroll. El cierre no se toca:
   es redundancia deliberada, y si sobra una de las dos sale la nueva.

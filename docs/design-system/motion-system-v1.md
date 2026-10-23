@@ -287,7 +287,8 @@ desplazamiento», con sus reglas, en vez de una excepción por pieza.
 - las figuras de línea hacen su verbo al bajar (familia C);
 - cada página gana su pieza.
 
-Se integran por tandas; **la tanda 1 son las piezas 1 a 13**, y la **tanda 2, las 14 a 16**.
+Se integran por tandas; **la tanda 1 son las piezas 1 a 13**, la **tanda 2, las 14 a 16**, y la
+**tanda 3, las 17 a 20**.
 
 | Regla de este documento | Estado |
 |---|---|
@@ -600,6 +601,7 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 | Zona | Movimiento | Por qué |
 |---|---|---|
 | Encabezado | **M6**, y **`vida` (pieza 4)**: sale la pregunta y entra la respuesta | Familia A, 1,8 s |
+| Banda de entrada | **Desde 1112 px, un riel pegado**, y **`vida` (pieza 17)**: marca el grupo que lees | *Añadido el 2026-10-23 (tanda 3).* El mismo riel que el artículo. Pegado vale también quieto; lo que se mueve es la marca, y con movimiento reducido no la hay. Cada entrada se enciende cuando su grupo cruza una línea a un tercio de la pantalla y se apaga cuando la cruza el siguiente |
 | Grupos | **M4** en cada cabecera | Como estaba |
 
 ### /precio  ·  *añadido el 2026-10-23*
@@ -608,6 +610,13 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 |---|---|---|
 | Qué cuesta y qué no | **`vida` (ADR-0018, pieza 16)**: cada «sin costo» se escribe en su fila al leerla, de izquierda a derecha, y la única fila que cobra traza su filete verde | Familia C. Lo que se revela es texto, no cifras: la tabla no tiene ninguna. Termina con la fila todavía en el cuarto de abajo de la pantalla. **No se desplaza**: un `translate` empujaba la columna fuera del contenedor a 320 px |
 | El resto | Como estaba | El abanico de «No cambia después de que lo aceptas» sigue con su enmienda del 2026-10-01 |
+
+### /cuanto-te-cobran  ·  *añadido el 2026-10-23*
+
+| Zona | Movimiento | Por qué |
+|---|---|---|
+| La tarjeta | **La regla (ADR-0018, pieza 20)**: se llena hasta tu spread con una transición de 280 ms (`--m-slow`) cuando cambia la cifra | Ninguna familia: el pariente de **M2** —que asienta una cifra que cambió— para una magnitud. Es la única barra del sitio que cambia de largo, y lo hace porque escribiste. **La cifra no se anima**: cambia de golpe, como siempre. Con movimiento reducido, la regla salta |
+| El resto | **Nada** | La página no carga el motor de movimiento |
 
 ### /blog  ·  *añadido el 2026-09-23*
 
@@ -622,7 +631,9 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 |---|---|---|
 | Portada | **Nada** | Es lo primero que ves al llegar y tiene que estar ahí. Mismo criterio que la tarjeta del cotizador en la regla dura 2 |
 | Cabecera | **M6** en categoría, titular y bajada, **en bloques** | No palabra por palabra: `PageHero` parte titulares de tres o cuatro palabras, y el de un artículo puede tener dieciséis — a 60 ms cada una la entrada duraría casi un segundo |
-| Cuerpo | **Nada** | Es un documento. Una columna de párrafos escalonada es la definición de plantilla |
+| Cuerpo | **Nada** | Es un documento. Una columna de párrafos escalonada es la definición de plantilla. *El riel y la barra, abajo, están al lado del texto y no en él* |
+| Riel | **`vida` (pieza 19)**: marca la sección que lees | *Añadido el 2026-10-23 (tanda 3).* Lo mismo que el riel de `/preguntas`, con los H2. Desde 1112 px, que es donde existe el riel |
+| Barra de lectura | **`vida` (pieza 18)**: crece con el texto leído | *Añadido el 2026-10-23 (tanda 3).* 3 px arriba de todo, en `--verde-deep`: una magnitud. Mide el texto y no la página. Con movimiento reducido no existe |
 
 **Las dos páginas ya cargaban el motor y no usaban nada**, desde que el blog se añadió el
 2026-09-11: este capítulo se escribió el 2026-09-07 y nunca tuvo una fila para ellas. Pagaban el
