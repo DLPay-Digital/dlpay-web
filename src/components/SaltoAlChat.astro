@@ -1,0 +1,314 @@
+---
+/**
+ * **El salto**: la portada de `/como-funciona` (Cowork, entrega `vida2-`,
+ * 2026-10-23; ADR-0018, pieza 14).
+ *
+ * ── Qué enseña ─────────────────────────────────────────────────────────────
+ *
+ * El momento que la bajada de la página dice con palabras —«la web te deja
+ * listo y una persona cierra»— y que hasta hoy la portada no dibujaba: **el
+ * botón del cotizador abriendo el chat**. Tres piezas, en el orden en que pasa:
+ *
+ * 1. **La tarjeta del cotizador, en pequeño**, con sus dos cajas reales
+ *    —«Envías» y «Llega aprox.», con su ficha de moneda y su bandera— y su
+ *    botón, «Continuar por WhatsApp». Rotulada «en la web».
+ * 2. **La cuña del sistema** (DS §6.2): «el trabajo cambia de manos». Es la
+ *    misma marca que los carriles de esta página dibujan en cada traspaso, y
+ *    éste es el primero.
+ * 3. **El teléfono, con el chat recién abierto y tu mensaje en la caja de
+ *    texto, sin enviar** (`WhatsAppMockup`, slot `caja`). Es lo que pasa de
+ *    verdad: `wa.me/?text=` deja el mensaje puesto y quien lo envía eres tú.
+ *    Rotulado «con tu ejecutivo».
+ *
+ * La caja de texto se dibuja **aquí** y entra al teléfono por su slot: así sus
+ * estilos viven en este componente y la hoja de `WhatsAppMockup`, que la Home
+ * lleva en línea, no cambia (ver la cabecera de ese componente).
+ *
+ * Los dos rótulos son el par de las etiquetas de precio —«en la web» y «con tu
+ * ejecutivo»—: el sitio llama igual a los mismos dos lugares en todas partes.
+ *
+ * **Hasta el 2026-10-23 la portada enseñaba dos burbujas** —tu mensaje y el
+ * ejecutivo confirmando—, y los pasos 02 y 03 las repetían ochocientos píxeles
+ * más abajo. Ahora la portada es el salto y **la conversación va en los
+ * pasos**: el 02 enseña tu mensaje ya enviado, el 03 la confirmación.
+ *
+ * ── Qué no es ──────────────────────────────────────────────────────────────
+ *
+ * **No es el cotizador.** Es un dibujo de él, como el portátil de `/empresas`
+ * es un dibujo de la plataforma: nada se enfoca, nada se pulsa —el botón es un
+ * `<span>`— y todo va `aria-hidden`. Lo dice con palabras el pie que pone la
+ * página debajo. Por eso la regla dura 2 («el cotizador no entra») no le
+ * aplica, igual que no le aplica al portátil.
+ *
+ * **Ninguna cifra se teclea.** El monto es `quoteLimits.samplePayClp`, lo que
+ * llega sale de `buildQuote` con el precio de `ConfigPriceSource`, y el mensaje
+ * es `mensajeInicial()`, letra por letra el del botón (`tests/telefono.test.ts`).
+ * Las cifras no se animan (regla dura 3).
+ *
+ * ── Cómo se compone ────────────────────────────────────────────────────────
+ *
+ * · **Desde 900 px, en fila**: tarjeta, cuña y teléfono, apoyados abajo. Así
+ *   el botón y la caja de texto quedan a la misma altura y la cuña va de uno a
+ *   la otra.
+ * · **Debajo de 900, en columna**: la tarjeta arriba, la cuña de pie y el
+ *   teléfono debajo.
+ *
+ * ── Lo que hace al cargar (ADR-0018, pieza 14) ─────────────────────────────
+ *
+ * Una vez, cuando la portada ya entró: el botón se hunde (0,75 s), la cuña se
+ * traza (0,95–1,35 s) y el mensaje aparece en la caja (1,35 s), con el botón
+ * de enviar detrás. Familia A, narración corta: termina a los 1,73 s. Con
+ * movimiento reducido el salto está entero desde el primer cuadro.
+ */
+import WhatsAppMockup from './WhatsAppMockup.astro';
+import Bandera from './Bandera.astro';
+import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
+import { buildQuote } from '../lib/pricing/quote.ts';
+import { currencyInfo, DEFAULT_CURRENCY, DEFAULT_DESTINO } from '../lib/pricing/currencies.ts';
+import { formatCLP, formatForeign } from '../lib/pricing/format.ts';
+import { mensajeInicial } from '../lib/pricing/mensaje-inicial.ts';
+import { banderaDeDestino } from '../lib/banderas.ts';
+import { quoteLimits } from '../lib/config/site.ts';
+
+const price = await new ConfigPriceSource(DEFAULT_CURRENCY).getPrice();
+const { minPayClp: minPay, maxPayClp: maxPay, samplePayClp: monto } = quoteLimits;
+const quote = buildQuote({ intent: 'to_foreign', giveAmount: monto, price, minPay, ...(maxPay !== undefined ? { maxPay } : {}) });
+const mensaje = await mensajeInicial();
+const destino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
+
+/* La cuña del sistema, la del Design System §6.2: la misma de `FiguraCaso`. */
+const CUNA = 'M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4';
+---
+<div class="salto" aria-hidden="true">
+  <div class="st-pieza st-web">
+    <div class="st-tarjeta">
+      <div class="st-monto">
+        <span class="st-cabeza">
+          <span class="st-label">Envías</span>
+          <span class="st-moneda num"><Bandera code="cl" size={16} />CLP</span>
+        </span>
+        <span class="st-cifra num">{formatCLP(monto)}</span>
+      </div>
+      <div class="st-monto st-llega">
+        <span class="st-cabeza">
+          <span class="st-label">Llega aprox.</span>
+          <span class="st-moneda num"><Bandera code={destino} size={16} />{DEFAULT_CURRENCY}</span>
+        </span>
+        <span class="st-cifra num">{formatForeign(quote.getAmount, currencyInfo(DEFAULT_CURRENCY).decimals)}</span>
+      </div>
+      <span class="st-boton">Continuar por WhatsApp</span>
+    </div>
+    <p class="st-rot">en la web</p>
+  </div>
+
+  <svg class="st-cuna" viewBox="0 0 56 20" fill="none">
+    <path d={CUNA} stroke="currentColor" stroke-width="3" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
+  </svg>
+
+  <div class="st-pieza st-chat">
+    <WhatsAppMockup variant="bare" thread={[]}>
+      <div class="caja-texto" slot="caja">
+        <p class="escrito">{mensaje}</p>
+        <span class="enviar">
+          <svg viewBox="0 0 16 16" fill="none">
+            <path d="M2.5 8h9.5M8.5 4l4 4-4 4" />
+          </svg>
+        </span>
+      </div>
+    </WhatsAppMockup>
+    <p class="st-rot">con tu ejecutivo</p>
+  </div>
+</div>
+
+<style>
+  .salto {
+    /* Dónde cae la cuña, medido desde abajo: el rótulo (17 px), su hueco
+       (8 px), el relleno inferior de la tarjeta (16 px) y medio botón (22). */
+    --st-cuna-y: 63px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-3);
+  }
+  .st-pieza { display: flex; flex-direction: column; align-items: center; gap: var(--s-2); }
+
+  /* El rótulo vive del lado claro, como el pie de la portada: la pieza monta
+     sobre la costura y su borde de abajo cae sobre `--papel-2`. */
+  .st-rot {
+    margin: 0;
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    line-height: 1.3;
+    letter-spacing: .02em;
+    color: var(--ink-mute);
+  }
+
+  /* ── La tarjeta, en pequeño: la del cotizador ──────────────────────────── */
+  .st-tarjeta {
+    width: 280px;
+    max-width: 100%;
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-4);
+    background: var(--papel);
+    color: var(--ink);
+    border-radius: var(--r-card);
+    box-shadow: var(--elev-card);
+  }
+  .st-monto {
+    display: grid;
+    gap: 2px;
+    padding: var(--s-2) var(--s-3);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-2);
+  }
+  .st-cabeza { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
+  .st-label {
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: var(--ls-label);
+    color: var(--ink-mute);
+    line-height: 1.3;
+  }
+  .st-moneda {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px var(--s-2) 3px 4px;
+    border-radius: var(--r-1);
+    background: var(--papel-2);
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--ink);
+  }
+  .st-cifra { font-size: 22px; font-weight: 500; line-height: 1.2; color: var(--ink); white-space: nowrap; }
+  .st-llega .st-cifra { font-weight: 600; }
+  .st-boton {
+    margin-top: var(--s-1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: var(--s-2) var(--s-3);
+    background: var(--verde);
+    color: var(--on-verde);
+    font-size: var(--t-body-sm);
+    font-weight: 700;
+    border-radius: var(--r-2);
+    text-align: center;
+  }
+
+  /* ── La cuña: de pie en columna, acostada en fila ──────────────────────── */
+  .st-cuna {
+    width: 56px;
+    height: 20px;
+    overflow: visible;
+    color: var(--verde-deep);
+    transform: rotate(90deg);
+    margin: var(--s-3) 0;
+  }
+
+  /* Más bajo que el de la Home (9:16 y no 9:19,5): el chat está vacío —la
+     conversación va en los pasos— y lo que importa es la cabecera y la caja. */
+  .st-chat :global(.mockup.bare .device) { width: 210px; aspect-ratio: 9 / 16; }
+
+  /* ── La caja de texto, dentro del teléfono ────────────────────────────────
+     El campo y el botón de enviar de cualquier app de mensajería, abstraídos
+     como el resto del cromo: un campo en `--papel` con radio `--r-3` —no una
+     píldora, DS §4.4— y el botón en `--verde-deep`, cuadrado con radio
+     `--r-2`, con la flecha del sitio y no el avión de papel de ninguna app.
+     El texto va a 14 px como las burbujas, y **entero**: la caja crece con el
+     mensaje, como crece la de verdad, y el chat vacío le deja sitio de sobra.
+     Es el único lugar de la página donde el mensaje se lee completo. */
+  .caja-texto {
+    flex: none;
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    padding: var(--s-2) var(--s-2) var(--s-4);
+  }
+  .escrito {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: var(--s-2) var(--s-3);
+    background: var(--papel);
+    border-radius: var(--r-3);
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--ink);
+    box-shadow: 0 1px 2px rgba(11, 19, 32, .10);
+    overflow-wrap: anywhere;
+  }
+  .enviar {
+    flex: none;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-2);
+    background: var(--verde-deep);
+    color: var(--papel);
+  }
+  .enviar svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* En columna, la tarjeta y la cuña quedan sobre la tinta de la portada:
+     la cuña va en `--verde` y el rótulo en `--on-tinta-mute` (DS §6.2: el
+     verde lo decide el fondo). En fila caen sobre el papel y vuelven a sus
+     colores de superficie clara. */
+  @media (max-width: 899.98px) {
+    .st-cuna { color: var(--verde); }
+    .st-web .st-rot { color: var(--on-tinta-mute); }
+  }
+
+  @media (min-width: 900px) {
+    .salto {
+      flex-direction: row;
+      align-items: flex-end;
+      gap: var(--s-4);
+    }
+    .st-tarjeta { width: 300px; }
+    .st-cuna { transform: none; margin: 0 0 var(--st-cuna-y); }
+    .st-chat :global(.mockup.bare .device) { width: 236px; }
+  }
+
+  /* ── Colores forzados ─────────────────────────────────────────────────────
+     La tarjeta, las cajas y el botón son fondos, y el sistema los quita: se
+     dibujan con su borde. La cuña es un trazo, pero se quedaba en su verde
+     sobre el `Canvas` —en columna, 2,1:1 sobre blanco, porque la tinta que
+     tenía detrás desaparece—: pasa a `CanvasText`, como la de `FiguraCaso`. */
+  @media (forced-colors: active) {
+    .st-tarjeta, .st-monto { border: 1px solid CanvasText; }
+    .st-boton { border: 2px solid Highlight; }
+    .st-cuna { forced-color-adjust: none; color: CanvasText; }
+    /* Lo que escribe el cliente va en el color de resalte, como sus burbujas
+       en `WhatsAppMockup`. */
+    .escrito { border: 1px solid Highlight; }
+    .enviar { forced-color-adjust: none; background: Highlight; color: Canvas; }
+  }
+
+  /*
+    ── El salto, una vez al cargar (ADR-0018, pieza 14) ────────────────────
+
+    En `/como-funciona` la portada termina de entrar a los ~440 ms (M6, quinto
+    paso). Desde ahí: el botón se hunde (0,75 s), la cuña se traza de la
+    tarjeta al teléfono (0,95–1,35 s) y el mensaje aparece en la caja (1,35 s),
+    con el botón de enviar detrás (1,45 s). Termina a los 1,73 s.
+
+    La cuña se traza con `stroke-dasharray`: su camino mide unas 69 unidades de
+    su `viewBox` (15,4 + 10,9 + 16,3 + 10,9 + 15,4), y `70` lo cubre entero.
+    `vector-effect: non-scaling-stroke` no cambia la longitud del camino, sólo
+    el grosor con que se pinta. Quieta, el dibujo es el mismo.
+  */
+  @media (prefers-reduced-motion: no-preference) {
+    .st-boton { animation: st-pulsa var(--m-base) var(--m-ease) .75s both; }
+    .st-cuna path { stroke-dasharray: 70; animation: st-traza .4s var(--m-ease) .95s both; }
+    .escrito { animation: st-aparece var(--m-slow) var(--m-ease) 1.35s both; }
+    .enviar { animation: st-aparece var(--m-slow) var(--m-ease) 1.45s both; }
+  }
+  @keyframes st-pulsa { 50% { transform: scale(.96); box-shadow: inset 0 2px 0 rgba(4, 20, 14, .25); } }
+  @keyframes st-traza { from { stroke-dashoffset: 70; } }
+  @keyframes st-aparece { from { opacity: 0; transform: translateY(6px); } }
+</style>

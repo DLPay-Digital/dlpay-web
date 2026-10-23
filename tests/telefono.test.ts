@@ -8,9 +8,12 @@
  * automáticamente desde nuestro cotizador», así que la primera burbuja tiene que
  * ser el texto que escribe el botón, letra por letra. Hasta el 2026-10-23 no lo
  * era —«necesito convertir» contra «quiero enviar … a Estados Unidos»— y nada
- * avisó. Y la conversación sólo crece si cada paso tiene sus mensajes: un
- * `data-paso` sin línea de tiempo, o una línea de tiempo sin mensajes, deja la
- * sección quieta sin que el build se queje.
+ * avisó. En `/como-funciona`, desde ese mismo día, el texto vive en la caja de
+ * texto del chat, sin enviar.
+ *
+ * Y la conversación sólo crece si cada paso tiene sus mensajes: un `data-paso`
+ * sin línea de tiempo, o una línea de tiempo sin mensajes, deja la sección
+ * quieta sin que el build se queje.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -52,10 +55,15 @@ describe('el teléfono de «Así se ve tu operación»', { skip: !existsSync(dis
     assert.equal(burbujas(proceso)[0], mensajeDelBoton(home));
   });
 
-  test('en /como-funciona también', () => {
+  test('en /como-funciona, el mensaje que queda escrito en la caja es el del botón', () => {
+    // Desde el 2026-10-23 (ADR-0018, pieza 14) la portada de `/como-funciona`
+    // no enseña burbujas: enseña el chat recién abierto, con el mensaje en la
+    // caja de texto y sin enviar. Es el mismo texto, y tiene que seguir siéndolo.
     const home = leer('index.html');
     const cf = leer('como-funciona/index.html');
-    assert.equal(burbujas(cf)[0], mensajeDelBoton(home));
+    const escrito = cf.match(/<p class="escrito[^"]*">([\s\S]*?)<\/p>/)?.[1];
+    assert.ok(escrito, 'la portada de /como-funciona no tiene la caja de texto');
+    assert.equal(texto(escrito), mensajeDelBoton(home));
   });
 
   test('un solo teléfono, y cada uno de los cuatro pasos con sus mensajes', () => {

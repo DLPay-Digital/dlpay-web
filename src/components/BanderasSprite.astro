@@ -17,11 +17,23 @@
  * nadie se entera. Por eso `tests/banderas.test.ts` revisa el build: cada
  * `#bandera-xx` que se usa tiene que estar definido en la misma página, y una
  * sola vez.
+ *
+ * **`codigos`, desde el 2026-10-23** (entrega `vida2-`): una página que pinta
+ * dos banderas no tiene por qué cargar las catorce. `/como-funciona` pasa
+ * `['cl', 'us']` y se ahorra 6,4 KB de HTML (1,7 KB comprimido). Sin la prop
+ * van todas, como en la Home. El test de arriba sigue valiendo igual: si una página pinta una
+ * bandera que no pidió, falla y dice cuál.
  */
-import { BANDERAS, CODIGOS_BANDERA } from '../lib/banderas.ts';
+import { BANDERAS, CODIGOS_BANDERA, type CodigoBandera } from '../lib/banderas.ts';
+
+interface Props {
+  /** Las que pinta la página. Sin la prop, las catorce. */
+  codigos?: readonly CodigoBandera[];
+}
+const { codigos = CODIGOS_BANDERA } = Astro.props;
 ---
 <svg class="banderas-sprite" aria-hidden="true" focusable="false">
-  {CODIGOS_BANDERA.map((c) => <symbol id={`bandera-${c}`} viewBox="0 0 40 40" set:html={BANDERAS[c]} />)}
+  {codigos.map((c) => <symbol id={`bandera-${c}`} viewBox="0 0 40 40" set:html={BANDERAS[c]} />)}
 </svg>
 
 <style>

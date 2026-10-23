@@ -17,12 +17,16 @@ import Carpeta from '../components/Carpeta.astro';
 import { caveats, hinge } from '../content/scope.ts';
 import Puente from '../components/Puente.astro';
 import FiguraRiel from '../components/FiguraRiel.astro';
-import WhatsAppMockup from '../components/WhatsAppMockup.astro';
+import SaltoAlChat from '../components/SaltoAlChat.astro';
+import BanderasSprite from '../components/BanderasSprite.astro';
+import Bandera from '../components/Bandera.astro';
 import { detailedSteps, checklist, chatLines } from '../content/process.ts';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { formatRate } from '../lib/pricing/format.ts';
 import { mensajeInicial } from '../lib/pricing/mensaje-inicial.ts';
 import { contact, platform } from '../lib/config/site.ts';
+import { DEFAULT_CURRENCY, DEFAULT_DESTINO } from '../lib/pricing/currencies.ts';
+import { banderaDeDestino } from '../lib/banderas.ts';
 
 /* El botón es «Preguntar primero» y está junto a «Crear mi cuenta», en la
    sección de registro y verificación. El mensaje nombra esa duda concreta. */
@@ -31,29 +35,46 @@ const wa = contact.whatsappUrl(
 );
 
 /*
-  El teléfono de la portada.
+  La conversación, de las mismas fuentes que la Home: las frases salen de
+  `chatLines` —que es de donde bebe `Process.astro`—, la tasa de
+  `ConfigPriceSource` y el primer mensaje de `mensajeInicial()`, el texto que
+  el botón del cotizador escribe solo, letra por letra. Ninguna cifra de esta
+  página puede contradecir a la Home.
 
-  La página que explica la conversación no enseñaba la conversación: el mockup
-  existía desde hacía semanas y sólo lo usaban la Home y `/empresas`.
-
-  **El hilo no se teclea.** Las frases salen de `chatLines`, que es la
-  misma fuente de la que bebe `Process.astro`; la tasa sale de
-  `ConfigPriceSource`, y el primer mensaje, desde el 2026-10-23, de
-  `mensajeInicial()`: es el texto que el botón del cotizador escribe solo, letra
-  por letra. Ninguna cifra de esta página puede contradecir a la Home.
-
-  Es el momento que los pasos 02 y 03 describen con palabras: el mensaje que el
-  botón escribe solo, y el ejecutivo confirmando. **Son dos burbujas desde el
-  2026-10-23**: el mensaje real del cotizador es más largo que la frase que
-  había, y con «Sí, acepto.» de tercera el teléfono cortaba el principio del
-  mensaje, que es justamente lo que esta figura enseña.
+  **Hasta el 2026-10-23 la portada enseñaba las dos primeras burbujas.** Desde
+  ese día enseña el salto —el botón del cotizador abriendo el chat, con tu
+  mensaje en la caja y sin enviar (`SaltoAlChat`, ADR-0018 pieza 14)— y la
+  conversación va en los pasos, de a una pieza por paso (pieza 15).
 */
 const price = await new ConfigPriceSource().getPrice();
 const chat = chatLines(await mensajeInicial(), formatRate(price.rate));
-const hilo = [
-  { sender: 'user', text: chat.pide },
-  { sender: 'dlpay', text: chat.confirma },
-] as const;
+
+/*
+  **La pieza de cada paso** (ADR-0018, pieza 15): lo que ves en ese momento,
+  en pequeño. Es lo que en la página de envíos de Wise son tarjetas con un
+  pedazo de su producto dentro, pero con el nuestro:
+
+  · 01 — el selector de destino del cotizador, cerrado, con sus palabras
+    («¿A dónde envías?») y su bandera. La tarjeta con los montos ya está en la
+    portada, justo encima.
+  · 02 — tu mensaje, **ya enviado**: la portada lo enseña en la caja, sin
+    enviar. Sólo sus tres primeros renglones; el entero está arriba.
+  · 03 a 06 — la conversación, en el orden en que pasa.
+
+  Van `aria-hidden`: el paso ya lo dice con palabras.
+*/
+type Pieza =
+  | { tipo: 'destino' }
+  | { tipo: 'out' | 'in'; texto: string };
+const piezas: Record<number, Pieza> = {
+  1: { tipo: 'destino' },
+  2: { tipo: 'out', texto: chat.pide },
+  3: { tipo: 'in', texto: chat.confirma },
+  4: { tipo: 'out', texto: chat.transfiere },
+  5: { tipo: 'in', texto: chat.recibido },
+  6: { tipo: 'in', texto: chat.entregado },
+};
+const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
 ---
 <Base
   title="Cómo funciona"
@@ -61,6 +82,8 @@ const hilo = [
   path="/como-funciona/"
 >
   <Motion />
+  {/* Dos banderas en la página: la del peso y la del destino. */}
+  <BanderasSprite codigos={['cl', banderaDestino]} />
   <Header />
   <main id="main">
     {/*
@@ -75,14 +98,13 @@ const hilo = [
       sequence
       layout="stacked"
     >
-      <div class="telefono" slot="aside">
-        {/* `bare`: el pie de la variante `proof` está escrito para papel —usa
-            `--ink` y `--ink-mute`— y acá el teléfono se apoya en tinta. El pie
-            lo pone la página, con los colores de la banda. */}
-        <WhatsAppMockup variant="bare" thread={hilo} />
+      <div class="portada" slot="aside">
+        <SaltoAlChat />
+        {/* El pie va con los colores del PAPEL: el bloque monta sobre la
+            costura y esto es lo último que hay dentro. Ver `.pie-tel`. */}
         <p class="pie-tel">
           <b>Acá pasa de la web a una persona.</b>
-          El chat se abre con tu operación ya escrita.
+          El chat se abre con tu operación ya escrita: sólo falta enviarla.
         </p>
       </div>
     </PageHero>
@@ -131,6 +153,27 @@ const hilo = [
                   <p>{step.body}</p>
                   <span class="who">{us ? 'Lo hacemos nosotros' : 'Lo haces tú'}</span>
                   <span class="time num">{step.time}</span>
+                  {(() => {
+                    const p = piezas[step.n];
+                    if (!p) return null;
+                    return p.tipo === 'destino' ? (
+                      <div class="pieza p-destino" aria-hidden="true">
+                        <span class="p-label">¿A dónde envías?</span>
+                        <span class="p-selector">
+                          <span class="p-actual">
+                            <Bandera code={banderaDestino} size={24} />
+                            <span class="p-nombre">{DEFAULT_DESTINO}</span>
+                            <span class="p-codigo num">{DEFAULT_CURRENCY}</span>
+                          </span>
+                          <Icon name="chevron" size={20} class="p-ico" />
+                        </span>
+                      </div>
+                    ) : (
+                      <div class={`pieza p-burbuja p-${p.tipo}`} aria-hidden="true">
+                        <p class="burbuja"><span class="texto">{p.texto}</span></p>
+                      </div>
+                    );
+                  })()}
                 </li>
               );
             })}
@@ -280,9 +323,11 @@ const hilo = [
     del alto de la pieza; mismo contrato que en `/empresas` y `/tarifas`.
   */
   main { --montaje: 96px; }
-  @media (min-width: 900px) { main { --montaje: 120px; } }
+  /* 160 y no 120 desde el 2026-10-23: con el salto, lo que tiene que caer
+     sobre el papel es la cuña, que va a la altura del botón, y no sólo el pie. */
+  @media (min-width: 900px) { main { --montaje: 160px; } }
 
-  .telefono { display: grid; justify-items: center; gap: var(--s-4); }
+  .portada { display: grid; justify-items: center; gap: var(--s-4); }
   /*
     El pie va con los colores del PAPEL, y esto costó una captura.
 
@@ -519,4 +564,134 @@ const hilo = [
     .step.us .handoff-mark { left: calc(-1 * var(--s-8) / 2 - 20px); }
     .step.you .handoff-mark { right: calc(-1 * var(--s-8) / 2 - 20px); transform: scaleX(-1); }
   }
+  /*
+    ── La pieza de cada paso (ADR-0018, pieza 15) ──────────────────────────
+
+    Debajo del tiempo de cada paso, en pequeño, lo que ves en ese momento. Las
+    burbujas son las del teléfono sin el teléfono —mismos colores, mismo 14 px
+    de interfaz—, y sin colita: fuera de un aparato, la colita no apunta a
+    nadie. **Lo tuyo va a la derecha**, como en cualquier chat, y en
+    escritorio, además, sale hacia el eje: hacia nosotros.
+
+    En los pasos de DLPay el suelo es `--papel`, así que la burbuja entrante,
+    que en el teléfono es `--papel` sobre `--papel-2`, se invierte: va en
+    `--papel-2`. Las dos dan más de 14:1 con `--ink` encima.
+
+    `.step .burbuja` y no `.burbuja`: `.step p` pinta los párrafos del paso en
+    `--ink-mute`, y una burbuja en gris daba 4,26:1 (medido con axe).
+  */
+  .pieza { margin-top: var(--s-4); max-width: 340px; }
+
+  .p-destino { display: grid; gap: var(--s-2); }
+  .p-label {
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: var(--ls-label);
+    color: var(--ink-mute);
+  }
+  .p-selector {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    min-height: 52px;
+    padding: 0 var(--s-3);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r-2);
+    color: var(--ink);
+  }
+  .p-actual { display: flex; align-items: center; gap: var(--s-3); min-width: 0; }
+  .p-nombre { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .p-codigo { font-size: var(--t-label); font-weight: 500; color: var(--ink-mute); }
+  .p-selector :global(.p-ico) { flex: none; color: var(--ink-mute); transform: rotate(90deg); }
+
+  .p-burbuja { display: flex; }
+  .p-out { justify-content: flex-end; }
+  .step .burbuja {
+    margin: 0;
+    max-width: 100%;
+    padding: var(--s-2) var(--s-3);
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--ink);
+    box-shadow: 0 1px 2px rgba(11, 19, 32, .10);
+  }
+  .p-out .burbuja { background: rgba(22, 199, 132, .22); border-radius: var(--r-3) 0 var(--r-3) var(--r-3); }
+  /* Tu mensaje entero está en la portada: acá basta su principio. */
+  .p-out .texto { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .p-in .burbuja { background: var(--papel); border-radius: 0 var(--r-3) var(--r-3) var(--r-3); }
+  .step.us .p-in .burbuja { background: var(--papel-2); }
+
+  @media (min-width: 900px) {
+    .step.you .pieza { margin-left: auto; }
+  }
+
+  @media (forced-colors: active) {
+    .p-selector, .step .burbuja { border: 1px solid CanvasText; }
+    .p-out .burbuja { border-color: Highlight; }
+  }
+
+  /*
+    ── Al bajar, cada paso «se hace» (ADR-0018, pieza 15) ───────────────────
+
+    Cada paso es su propia línea de tiempo de vista (`view()`, sin nombre: la
+    lee el propio elemento): **su filete se traza** de izquierda a derecha —en
+    `--ink-mute` si lo haces tú, que es el filete de «existe, es real, no es
+    nuestro», y en verde si lo hacemos nosotros, que es el tramo nuestro y el
+    color del filete que ya tenía (DS §6.2)—, **su número se enciende** y **su
+    pieza llega**.
+    Familia C: función pura del desplazamiento, CSS entero, y con movimiento
+    reducido o sin soporte el paso es el de siempre, con su pieza puesta.
+
+    Las cuñas de traspaso siguen siendo M3 (`data-draw`), como estaban: se
+    dibujan una vez, y lo de acá no las toca.
+  */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .step::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--ink-mute);
+        transform-origin: left center;
+        animation: paso-filete linear both;
+        animation-timeline: view();
+        animation-range: entry 60% cover 35%;
+      }
+      .step.us::before { background: var(--verde-deep); border-radius: var(--r-3) var(--r-3) 0 0; }
+      .step.you .n { color: var(--ink); }
+      .step.us .n { color: var(--verde-deep); }
+      .step .n {
+        animation: paso-numero linear both;
+        animation-timeline: view();
+        animation-range: entry 80% cover 35%;
+      }
+      /* Dos tramos: la opacidad termina **en cuanto la pieza entra entera**
+         (`entry 100%`), y la subida sigue un poco más (`cover 30%`). Así, si
+         alguien deja de bajar a media llegada, lo que ve está opaco: nunca
+         queda texto a media tinta en la zona donde se lee. En el prototipo
+         eran un solo tramo hasta `cover 40%`, y axe encontró una burbuja a
+         media opacidad a 390. */
+      .pieza {
+        animation: paso-aparece linear both, paso-sube linear both;
+        animation-timeline: view(), view();
+        animation-range: entry 0% entry 100%, entry 0% cover 30%;
+      }
+    }
+  }
+  /* En colores forzados el filete es un fondo, y el modo lo pinta en `Canvas`:
+     tapaba el borde de arriba del paso a medida que crecía, y el separador se
+     borraba en vez de trazarse. Se ancla a `CanvasText`, como las marcas de
+     `FiguraCaso`. Va después del bloque de arriba para ganarle. */
+  @media (forced-colors: active) {
+    .step::before, .step.us::before { forced-color-adjust: none; background: CanvasText; }
+  }
+  @keyframes paso-filete { from { transform: scaleX(0); } }
+  @keyframes paso-numero { from { color: var(--ink-mute); } }
+  @keyframes paso-aparece { from { opacity: 0; } }
+  @keyframes paso-sube { from { transform: translateY(16px); } }
 </style>

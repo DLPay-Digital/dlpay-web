@@ -40,6 +40,16 @@
  *
  * El dispositivo va aria-hidden y el contexto lo dan las palabras de alrededor:
  * un lector de pantalla no necesita el cromo de un teléfono dibujado.
+ *
+ * ── El slot `caja` (entrega `vida2-`, 2026-10-23) ──────────────────────────
+ *
+ * Lo que va **debajo del chat, dentro del teléfono**: hoy, la caja de texto
+ * con el mensaje escrito y sin enviar que dibuja `SaltoAlChat`, la portada de
+ * `/como-funciona`. Es un slot y no una prop **para que este componente no
+ * cambie ni un byte de CSS**: la Home lo usa, y su hoja va en línea en el HTML
+ * mientras pese menos de 4 KB. Con la caja aquí dentro pasaba de ese límite,
+ * salía a un archivo aparte y la Home ganaba una petición. Los estilos de la
+ * caja viven en quien la pone.
  */
 import Logo from './Logo.astro';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
@@ -120,6 +130,7 @@ const orden = messages.map((m, i) => messages.slice(0, i + 1).filter((x) => x.pa
               <p class:list={['bubble', m.sender === 'user' ? 'out' : 'in']}>{m.text}</p>
             ))}
       </div>
+      <slot name="caja" />
     </div>
   </div>
 

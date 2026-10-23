@@ -58,8 +58,8 @@
  *   mercado se mueve; el precio que te confirman, no.
  * · `monto`: la línea del monto crece hasta el límite y, al cruzarlo, aparece
  *   con quién se conversa.
- * · `people`: la placa con el nombre llega al escritorio. Lo identificable es
- *   el nombre.
+ * · `people`: la placa con el nombre se levanta sobre el escritorio. Lo
+ *   identificable es el nombre.
  * · `precio` no hace nada: sólo vive en la Home.
  *
  * **La Home no se mueve: `compacta` queda fuera**, porque ahí las tres láminas
@@ -595,8 +595,12 @@ const { kind, compacta = false } = Astro.props;
     **Lo que se mueve no cambia de sitio en el documento.** La unidad viaja con
     `translate` en `cqw` —sale 19,5 cqw a la izquierda, junto a la pieza de tu
     banco, y termina en su sitio de siempre—; la etiqueta gira desde su propio
-    ojal (`transform-origin` ya estaba puesto ahí), y la placa baja con
-    `translate`, que se suma al `translateX(-50%)` que la centra sin pisarlo.
+    ojal (`transform-origin` ya estaba puesto ahí), y la placa se levanta con
+    `scale`, que se suma al `translateX(-50%)` que la centra sin pisarlo.
+
+    **Ningún texto se funde** (corregido el 2026-10-23, tanda 2): lo que se lee
+    está opaco en todo momento. Las marcas sí entran con opacidad, porque son
+    dibujo; los rótulos y la placa, no.
   */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
@@ -627,16 +631,30 @@ const { kind, compacta = false } = Astro.props;
         animation-timeline: --fm;
         animation-range: cover 20% cover 45%;
       }
-      .fm-monto:not(.fm-compacta) :is(.fm-rot-conversa, .fm-persona, .fm-mesa, .fm-pata, .fm-placa) {
+      /* Aparece el escritorio —persona, mesa y patas— y la placa se levanta
+         sobre él. **El texto no se funde**: «acá se conversa» está desde el
+         principio, porque marca el lado del límite y no la llegada, y «Tu
+         ejecutivo» se levanta con `scale`, entero y opaco. Hasta el
+         2026-10-23 (tanda 1) los dos textos se fundían, y axe, con la página
+         parada a cada altura, encontró «acá se conversa» a media tinta en el
+         tercio de arriba de la pantalla. */
+      .fm-monto:not(.fm-compacta) :is(.fm-persona, .fm-mesa, .fm-pata) {
         animation: fm-aparece linear both;
         animation-timeline: --fm;
         animation-range: cover 44% cover 54%;
       }
+      .fm-monto:not(.fm-compacta) .fm-placa {
+        transform-origin: 50% 100%;
+        animation: fm-levanta linear both;
+        animation-timeline: --fm;
+        animation-range: cover 46% cover 54%;
+      }
 
       .fm-people:not(.fm-compacta) .fm-placa {
-        animation: fm-placa linear both;
+        transform-origin: 50% 100%;
+        animation: fm-levanta linear both;
         animation-timeline: --fm;
-        animation-range: cover 25% cover 45%;
+        animation-range: cover 25% cover 40%;
       }
     }
   }
@@ -652,5 +670,8 @@ const { kind, compacta = false } = Astro.props;
   /* La línea arranca en un quinto de su largo: el monto nunca es cero. */
   @keyframes fm-crece { from { transform: scaleX(.18); } }
   @keyframes fm-aparece { from { opacity: 0; } }
-  @keyframes fm-placa { from { opacity: 0; translate: 0 -10cqw; } }
+  /* `scale` y no `transform`: se suma al `translateX(-50%)` que centra la
+     placa sin pisarlo. La placa crece desde el escritorio, con el texto opaco
+     en todo momento. */
+  @keyframes fm-levanta { from { scale: 1 0; } }
 </style>
