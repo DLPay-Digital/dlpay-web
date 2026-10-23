@@ -386,12 +386,23 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
   .step p { color: var(--ink-mute); max-width: 47ch; margin-bottom: var(--s-2); }
 
   /* En móvil no hay carriles, así que quién y cuándo viajan juntos en un solo
-     pie mono: dos datos del mismo orden, una sola línea. */
+     pie mono: dos datos del mismo orden, una sola línea.
+
+     **El punto va al final de «quién», no al principio de «cuándo»** (corregido
+     el 2026-10-23, entrega `vida3-`). Cuando los dos no caben —en el paso 06 a
+     390, «te lo confirma tu ejecutivo»—, la segunda línea empezaba por «·».
+     Ahora el punto se queda pegado a lo de antes (`nowrap`) y la línea nueva
+     empieza por el tiempo. El punto es dibujo y no se lee: `/ ''`, con la
+     forma sin texto alternativo delante para quien no la entienda. */
   .who, .time { display: inline; font-family: var(--f-num); font-size: var(--t-dato-sm); }
-  .who { font-weight: 600; }
-  .who + .time::before {
+  .who { font-weight: 600; white-space: nowrap; }
+  .who::after {
     content: '·';
-    margin: 0 .55em;
+    content: '·' / '';
+    /* Los mismos huecos de antes a cada lado del punto: el espacio entre las
+       dos etiquetas pasó de antes a después de él, y los márgenes lo
+       compensan. Ninguno va en «cuándo», que al partir lo sangraría. */
+    margin: 0 .25em 0 .85em;
     font-weight: 400;
     color: var(--ink-mute);
   }
@@ -547,7 +558,7 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
       clip-path: inset(50%);
       white-space: nowrap;
     }
-    .who + .time::before { content: none; }
+    .who::after { content: none; }
     .time { display: block; margin-top: var(--s-2); }
 
     /* La cuña marca el momento en que el trabajo cambia de manos: el marcador de

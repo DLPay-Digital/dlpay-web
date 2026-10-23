@@ -63,6 +63,13 @@ const { Content, headings } = await render(post);
    un índice sería ruido. Sólo H2: los H3 lo harían largo y no se escanea. */
 const indice = headings.filter((h) => h.depth === 2);
 const conIndice = indice.length >= 3;
+/* El riel marca la sección que lees con una línea de tiempo por H2, y el CSS
+   las nombra de la primera a la duodécima (ADR-0018, pieza 19). Con una
+   decimotercera, ésa no se marcaría y nada avisaría: lo dice el build. Hoy el
+   artículo más largo tiene ocho. */
+if (indice.length > 12) {
+  throw new Error(`/blog/${post.id}/: ${indice.length} secciones, y el riel marca hasta 12. Añade sus líneas de tiempo al CSS.`);
+}
 const minutos = minutosDeLectura(post);
 const ruta = rutaPublicada(posts);
 const aquiEnRuta = ruta.find((r) => r.post.id === post.id);
@@ -142,6 +149,10 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
   <Motion />
   <Header />
   <main id="main" class:list={['articulo', { 'con-riel': conIndice || aquiEnRuta }]}>
+    {/* La barra de lectura (ADR-0018, pieza 18): crece con el texto que llevas
+        leído. Es dibujo —lo que dice, lo dice la barra de desplazamiento del
+        navegador— y por eso va `aria-hidden`. Sin movimiento no existe. */}
+    <span class="lectura" aria-hidden="true"></span>
     {/*
       La portada va FUERA del artículo y a sangre; el titular va debajo, sobre
       papel. Con el titular dentro de la banda el artículo se leía como una
@@ -677,7 +688,9 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
       color: var(--ink-mute);
     }
     /* El índice: un filete `--line` a la izquierda y las entradas colgadas de
-       él. Sin marcar «dónde estás»: eso pediría JavaScript, y aquí no hay. */
+       él. **Marca la sección que lees**, sin JavaScript: ver el bloque del
+       final de esta hoja. *Hasta el 2026-10-23 este comentario decía que
+       marcarla «pediría JavaScript»; no hacía falta.* */
     .lat-indice {
       display: grid;
       gap: 0;
@@ -730,5 +743,112 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
     .lat-ruta a > span:last-child { padding-top: 2.5px; }
     .lat-ruta a[aria-current='page'] { color: var(--ink); font-weight: 600; }
     .lat-ruta a[aria-current='page'] .lat-n { border: 1.5px solid var(--ink); }
+    /* La marca de «dónde estás», quieta: transparente, 2 px sobre el filete de
+       1 y centrada en él. La enciende el bloque de abajo. */
+    .lat-indice a { position: relative; }
+    .lat-indice a::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -1.5px;
+      width: 2px;
+      background: transparent;
+    }
+  }
+
+  /*
+    ── Leer con el sitio de tu lado (ADR-0018, piezas 18 y 19) ──────────────
+
+    **La barra de lectura** crece con el texto que llevas leído: arranca cuando
+    el principio del texto llega arriba de la pantalla y se llena cuando su
+    final asoma abajo (`contain`). Mide **el texto, no la página**: con
+    `scroll()`, como en el prototipo, contaba también «Sigue leyendo» y el pie.
+    Es una magnitud —«barra llena verde», DS §6.2— en `--verde-deep`, que da
+    5,4:1 sobre el papel y 3,1:1 sobre la tinta. 3 px, arriba de todo.
+
+    **El riel marca la sección que lees**, igual que el de `/preguntas`: cada H2
+    es una línea de tiempo con nombre, la vista se reduce a una línea a un
+    tercio de la pantalla, y cada entrada se enciende cuando su H2 cruza esa
+    línea y se apaga cuando la cruza el siguiente. La marca es la del menú en
+    claro: el filete en `--verde-deep` y el texto en `--ink`, sin cambiar de
+    grosor.
+
+    Familia C, CSS entero. Sin soporte o con movimiento reducido no hay barra y
+    el riel no marca: el artículo es el de siempre.
+  */
+  .lectura { display: none; }
+  @supports (animation-timeline: view()) and (timeline-scope: none) {
+    @media (prefers-reduced-motion: no-preference) {
+      .articulo { timeline-scope: --texto; }
+      .prose { view-timeline: --texto block; }
+      .lectura {
+        display: block;
+        position: fixed;
+        inset: 0 0 auto 0;
+        height: 3px;
+        background: var(--verde-deep);
+        transform-origin: left center;
+        z-index: 40;
+        pointer-events: none;
+        animation: lectura-crece linear both;
+        animation-timeline: --texto;
+        animation-range: contain 0% contain 100%;
+      }
+    }
+    @media (prefers-reduced-motion: no-preference) and (min-width: 1112px) {
+      .post.con-riel { timeline-scope: --h1, --h2, --h3, --h4, --h5, --h6, --h7, --h8, --h9, --h10, --h11, --h12; }
+      .prose :global(h2) { view-timeline-inset: 33% 66%; }
+      .prose :global(h2:nth-of-type(1)) { view-timeline-name: --h1; }
+      .prose :global(h2:nth-of-type(2)) { view-timeline-name: --h2; }
+      .prose :global(h2:nth-of-type(3)) { view-timeline-name: --h3; }
+      .prose :global(h2:nth-of-type(4)) { view-timeline-name: --h4; }
+      .prose :global(h2:nth-of-type(5)) { view-timeline-name: --h5; }
+      .prose :global(h2:nth-of-type(6)) { view-timeline-name: --h6; }
+      .prose :global(h2:nth-of-type(7)) { view-timeline-name: --h7; }
+      .prose :global(h2:nth-of-type(8)) { view-timeline-name: --h8; }
+      .prose :global(h2:nth-of-type(9)) { view-timeline-name: --h9; }
+      .prose :global(h2:nth-of-type(10)) { view-timeline-name: --h10; }
+      .prose :global(h2:nth-of-type(11)) { view-timeline-name: --h11; }
+      .prose :global(h2:nth-of-type(12)) { view-timeline-name: --h12; }
+      .lat-indice a::before {
+        animation: riel-marca linear both, riel-sin-marca linear both;
+        animation-range: entry 0% entry 100%, entry 0% entry 100%;
+      }
+      /* El texto no se anima directo: se anima `--riel-texto` y el color lo
+         lee. Así el `:hover` de arriba, que pinta en tinta, sigue ganando: una
+         animación le ganaría a cualquier regla. */
+      .lat-indice a {
+        color: var(--riel-texto, var(--ink-mute));
+        animation: riel-tinta linear both, riel-sin-tinta linear both;
+        animation-range: entry 0% entry 100%, entry 0% entry 100%;
+      }
+      .lat-indice li:nth-child(1) a, .lat-indice li:nth-child(1) a::before { animation-timeline: --h1, --h2; }
+      .lat-indice li:nth-child(2) a, .lat-indice li:nth-child(2) a::before { animation-timeline: --h2, --h3; }
+      .lat-indice li:nth-child(3) a, .lat-indice li:nth-child(3) a::before { animation-timeline: --h3, --h4; }
+      .lat-indice li:nth-child(4) a, .lat-indice li:nth-child(4) a::before { animation-timeline: --h4, --h5; }
+      .lat-indice li:nth-child(5) a, .lat-indice li:nth-child(5) a::before { animation-timeline: --h5, --h6; }
+      .lat-indice li:nth-child(6) a, .lat-indice li:nth-child(6) a::before { animation-timeline: --h6, --h7; }
+      .lat-indice li:nth-child(7) a, .lat-indice li:nth-child(7) a::before { animation-timeline: --h7, --h8; }
+      .lat-indice li:nth-child(8) a, .lat-indice li:nth-child(8) a::before { animation-timeline: --h8, --h9; }
+      .lat-indice li:nth-child(9) a, .lat-indice li:nth-child(9) a::before { animation-timeline: --h9, --h10; }
+      .lat-indice li:nth-child(10) a, .lat-indice li:nth-child(10) a::before { animation-timeline: --h10, --h11; }
+      .lat-indice li:nth-child(11) a, .lat-indice li:nth-child(11) a::before { animation-timeline: --h11, --h12; }
+      .lat-indice li:nth-child(12) a, .lat-indice li:nth-child(12) a::before { animation-timeline: --h12, none; }
+    }
+  }
+  @keyframes lectura-crece { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  /* Las mismas cuatro de `/preguntas`: la segunda de cada par parte de lo que
+     dejó la primera, así que sólo dice adónde vuelve. */
+  @keyframes riel-marca { to { background-color: var(--riel-marca, var(--verde-deep)); } }
+  @keyframes riel-sin-marca { to { background-color: transparent; } }
+  @keyframes riel-tinta { to { --riel-texto: var(--ink); } }
+  @keyframes riel-sin-tinta { to { --riel-texto: var(--ink-mute); } }
+
+  @media (forced-colors: active) {
+    .lectura { forced-color-adjust: none; background: Highlight; }
+    /* La marca, el doble de ancha: aquí el texto no cambia de color y es la
+       única pista. Lo mismo en `/preguntas`. */
+    .lat-indice a::before { forced-color-adjust: none; --riel-marca: Highlight; width: 4px; left: -2.5px; }
   }
 </style>

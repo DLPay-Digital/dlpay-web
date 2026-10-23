@@ -33,6 +33,27 @@
  * los rótulos. Es la segunda copia del dibujo, y a propósito: la de la guía es
  * HTML dentro de un `.md`, que no puede usar componentes (`FiguraRiel.astro`
  * explica el mismo caso).
+ *
+ * ── La regla (2026-10-23, ADR-0018, pieza 20) ──────────────────────────────
+ *
+ * **La figura sigue sin escalar; la regla sí, y lleva su escala escrita.**
+ * Debajo de «te cobran 1,00 %» hay una regla fija de 0 a 5 %, con un tic por
+ * punto, que se llena hasta tu spread mientras escribes. Es lo que el párrafo
+ * de arriba evitaba —que la figura afirmara una escala que el texto no
+ * tiene—, resuelto al revés: la escala está dibujada y rotulada.
+ *
+ * · **Es una magnitud** —«barra llena verde», Design System §6.2— en `--verde`
+ *   sobre la tinta de la caja.
+ * · **No dice qué es mucho ni poco**: eso no lo dice nadie en esta página.
+ *   Sólo da escala a la cifra de al lado.
+ * · **Sobre 5 % queda llena, y por eso el extremo dice «5 % o más»**; bajo la
+ *   referencia queda vacía, y el aviso de abajo dice por qué.
+ * · Va `aria-hidden`: el anuncio ya dice el porcentaje.
+ * · **Se llena con una transición de 280 ms** (`--m-slow`) cuando cambia la
+ *   cifra, y con movimiento reducido salta. Es el pariente de M2 —`settle`,
+ *   que asienta una cifra que cambió— para una magnitud: ninguna familia del
+ *   §0 bis, porque no la mueve ni la carga ni el desplazamiento sino lo que
+ *   escribes. Es la única barra del sitio que cambia de largo.
  */
 import { calcularSpread, formatPorcentaje } from '../lib/spread.ts';
 import { formatCLP, formatRate, formatUSD } from '../lib/pricing/format.ts';
@@ -40,6 +61,9 @@ import { formatCLP, formatRate, formatUSD } from '../lib/pricing/format.ts';
 /* El ejemplo de la guía. Inventado y dicho como tal en la tarjeta. */
 const EJEMPLO = { precio: 1010, referencia: 1000, monto: 1_000_000, comision: 0 } as const;
 const r = calcularSpread(EJEMPLO);
+/* El largo de la regla, de 0 a 5: el spread, sin pasar de los dos extremos.
+   La misma cuenta está en la isla, abajo. */
+const regla = (porcentaje: number): number => Math.min(Math.max(porcentaje, 0), 5);
 if (!r.valido || !r.conMonto) throw new Error('El ejemplo de la calculadora tiene que ser válido');
 const m = r.conMonto;
 ---
@@ -98,6 +122,18 @@ const m = r.conMonto;
         <span class="pct-rot">te cobran</span>
         <span class="pct-cifra num" data-o="porcentaje">{formatPorcentaje(r.porcentaje)}</span>
         <span class="pct-rot">sobre la referencia</span>
+        {/* La regla: ver la cabecera. El largo lo da `--p`, de 0 a 5, que pone
+            el build con el ejemplo y la isla con tus números. */}
+        <span class="regla" aria-hidden="true" data-regla style={`--p:${regla(r.porcentaje)}`}>
+          {/* Los tics van antes de lo lleno, para quedar debajo: una barra
+              llena partida en tramos sería el «canto dividido en unidades»
+              del §6.2, que significa otra cosa. */}
+          <span class="regla-via">
+            {[0, 1, 2, 3, 4, 5].map((n) => <span class="regla-tic" style={`--n:${n}`}></span>)}
+            <span class="regla-lleno"></span>
+          </span>
+          <span class="regla-n"><span>0 %</span><span>5 % o más</span></span>
+        </span>
       </p>
       <p class="aviso" data-aviso hidden></p>
     </div>
@@ -310,6 +346,64 @@ const m = r.conMonto;
     transparente, que en este modo el navegador pinta, porque su fondo
     desaparece. La barra y los topes de la figura son bordes.
   */
+
+  /*
+    ── La regla, de 0 a 5 % (ADR-0018, pieza 20) ───────────────────────────
+
+    Ocupa su propia fila dentro de la caja (`flex-basis: 100%`). La vía es un
+    filete `--line-on-tinta` de 3 px con un tic por punto; lo lleno, `--verde`,
+    11 px, que sobre la tinta da 8,4:1. Se llena con `scaleX` y no con `width`,
+    para no recolocar nada en cada tecla, y por eso no lleva radio: se
+    deformaría al escalar.
+
+    Los rótulos sólo en los extremos. Los tics dicen el resto, y con un rótulo
+    por punto no cabían a 320 px con el espaciado de 1.4.12.
+  */
+  .regla { flex-basis: 100%; display: grid; gap: 6px; margin-top: var(--s-3); }
+  .regla-via { position: relative; height: 11px; }
+  .regla-via::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 4px;
+    height: 3px;
+    background: var(--line-on-tinta);
+  }
+  .regla-lleno {
+    position: absolute;
+    inset: 0;
+    background: var(--verde);
+    transform-origin: left center;
+    transform: scaleX(calc(var(--p, 0) / 5));
+  }
+  .regla-tic {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--n) / 5 * 100%);
+    width: 1px;
+    margin-left: calc(var(--n) / 5 * -1px);
+    background: var(--line-on-tinta);
+  }
+  .regla-n {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-3);
+    font-family: var(--f-num);
+    font-size: var(--t-label);
+    line-height: 1.3;
+    color: var(--on-tinta-mute);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .regla-lleno { transition: transform var(--m-slow) var(--m-ease); }
+  }
+  /* El fondo de la caja desaparece en este modo, y con él la tinta: la vía y
+     los tics pasan a `CanvasText` y lo lleno, al color de resalte. */
+  @media (forced-colors: active) {
+    .regla-via::before, .regla-tic { forced-color-adjust: none; background: CanvasText; }
+    .regla-lleno { forced-color-adjust: none; background: Highlight; }
+  }
 </style>
 
 <script>
@@ -326,6 +420,9 @@ const m = r.conMonto;
     const efectivo = root.querySelector<HTMLElement>('[data-efectivo]')!;
     const aviso = root.querySelector<HTMLElement>('[data-aviso]')!;
     const anuncio = root.querySelector<HTMLElement>('[data-anuncio]')!;
+    const regla = root.querySelector<HTMLElement>('[data-regla]')!;
+    /* El largo de la regla, de 0 a 5: la misma cuenta que hace el build. */
+    const largo = (porcentaje: number): void => regla.style.setProperty('--p', String(Math.min(Math.max(porcentaje, 0), 5)));
     let espera: number | undefined;
 
     const leer = (k: string): number =>
@@ -338,6 +435,7 @@ const m = r.conMonto;
 
       if (!r.valido) {
         for (const k of ['porDolar', 'porcentaje']) o(k).textContent = '—';
+        largo(0);
         o('precio').textContent = precio > 0 ? formatRate(precio) : '—';
         o('referencia').textContent = referencia > 0 ? formatRate(referencia) : '—';
         detalle.hidden = true;
@@ -349,6 +447,7 @@ const m = r.conMonto;
       o('referencia').textContent = formatRate(referencia);
       o('porDolar').textContent = formatRate(r.porDolar).replace('-', '−');
       o('porcentaje').textContent = formatPorcentaje(r.porcentaje);
+      largo(r.porcentaje);
 
       if (r.conMonto) {
         const m = r.conMonto;

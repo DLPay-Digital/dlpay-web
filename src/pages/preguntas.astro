@@ -58,6 +58,21 @@
  *
  * La banda **no construye ningún mecanismo**: son anclas nativas. Cero
  * JavaScript, que es lo que esta página tenía y sigue teniendo.
+ *
+ * ── Desde 1112 px, la banda vuelve a pegarse (2026-10-23) ──────────────────
+ *
+ * **Esto sí revierte la decisión del 2026-09-24, y Sebastián lo decidió
+ * sabiéndolo**: antes de construirla vio la página de hoy al lado de la nueva,
+ * con la advertencia escrita, y eligió que se pegue (ADR-0018, pieza 17).
+ *
+ * Lo que cambia es sólo desde 1112 px, donde el margen izquierdo estaba vacío:
+ * la banda pasa a ser **un riel**, el mismo del artículo —176 px de riel, 48 de
+ * hueco y 760 de lectura—, se queda contigo mientras bajas y **marca el grupo
+ * que estás leyendo**. Debajo de 1112 la banda es la de siempre y se va con el
+ * scroll. La numeración 01–05 sigue sin volver: el número es el recuento.
+ *
+ * Marcar no necesita JavaScript: lo hacen líneas de tiempo de CSS, y la página
+ * sigue en cero bytes.
  */
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
@@ -206,6 +221,15 @@ const entrada = [
   { ...PRACTICA, n: generalFaq.length },
 ];
 
+/*
+  El riel marca el grupo que lees con una línea de tiempo por grupo, y el CSS
+  las nombra de la primera a la octava. Con un noveno grupo, el noveno no se
+  marcaría y nada avisaría: lo dice el build.
+*/
+if (entrada.length > 8) {
+  throw new Error(`/preguntas: ${entrada.length} grupos, y el riel marca hasta 8. Añade sus líneas de tiempo al CSS.`);
+}
+
 const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.');
 ---
 <Base
@@ -247,6 +271,10 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
           porque un «1» suelto no dice de qué.
         */}
         <nav class="entrada" aria-label="Los grupos de preguntas">
+          {/* El rótulo del riel, sólo desde 1112 px: «Las preguntas», el par de
+              «Las palabras», que es la sección de abajo. Va `aria-hidden`
+              porque el `aria-label` de arriba ya nombra la lista. */}
+          <p class="entrada-t" aria-hidden="true">Las preguntas</p>
           <ol>
             {entrada.map((g) => (
               <li>
@@ -395,6 +423,8 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
 
     No es el índice que se retiró el 2026-09-24 —aquél era pegajoso y numeraba
     los grupos 01–05—, y el porqué está entero en la cabecera de esta página.
+    **Desde 1112 px sí se pega** (2026-10-23): ver el riel, al final de esta
+    hoja.
 
     ── Mobile-first, y no es una preferencia de estilo ───────────────────────
 
@@ -669,5 +699,149 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
        definiciones. */
     .term { display: grid; grid-template-columns: 200px 1fr; gap: var(--s-6); align-items: baseline; }
     dt { margin-bottom: 0; }
+  }
+
+  /*
+    ── Desde 1112 px, la banda es un riel (ADR-0018, pieza 17) ──────────────
+
+    **El riel del artículo, con el recuento de esta página.** La misma rejilla
+    —176 px de riel, 48 de hueco y 760 de lectura, que son los 984 del
+    contenedor— y el mismo breakpoint, por la misma razón: 1112 es el ancho en
+    que esa rejilla cabe con los márgenes de sección. Las mismas piezas: el
+    rótulo en mono, un filete `--line` a la izquierda y las entradas colgadas de
+    él, de 44 px (§10), en `--t-body-sm` y `--ink-mute`.
+
+    **Lo que se mueve a la derecha son las preguntas, no el borde derecho**:
+    siguen acabando en el mismo sitio que el glosario de abajo, que es lo que
+    pidió Sebastián el 2026-09-25. El glosario no lleva riel —no está en la
+    lista—, pero **su rejilla pasa a la del riel**: el término en la columna de
+    176 y la definición en la de 760. Antes eran 200 y 32 de hueco, y las
+    definiciones quedaban 8 px a la derecha de las respuestas; ahora las dos
+    columnas de lectura de la página arrancan en el mismo sitio.
+
+    Pegado vale también quieto: no es movimiento, es dónde está. Lo que sí se
+    mueve, abajo, es la marca del grupo que lees.
+  */
+  .entrada-t { display: none; }
+  @media (min-width: 1112px) {
+    .cuerpo .inner {
+      display: grid;
+      grid-template-columns: 176px minmax(0, 760px);
+      column-gap: var(--s-7);
+      align-items: start;
+    }
+    .entrada {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      position: sticky;
+      top: var(--s-6);
+      margin-bottom: 0;
+    }
+    .grupos, .salida { grid-column: 2; }
+    .entrada-t {
+      display: block;
+      margin: 0 0 var(--s-3);
+      font-family: var(--f-num);
+      font-size: var(--t-dato-sm);
+      color: var(--ink-mute);
+    }
+    .entrada ol { grid-template-columns: 1fr; border-top: 0; border-left: 1px solid var(--line); }
+    .entrada li,
+    .entrada li:not(:nth-child(3n + 1)) { border: 0; }
+    /* Rejilla y no flex: la fila se centra en sus 44 px y, si el título parte
+       en dos renglones, el recuento se queda en la línea base del primero. */
+    .cuerpo .entrada li a {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: baseline;
+      align-content: center;
+      column-gap: var(--s-3);
+      min-height: 44px;
+      padding: 6px 0 6px var(--s-4);
+    }
+    .entrada .t { font-size: var(--t-body-sm); font-weight: 400; line-height: 1.35; color: var(--ink-mute); }
+    .entrada .n { margin-left: 0; }
+    .term { grid-template-columns: 176px minmax(0, 1fr); column-gap: var(--s-7); }
+    /* La marca de «dónde estás»: 2 px sobre el filete de 1, centrados en él.
+       Quieta es transparente; la enciende el bloque de abajo. Es un
+       pseudoelemento para que encenderla no mueva nada. */
+    .cuerpo .entrada li a::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -1.5px;
+      width: 2px;
+      background: transparent;
+    }
+  }
+
+  /*
+    ── El grupo que lees, marcado (familia C) ───────────────────────────────
+
+    Cada grupo es una línea de tiempo con nombre (`--g1` a `--g8`), y la vista
+    se reduce a **una línea a un tercio de la pantalla** (`view-timeline-inset`).
+    Cada entrada del riel lleva dos animaciones: **se enciende cuando su grupo
+    cruza esa línea y se apaga cuando la cruza el siguiente.** Así, en el hueco
+    entre dos grupos sigue marcado el que acabas de leer, y nunca hay dos.
+
+    La marca es la del menú, que señala la página en la que estás con verde
+    (`--verde` sobre la tinta): sobre claro, su par es `--verde-deep`. El texto
+    pasa a `--ink`. **No cambia de grosor**: cambiar el peso movía el texto.
+
+    Sin soporte o con movimiento reducido, el riel está pegado y no marca.
+    Un lector de pantalla no oye «actual» —eso pediría `aria-current`, y
+    `aria-current` pediría JavaScript—, igual que no lo oía antes.
+  */
+  @supports (animation-timeline: view()) and (timeline-scope: none) {
+    @media (prefers-reduced-motion: no-preference) and (min-width: 1112px) {
+      .cuerpo .inner { timeline-scope: --g1, --g2, --g3, --g4, --g5, --g6, --g7, --g8; }
+      .grupo { view-timeline-inset: 33% 66%; }
+      .grupo:nth-child(1) { view-timeline-name: --g1; }
+      .grupo:nth-child(2) { view-timeline-name: --g2; }
+      .grupo:nth-child(3) { view-timeline-name: --g3; }
+      .grupo:nth-child(4) { view-timeline-name: --g4; }
+      .grupo:nth-child(5) { view-timeline-name: --g5; }
+      .grupo:nth-child(6) { view-timeline-name: --g6; }
+      .grupo:nth-child(7) { view-timeline-name: --g7; }
+      .grupo:nth-child(8) { view-timeline-name: --g8; }
+      /* Sin `.cuerpo` delante, a propósito: Astro añade su clase de ámbito a
+         cada selector simple, así que un compuesto más le ganaría a las reglas
+         de abajo, que son las que ponen la línea de tiempo de cada entrada. */
+      .entrada li a::before {
+        animation: riel-marca linear both, riel-sin-marca linear both;
+        animation-range: entry 0% entry 100%, entry 0% entry 100%;
+      }
+      /* El texto no se anima directo, sino `--riel-texto`, que el color lee:
+         es el mismo truco que el riel del artículo, que lo necesita para que
+         su `:hover` siga ganando. */
+      .entrada li .t {
+        color: var(--riel-texto, var(--ink-mute));
+        animation: riel-tinta linear both, riel-sin-tinta linear both;
+        animation-range: entry 0% entry 100%, entry 0% entry 100%;
+      }
+      .entrada li:nth-child(1) a::before, .entrada li:nth-child(1) .t { animation-timeline: --g1, --g2; }
+      .entrada li:nth-child(2) a::before, .entrada li:nth-child(2) .t { animation-timeline: --g2, --g3; }
+      .entrada li:nth-child(3) a::before, .entrada li:nth-child(3) .t { animation-timeline: --g3, --g4; }
+      .entrada li:nth-child(4) a::before, .entrada li:nth-child(4) .t { animation-timeline: --g4, --g5; }
+      .entrada li:nth-child(5) a::before, .entrada li:nth-child(5) .t { animation-timeline: --g5, --g6; }
+      .entrada li:nth-child(6) a::before, .entrada li:nth-child(6) .t { animation-timeline: --g6, --g7; }
+      .entrada li:nth-child(7) a::before, .entrada li:nth-child(7) .t { animation-timeline: --g7, --g8; }
+      .entrada li:nth-child(8) a::before, .entrada li:nth-child(8) .t { animation-timeline: --g8, none; }
+    }
+  }
+  /* La segunda animación de cada par parte de lo que dejó la primera (su
+     `from` es el valor de debajo), así que sólo dice adónde vuelve. */
+  @keyframes riel-marca { to { background-color: var(--riel-marca, var(--verde-deep)); } }
+  @keyframes riel-sin-marca { to { background-color: transparent; } }
+  @keyframes riel-tinta { to { --riel-texto: var(--ink); } }
+  @keyframes riel-sin-tinta { to { --riel-texto: var(--ink-mute); } }
+
+  /* En colores forzados la marca es la del sistema para «lo seleccionado», y
+     el doble de ancha: el texto ya no cambia de color en este modo, así que
+     es la única pista, y a 2 px se confundía con el filete. */
+  @media (forced-colors: active) {
+    .cuerpo .entrada li a::before { forced-color-adjust: none; --riel-marca: Highlight; width: 4px; left: -2.5px; }
   }
 </style>
