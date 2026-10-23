@@ -118,6 +118,47 @@
 /* Superficies en tinta: ahí el verde de marca sí contrasta */
 .on-tinta-surface{ --focus:var(--verde); }
 
+/* ── La superficie de noche (2026-10-23 · ADR-0018, tanda 4) ──────────────────
+   Una sección con `.noche` se lee sobre tinta SIN que sus componentes sepan
+   nada: los tokens claros pasan a sus pares de noche y **lo que era tinta pasa
+   a claro**. Es una inversión, no un tema: cada pieza conserva su contraste
+   interno, sólo que al revés —la columna «Empresa» de la comparación, el bloque
+   «Nuestra parte» o la pila de la divisa, que de día son tinta sobre papel, de
+   noche son claro sobre tinta—. No estrena ningún color.
+
+   Para invertir hace falta leer los valores del día, y una propiedad no puede
+   leerse a sí misma en el mismo elemento: por eso las copias `--dia-*`, que se
+   calculan en la raíz. **Ningún componente las usa**; sólo esta regla.
+
+   `--verde-en-tinta` es el verde de lo que vive sobre un objeto de tinta —el
+   sello de la columna «Empresa», la vía de «Nuestra parte»—: de día `--verde`,
+   que es lo que da sobre la tinta; de noche, cuando el objeto pasa a claro,
+   `--verde-deep`. El verde lo decide el fondo (DS §6.2). */
+:root{
+  --verde-en-tinta:var(--verde);
+  --dia-papel:var(--papel); --dia-papel-2:var(--papel-2);
+  --dia-ink:var(--ink); --dia-ink-mute:var(--ink-mute);
+  --dia-tinta:var(--tinta); --dia-tinta-2:var(--tinta-2);
+  --dia-on-tinta:var(--on-tinta); --dia-on-tinta-mute:var(--on-tinta-mute);
+  --dia-verde-deep:var(--verde-deep);
+}
+.noche{
+  --papel:var(--dia-tinta);
+  --papel-2:var(--dia-tinta-2);
+  --ink:var(--dia-on-tinta);
+  --ink-mute:var(--dia-on-tinta-mute);
+  --line:rgba(237,242,239,.14);          /* el separador de la tinta, como el del dock */
+  --tinta:var(--dia-on-tinta);
+  --tinta-2:var(--dia-papel-2);
+  --on-tinta:var(--dia-tinta);
+  --on-tinta-mute:var(--dia-ink-mute);
+  --line-on-tinta:rgba(11,19,32,.46);    /* contorno de control sobre lo que pasó a claro: 3,00:1 */
+  --verde-deep:var(--verde);
+  --verde-en-tinta:var(--dia-verde-deep);
+  --focus:var(--verde);
+  color:var(--ink);
+}
+
 /* ── Utilidades ───────────────────────────────────────────────────────────── */
 
 /*

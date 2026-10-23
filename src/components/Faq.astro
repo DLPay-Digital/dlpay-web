@@ -23,8 +23,11 @@ interface Props {
    * Dos bloques con el mismo fondo dejan 192px de aire entre el último
    * desplegable de uno y el título del otro, y se leen como un solo bloque mal
    * espaciado. Alternar es el ritmo que el sitio ya usa entre secciones.
+   *
+   * `noche` (2026-10-23): el bloque se pinta en la superficie de noche de
+   * `tokens.css`, sobre tinta. Lo usa `/empresas`.
    */
-  surface?: 'papel' | 'papel-2';
+  surface?: 'papel' | 'papel-2' | 'noche';
 }
 const { items, title, surface = 'papel' } = Astro.props;
 

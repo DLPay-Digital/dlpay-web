@@ -161,8 +161,10 @@ const { rows } = Astro.props;
     color: var(--ink);
   }
   .cmp-sello :global(svg) { width: 20px; height: 20px; }
+  /* `--verde-en-tinta` y no `--verde`: el sello vive sobre la columna de la
+     empresa, que de día es tinta y en la superficie de noche pasa a claro. */
   .cmp-h-empresa .cmp-sello {
-    border: 2px solid var(--verde);
+    border: 2px solid var(--verde-en-tinta);
     color: var(--on-tinta);
   }
 
@@ -252,7 +254,7 @@ const { rows } = Astro.props;
       color: var(--ink-mute);
     }
     .cmp-empresa .cmp-quien { color: var(--on-tinta-mute); }
-    .cmp-empresa .cmp-quien :global(svg) { color: var(--verde); }
+    .cmp-empresa .cmp-quien :global(svg) { color: var(--verde-en-tinta); }
     /* En colores forzados el fondo desaparece: un borde visible separa las dos
        franjas. */
     .cmp-persona, .cmp-empresa { border: 1px solid transparent; }
