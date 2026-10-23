@@ -310,6 +310,33 @@ También eligió que vaya el llamado que te sigue.
 **Lo que queda de la tanda 4** —la fila grande del blog, y las legales y la 404— entra con su
 propia entrega, con prototipo antes.
 
+### Un ajuste visto en staging: las cuñas de la portada siguen
+
+**Sebastián lo vio en staging el mismo día.** La sección de abajo también es de tinta, así que las
+dos cuñas del fondo de la portada se cortaban en la costura sin nada que justificara el corte. Se
+leía como un error.
+
+- **Ahora siguen** por su misma diagonal sobre «Para qué lo usan», hasta salir por el borde
+  izquierdo de la página. Es una prop nueva de `PageHero`, `wedges="continue"`, y sólo la pide
+  `/empresas`.
+- **Son las mismas dos rectas, prolongadas.** La caja de las cuñas mide 1,6 veces la portada y el
+  polígono se recalculó para que cada borde siga su recta: una recta que va de x₀ arriba a x₁ abajo
+  cruza el borde izquierdo a x₀/(x₀−x₁) altos de banda, y de ahí salen el 62,5 %, 83,333 %,
+  89,674 % y 98,611 % del polígono. El más lejano cae en 1,578 H, dentro de la caja de 1,6.
+  Como la caja se mide contra la portada, cuadra a cualquier ancho sin un número por breakpoint.
+- **Pasan por detrás** del portátil y del contenido de la sección, y terminan antes de la primera
+  fila de casos: medido, bajan 341 px pasada la costura a 1000 y 1280, y 364 a 390.
+- `tests/empresas.test.ts` exige que, en cualquier página, la portada que prolonga sus cuñas vaya
+  seguida de una sección de noche.
+
+**Lo que cuesta:**
+
+- **0 B de JavaScript**, y el `_headers` byte a byte idéntico.
+- **+10 B en el CSS comprimido de `/empresas`.**
+- **+56 a +65 B de HTML comprimido** en las doce páginas con `PageHero`, porque su hoja va en línea.
+  **La Home y los cinco artículos, +0 B: byte a byte iguales.** No cambia lo que se ve: **las otras
+  diecisiete páginas quedan idénticas al píxel**, comprobado a 390, 1000 y 1280.
+
 ## Lo que este ADR NO concede
 
 - **Ningún movimiento en la Home.** La Home tiene el suyo, con sus ADR.
