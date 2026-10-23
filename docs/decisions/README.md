@@ -22,6 +22,7 @@ evaluadas, decisión y consecuencias**. La documentación explica el *porqué*, 
 | [0015](0015-motion-e5-dos-caminos.md) | Motion V1, quinta excepción: «El mismo envío, por dos caminos», una animación narrativa de 4,8 s en la Home | Aceptada | 4 |
 | [0016](0016-motion-e6-banda-de-destinos.md) | Motion V1, sexta excepción: la banda de los destinos, ligada al desplazamiento y no al reloj — la primera que rompe «una sola vez» | Aceptada | 4 |
 | [0017](0017-motion-e7-telefono-fijo.md) | Motion V1, séptima excepción: «Así se ve tu operación» con un solo teléfono fijo y una conversación que crece al bajar, ligada al desplazamiento y sin JavaScript | Aceptada | 4 |
+| [0018](0018-paginas-que-cuentan.md) | Las páginas que cuentan: las portadas actúan, las figuras hacen su verbo al bajar y cada página tiene su pieza. Veinte piezas en un ADR, una fila por pieza, integradas por tandas | Aceptada | 4 |
 
 **Convención:** numeración correlativa, un archivo por decisión, nunca se reescribe una decisión
 aceptada — se **enmienda** dejando visible lo anterior, o se supera con un ADR nuevo que la cite.

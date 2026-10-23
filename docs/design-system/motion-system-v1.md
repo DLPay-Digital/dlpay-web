@@ -278,6 +278,23 @@ entera.
 guardarrieles. Si V1 se revisa, ésa es la familia que le falta: un movimiento «ligado al
 desplazamiento», con sus reglas, en vez de una excepción por pieza.
 
+### Enmienda externa — 2026-10-23 (b)
+
+**ADR-0018, «Las páginas que cuentan» (`vida`)**, la primera decisión tomada con el mapa del
+§0 bis y no como excepción. Cubre veinte piezas en las páginas que no son la Home:
+
+- las portadas actúan una vez al cargar (familia A, narraciones de 1,8 a 2,6 s);
+- las figuras de línea hacen su verbo al bajar (familia C);
+- cada página gana su pieza.
+
+Se integran por tandas; **la tanda 1 son las piezas 1 a 13**.
+
+| Regla de este documento | Estado |
+|---|---|
+| §0 bis, familia C, regla 1 — una por pieza, con su ADR | **Enmendada**: un ADR puede cubrir varias piezas si lleva una fila por pieza. ADR-0018 lleva veinte |
+| §4, reglas duras 2, 3 y 6 | **Intactas.** El cotizador no entra, ninguna cifra se mueve, y con movimiento reducido no se declara nada |
+| Guardas de la familia C | **Ahora las vigila un test**: `tests/movimiento.test.ts` falla si una `animation-timeline` del build queda fuera de `@supports` o de `prefers-reduced-motion: no-preference`, o si una regla con línea de tiempo alcanza a la forma `compacta` de la Home |
+
 ---
 
 ## 0 bis. Revisión de V1  ·  *2026-10-23*
@@ -355,7 +372,9 @@ tenga a qué atenerse.
 
 **Familia C · Ligado al desplazamiento**
 
-1. **Una por pieza, con su ADR.** Hoy son dos.
+1. **Una por pieza, con su ADR.** Hoy son dos. *Enmendada el 2026-10-23 (ADR-0018): un ADR
+   puede cubrir varias piezas si lleva una fila por cada una —qué hace, su familia y dónde vive—.
+   Con ADR-0018 la familia pasa de dos piezas a dieciséis.*
 2. **Función pura del desplazamiento.** Quieta la página, quieta la pieza; si subes, vuelve atrás.
    No arranca sola y no tiene duración, así que el techo no le aplica.
 3. **CSS entero, cero JavaScript.** Las dos piezas de hoy no añaden un byte ni tocan el CSP, y eso
@@ -549,8 +568,8 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 
 | Zona | Movimiento | Por qué |
 |---|---|---|
-| Encabezado | **M6** en titular, bajada, botones y el portátil | *Añadido el 2026-09-10.* Está sobre el pliegue: entra al cargar y sin depender del observador, igual que el héroe de la Home. Cuatro elementos en secuencia, justo en el tope de 4. El portátil **no** es el instrumento —es un mockup sin controles, hermano del teléfono de la Home—, así que la regla dura 2 no le aplica y sí entra |
-| Casos de uso | **M5** en los 4 casos | Justo en el máximo. *Corregido el 2026-09-17:* la regla de acento se retiró el 2026-09-16 con el rediseño de las figuras, y su M3 nunca llegó a existir |
+| Encabezado | **M6** en titular, bajada, botones y el portátil, y después **`vida` (ADR-0018, pieza 2)**: el portátil pasa por «Precio», elige «Retirar» y llega la tarjeta con su visto | *Añadido el 2026-09-10.* Está sobre el pliegue: entra al cargar y sin depender del observador, igual que el héroe de la Home. Cuatro elementos en secuencia, justo en el tope de 4. El portátil **no** es el instrumento —es un mockup sin controles, hermano del teléfono de la Home—, así que la regla dura 2 no le aplica y sí entra. *Añadido el 2026-10-23:* la pantalla que ya se enseñaba, contada en el orden en que se llega a ella |
+| Casos de uso | **M5** en los 4 casos, y **`vida` (piezas 5–8)**: cada figura hace su verbo al bajar | Justo en el máximo. *Corregido el 2026-09-17:* la regla de acento se retiró el 2026-09-16 con el rediseño de las figuras, y su M3 nunca llegó a existir. *Añadido el 2026-10-23:* el movimiento es el significado de la marca —la unidad cruza, los meses se marcan— |
 | Tabla comparativa | **Nada** | Son datos: se leen, no se presentan |
 | Incorporación | **M4** en el titular | |
 | Contacto | **M1** | |
@@ -559,11 +578,28 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 
 | Zona | Movimiento | Por qué |
 |---|---|---|
-| Encabezado | **M6** en titular y bajada | *Añadido el 2026-09-23.* No toca la quietud de «Lo que no afirmamos», que sigue sin movimiento a propósito |
-| Mecanismos | **M4** en el titular. Los tres bloques **no** escalonan | Ya se ajustó su composición; escalonarlos la desharía |
+| Encabezado | **M6** en titular y bajada, y **`vida` (pieza 1)**: los tres avisos llegan en orden, sin horas | *Añadido el 2026-09-23.* No toca la quietud de «Lo que no afirmamos», que sigue sin movimiento a propósito. *Añadido el 2026-10-23* |
+| Mecanismos | **M4** en el titular. Los tres bloques **no** escalonan. **Las figuras hacen su verbo** al bajar (`vida`, piezas 9–11) | Ya se ajustó su composición; escalonarlos la desharía. *Añadido el 2026-10-23:* no es un escalonado —cada figura se mueve con su propio paso por la pantalla— |
 | Requisitos | **Nada** | |
 | **Lo que no afirmamos** | **Nada, deliberadamente** | Es la sección más honesta del sitio. La quietud *es* el tono |
 | Quiénes somos | **M1** en el botón | |
+
+### /tarifas  ·  *añadido el 2026-10-23*
+
+| Zona | Movimiento | Por qué |
+|---|---|---|
+| Encabezado | **M6**, y **`vida` (pieza 3)**: la barra de la tarjeta se llena hasta el punteado, después la llave y «acá termina» | Es el argumento de la página. Las filas del cotizador y sus cifras están quietas desde el primer cuadro (reglas duras 2 y 3) |
+| Qué mueve el precio | **`vida` (piezas 11 y 12)**: la referencial se mece y la final no; el monto crece hasta el límite y aparece con quién se conversa | Familia C |
+| Dónde está tu dinero | **`vida` (pieza 13)**: los tres avisos se apilan de a uno | Familia C |
+
+**Sigue en cero bytes de JavaScript**: todo lo de arriba es CSS.
+
+### /preguntas  ·  *añadido el 2026-10-23*
+
+| Zona | Movimiento | Por qué |
+|---|---|---|
+| Encabezado | **M6**, y **`vida` (pieza 4)**: sale la pregunta y entra la respuesta | Familia A, 1,8 s |
+| Grupos | **M4** en cada cabecera | Como estaba |
 
 ### /blog  ·  *añadido el 2026-09-23*
 

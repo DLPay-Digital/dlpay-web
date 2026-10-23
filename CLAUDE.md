@@ -53,6 +53,13 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   soporte, con movimiento reducido o en una pantalla baja. Ver ADR-0017. Con dos piezas de la misma
   familia, la pregunta sobre V1 ya tiene una respuesta candidata: un movimiento más, con reglas
   propias.
+  **Y una decisión, del 2026-10-23, que ya no es una excepción: ADR-0018, «Las páginas que
+  cuentan».** Sebastián pidió que las páginas que no son la Home dejaran de verse sin vida, y aprobó
+  el análisis de Cowork contra Wise: **se trae el cómo cuenta, no el cómo se ve**. Las portadas
+  actúan una vez (familia A), las figuras de línea hacen su verbo al bajar (familia C), y cada
+  página gana su pieza. Son **veinte piezas en un solo ADR**, una fila por pieza, y entran por
+  tandas. **La Home no cambia**, `/tarifas` sigue sin JavaScript, y `tests/movimiento.test.ts`
+  vigila que toda línea de tiempo quede dentro de sus dos guardas.
   **Una tercera, del 2026-09-25:** la **intro de marca** de la Home —830 ms de telón en los que el
   isotipo se separa por su propio eje y se une—. Enmienda dos reglas a la vez: el techo de 280 ms y,
   sobre todo, la regla dura 2 («el cotizador no entra»), porque el telón lo **tapa** 937 ms. Se
