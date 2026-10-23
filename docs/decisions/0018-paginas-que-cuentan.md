@@ -78,8 +78,10 @@ con su semántica y las cifras de `lib/pricing`. Lo hace en tres capas:
 | 18 | Artículo | La barra de lectura | Crece con el texto leído. Es una magnitud | C (`view()` del texto) | 3 |
 | 19 | Artículo | El riel | Marca la sección que lees: dos líneas de tiempo por entrada | C | 3 |
 | 20 | `/cuanto-te-cobran` | La regla | De 0 a 5 %, se llena hasta tu spread; transición de 280 ms | ninguna (M2) | 3 |
+| 21 | `/empresas` | El llamado que te sigue | Bajo 900 px, entra al salir la portada y se va cuando llega la banda de contacto, que tiene el mismo botón | C | 4 |
 
-**La tanda 4 no tiene filas en esta tabla.** Son decisiones de composición, no de movimiento:
+**La tanda 4 tiene una sola fila, la 21**, porque es lo único de ella que se mueve. Lo demás son
+decisiones de composición, no de movimiento:
 
 - «Empresas, de noche»;
 - el llamado que te sigue en `/empresas`;
@@ -118,6 +120,9 @@ fila aquí.
    HTML de la Home sube 112 B y la hoja compartida baja 114, o sea **−2 B**. Lo que la Home paga
    de verdad son **+3 B** sobre 55.576, porque encima van los 5 B de la corrección de
    `FiguraMecanismo`. Medido con `gzip -9` sobre el HTML y sus tres hojas.
+   *En la tanda 4*, la Home sigue idéntica al píxel y con las mismas peticiones. Cambia el nombre de
+   la hoja global, porque `tokens.css` gana la superficie de noche: +135 B comprimidos, en todas las
+   páginas.
 8. **Ningún texto se queda parado a media tinta donde se lee** (desde la tanda 2). Es una regla de
    la familia C, porque ahí quien baja puede detenerse a mitad: la opacidad de una pieza con texto
    termina en `entry 100%`, o mientras el texto está en el cuarto de abajo de la pantalla. Las
@@ -133,7 +138,7 @@ fila aquí.
 | §0 bis, familia A — las narraciones largas salen del techo con un ADR | **Aplicada**: las piezas 1 a 4 y 14 son narraciones de una vez, de 1,8 a 2,6 s en total, con cada paso a `--m-slow` o menos |
 | §4, regla dura 1 — una sola vez, en las entradas | **Intacta** para las piezas A. Las C se arrastran con el desplazamiento, como manda su familia |
 | §4, reglas duras 2, 3 y 6 | **Intactas** |
-| §5 — dónde se aplica, página por página | **Se actualiza** con cada tanda: `/empresas` y `/confianza`; tablas nuevas para `/tarifas`, `/preguntas`, `/precio` y `/cuanto-te-cobran`; en `/como-funciona`, el encabezado y los pasos; en el artículo, el riel y la barra de lectura |
+| §5 — dónde se aplica, página por página | **Se actualiza** con cada tanda: `/empresas` y `/confianza`; tablas nuevas para `/tarifas`, `/preguntas`, `/precio` y `/cuanto-te-cobran`; en `/como-funciona`, el encabezado y los pasos; en el artículo, el riel y la barra de lectura; en `/empresas`, el llamado que te sigue |
 
 ## Lo que cuesta, medido en la tanda 1
 
@@ -253,6 +258,57 @@ empezaba por «·». Ahora el punto va al final de «quién».
   - `/preguntas` desde 1112, por el riel —a 1280 queda **206 px más corta**—;
   - `/cuanto-te-cobran`, por la regla: 50 px más alta a 390 y 49 a 1280;
   - `/como-funciona` a 390, por el punto del paso 06.
+
+## La tanda 4: `/empresas` de noche y el llamado que te sigue, integrada el 2026-10-23
+
+**Sebastián eligió viendo los dos prototipos** (`Claude outputs/vida4-noche.png`), igual que
+cuando lo aprobó en el análisis:
+
+- **A · Entera**: todo `/empresas` sobre tinta, salvo la banda de contacto. **Es la que eligió.**
+- **B · Bandas**: noche y día alternados.
+
+También eligió que vaya el llamado que te sigue.
+
+**Cómo se hace, sin estrenar un color: la superficie de noche** (`.noche`, en `tokens.css`).
+
+- Dentro de una sección de noche, los tokens claros pasan a sus pares sobre tinta, **y lo que era
+  tinta pasa a claro**. Es una inversión, no un tema.
+- Así **lo más claro de la página es lo de la empresa**: la columna «Empresa» de la comparación y el
+  bloque «Nuestra parte».
+- Los componentes no saben nada. La alternancia del día, `--papel` y `--papel-2`, se vuelve tinta y
+  tinta-2 sola.
+- **Un token nuevo, `--verde-en-tinta`**, para el verde que vive sobre un objeto de tinta. De día es
+  `--verde`; de noche, cuando el objeto pasa a claro, es `--verde-deep`. Lo usan `ComparaEmpresa` y
+  `AlcanceEmpresa`.
+- **La banda de contacto queda clara**, que es la regla de la banda de cierre (DS §6.3).
+
+**El llamado que te sigue** (pieza 21) es el par del dock de la Home, sin cifra:
+
+- «DLPay Empresas · Te responde una persona · Escribir».
+- Bajo 900 px.
+- Entra con la línea de tiempo de la portada y sale con la del contacto.
+- `visibility` va en la animación, así que escondido no se enfoca.
+- `scroll-padding-bottom` evita que tape lo que enfocas (WCAG 2.2, 2.4.11).
+- **Con movimiento reducido no existe**, por la regla 2 de este ADR. El de la Home sí aparece,
+  porque lo enciende JavaScript.
+
+`tests/empresas.test.ts` comprueba dos cosas:
+
+- que el llamado y el cierre abren el mismo mensaje;
+- que la banda de contacto es la única clara.
+
+### Lo que cuesta
+
+- **JavaScript: 0 B.** Los mismos archivos y el mismo CSP, byte a byte.
+- **CSS comprimido: +524 B.**
+  - La hoja global, **+135 B** (4.108 → 4.243), en todas las páginas: es la superficie. Su diff es
+    **un solo `insert` de 693 B sin comprimir: no se quitó ni un byte de lo que ya había**.
+  - La de `/empresas`, **+389 B**: el llamado, y los dos componentes que cambian de verde.
+- **En reposo, todas las rutas idénticas al píxel** salvo `/empresas`, que conserva su mismo alto
+  —8.122 px a 390 y 6.320 a 1280— y gana diez elementos, los del llamado.
+
+**Lo que queda de la tanda 4** —la fila grande del blog, y las legales y la 404— entra con su
+propia entrega, con prototipo antes.
 
 ## Lo que este ADR NO concede
 

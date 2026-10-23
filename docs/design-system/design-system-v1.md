@@ -29,6 +29,7 @@
 | `--verde` | `#16C784` | Acción primaria, el dato vivo (precio), acentos estructurales. **Nunca** como wash/degradado. |
 | `--verde-hi` | `#3DD69A` | Hover del verde, líneas del motivo geométrico sobre tinta. |
 | `--verde-deep` | `#0A7250` | Verde sobre superficie clara donde `#16C784` no alcanza contraste AA (texto-enlace, iconos). **5,44:1 sobre `--papel` · 4,93:1 sobre `--papel-2`.** Ver la nota de abajo: sobre un chip translúcido del propio verde **no** llega a AA. **Ajustado el 2026-09-17** desde `#0B7A54`, que daba 4,90 sobre papel pero **4,44 sobre `--papel-2`** y dejaba tres rótulos del sitio por debajo del piso. |
+| `--verde-en-tinta` | `var(--verde)` | El verde de lo que vive **sobre un objeto de tinta**: el sello de la columna «Empresa», la vía de «Nuestra parte». De día es `--verde`, que es lo que da sobre la tinta. Dentro de la superficie de noche (§6.4), donde ese objeto pasa a claro, es `--verde-deep`. *2026-10-23.* |
 | `--tinta` | `#0B1320` | Fondo de héroes, footer, bandas. Superficie profunda. |
 | `--tinta-2` | `#101A2B` | Banda secundaria / capas sobre tinta. |
 
@@ -444,7 +445,7 @@ entonces gana por orden del DOM. Hay siete animaciones de `opacity` repartidas p
 
 | Valor | Qué |
 |---|---|
-| `30` | Barra fija inferior del cotizador. |
+| `30` | Barra fija inferior: el cotizador de la Home y el llamado que te sigue de `/empresas`. |
 | `20` | Enlace de salto al contenido. **Siempre lo más alto**, por accesibilidad. |
 | `15` | Menú móvil desplegado. |
 | `10` | Cabecera. |
@@ -1258,7 +1259,7 @@ material y no por un filete.
 | `/como-funciona` | `.scope` · `--papel-2` | `--papel` |
 | `/preguntas` | `.palabras` · `--papel-2` | `--papel` |
 | `/precio` | `.tres` · `--papel` | `--papel-2` |
-| `/empresas` | la FAQ · `--papel` | `--papel-2` |
+| `/empresas` | la FAQ · de noche, `--tinta` (§6.4) | `--papel-2` |
 
 **El tono no es fijo: lo decide el vecino de arriba.** Una banda siempre en el mismo papel se funde
 con la sección anterior en la mitad de las páginas, que es el mismo defecto una fila más arriba.
@@ -1285,6 +1286,54 @@ borde superior del pie se conserva porque no estorba y salva los casos futuros.
 
 > **PENDIENTE, medido y no corregido acá:** los fantasmas sobre papel que ya existían —`/como-funciona`
 > §kyc y `Steps.astro`— siguen con `--line` a 1,35:1. Es anterior a este cambio.
+
+### 6.4 La superficie de noche  ·  *añadido el 2026-10-23*
+
+**`.noche`, en `tokens.css`: una sección que se lee sobre tinta sin que sus componentes sepan
+nada.** La pidió ADR-0018 para `/empresas`, que desde el 2026-10-23 vive de noche entera salvo la
+banda de contacto. Es como Empresas se distingue del resto del sitio **sin estrenar un color**:
+cambia la proporción, no la paleta.
+
+**Es una inversión, no un tema.** Dentro de `.noche`:
+
+| Token | De noche | Por qué |
+|---|---|---|
+| `--papel`, `--papel-2` | `--tinta`, `--tinta-2` | La alternancia de fondos del día se vuelve tinta y tinta-2 sola |
+| `--ink`, `--ink-mute` | `--on-tinta`, `--on-tinta-mute` | El texto, sobre la tinta |
+| `--line` | el separador claro al 14 % | Separador sin significado, sobre tinta |
+| `--tinta`, `--tinta-2` | `--on-tinta`, `--papel-2` | **Lo que era tinta pasa a claro**: cada pieza conserva su contraste interno, al revés |
+| `--on-tinta`, `--on-tinta-mute` | `--tinta`, `--ink-mute` | El texto de esas piezas, ahora sobre claro |
+| `--line-on-tinta` | la tinta al 46 % | El contorno de un control sobre lo que pasó a claro: 3,00:1 |
+| `--verde-deep` | `--verde` | El verde lo decide el fondo (§6.2) |
+| `--verde-en-tinta` | `--verde-deep` | El verde de las piezas que pasan a claro |
+| `--focus` | `--verde` | Como en `.on-tinta-surface` |
+
+**Por qué las copias `--dia-*`.** Para invertir hay que leer los valores del día, y una propiedad
+no puede leerse a sí misma en el mismo elemento: `--tinta: var(--on-tinta)` junto a
+`--on-tinta: var(--tinta)` es un ciclo. Las copias se calculan en la raíz, **y no las usa ningún
+componente**: sólo la regla `.noche`.
+
+**Cuándo sí:** una sección o una página entera que tiene que leerse sobre tinta **con componentes
+pensados para el día**. Hoy, las cinco secciones de contenido de `/empresas`, y la FAQ con
+`surface="noche"`.
+
+**Cuándo no:**
+
+- **No es un modo oscuro del sitio.**
+- **No se usa en una banda que ya se diseñó sobre tinta**, como `Puente`, `Business` o `PageHero`.
+  Ésas llevan `.on-tinta-surface` y sus propios tokens, y **las dos clases no se anidan**: una
+  dentro de la otra invertiría dos veces.
+- **Los objetos de chasis claro no se invierten**: el portátil o la tarjeta del cotizador. No están
+  dentro de ninguna sección de noche.
+
+**Las reglas que la hacen funcionar:**
+
+1. **Un componente no escribe colores literales.** Un literal no se invierte. Los siete componentes
+   de `/empresas` están auditados: no tienen ninguno.
+2. **El verde que vive sobre un objeto de tinta es `--verde-en-tinta`**, nunca `--verde`. Con
+   `--verde`, de noche quedaría verde de marca sobre claro (2,0:1). Pasó en el prototipo, con el
+   sello de la columna «Empresa».
+3. **La banda de cierre sigue siendo clara** (§6.3): separa del pie, que es tinta.
 
 ---
 

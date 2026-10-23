@@ -287,8 +287,8 @@ desplazamiento», con sus reglas, en vez de una excepción por pieza.
 - las figuras de línea hacen su verbo al bajar (familia C);
 - cada página gana su pieza.
 
-Se integran por tandas; **la tanda 1 son las piezas 1 a 13**, la **tanda 2, las 14 a 16**, y la
-**tanda 3, las 17 a 20**.
+Se integran por tandas; **la tanda 1 son las piezas 1 a 13**, la **tanda 2, las 14 a 16**, la
+**tanda 3, las 17 a 20**, y la **tanda 4, la 21**.
 
 | Regla de este documento | Estado |
 |---|---|
@@ -575,6 +575,7 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 | Tabla comparativa | **Nada** | Son datos: se leen, no se presentan |
 | Incorporación | **M4** en el titular | |
 | Contacto | **M1** | |
+| Llamado que te sigue | **`vida` (ADR-0018, pieza 21)**, sólo bajo 900 px: entra al salir la portada y sale cuando entra la banda de contacto | *Añadido el 2026-10-23 (tanda 4).* Familia C: dos líneas de tiempo con nombre, la de la portada y la del contacto, y `visibility` en la animación para que escondido no se enfoque. Con movimiento reducido no existe; el del cierre y el de la portada siguen ahí |
 
 ### /confianza
 

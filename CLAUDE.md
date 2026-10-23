@@ -444,6 +444,12 @@ clara con héroes y bandas en tinta profunda, cifras tabulares protagonistas, je
 bordes finos, radios discretos) + un **sistema geométrico derivado del propio isotipo** (planos
 angulares, corte diagonal ~30–35°, cuña direccional).
 
+**Una página, desde el 2026-10-23, invierte la proporción: `/empresas` vive de noche** (ADR-0018,
+tanda 4). Sebastián lo eligió entre dos prototipos. La dirección es la misma —tinta, papel, verde,
+sin un color nuevo—, pero en esa página la superficie es la tinta y lo claro es la excepción. Se
+hace con la superficie de noche del Design System §6.4, no página por página. La banda de contacto
+sigue clara, para separarse del pie.
+
 **Regla dura del componente geométrico:** cada trazo representa **movimiento, flujo de valor o un
 paso de un proceso**. Nunca decoración, nunca papel tapiz, nunca "red de nodos", nunca compitiendo
 con el cotizador.
