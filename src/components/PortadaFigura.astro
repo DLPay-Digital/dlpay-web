@@ -119,8 +119,12 @@ interface Props {
    * pictograma cambie habría dos versiones del mismo dibujo diciendo cosas
    * distintas en dos páginas. Es el mismo motivo por el que el eje de alcance
    * salió a componente.
+   *
+   * `bloque` (2026-10-23, ADR-0018, tanda 4) es la portada como bloque de tinta
+   * dentro de una sección clara, con `--r-block`: la fila grande del índice.
+   * Mismo dibujo y mismos colores que `banda`, porque el fondo es el mismo.
    */
-  variant?: 'banda' | 'marca';
+  variant?: 'banda' | 'marca' | 'bloque';
   /**
    * Alto en px de la variante `marca`, en escritorio y bajo 900. Van por prop y
    * no por CSS porque el ámbito de estilos de Astro **no alcanza al interior de
@@ -199,6 +203,14 @@ const nombres: Record<Figura, string> = {
      vertical. Lo único que difiere es el alto, porque acá lo fija la figura y
      allá el texto — 256 / 196 contra 226 / 174, medido en el build. */
   .portada.banda { background: var(--tinta); padding: var(--s-6) 0; }
+  /* El bloque: la banda dentro de una sección clara. El borde transparente se
+     pinta en colores forzados y le devuelve el contorno. */
+  .portada.bloque {
+    background: var(--tinta);
+    border-radius: var(--r-block);
+    border: 1px solid transparent;
+    padding: var(--s-6) var(--s-5);
+  }
 
   /*
     ── La variante `marca`, para el índice ──────────────────────────────────
@@ -220,7 +232,7 @@ const nombres: Record<Figura, string> = {
   .portada.marca { display: grid; place-items: center; }
   /* Móvil primero: bajo 900 el dibujo va más pequeño porque su columna también.
      A 72px los trazos siguen por encima de 1px y el canto se distingue. */
-  .portada.banda svg { height: 132px; }
+  .portada.banda svg, .portada.bloque svg { height: 132px; }
   .portada.marca svg { height: var(--marca-sm); }
   .portada.marca .token { stroke: var(--verde-deep); }
   .portada.marca .flujo { stroke: var(--ink-mute); }
@@ -249,7 +261,7 @@ const nombres: Record<Figura, string> = {
 
   @media (min-width: 900px) {
     .portada.banda { padding: var(--s-7) 0; }
-    .portada.banda svg { height: 160px; }
+    .portada.banda svg, .portada.bloque svg { height: 160px; }
     .portada.marca svg { height: var(--marca); }
   }
 
@@ -278,9 +290,9 @@ const nombres: Record<Figura, string> = {
     ganarles por orden.
   */
   @media (forced-colors: active) {
-    .portada.banda .token, .portada.marca .token,
-    .portada.banda .flujo, .portada.marca .flujo,
-    .portada.banda .propia, .portada.marca .propia { stroke: CanvasText; }
-    .portada.banda .magnitud, .portada.marca .magnitud { fill: CanvasText; }
+    .portada.banda .token, .portada.marca .token, .portada.bloque .token,
+    .portada.banda .flujo, .portada.marca .flujo, .portada.bloque .flujo,
+    .portada.banda .propia, .portada.marca .propia, .portada.bloque .propia { stroke: CanvasText; }
+    .portada.banda .magnitud, .portada.marca .magnitud, .portada.bloque .magnitud { fill: CanvasText; }
   }
 </style>

@@ -15,6 +15,11 @@
  * Y el CSS nombra un número fijo de líneas de tiempo —8 en `/preguntas`, 12 en
  * el artículo—: los dos `astro` ya fallan al pasarse, y esto lo comprueba
  * también sobre el resultado.
+ *
+ * **Desde la entrega `vida5-` (2026-10-23, tanda 4), también las legales**: el
+ * riel aparece con tres secciones o más, y cada entrada apunta a su H2 de
+ * primer nivel. El H2 del aviso `PendingNotice` va dentro de un `<div>` y no
+ * cuenta: el CSS de las legales nombra sólo los hijos directos (`.prose > h2`).
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -80,5 +85,25 @@ describe('el riel que sabe dónde estás', { skip: !existsSync(dist) && 'sin dis
       assert.ok(directos.length <= 12, `/blog/${slug}/: ${directos.length} secciones, y el CSS marca hasta 12`);
     }
     assert.ok(vistos > 0, 'ningún artículo tiene riel: el test no está mirando nada');
+  });
+
+  test('en las legales, el riel sale con tres secciones o más y apunta a sus H2 en orden', () => {
+    let conRiel = 0;
+    for (const pagina of ['terminos', 'privacidad', 'canal-de-denuncias']) {
+      const html = leer(join(pagina, 'index.html'));
+      const prosa = html.match(/<article class="prose[^"]*">([\s\S]*?)<footer class="meta/)?.[1];
+      assert.ok(prosa, `/${pagina}/: no encontré el documento`);
+      const { directos } = h2Directos(prosa);
+      const indice = html.match(/<ol class="lat-indice[\s\S]*?<\/ol>/)?.[0];
+      if (directos.length < 3) {
+        assert.equal(indice, undefined, `/${pagina}/: ${directos.length} secciones y tiene riel; con menos de tres no va`);
+        continue;
+      }
+      conRiel++;
+      assert.ok(indice, `/${pagina}/: ${directos.length} secciones y no tiene riel`);
+      assert.deepEqual(anclas(indice), directos, `/${pagina}/: el riel y los H2 no están en el mismo orden`);
+      assert.ok(directos.length <= 12, `/${pagina}/: ${directos.length} secciones, y el CSS marca hasta 12`);
+    }
+    assert.ok(conRiel > 0, 'ninguna legal tiene riel: el test no está mirando nada');
   });
 });

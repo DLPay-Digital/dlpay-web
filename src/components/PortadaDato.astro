@@ -106,8 +106,23 @@ type Portada =
 
 interface Props {
   portada: Portada;
+  /**
+   * Cómo se encaja la portada (Cowork, 2026-10-23, ADR-0018, tanda 4).
+   *
+   * · `banda` (por omisión) — la portada del artículo: a sangre, sobre tinta.
+   *   Es lo de siempre.
+   * · `bloque` — la misma portada como bloque de tinta dentro de una sección
+   *   clara, con `--r-block`. La usa la fila grande del índice del blog. Es el
+   *   MISMO dibujo, no una copia: así una portada no puede decir una cosa en el
+   *   artículo y otra en el índice.
+   *
+   * El cuerpo de la cifra lo puede escalar quien la contiene con
+   * `--portada-escala` (1 por omisión), porque el ámbito de Astro no deja
+   * dimensionar desde fuera el interior de un componente hijo.
+   */
+  encaje?: 'banda' | 'bloque';
 }
-const { portada } = Astro.props;
+const { portada, encaje = 'banda' } = Astro.props;
 
 /*
   Las cifras se formatean con `lib/pricing/format.ts`, que ya sabe el formato
@@ -156,7 +171,7 @@ const dosDigitos = (n: number): string => String(n).padStart(2, '0');
 const fechaCorta = `${dosDigitos(portada.fecha.getUTCDate())}-${dosDigitos(portada.fecha.getUTCMonth() + 1)}-${portada.fecha.getUTCFullYear()}`;
 const fechaISO = portada.fecha.toISOString();
 ---
-<div class:list={['portada', portada.tipo]}>
+<div class:list={['portada', portada.tipo, encaje]}>
   <div class="inner">
     <p class="etiqueta">{portada.etiqueta}</p>
 
@@ -216,7 +231,7 @@ const fechaISO = portada.fecha.toISOString();
   .cifra { --cuerpo: 40px; }
   .rango { --cuerpo: 30px; }
   .valor {
-    font-size: var(--cuerpo);
+    font-size: calc(var(--cuerpo) * var(--portada-escala, 1));
     font-weight: 500;
     line-height: 1.1;
     letter-spacing: -0.01em;
@@ -290,6 +305,27 @@ const fechaISO = portada.fecha.toISOString();
       max-width: calc(760px + var(--art-desplaza, 0px));
       padding-inline-start: var(--art-desplaza, 0px);
     }
+  }
+
+  /*
+    ── El encaje `bloque` (2026-10-23) ──────────────────────────────────────
+    Un bloque de tinta dentro de una sección clara: `--r-block`, sin sombra
+    (DS §4.5: la jerarquía la dan la tipografía y el espacio), y el contenido
+    sin la columna de 760 del artículo ni su desplazamiento por el riel: manda
+    el ancho del bloque. El borde transparente es para colores forzados, donde
+    se pinta y le devuelve al bloque el contorno que pierde con el fondo.
+  */
+  .portada.bloque {
+    border-radius: var(--r-block);
+    border: 1px solid transparent;
+    padding: var(--s-5);
+  }
+  .bloque .inner { max-width: none; padding: 0; }
+  @media (min-width: 900px) {
+    .portada.bloque { padding: var(--s-6) var(--s-7); }
+  }
+  @media (min-width: 1112px) {
+    .bloque .inner { max-width: none; padding-inline-start: 0; }
   }
 
   /*

@@ -2,9 +2,12 @@
 /**
  * /blog — listado de artículos.
  *
- * Rejilla mínima de tarjetas sobre tinta, el mismo registro A×C que el resto
- * del sitio. Sin paginación: con el volumen actual sería infraestructura para
- * un problema que todavía no existe (Principio 5). Cuando haga falta, entra.
+ * Un índice de filas sobre papel, agrupado por categoría, el mismo registro
+ * A×C que el resto del sitio. *Hasta el 2026-10-23 esta línea decía «rejilla
+ * mínima de tarjetas sobre tinta», que dejó de ser cierto cuando la rejilla
+ * pasó a filas (ver la nota de `.posts`).* Sin paginación: con el volumen
+ * actual sería infraestructura para un problema que todavía no existe
+ * (Principio 5). Cuando haga falta, entra.
  *
  * ── Movimiento (2026-09-23) ────────────────────────────────────────────────
  *
@@ -44,6 +47,19 @@ const posts = await publishedPosts();
 
   La lista sigue ENTERA, como pedía la nota de la portada de abajo: quien busca
   un artículo los encuentra todos quietos, ahora en dos grupos con nombre.
+
+  ── La fila grande (Cowork, 2026-10-23, ADR-0018, tanda 4) ─────────────────
+
+  **La primera fila de cada grupo lleva la portada real del artículo**, al lado
+  del texto, en vez de la miniatura (`FilaArticulo`, prop `grande`). Sebastián
+  eligió la variante entre dos prototipos.
+
+  Es **la primera de su grupo**, no «la más reciente», y también lo eligió él.
+  En Mercado son lo mismo. En Guías, con la ruta publicada, la primera es el
+  paso 1: lo primero que conviene leer. Sin ruta, la más reciente.
+
+  No se repite nada: la fila grande ES esa fila, no una copia arriba de la
+  lista. Y no se mueve: entra con su `data-enter`, como las demás.
 */
 const ruta = rutaPublicada(posts);
 const minutosRuta = ruta.reduce((suma, r) => suma + minutosDeLectura(r.post), 0);
@@ -220,9 +236,9 @@ const DESCRIPCION =
                 {g.bajada && <p>{g.bajada}</p>}
               </div>
               <ul class="posts" role="list" aria-labelledby={`${g.id}-title`}>
-                {g.posts.map((post) => (
+                {g.posts.map((post, i) => (
                   <li data-enter>
-                    <FilaArticulo post={post} />
+                    <FilaArticulo post={post} grande={i === 0} />
                   </li>
                 ))}
               </ul>

@@ -23,6 +23,7 @@
  * escalonado de entrada (`data-enter`) y el ritmo entre filas son del listado.
  */
 import PortadaFigura, { type Figura } from './PortadaFigura.astro';
+import PortadaDato from './PortadaDato.astro';
 import { formatFigure, formatFigureRange } from '../lib/pricing/format.ts';
 import type { Post } from '../lib/blog.ts';
 
@@ -40,8 +41,20 @@ export interface ItemFila {
   figura: Figura;
 }
 
-type Props = { antetitulo?: string } & ({ post: Post; item?: never } | { item: ItemFila; post?: never });
-const { post, item, antetitulo } = Astro.props;
+/**
+ * `grande` (Cowork, 2026-10-23, ADR-0018, tanda 4): la fila grande del
+ * índice. En vez de la marca en miniatura lleva **la portada real** del
+ * artículo —`PortadaDato` o `PortadaFigura`, en su encaje `bloque`—, al lado
+ * del texto. Sebastián eligió esta variante, «al lado», entre dos prototipos
+ * (`Claude outputs/vida5-prototipos.png`); la otra ponía la portada encima, a
+ * todo el ancho.
+ *
+ * La pide el índice para la primera fila de cada grupo. Un artículo sin
+ * portada no tiene qué agrandar y sale en la fila de siempre. Una herramienta
+ * (`item`) no tiene portada y nunca es grande.
+ */
+type Props = { antetitulo?: string; grande?: boolean } & ({ post: Post; item?: never } | { item: ItemFila; post?: never });
+const { post, item, antetitulo, grande } = Astro.props;
 
 /**
  * La fecha del ÍNDICE va tabular y numérica (`17-09-2026`), no en prosa. Acá es
@@ -87,7 +100,28 @@ const cifra =
 */
 const esLarga = p !== undefined && p.tipo !== 'figura' && (cifra + p.unidad).length > 7;
 ---
-{item ? (
+{post && grande && post.data.portada ? (
+<a class="fila grande" href={`/blog/${post.id}/`}>
+  {/*
+    El texto va ANTES que la portada en el documento, y la rejilla la sube:
+    así el nombre del enlace empieza por la categoría, la fecha y el titular,
+    y la portada —con su cifra, su fecha y su fuente— se oye después.
+  */}
+  <span class="texto">
+    <span class="p-meta">
+      <span class="cat">{post.data.category}</span>
+      <time datetime={post.data.pubDate.toISOString()}>{fecha.format(post.data.pubDate)}</time>
+    </span>
+    <span class="p-title">{post.data.title}</span>
+    <span class="p-desc">{post.data.description}</span>
+  </span>
+  <div class="portada-hueco">
+    {post.data.portada.tipo === 'figura'
+      ? <PortadaFigura figura={post.data.portada.figura} variant="bloque" />
+      : <PortadaDato portada={post.data.portada} encaje="bloque" />}
+  </div>
+</a>
+) : item ? (
 <a class="fila" href={item.href}>
   <span class="marca"><PortadaFigura figura={item.figura} variant="marca" /></span>
   <span class="texto">
@@ -238,6 +272,27 @@ const esLarga = p !== undefined && p.tipo !== 'figura' && (cifra + p.unidad).len
   /* M1 y nada más: el índice no necesita que nada entre ni se mueva. */
   .fila:hover .p-title { color: var(--verde-deep); }
 
+  /*
+    ── La fila grande (2026-10-23) ──────────────────────────────────────────
+    Bajo 900, la portada arriba, a lo ancho, y el texto debajo. El titular
+    sube un escalón: es la fila que se mira primero en el grupo. La portada es
+    un bloque de tinta con `--r-block` y sin sombra (DS §4.5): la jerarquía la
+    dan el tamaño y el contraste, no una elevación.
+  */
+  .fila.grande {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--s-5);
+    padding: var(--s-6) 0 var(--s-7);
+  }
+  .grande .portada-hueco { order: -1; min-width: 0; }
+  .grande .p-title {
+    font-size: var(--t-h2-m);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+  }
+  /* La bajada sube con el titular: a 14 px bajo uno de 32 se perdía. */
+  .grande .p-desc { font-size: var(--t-body); }
+
   @media (min-width: 900px) {
     /*
       La marca sube a 132px, que es lo que el pictograma necesita para que sus
@@ -254,5 +309,17 @@ const esLarga = p !== undefined && p.tipo !== 'figura' && (cifra + p.unidad).len
        unidad vuelve a su sitio junto a la cifra. */
     .marca-dato.larga .cifra { font-size: var(--t-h3); }
     .marca-dato.larga .cifra .u { display: inline; margin-left: var(--s-2); font-size: var(--t-label); }
+
+    .fila.grande { padding: var(--s-7) 0; }
+    .grande .p-title { font-size: var(--t-h2); }
+    /* Desde 900, al lado: la portada en cinco doceavos y el texto en siete.
+       La cifra a 0,8 de la escala del artículo, porque el bloque mide 400 y
+       no 760. */
+    .fila.grande {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      column-gap: var(--s-7);
+      align-items: center;
+    }
+    .grande .portada-hueco { --portada-escala: 0.8; }
   }
 </style>
