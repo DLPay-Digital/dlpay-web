@@ -37,6 +37,16 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   entero y cero JavaScript. Ver ADR-0016. **Es la primera que rompe la regla dura 1** («una sola
   vez»), porque se mueve otra vez al volver a pasar. Con movimiento reducido no se declara nada. La
   pregunta de la quinta sigue abierta, y ahora es más urgente.
+  **Revisado el 2026-10-23, y la lista de arriba deja de crecer sola.** Sebastián pidió la revisión
+  que ADR-0015 había dejado planteada y eligió **enmendar V1 en su sitio**, no escribir un V2. Se
+  midió primero: 34 keyframes y 64 transiciones en el build, 25 duraciones sobre el techo y **las 25
+  con su ADR o su enmienda escrita** — nada se había colado—, y **cero animaciones con
+  `prefers-reduced-motion` en las trece rutas**. El diagnóstico fue que V1 ordenaba por duración y
+  el sitio tiene hoy tres clases de movimiento que se distinguen por **qué las mueve**: entradas,
+  ambiente y ligado al desplazamiento. La revisión añade las dos que faltaban, acota el techo de 280
+  ms a las entradas y acota «una sola vez» a lo mismo. **No autoriza nada nuevo:** cada pieza sigue
+  necesitando su ADR. Ver `motion-system-v1.md` §0 bis.
+
   **Una séptima, del 2026-10-23:** «Así se ve tu operación» deja los cuatro teléfonos en zig-zag
   por **uno solo, fijo mientras pasan los pasos**, cuya conversación crece al bajar. Misma técnica
   que la sexta —CSS ligado al desplazamiento, cero JavaScript— y la misma forma quieta y entera sin

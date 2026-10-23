@@ -3,6 +3,11 @@
 > **Aprobado el 2026-09-07** por Sebastián. Enmienda el Design System §9, que prohibía las entradas
 > al hacer scroll y el escalonado.
 >
+> **Revisado el 2026-10-23 — ver §0 bis.** Siete excepciones en siete semanas dejaron el catálogo
+> describiendo menos de lo que el sitio hace. La revisión **no cambia ninguna decisión tomada**:
+> añade las dos familias que faltaban —ambiente y ligado al desplazamiento—, acota el techo a las
+> entradas y acota «una sola vez» a lo mismo. Quien venga a buscar las reglas, empiece por ahí.
+>
 > **Fundamento de la enmienda:** la prohibición se escribió cuando la identidad visual todavía no
 > existía y el riesgo real era que el sitio se pareciera a una plantilla. Con la dirección A×C
 > construida, la tipografía T-C cerrada y el sistema geométrico aplicado, ese riesgo se evaluó y ya
@@ -275,9 +280,108 @@ desplazamiento», con sus reglas, en vez de una excepción por pieza.
 
 ---
 
-## 1. Estado actual, verificado
+## 0 bis. Revisión de V1  ·  *2026-10-23*
 
-El sitio es prácticamente estático:
+> **Qué es esto.** No es una enmienda más de una pieza: es la respuesta a la pregunta que ADR-0015
+> dejó escrita el 2026-10-22 —«¿sigue V1 describiendo el movimiento de este sitio?»— y que ADR-0016
+> y ADR-0017 repitieron. **Sebastián pidió la revisión el 2026-10-23 y eligió enmendar V1 en su
+> sitio**, no escribir un V2: el catálogo y los seis movimientos se quedan, y lo que se añade es la
+> parte del mapa que faltaba. Ninguna de las siete decisiones se re-litiga; se recategorizan.
+
+### Lo que se midió antes de decidir
+
+Sobre el build, no de memoria, el 2026-10-23:
+
+| Qué | Cuánto |
+|---|---|
+| `@keyframes` declarados | **34** |
+| Declaraciones de `transition` | **64**, de las que **52 usan los tokens del sistema** (49 `--m-fast`, 2 `--m-base`, 1 `--m-slow`) |
+| Duraciones declaradas por encima de 280 ms | **25** |
+| De ésas, **cubiertas por un ADR o una enmienda escrita** | **25 de 25** |
+| Animaciones ligadas al desplazamiento | **24**, todas en la Home |
+| **Con `prefers-reduced-motion`, animaciones de más de 1 ms en las 13 rutas** | **0** |
+
+**Dos conclusiones, y la segunda es la que manda.** Primera: *nada se coló*. En siete semanas y
+siete excepciones no hay una sola pieza de movimiento largo sin su decisión escrita — lo único
+marginalmente fuera son dos fundidos de 300 ms en los rótulos del globo, 20 ms sobre el techo y
+dentro de un componente que ya tiene ADR propio. Segunda: **la regla dura 6 nunca se rompió**, ni
+siquiera con las siete excepciones encima. Es la que protege a personas, y está intacta.
+
+Por eso la revisión **no endurece nada**: el sistema está funcionando. Lo que falla es el mapa.
+
+### El diagnóstico: V1 tiene un eje y el sitio tiene dos
+
+V1 ordena el movimiento por **duración**, y con eso basta mientras todo el movimiento sea una
+entrada. Hoy el sitio tiene tres clases que se distinguen por **qué las mueve**, y dos de ellas no
+caben en ese eje:
+
+| Familia | Qué la mueve | Piezas de hoy |
+|---|---|---|
+| **A · Entradas** | el reloj, una vez, al llegar el contenido | M1–M6, el catálogo entero |
+| **B · Ambiente** | el reloj, sin parar | la franja (ADR-0006), el pulso del globo (ADR-0008), el Diario (ADR-0011) |
+| **C · Ligado al desplazamiento** | quien baja | la banda de destinos (ADR-0016), el teléfono (ADR-0017) |
+
+Las narraciones largas de una sola vez —la intro (ADR-0010), la banda de `/precio` (enmienda del
+2026-09-24), el abanico (2026-10-01) y «dos caminos» (ADR-0015)— **siguen siendo familia A**. No
+son otra cosa: son entradas en las que **el orden es el contenido**, y por eso duran más. Lo que
+cambia es que el techo deja de ser una prohibición y pasa a ser lo que siempre fue en la práctica:
+el valor por omisión, del que se sale con un ADR que diga por qué.
+
+### Lo que cambia, exactamente
+
+**Tres frases de este documento dejaron de ser ciertas y se corrigen**, cada una donde está y
+dejando ver lo anterior:
+
+1. **§2c, «Techo absoluto»** → **techo de las entradas**. Sigue siendo 280 ms y sigue siendo lo que
+   se usa 52 veces de 52 en las transiciones del sitio. Lo que no es, es absoluto.
+2. **§4, «Si algo no está acá, no se mueve»** → el catálogo gobierna la familia A. Las otras dos
+   tienen sus reglas, abajo.
+3. **§4, regla dura 1, «una sola vez»** → vale **para las entradas**. La familia B es infinita por
+   definición y la C se arrastra con el desplazamiento; las dos están acotadas por sus reglas.
+
+### Las reglas de las dos familias nuevas
+
+No son permisos: son las condiciones que las siete piezas ya cumplen, escritas para que la octava
+tenga a qué atenerse.
+
+**Familia B · Ambiente**
+
+1. **Una por pieza, con su ADR.** No hay permiso general: hoy son tres y una cuarta vuelve a pedir
+   esta conversación.
+2. **Ninguna cifra se mueve.** Regla dura 3, intacta.
+3. **No tapa ni desplaza contenido**, y no compite con el cotizador (regla dura 2).
+4. **Se detiene con `prefers-reduced-motion`.** Sin excepción.
+5. **Si se quita, no falta nada.** Lo que dice la pieza tiene que estar escrito en otro sitio.
+
+**Familia C · Ligado al desplazamiento**
+
+1. **Una por pieza, con su ADR.** Hoy son dos.
+2. **Función pura del desplazamiento.** Quieta la página, quieta la pieza; si subes, vuelve atrás.
+   No arranca sola y no tiene duración, así que el techo no le aplica.
+3. **CSS entero, cero JavaScript.** Las dos piezas de hoy no añaden un byte ni tocan el CSP, y eso
+   es parte de la definición, no una casualidad.
+4. **El reposo se lee completo.** Sin soporte del navegador, con movimiento reducido o en una
+   pantalla baja, la pieza está quieta **y entera**: no se pierde ningún dato.
+5. **Ninguna cifra que no esté también escrita** en un sitio que no se mueva.
+
+### Lo que esta revisión NO hace
+
+- **No autoriza nada nuevo.** Cada pieza futura, de cualquier familia, sigue necesitando su ADR.
+- **No toca el catálogo.** M1–M6 siguen siendo seis, con su techo y su eje diagonal.
+- **No relaja `prefers-reduced-motion`.** Es la única regla que ninguna excepción ha tocado nunca, y
+  la medición de arriba dice por qué conviene que siga así.
+- **No convierte el movimiento en adorno.** La idea del §2 manda igual: si un movimiento no dice
+  nada, no entra, tenga la familia que tenga.
+
+---
+
+## 1. Estado actual, verificado  ·  *del 2026-09-07; ver §0 bis para el de hoy*
+
+> *Esto describe el sitio **antes** de implementar el sistema, y se conserva porque explica por qué
+> se escribió: el problema era la ausencia, no el exceso. El estado de hoy está medido en §0 bis, y
+> es el contrario — 34 keyframes, 64 transiciones y siete excepciones.*
+
+El sitio era prácticamente estático:
 
 - Un fundido de 420 ms cuando entra una operación nueva al feed.
 - El marcador `+` de la FAQ rota **sin transición**: salta.
@@ -316,7 +420,8 @@ Se añadirían a `tokens.css`, con el mismo criterio que el resto: nada de valor
 ```
 --m-fast:    120ms   /* microinteracciones: hover, focus, toggle          */
 --m-base:    200ms   /* entradas y cambios de estado                      */
---m-slow:    280ms   /* revelados de superficie mayor. Techo absoluto.    */
+--m-slow:    280ms   /* revelados de superficie mayor. Techo DE LAS       */
+/*                       ENTRADAS, no absoluto: ver §0 bis (2026-10-23). */
 
 --m-ease:    cubic-bezier(.2, 0, 0, 1)    /* desaceleración, sin rebote   */
 --m-ease-in: cubic-bezier(.4, 0, 1, 1)    /* salidas                      */
@@ -333,7 +438,10 @@ Sin rebotes, sin `spring`, sin `ease-in-out`. Un instrumento no rebota.
 
 ## 4. Catálogo de movimientos
 
-Seis, numerados y contables. Si algo no está acá, no se mueve.
+Seis, numerados y contables. Decía «**si algo no está acá, no se mueve**», y eso valió hasta que el
+sitio tuvo movimiento que no es una entrada. **Desde la revisión del 2026-10-23 (§0 bis) este
+catálogo gobierna la familia A, las entradas**; el ambiente y lo ligado al desplazamiento tienen sus
+reglas allá. Lo que no cambió: fuera de esas tres familias, no se mueve nada.
 
 | # | Nombre | Qué hace | Duración | Dónde |
 |---|---|---|---|---|
@@ -371,8 +479,11 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 
 ### Reglas duras del catálogo
 
-1. **Una sola vez.** Nada se re-anima al volver a hacer scroll. Un elemento que reaparece cada vez
-   que pasas es el sello del movimiento decorativo.
+1. **Una sola vez, en las entradas.** Nada se re-anima al volver a hacer scroll. Un elemento que
+   reaparece cada vez que pasas es el sello del movimiento decorativo. *Acotada a la familia A el
+   2026-10-23 (§0 bis): el ambiente es infinito por definición y lo ligado al desplazamiento se
+   arrastra con él, y las dos familias traen sus propias reglas en su lugar. La frase de arriba se
+   conserva porque sigue siendo el criterio con el que se juzga una entrada.*
 2. **El cotizador no entra.** Es el instrumento: tiene que estar encendido cuando llegas. En el
    héroe de la Home, **la tarjeta ya está ahí y lo que entra es el texto** — al revés de lo
    habitual, y coherente con "la cifra manda".
