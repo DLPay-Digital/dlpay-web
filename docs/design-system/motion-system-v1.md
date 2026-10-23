@@ -252,6 +252,27 @@ alcance acotado que las anteriores: **enmienda la pieza, no los seis movimientos
 **La pregunta de la enmienda anterior sigue abierta**, y esta pieza la hace más urgente: es la
 primera excepción que rompe la regla con que el catálogo separa el movimiento que sirve del que
 decora.
+
+### Enmienda externa — 2026-10-23
+
+La **séptima** excepción, razonada y aceptada en **ADR-0017** (`motion-e7`): «Así se ve tu
+operación, paso a paso» deja los cuatro teléfonos en zig-zag por **uno solo**, fijo mientras pasan
+los cuatro pasos, cuya conversación **crece al bajar**. Misma técnica y mismas condiciones que la
+banda de ADR-0016: líneas de tiempo de vista con nombre, `timeline-scope`, CSS entero y cero
+JavaScript. Sin soporte, con movimiento reducido o en una pantalla baja, la sección está quieta y
+entera.
+
+| Regla de este documento | Estado |
+|---|---|
+| §4, regla dura 1 — **una sola vez** | **Enmendada, y sólo para esta pieza.** Los mensajes se cierran si subes y se vuelven a abrir si bajas. A diferencia de la banda, aquí el movimiento es el contenido |
+| §2c — techo de **280 ms** | **No aplica.** No tiene duración |
+| §4, reglas duras 3 y 5 | **Intactas.** Las cifras no se animan, y no hay JavaScript |
+| `prefers-reduced-motion` | **Intacto, y más estricto.** Con la preferencia no se declara ninguna animación ni se fija el teléfono |
+
+**Ya son dos excepciones ligadas al desplazamiento**, con la misma técnica y los mismos
+guardarrieles. Si V1 se revisa, ésa es la familia que le falta: un movimiento «ligado al
+desplazamiento», con sus reglas, en vez de una excepción por pieza.
+
 ---
 
 ## 1. Estado actual, verificado
@@ -387,6 +408,7 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 | Cotizador | **M1** en opciones y botón · **M2** al recalcular | Acuse de recibo y dato que cambió |
 | Tres usos | **M4** en el titular + **M5** en las tres tarjetas | 3 hermanos: dentro del máximo. *Corregido el 2026-09-17:* la propuesta añadía M3 en las reglas de acento y nunca se implementó — `UseCaseFigure` no llevaba `data-draw`, y `FiguraUso`, que lo sustituye desde el 2026-10-02, tampoco |
 | Cómo funciona | **M4** en el titular | *Corregido el 2026-09-17:* la propuesta pedía M3 en las cuñas entre pasos y ese bloque de la Home no las tiene. La idea sí se cumplió, pero en `/como-funciona`, donde las cuñas de traspaso sí se dibujan |
+| Así se ve tu operación | **`motion-e7` (ADR-0017)**: el teléfono se queda y la conversación crece al bajar | Es la pieza que enseña el recorrido; el movimiento ES el contenido. *Añadida el 2026-10-23.* |
 | Confianza | **M4** sólo en el titular de sección | Los tres bloques **no** escalonan: son afirmaciones, no una secuencia |
 | Banda empresas | **M1** en el botón | Nada más |
 | FAQ | **M1** en el marcador `+` | Hoy salta |

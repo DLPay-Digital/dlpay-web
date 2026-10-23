@@ -37,6 +37,12 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   entero y cero JavaScript. Ver ADR-0016. **Es la primera que rompe la regla dura 1** («una sola
   vez»), porque se mueve otra vez al volver a pasar. Con movimiento reducido no se declara nada. La
   pregunta de la quinta sigue abierta, y ahora es más urgente.
+  **Una séptima, del 2026-10-23:** «Así se ve tu operación» deja los cuatro teléfonos en zig-zag
+  por **uno solo, fijo mientras pasan los pasos**, cuya conversación crece al bajar. Misma técnica
+  que la sexta —CSS ligado al desplazamiento, cero JavaScript— y la misma forma quieta y entera sin
+  soporte, con movimiento reducido o en una pantalla baja. Ver ADR-0017. Con dos piezas de la misma
+  familia, la pregunta sobre V1 ya tiene una respuesta candidata: un movimiento más, con reglas
+  propias.
   **Una tercera, del 2026-09-25:** la **intro de marca** de la Home —830 ms de telón en los que el
   isotipo se separa por su propio eje y se une—. Enmienda dos reglas a la vez: el techo de 280 ms y,
   sobre todo, la regla dura 2 («el cotizador no entra»), porque el telón lo **tapa** 937 ms. Se
@@ -65,8 +71,11 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
 - **Lo que falta para publicar es de Compliance.** Tres decisiones **bloquean** los textos legales: D9 (razón social), D19 (correo
   oficial) y D20 (alcance de los T&C). Pero no son lo único que necesita firma: hay además
   **claims ya publicados** con marcador `REQUIERE VALIDACIÓN DE COMPLIANCE` —el banco por nombre,
-  el tiempo de ~5 minutos, los 10 días hábiles, «Precio garantizado», «la mesa de dinero» y «el
-  mejor precio»— que nadie ha aprobado. Decía «exclusivamente» y era inexacto: corregido el
+  el tiempo de ~5 minutos, los 10 días hábiles y «el mejor precio»— que nadie ha aprobado.
+  *El 2026-10-23 salieron de esa lista «Precio garantizado» y «la mesa de dinero»: **dejaron de
+  publicarse**, porque el paso 2 de la Home pasó a decir «Un ejecutivo confirma tu precio». No se
+  firmaron; se retiraron. Quedan tachados en `auditoria-preproduccion.md` con su fecha, y
+  `grep -rn "Precio garantizado\|mesa de dinero" src` sólo devuelve comentarios.* Decía «exclusivamente» y era inexacto: corregido el
   2026-09-15 a raíz de una auditoría externa. La lista completa está en *Bloqueantes de producción*
   y en *Claims publicados pendientes de firma*, en `docs/auditoria-preproduccion.md`. Todo lo demás
   es configuración del host.

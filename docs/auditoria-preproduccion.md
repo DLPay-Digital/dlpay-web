@@ -473,8 +473,8 @@ lista de bloqueantes. No son trabajo de ingeniería: necesitan que DLPay los apr
 | «cuenta de DLPay en BCI» — un banco por su nombre | Home y `/confianza` | `home.ts`, `trust.ts` |
 | «~5 min desde el pago» | `/como-funciona` | `process.ts` |
 | «10 días hábiles» de respuesta | `/canal-de-denuncias` | `canal-de-denuncias.astro` |
-| «Precio garantizado» | Home | `Process.astro` |
-| «la mesa de dinero» | Home | `Process.astro` |
+| ~~«Precio garantizado»~~ — **retirado el 2026-10-23**: el paso 2 dice «Un ejecutivo confirma tu precio» | Home | — |
+| ~~«la mesa de dinero»~~ — **retirado el 2026-10-23**: el cuerpo del paso 2 usa la frase de la sección de destinos, validada el 2026-10-22 | Home | — |
 | «el mejor precio» — claim comparativo, en un H1 | `/empresas` | `empresas.astro` |
 | «no publicamos una tabla por tramos» — condiciones comerciales | `/empresas` y `/precio` | `business.ts`, constante `volumeTerms` |
 
