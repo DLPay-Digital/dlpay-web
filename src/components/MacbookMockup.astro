@@ -64,6 +64,15 @@
  * Los tres círculos de la barra de título son variaciones de opacidad de UN
  * token neutro, no el semáforo de macOS: el cromo se abstrae, no se copia
  * —misma regla que el teléfono, que tampoco imita a WhatsApp.
+ *
+ * ── La plataforma, usándose (ADR-0018, 2026-10-23) ─────────────────────────
+ *
+ * **Una vez, al cargar**: la barra lateral pasa por «Precio», se queda en
+ * «Retirar» y entonces llega la tarjeta, con su visto que se traza. Es la
+ * pantalla que ya se enseñaba, contada en el orden en que se llega a ella.
+ * Familia A del Motion System, narración corta: termina a los 2,3 s, y con
+ * movimiento reducido la pantalla es la de siempre desde el primer cuadro.
+ * Ninguna cifra, porque la pantalla no tiene.
  */
 ---
 <figure class="mac" aria-hidden="true">
@@ -493,4 +502,26 @@
        `.body` habría metido el lienzo dentro de un marco que ahora es la propia
        pantalla. */
   }
+  /*
+    ── La plataforma, usándose (ADR-0018) ──────────────────────────────────
+
+    Arranca cuando el portátil ya terminó de entrar con la portada: en
+    `/empresas` es el séptimo paso de M6 y acaba a los ~620 ms. Desde ahí, la
+    barra pasa por «Precio» (0,7–1,6 s), elige «Retirar» (1,4 s), llega la
+    tarjeta (1,6 s) y se traza el visto (1,85 s). Sólo fondo, sombra interior,
+    opacidad y trazo: nada se recoloca.
+
+    El trazo del visto mide unas 13,2 unidades de su `viewBox`; `18` lo cubre
+    entero con margen, y `stroke-dasharray` no cambia el dibujo quieto.
+  */
+  @media (prefers-reduced-motion: no-preference) {
+    .side > .mac-nav:nth-child(3) { animation: mac-pasa .9s var(--m-ease) .7s both; }
+    .mac-nav.on { animation: mac-elige var(--m-base) var(--m-ease) 1.4s both; }
+    .card { animation: mac-llega var(--m-slow) var(--m-ease) 1.6s both; }
+    .tick path { stroke-dasharray: 18; animation: mac-traza .42s var(--m-ease) 1.85s both; }
+  }
+  @keyframes mac-pasa { 0%, 100% { background: transparent; } 25%, 70% { background: var(--pf-activo); } }
+  @keyframes mac-elige { from { background: transparent; box-shadow: none; } }
+  @keyframes mac-llega { from { opacity: 0; transform: translateY(10px) scale(.97); } }
+  @keyframes mac-traza { from { stroke-dashoffset: 18; } }
 </style>

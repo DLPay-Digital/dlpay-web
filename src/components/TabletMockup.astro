@@ -60,6 +60,12 @@
  * en hexadecimal y no en `color-mix()` a propósito — si el navegador no
  * entendiera la función, la declaración se descartaría y el objeto volvería a
  * camuflarse contra la tinta.
+ *
+ * ── La pregunta y la respuesta llegan (ADR-0018, 2026-10-23) ───────────────
+ *
+ * **Una vez, al cargar**: sale la pregunta y después entra la respuesta, como
+ * en cualquier chat. Familia A, narración corta, 1,8 s. Con varias claves,
+ * todas las preguntas salen juntas y todas las respuestas después: hoy es una.
  */
 import Logo from './Logo.astro';
 import { generalFaq } from '../content/general.ts';
@@ -326,4 +332,17 @@ const hilo = claves.map((c) => {
     .chat { padding: var(--s-3); }
     .bubble { max-width: 92%; }
   }
+  /*
+    ── La pregunta y la respuesta llegan (ADR-0018) ────────────────────────
+
+    En `/preguntas` la tableta termina de entrar a los ~320 ms (M6, tercer
+    paso); la pregunta sale a los 600 y la respuesta entra a los 1.500, que es
+    lo que se tarda en leer la pregunta.
+  */
+  @media (prefers-reduced-motion: no-preference) {
+    .bubble { animation: pad-llega var(--m-slow) var(--m-ease) both; }
+    .bubble.out { animation-delay: .6s; }
+    .bubble.in { animation-delay: 1.5s; }
+  }
+  @keyframes pad-llega { from { opacity: 0; transform: translateY(10px); } }
 </style>

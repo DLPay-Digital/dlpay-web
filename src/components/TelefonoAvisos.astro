@@ -96,6 +96,19 @@
  * sin copiar ningún teléfono ni ninguna app: el banco y quien recibe son
  * «tu banco» y «quien recibe», con iconos del sitio. Cero imágenes, cero
  * JavaScript.
+ *
+ * ── Los avisos llegan (ADR-0018, 2026-10-23) ───────────────────────────────
+ *
+ * · En la portada (`telefono`), **una vez al cargar**: primero tu banco,
+ *   después nosotros, al final quien recibe. Es el orden en que te llegarían,
+ *   y sigue sin horas: el ritmo es de la portada, no de la operación. Familia
+ *   A del Motion System, narración corta; el último aviso termina a los 2,6 s.
+ * · En el puente de `/tarifas` (`puente`), **al bajar**: se apilan de a uno
+ *   mientras el puente pasa. Familia C.
+ *
+ * Los avisos siguen siendo una lista real —no van `aria-hidden`— y aparecer
+ * no cambia lo que lee un lector de pantalla. Con movimiento reducido llegan
+ * los tres a la vez, como hasta hoy.
  */
 import Icon from './Icon.astro';
 import Logo from './Logo.astro';
@@ -461,4 +474,31 @@ const avisos = [
   @media (min-width: 960px) {
     .puente { max-width: 336px; margin-inline: auto 0; }
   }
+  /*
+    ── Los avisos llegan (ADR-0018) ────────────────────────────────────────
+
+    En la portada el retraso del primero (700 ms) deja pasar la secuencia del
+    héroe: el teléfono termina de entrar a los ~450 ms (`PageHero`, M6). Los
+    siguientes van cada 800 ms, que es lo que tarda en leerse un aviso de tres
+    renglones sin sentir que se espera.
+
+    Entran desde arriba, como entra una notificación, y se quedan: la
+    animación sólo declara su `from`.
+  */
+  @media (prefers-reduced-motion: no-preference) {
+    .telefono .aviso { animation: tel-llega var(--m-slow) var(--m-ease) both; }
+    .telefono .aviso:nth-child(1) { animation-delay: .7s; }
+    .telefono .aviso:nth-child(2) { animation-delay: 1.5s; }
+    .telefono .aviso:nth-child(3) { animation-delay: 2.3s; }
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .puente { view-timeline: --avisos block; }
+      .puente .aviso { animation: tel-llega linear both; animation-timeline: --avisos; }
+      .puente .aviso:nth-child(1) { animation-range: cover 15% cover 25%; }
+      .puente .aviso:nth-child(2) { animation-range: cover 28% cover 38%; }
+      .puente .aviso:nth-child(3) { animation-range: cover 41% cover 51%; }
+    }
+  }
+  @keyframes tel-llega { from { opacity: 0; transform: translateY(-12px) scale(.97); } }
 </style>

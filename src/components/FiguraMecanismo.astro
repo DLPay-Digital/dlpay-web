@@ -44,6 +44,27 @@
  * con la nota «si aparece un tercero, se extrae». El tercero fue `FiguraUso`.
  *
  * Va `aria-hidden`: el `h3` y el párrafo de al lado ya lo dicen con palabras.
+ *
+ * ── Lo que hace al bajar (ADR-0018, 2026-10-23) ────────────────────────────
+ *
+ * En `/confianza` y `/tarifas`, cada mecanismo hace **su verbo** mientras pasa
+ * por la pantalla:
+ *
+ * · `bank`: la unidad sale de tu banco y entra a la cuenta de DLPay, y **sólo
+ *   entonces se traza el tramo verde**, que es el nuestro y va después del
+ *   límite. El orden del dibujo es el de la promesa: acreditada antes de mover
+ *   nada.
+ * · `clock`: **la etiqueta de la web se mece y la final no se mueve nada.** El
+ *   mercado se mueve; el precio que te confirman, no.
+ * · `monto`: la línea del monto crece hasta el límite y, al cruzarlo, aparece
+ *   con quién se conversa.
+ * · `people`: la placa con el nombre llega al escritorio. Lo identificable es
+ *   el nombre.
+ * · `precio` no hace nada: sólo vive en la Home.
+ *
+ * **La Home no se mueve: `compacta` queda fuera**, porque ahí las tres láminas
+ * van en fila y pequeñas, y la Home ya tiene su movimiento. Familia C (§0 bis):
+ * CSS entero; sin soporte o con movimiento reducido, la figura es la de arriba.
  */
 import Icon from './Icon.astro';
 import Logo from './Logo.astro';
@@ -564,4 +585,72 @@ const { kind, compacta = false } = Astro.props;
        lado sigue abierto. */
     .fm-gancho { forced-color-adjust: none; border-color: CanvasText; border-top-color: transparent; }
   }
+  /*
+    ── Al bajar: cada mecanismo hace su verbo (ADR-0018) ───────────────────
+
+    Una línea de tiempo de vista por lámina (`--fm`), y nunca en `compacta`,
+    que es la forma de la Home: todas las reglas cuelgan de
+    `.fm:not(.fm-compacta)`.
+
+    **Lo que se mueve no cambia de sitio en el documento.** La unidad viaja con
+    `translate` en `cqw` —sale 19,5 cqw a la izquierda, junto a la pieza de tu
+    banco, y termina en su sitio de siempre—; la etiqueta gira desde su propio
+    ojal (`transform-origin` ya estaba puesto ahí), y la placa baja con
+    `translate`, que se suma al `translateX(-50%)` que la centra sin pisarlo.
+  */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .fm:not(.fm-compacta) { view-timeline: --fm block; }
+
+      .fm-bank:not(.fm-compacta) .fm-unidad {
+        animation: fm-entra linear both;
+        animation-timeline: --fm;
+        animation-range: cover 22% cover 45%;
+      }
+      .fm-bank:not(.fm-compacta) .fm-nuestro {
+        transform-origin: left center;
+        animation: fm-traza linear both;
+        animation-timeline: --fm;
+        animation-range: cover 45% cover 60%;
+      }
+
+      /* La referencial va y viene dos veces y termina donde estaba (−9°). */
+      .fm-clock:not(.fm-compacta) .fm-web {
+        animation: fm-mece linear both;
+        animation-timeline: --fm;
+        animation-range: cover 15% cover 75%;
+      }
+
+      .fm-monto:not(.fm-compacta) .fm-monto-linea {
+        transform-origin: left center;
+        animation: fm-crece linear both;
+        animation-timeline: --fm;
+        animation-range: cover 20% cover 45%;
+      }
+      .fm-monto:not(.fm-compacta) :is(.fm-rot-conversa, .fm-persona, .fm-mesa, .fm-pata, .fm-placa) {
+        animation: fm-aparece linear both;
+        animation-timeline: --fm;
+        animation-range: cover 44% cover 54%;
+      }
+
+      .fm-people:not(.fm-compacta) .fm-placa {
+        animation: fm-placa linear both;
+        animation-timeline: --fm;
+        animation-range: cover 25% cover 45%;
+      }
+    }
+  }
+  @keyframes fm-entra { from { translate: -19.5cqw 0; } }
+  @keyframes fm-traza { from { transform: scaleX(0); } }
+  @keyframes fm-mece {
+    0% { transform: rotate(-9deg); }
+    25% { transform: rotate(5deg); }
+    50% { transform: rotate(-14deg); }
+    75% { transform: rotate(2deg); }
+    100% { transform: rotate(-9deg); }
+  }
+  /* La línea arranca en un quinto de su largo: el monto nunca es cero. */
+  @keyframes fm-crece { from { transform: scaleX(.18); } }
+  @keyframes fm-aparece { from { opacity: 0; } }
+  @keyframes fm-placa { from { opacity: 0; translate: 0 -10cqw; } }
 </style>

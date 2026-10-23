@@ -51,6 +51,25 @@
  * copiadas aquí): `--papel-2`, radio `--r-3`, ni sombra, ni textura, ni
  * `--elev-card`. Va `aria-hidden`: el `h3` y el párrafo de al lado ya lo dicen
  * con palabras.
+ *
+ * ── Lo que hace al bajar (ADR-0018, 2026-10-23) ────────────────────────────
+ *
+ * Cada figura hace **su verbo** mientras pasa por la pantalla, y el verbo es el
+ * significado de su marca (DS §6.2), no un adorno:
+ *
+ * · Proveedores: **la unidad cruza la frontera**, de tu empresa a tu
+ *   proveedor. Es «valor moviéndose», que es lo que la cuña ya decía quieta.
+ * · Tesorería: el cajón de la divisa se abre y, después, aparece el tramo
+ *   verde del cambio, que es el nuestro.
+ * · Recurrentes: **los doce meses se marcan de a uno**, de enero a diciembre.
+ * · Volumen: la pila de la divisa se arma losa por losa, hasta el mismo alto
+ *   que la de pesos. El valor no cambia; cambia la unidad.
+ *
+ * Familia C del Motion System (§0 bis): función pura del desplazamiento —si
+ * subes, vuelve—, CSS entero, cero JavaScript. **Quieta es la de siempre**: sin
+ * soporte del navegador o con movimiento reducido no se declara ninguna
+ * animación y la figura es la de arriba, punto por punto. Ninguna cifra, porque
+ * la figura no tiene cifras.
  */
 import Icon from './Icon.astro';
 import Lamina from './Lamina.astro';
@@ -435,4 +454,83 @@ const CUNA = 'M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4';
     .fc-tapa { border-bottom: 1px solid CanvasText; }
     .fc-anilla { border: 1px solid CanvasText; }
   }
+  /*
+    ── Al bajar: cada figura hace su verbo (ADR-0018) ──────────────────────
+
+    Una línea de tiempo de vista por lámina (`--fc`): cada figura la declara,
+    y sus marcas la leen. El nombre se repite en las cuatro y no chocan, porque
+    una marca encuentra la de su propia lámina, que es su antepasado más
+    cercano con ese nombre.
+
+    Los tramos (`cover X% cover Y%`) van entre el 18 % y el 60 %: la figura
+    empieza a contar cuando ya entró entera y termina antes de la mitad de su
+    salida. Medido a 390 y 1280 con ventanas de 667 a 900 de alto.
+
+    **La unidad se mueve con `translate` y no con `left`**: va en `cqw`, la
+    unidad del dibujo, y no recoloca nada al pasar. Sale 6 cqw antes de su
+    sitio de siempre (37 %, junto a tu empresa) y termina 32 cqw después
+    (69 %, junto al proveedor). Al terminar de pasar se queda allá: ya llegó.
+  */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .fc { view-timeline: --fc block; }
+
+      .fc-proveedores .fc-unidad, .fc-proveedores .fc-usd {
+        animation: fc-cruza linear both;
+        animation-timeline: --fc;
+        animation-range: cover 25% cover 60%;
+      }
+
+      .fc-cajon-usd {
+        animation: fc-abre linear both;
+        animation-timeline: --fc;
+        animation-range: cover 25% cover 50%;
+      }
+      .fc-puente, .fc-cuna-v {
+        animation: fc-aparece linear both;
+        animation-timeline: --fc;
+        animation-range: cover 45% cover 58%;
+      }
+
+      /* Doce tramos de 3 puntos, uno por mes: de enero a diciembre en la misma
+         distancia que tarda la unidad en cruzar la frontera de al lado. */
+      .fc-mes-punto { animation: fc-marca linear both; animation-timeline: --fc; }
+      .fc-mes:nth-child(1) .fc-mes-punto { animation-range: cover 22% cover 25%; }
+      .fc-mes:nth-child(2) .fc-mes-punto { animation-range: cover 25% cover 28%; }
+      .fc-mes:nth-child(3) .fc-mes-punto { animation-range: cover 28% cover 31%; }
+      .fc-mes:nth-child(4) .fc-mes-punto { animation-range: cover 31% cover 34%; }
+      .fc-mes:nth-child(5) .fc-mes-punto { animation-range: cover 34% cover 37%; }
+      .fc-mes:nth-child(6) .fc-mes-punto { animation-range: cover 37% cover 40%; }
+      .fc-mes:nth-child(7) .fc-mes-punto { animation-range: cover 40% cover 43%; }
+      .fc-mes:nth-child(8) .fc-mes-punto { animation-range: cover 43% cover 46%; }
+      .fc-mes:nth-child(9) .fc-mes-punto { animation-range: cover 46% cover 49%; }
+      .fc-mes:nth-child(10) .fc-mes-punto { animation-range: cover 49% cover 52%; }
+      .fc-mes:nth-child(11) .fc-mes-punto { animation-range: cover 52% cover 55%; }
+      .fc-mes:nth-child(12) .fc-mes-punto { animation-range: cover 55% cover 58%; }
+
+      /* Primero aparece el cambio —el tramo verde y su cuña— y después la
+         divisa, de abajo arriba: la última losa del DOM es la de abajo. */
+      .fc-cambio, .fc-cuna-pilas {
+        animation: fc-aparece linear both;
+        animation-timeline: --fc;
+        animation-range: cover 18% cover 24%;
+      }
+      .fc-pila-usd .fc-losa { animation: fc-losa linear both; animation-timeline: --fc; }
+      .fc-pila-usd .fc-losa:nth-child(8) { animation-range: cover 24% cover 28%; }
+      .fc-pila-usd .fc-losa:nth-child(7) { animation-range: cover 28% cover 32%; }
+      .fc-pila-usd .fc-losa:nth-child(6) { animation-range: cover 32% cover 36%; }
+      .fc-pila-usd .fc-losa:nth-child(5) { animation-range: cover 36% cover 40%; }
+      .fc-pila-usd .fc-losa:nth-child(4) { animation-range: cover 40% cover 44%; }
+      .fc-pila-usd .fc-losa:nth-child(3) { animation-range: cover 44% cover 48%; }
+      .fc-pila-usd .fc-losa:nth-child(2) { animation-range: cover 48% cover 52%; }
+      .fc-pila-usd .fc-losa:nth-child(1) { animation-range: cover 52% cover 56%; }
+    }
+  }
+  @keyframes fc-cruza { from { translate: -6cqw 0; } to { translate: 32cqw 0; } }
+  /* El cajón quieto está medio abierto (`translateX(4cqw)`): al bajar sale de
+     cerrado y termina donde siempre. */
+  @keyframes fc-abre { from { transform: none; } to { transform: translateX(4cqw); } }
+  @keyframes fc-aparece { from { opacity: 0; } }
+  @keyframes fc-marca { from { transform: scale(0); } }
+  @keyframes fc-losa { from { opacity: 0; transform: translateY(-6cqw); } }
 </style>

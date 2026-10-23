@@ -758,4 +758,32 @@ const wa = contact.whatsappUrl(
     .barra, .sw-barra { forced-color-adjust: none; background: CanvasText; }
     .llave::after { forced-color-adjust: none; border-top-color: CanvasText; }
   }
+  /*
+    ── El número se llena hasta el límite (ADR-0018, 2026-10-23) ──────────
+
+    **Una vez, al cargar**, la figura de la tarjeta cuenta su argumento: la
+    barra —la referencia y el spread, juntos— se llena de una vez hasta el
+    punteado (0,7–1,6 s); después aparece la llave que la abarca entera
+    (1,6 s), y al final «acá termina y no se suma nada» (1,9 s). Familia A,
+    narración corta, termina a los 2,2 s.
+
+    Lo que NO se mueve, y es a propósito:
+    · **las dos filas del cotizador y sus cifras**. Están encendidas desde el
+      primer cuadro: el cotizador no entra (regla dura 2) y las cifras no se
+      animan (regla dura 3);
+    · **la barra no se parte al llenarse**: crece entera, desde la izquierda,
+      porque «la barra no está partida porque el número tampoco lo está» es
+      la frase de la leyenda de abajo.
+
+    CSS entero: la página sigue en cero bytes de JavaScript
+    (`tests/zero-js.test.ts`). Sólo la tarjeta de la portada; la del monto
+    mínimo (`.plana`) no tiene figura.
+  */
+  @media (prefers-reduced-motion: no-preference) {
+    .tarjeta:not(.plana) .barra { transform-origin: left center; animation: tf-llena .9s var(--m-ease) .7s both; }
+    .tarjeta:not(.plana) .llave { animation: tf-aparece var(--m-slow) var(--m-ease) 1.6s both; }
+    .tarjeta:not(.plana) .fin { animation: tf-aparece var(--m-slow) var(--m-ease) 1.9s both; }
+  }
+  @keyframes tf-llena { from { transform: scaleX(0); } }
+  @keyframes tf-aparece { from { opacity: 0; } }
 </style>
