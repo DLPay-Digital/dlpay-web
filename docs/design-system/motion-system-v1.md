@@ -288,11 +288,11 @@ desplazamiento», con sus reglas, en vez de una excepción por pieza.
 - cada página gana su pieza.
 
 Se integran por tandas; **la tanda 1 son las piezas 1 a 13**, la **tanda 2, las 14 a 16**, la
-**tanda 3, las 17 a 20**, y la **tanda 4, la 21**.
+**tanda 3, las 17 a 20**, y la **tanda 4, las 21 y 22**.
 
 | Regla de este documento | Estado |
 |---|---|
-| §0 bis, familia C, regla 1 — una por pieza, con su ADR | **Enmendada**: un ADR puede cubrir varias piezas si lleva una fila por pieza. ADR-0018 lleva veinte |
+| §0 bis, familia C, regla 1 — una por pieza, con su ADR | **Enmendada**: un ADR puede cubrir varias piezas si lleva una fila por pieza. ADR-0018 lleva veintidós |
 | §4, reglas duras 2, 3 y 6 | **Intactas.** El cotizador no entra, ninguna cifra se mueve, y con movimiento reducido no se declara nada |
 | Guardas de la familia C | **Ahora las vigila un test**: `tests/movimiento.test.ts` falla si una `animation-timeline` del build queda fuera de `@supports` o de `prefers-reduced-motion: no-preference`, o si una regla con línea de tiempo alcanza a la forma `compacta` de la Home |
 | Texto a media tinta | **Regla nueva de ADR-0018 para la familia C, desde la tanda 2**: ningún texto se queda parado a media opacidad en la zona donde se lee. La opacidad de una pieza con texto termina en `entry 100%`, o mientras el texto está en el cuarto de abajo de la pantalla; las marcas, que son dibujo, sí pueden fundirse. Lo comprueba axe con la página parada cada 120 px. En la familia A no aplica: el texto entra solo y en menos de 300 ms, como en M6 |
@@ -624,6 +624,7 @@ misma curva; distinto eje porque es distinto el gesto físico. No es un séptimo
 | Zona | Movimiento | Por qué |
 |---|---|---|
 | Encabezado | **M6** en titular y bajada | Está sobre el pliegue: entra al cargar, sin depender del observador |
+| Fila grande | **M5, como las demás filas.** La portada que lleva no se mueve | *Añadido el 2026-10-23 (tanda 4).* Es la portada del artículo, y la del artículo no se mueve (regla dura 2) |
 | Listado de artículos | **M5** en cada artículo | El escalonado lo pone `:nth-child`, que sólo retrasa del 2.º al 4.º hermano. El quinto artículo y los siguientes entran sin esperar, así que la lista puede crecer sin volver a tocar esto |
 
 ### /blog/artículo  ·  *añadido el 2026-09-23*
@@ -649,6 +650,11 @@ en su mitad de diseño: lo que se presenta con movimiento es el **encabezado de 
 titular y su bajada, como en todas las demás—, no el articulado. **La mitad técnica sigue intacta y
 comprobada: cero JavaScript.** M6 es una animación CSS de carga, así que estas cuatro páginas y la
 404 siguen sin un solo byte de script ejecutable.
+
+**Y el riel, desde el 2026-10-23** (ADR-0018, pieza 22, familia C): con tres secciones o más, el
+riel del artículo marca la sección que lees. Hoy, en `/canal-de-denuncias`. Es CSS entero, así
+que las legales siguen en cero JavaScript. Con movimiento reducido el riel está y no marca, como
+en el artículo.
 
 ---
 

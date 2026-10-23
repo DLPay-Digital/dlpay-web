@@ -79,9 +79,10 @@ con su semántica y las cifras de `lib/pricing`. Lo hace en tres capas:
 | 19 | Artículo | El riel | Marca la sección que lees: dos líneas de tiempo por entrada | C | 3 |
 | 20 | `/cuanto-te-cobran` | La regla | De 0 a 5 %, se llena hasta tu spread; transición de 280 ms | ninguna (M2) | 3 |
 | 21 | `/empresas` | El llamado que te sigue | Bajo 900 px, entra al salir la portada y se va cuando llega la banda de contacto, que tiene el mismo botón | C | 4 |
+| 22 | Las legales | El riel | Con tres secciones o más, el del artículo: marca la sección que lees | C | 4 |
 
-**La tanda 4 tiene una sola fila, la 21**, porque es lo único de ella que se mueve. Lo demás son
-decisiones de composición, no de movimiento:
+**La tanda 4 tiene dos filas, la 21 y la 22**, porque es lo único de ella que se mueve. Lo demás
+son decisiones de composición, no de movimiento:
 
 - «Empresas, de noche»;
 - el llamado que te sigue en `/empresas`;
@@ -123,6 +124,8 @@ fila aquí.
    *En la tanda 4*, la Home sigue idéntica al píxel y con las mismas peticiones. Cambia el nombre de
    la hoja global, porque `tokens.css` gana la superficie de noche: +135 B comprimidos, en todas las
    páginas.
+   *En su segunda parte* (`vida5-`), la Home queda **byte a byte igual**: el menú se mudó a
+   `lib/navegacion.ts` y la cabecera sale idéntica, comprobado sobre el build.
 8. **Ningún texto se queda parado a media tinta donde se lee** (desde la tanda 2). Es una regla de
    la familia C, porque ahí quien baja puede detenerse a mitad: la opacidad de una pieza con texto
    termina en `entry 100%`, o mientras el texto está en el cuarto de abajo de la pantalla. Las
@@ -138,7 +141,7 @@ fila aquí.
 | §0 bis, familia A — las narraciones largas salen del techo con un ADR | **Aplicada**: las piezas 1 a 4 y 14 son narraciones de una vez, de 1,8 a 2,6 s en total, con cada paso a `--m-slow` o menos |
 | §4, regla dura 1 — una sola vez, en las entradas | **Intacta** para las piezas A. Las C se arrastran con el desplazamiento, como manda su familia |
 | §4, reglas duras 2, 3 y 6 | **Intactas** |
-| §5 — dónde se aplica, página por página | **Se actualiza** con cada tanda: `/empresas` y `/confianza`; tablas nuevas para `/tarifas`, `/preguntas`, `/precio` y `/cuanto-te-cobran`; en `/como-funciona`, el encabezado y los pasos; en el artículo, el riel y la barra de lectura; en `/empresas`, el llamado que te sigue |
+| §5 — dónde se aplica, página por página | **Se actualiza** con cada tanda: `/empresas` y `/confianza`; tablas nuevas para `/tarifas`, `/preguntas`, `/precio` y `/cuanto-te-cobran`; en `/como-funciona`, el encabezado y los pasos; en el artículo, el riel y la barra de lectura; en `/empresas`, el llamado que te sigue; en las legales, el riel |
 
 ## Lo que cuesta, medido en la tanda 1
 
@@ -337,10 +340,73 @@ leía como un error.
   **La Home y los cinco artículos, +0 B: byte a byte iguales.** No cambia lo que se ve: **las otras
   diecisiete páginas quedan idénticas al píxel**, comprobado a 390, 1000 y 1280.
 
+## La tanda 4, segunda parte: la fila grande del blog, el riel de las legales y la 404
+
+**Sebastián eligió viendo los prototipos** (`Claude outputs/vida5-prototipos.png`).
+
+**La fila grande del blog.** La primera fila de cada grupo del índice lleva **la portada real del
+artículo**, en vez de la miniatura.
+
+- Es la misma pieza del artículo, con su cifra, su unidad, su fecha y su fuente. Va como bloque de
+  tinta dentro del índice: `PortadaDato` con `encaje="bloque"`, o `PortadaFigura` con
+  `variant="bloque"`. No es una copia, así que una portada no puede decir una cosa en el artículo y
+  otra en el índice.
+- **Al lado del texto**, en cinco doceavos desde 900 px. La otra variante, la portada encima a todo
+  el ancho, dejaba la tinta vacía a la derecha de la cifra y alargaba la página 370 px.
+- **Es la primera de su grupo**, no «la más reciente», y también lo eligió Sebastián. En Mercado
+  son lo mismo. En Guías, con la ruta publicada, la primera es el paso 1.
+- **No se repite nada**: la fila grande es esa fila, no una copia arriba de la lista. Y no se
+  mueve más que las demás: entra con su M5.
+
+**El riel en las legales (pieza 22).** Es el del artículo, con su misma regla: **sólo con tres
+secciones o más**.
+
+- Hoy lo cumple `/canal-de-denuncias`, con cuatro.
+- Términos y privacidad tienen dos cada uno mientras su texto definitivo espera la firma (D9, D19,
+  D20). **No cambian a la vista** —mismo alto y cada elemento en su caja exacta, comprobado—, y el
+  riel les llega solo el día que lo tengan. Lo que ganan son dos envoltorios de rejilla.
+- Las secciones salen del HTML del propio documento (`lib/secciones.ts`): sólo los H2 de primer
+  nivel, así que el aviso de `PendingNotice` no cuenta. Ninguna página repite sus títulos en una
+  lista aparte.
+- Marca la sección que lees como el del artículo: familia C, CSS entero. Las legales siguen en
+  **cero JavaScript**.
+- `tests/riel.test.ts` lo vigila también en las legales, y `tests/secciones.test.ts` prueba la
+  función.
+
+**La 404: tres salidas más.** Bajo «Para conocer DLPay» van Cómo funciona, Precio y Preguntas, con
+**los mismos rótulos y descripciones del menú «Información»**.
+
+- El menú salió de `Header.astro` a `lib/navegacion.ts` para que las dos lo lean del mismo sitio.
+- **No son «las más visitadas»**: el sitio no tiene analítica. Son las tres que responden qué es,
+  qué cuesta y qué dudas hay.
+- El único texto nuevo es el rótulo, con su `REQUIERE VALIDACIÓN DE COMPLIANCE`.
+- `tests/404.test.ts` comprueba que dicen lo mismo que el menú y que llevan a una página que existe.
+
+### Lo que cuesta
+
+Medido con `gzip -9` sobre el HTML y las hojas que pide cada página.
+
+- **JavaScript: 0 B.** Los mismos archivos, y `dist/_headers` idéntico.
+- **La Home, byte a byte igual**, y con las mismas tres hojas.
+- **Una hoja más en `/blog`, en los artículos y en las legales**, porque sus estilos pasan del
+  umbral de 4 KB en que el build los deja en línea:
+
+  | Página | Antes | Ahora | |
+  |---|---|---|---|
+  | La Home | 55.634 B | 55.634 B | **+0** |
+  | `/blog` | 16.228 B | 17.306 B | +1.078 B |
+  | Cada artículo | 20.842 B | 21.186 B | +344 B, con la hoja nueva compartida con `/blog` |
+  | `/terminos` | 9.728 B | 11.217 B | +1.489 B, el CSS de un riel que todavía no usa |
+  | `/privacidad` | 9.616 B | 11.099 B | +1.483 B, lo mismo |
+  | `/canal-de-denuncias` | 9.703 B | 11.467 B | +1.764 B |
+  | La 404 | 8.743 B | 9.123 B | +380 B, con la misma hoja |
+
+- **En reposo, idénticas al píxel** todas las rutas salvo `/blog`, `/canal-de-denuncias` y la 404.
+
 ## Lo que este ADR NO concede
 
 - **Ningún movimiento en la Home.** La Home tiene el suyo, con sus ADR.
-- **Ninguna pieza que no esté en la tabla.** La vigesimoprimera trae su fila, o su ADR.
+- **Ninguna pieza que no esté en la tabla.** La vigesimotercera trae su fila, o su ADR.
 - **Nada en «Lo que no vas a leer acá»** de `/confianza`. Su quietud es su tono (§5), y sigue así.
 - **Ningún plazo, canal ni «remesa»** en lo que se mueve (ADR-0014, `CLAUDE.md` §1). Los avisos y
   la conversación siguen sin horas.
