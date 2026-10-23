@@ -1,147 +1,126 @@
 ---
 /**
- * El recorrido real, contado en cuatro pasos con el chat a la vista.
+ * «Así se ve tu operación, paso a paso»: un teléfono que se queda y una
+ * conversación que crece mientras bajas (Cowork, entrega `telefono-`,
+ * 2026-10-23, pedida por Sebastián).
  *
- * Zig-zag en escritorio, apilado en móvil. El DOM va SIEMPRE texto → teléfono,
- * que es el orden correcto en móvil y el orden de lectura correcto siempre; en
- * escritorio las filas pares se recolocan con `grid-column` explícito. Los
- * teléfonos van `aria-hidden` y sin nada enfocable dentro, así que no hay
- * desajuste entre orden visual y orden de tabulación.
+ * ── Qué sustituye ────────────────────────────────────────────────────────────
  *
- * Se coloca por `grid-column` y no por `order`: con `order` el intercambio
- * depende de que las dos columnas midan lo mismo, y el día que alguien ponga
- * `1fr auto` el teléfono se queda con la columna elástica sin que salte ningún
- * error. Explícito no depende de nada más.
+ * Hasta el 2026-10-23 eran CUATRO teléfonos en zig-zag, uno por paso, cada uno
+ * con su trozo de conversación: 2.313 px a 1280 y 2.676 a 390, el 30 % de la
+ * Home para cuatro capturas del mismo aparato. La idea es de Cowork, del
+ * 2026-09-28 (`Claude outputs/analisis.md`, con el prototipo
+ * `prototipo-un-telefono.html`): un aparato que se queda quieto y cambia de
+ * pantalla mientras lees. Sebastián eligió el 2026-10-23 que la conversación
+ * **crezca** —cada paso suma sus mensajes y los anteriores suben, como en un
+ * chat de verdad— y que en móvil el teléfono también quede fijo, arriba.
  *
- * ── Por qué este zig-zag y no el que se borró ───────────────────────────────
+ * ── Cómo está hecho: CSS, cero JavaScript (ADR-0017, `motion-e7`) ────────────
  *
- * El anterior alternaba figuras ABSTRACTAS —cuñas, topologías— que no decían
- * nada por sí solas: había que leer el texto y luego descifrar el dibujo. Aquí
- * la figura es la conversación literal, así que se entiende sin leer. Es la
- * diferencia entre un diagrama y una captura.
+ * El prototipo usaba un `IntersectionObserver` y un oyente de scroll. Esto no:
+ * cada paso declara una línea de tiempo de vista con nombre (`--paso-1` …
+ * `--paso-4`), la escena las hace visibles a sus hijos con `timeline-scope`, y
+ * cada mensaje del teléfono se abre con la línea de su paso. Es la misma
+ * técnica de la banda de destinos (ADR-0016), y como ella va ligada al
+ * desplazamiento: si dejas de bajar se detiene, y si subes vuelve atrás.
  *
- * ── Las cifras no se teclean ────────────────────────────────────────────────
+ * **Sólo se mueve si se cumplen las tres condiciones**: un navegador que
+ * entienda `animation-timeline` y `timeline-scope`, `prefers-reduced-motion:
+ * no-preference` y una pantalla con alto para el teléfono y el texto (desde
+ * 640 px en escritorio y 600 en móvil). Si falta una, la sección se ve quieta y
+ * entera: el teléfono con la conversación completa, al lado de los pasos en
+ * escritorio y encima de ellos en móvil. Nada se pierde, y lo único que no hay
+ * es el movimiento.
  *
- * El monto y la tasa que aparecen en los hilos salen de `ConfigPriceSource` y
- * de los formateadores de `lib/pricing`. Escribir "919,70" a mano habría creado
- * una cuarta fuente de verdad para el precio y, peor, habría dejado clavado en
- * el copy un valor de MUESTRA que hoy es un placeholder (D7 abierta).
+ * **En el DOM el teléfono va antes que los pasos.** En móvil es el que se pega
+ * arriba, y si fuera después se pegaría cuando ya pasaste los cuatro pasos: lo
+ * aprendió el prototipo. En escritorio se recoloca a la derecha con
+ * `grid-column`. Va `aria-hidden`, así que el orden de lectura es el del texto.
+ *
+ * ── Las cifras y las frases no se teclean ────────────────────────────────────
+ *
+ * El primer mensaje es `mensajeInicial()`: el texto que el botón del cotizador
+ * escribe solo, letra por letra, y `tests/telefono.test.ts` lo comprueba sobre
+ * el build. La tasa sale de `ConfigPriceSource`. Las demás frases viven en
+ * `content/process.ts`, que también usa la portada de `/como-funciona`.
  */
 import WhatsAppMockup from './WhatsAppMockup.astro';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
-import { formatCLP, formatRate } from '../lib/pricing/format.ts';
-import { quoteLimits } from '../lib/config/site.ts';
+import { formatRate } from '../lib/pricing/format.ts';
+import { mensajeInicial } from '../lib/pricing/mensaje-inicial.ts';
 import { chatLines } from '../content/process.ts';
-
-interface ChatMessage {
-  sender: 'user' | 'dlpay';
-  text: string;
-}
 
 interface Step {
   title: string;
   body: string;
-  thread: readonly ChatMessage[];
 }
 
 const price = await new ConfigPriceSource().getPrice();
-
-/** El mismo monto que carga el cotizador: un solo origen (D24). */
-const SAMPLE_PAY = quoteLimits.samplePayClp;
-const monto = formatCLP(SAMPLE_PAY);
-const tasa = formatRate(price.rate);
-/* Las frases viven en `content/process.ts` desde el 2026-09-25: la portada de
-   `/como-funciona` usa tres de ellas y no puede haber dos dueños de una línea. */
-const chat = chatLines(monto, tasa);
+const chat = chatLines(await mensajeInicial(), formatRate(price.rate));
 
 const steps: readonly Step[] = [
   {
     title: '1. Inicias el chat',
     body: 'Tu operación llega escrita automáticamente desde nuestro cotizador.',
-    thread: [
-      { sender: 'user', text: chat.pide },
-    ],
   },
   {
-    // REQUIERE VALIDACIÓN DE COMPLIANCE — "Precio garantizado" y "Congelamos tu
-    // precio" afirman una cotización cerrada. CLAUDE.md §6 dice que el
-    // cotizador "no bloquea precios, no promete cotizaciones cerradas", y
-    // `Quote.isReferential` es un literal de tipo, no un booleano variable:
-    // V1 no puede emitir un precio garantizado. El copy va textual por
-    // decisión del equipo (2026-09-09) y la aprobación es de DLPay.
-    // Alternativa que dice lo mismo sin el claim: "2. Un ejecutivo confirma tu
-    // precio".
-    title: '2. Precio garantizado',
-    // REQUIERE VALIDACIÓN DE COMPLIANCE — "mesa de dinero" describe una
-    // función de tesorería concreta; conviene confirmar que es como DLPay
-    // quiere nombrar su operación.
-    body: 'Un ejecutivo confirma tu tasa en tiempo real por la mesa de dinero.',
-    thread: [
-      { sender: 'dlpay', text: chat.confirma },
-      { sender: 'user', text: chat.acepta },
-    ],
+    // Decía «2. Precio garantizado», con marcador de Compliance: afirmaba una
+    // cotización cerrada, y el cotizador no las emite (`Quote.isReferential`
+    // es un literal de tipo). Sebastián eligió el 2026-10-23 la alternativa
+    // que el propio marcador traía redactada.
+    //
+    // El cuerpo decía «Un ejecutivo confirma tu tasa en tiempo real por la mesa
+    // de dinero.»: repetía el título nuevo y llevaba su propio marcador por
+    // «mesa de dinero». Ahora dice lo mismo con las palabras que el sitio ya
+    // publica —«el precio final te lo confirma tu ejecutivo antes de que
+    // transfieras», validado por Sebastián (Compliance) el 2026-10-22 en la
+    // sección de destinos—, y los dos marcadores se van con las frases.
+    title: '2. Un ejecutivo confirma tu precio',
+    body: 'El precio de la web es referencial: el final te lo confirma tu ejecutivo antes de que transfieras.',
   },
   {
     title: '3. Transfieres con seguridad',
     body: 'Envías tus pesos a nuestra cuenta bancaria en Chile.',
-    thread: [
-      { sender: 'user', text: chat.transfiere },
-      { sender: 'dlpay', text: chat.recibido },
-    ],
   },
   {
     // REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega a destino
-    // (ADR-0014).
-    //
-    // **Decía «4. Recibes en minutos» hasta el 2026-10-22, y era el hallazgo
-    // más serio de la revisión de Cowork.** Aquel título cumplía la regla del
-    // §1 que regía al escribirlo: la rapidez se predicaba de NUESTRA
-    // operación, que entonces terminaba al entregar en una billetera, así que
-    // los minutos tenían sujeto. **ADR-0014 metió la entrega en destino dentro
-    // de nuestra operación**, y con eso el mismo texto pasó a prometer un
-    // plazo de la entrega final — justo lo que su §3 prohíbe, y lo que el
-    // héroe y `Steps` ya habían perdido ese día. Esta pieza se quedó atrás
-    // porque nadie la buscó: el comentario de arriba seguía citando la regla
-    // de la billetera.
-    //
-    // «Sin esperar días hábiles» se queda: no es un plazo, es no depender del
-    // calendario bancario, y es lo que publican la franja de confianza del
-    // héroe y `Steps`.
+    // (ADR-0014). Decía «4. Recibes en minutos» hasta el 2026-10-22: ver el
+    // historial de este archivo. «Sin esperar días hábiles» no es un plazo, es
+    // no depender del calendario bancario.
     title: '4. Llega a destino',
     body: 'Sin esperar días hábiles ni lidiar con bancos intermediarios.',
-    thread: [
-      { sender: 'dlpay', text: chat.entregado },
-    ],
   },
 ];
+
+/* La conversación entera, en orden, con el paso al que pertenece cada mensaje. */
+const hilo = [
+  { sender: 'user', text: chat.pide, paso: 1 },
+  { sender: 'dlpay', text: chat.confirma, paso: 2 },
+  { sender: 'user', text: chat.acepta, paso: 2 },
+  { sender: 'user', text: chat.transfiere, paso: 3 },
+  { sender: 'dlpay', text: chat.recibido, paso: 3 },
+  { sender: 'dlpay', text: chat.entregado, paso: 4 },
+] as const;
 ---
 <section class="process" aria-labelledby="process-title">
   <div class="inner">
-    {/*
-      La sección lleva su propio h2 y los pasos van en h3.
-      Se pidieron los cuatro títulos como h2, pero cuatro h2 hermanos sin un
-      encabezado que los agrupe dejan la sección sin nombre accesible y rompen
-      la jerarquía que el DoD verifica (CLAUDE.md §7). El resto del sitio tiene
-      exactamente un h2 por sección. El texto de los pasos es el que se pidió,
-      literal, sólo que en el nivel que le corresponde.
-    */}
     <header class="head" data-enter>
       <h2 id="process-title">Así se ve tu operación, paso a paso</h2>
     </header>
 
-    <ol class="list" role="list">
-      {steps.map((step) => (
-        <li class="step" data-enter>
-          <div class="body">
+    <div class="escena">
+      <div class="soporte">
+        <WhatsAppMockup variant="escena" thread={hilo} />
+      </div>
+      <ol class="pasos" role="list">
+        {steps.map((step) => (
+          <li class="paso">
             <h3>{step.title}</h3>
             <p>{step.body}</p>
-          </div>
-          <div class="phone">
-            <WhatsAppMockup variant="bare" thread={step.thread} />
-          </div>
-        </li>
-      ))}
-    </ol>
+          </li>
+        ))}
+      </ol>
+    </div>
   </div>
 </section>
 
@@ -162,57 +141,153 @@ const steps: readonly Step[] = [
     line-height: var(--lh-h2);
     letter-spacing: var(--ls-h2);
   }
-
-  /* El respiro entre pasos es lo que hace legible una narración larga: sin él,
-     cuatro teléfonos seguidos se leen como una rejilla de producto. */
-  .list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--s-9);
-  }
-
-  /* Móvil: una columna, texto arriba y teléfono abajo en los cuatro pasos.
-     Como el DOM ya va en ese orden, aquí no hace falta ninguna regla. */
-  .step { display: grid; gap: var(--s-5); }
-
   h3 {
     font-size: var(--t-h3-m);
     font-weight: 600;
     line-height: var(--lh-h3);
     margin-bottom: var(--s-2);
   }
-  .body p { color: var(--ink-mute); max-width: 44ch; }
+  .paso p { color: var(--ink-mute); max-width: 44ch; }
 
-  .phone { display: flex; justify-content: center; }
+  /* ── Quieto: el estado de partida, y el de siempre si falta una condición ──
+     Móvil: el teléfono con la conversación entera y, debajo, los cuatro pasos.
+     Escritorio: los pasos a la izquierda y el teléfono a la derecha. */
+  .escena { display: grid; gap: var(--s-7); }
+  .soporte { display: flex; justify-content: center; }
+  .pasos { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-6); }
 
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
     h2 { font-size: var(--t-h2); }
     h3 { font-size: var(--t-h3); }
-    /* `--s-9` y no `--s-10`: con cuatro teléfonos de 425px, 128px entre pasos
-       llevaban la sección por encima de 2.400px. 96px sigue siendo respiro
-       amplio y recorta casi 100px de scroll. */
-    .list { gap: var(--s-9); }
+    /* La pareja va centrada y junta: el texto a una medida de lectura y el
+       teléfono a su lado. Con `1fr auto` el teléfono se iba al borde derecho y
+       quedaba a 400 px del texto que explica. */
+    .escena {
+      grid-template-columns: minmax(0, 30rem) auto;
+      justify-content: center;
+      gap: var(--s-10);
+      align-items: start;
+    }
+    .soporte { grid-column: 2; grid-row: 1; }
+    .pasos { grid-column: 1; grid-row: 1; align-self: center; }
+  }
 
-    /* Columnas iguales para que el intercambio del zig-zag no cambie los
-       anchos de una fila a la siguiente. */
-    .step {
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-      gap: var(--s-9);
+  /* ── En movimiento: motion-e7 (ADR-0017) ─────────────────────────────────
+     Todo lo de abajo exige las tres condiciones de la cabecera. Los alturas
+     del teléfono van en px por tramo de pantalla, porque de ellas salen el
+     `top` del teléfono fijo y el recorte de las líneas de tiempo de los pasos.
+
+     · Escritorio: teléfono de 236 × 511 px, fijo a media pantalla. Cada paso
+       ocupa la mitad del alto de la pantalla, para que su texto pase por el
+       centro mientras el teléfono está quieto.
+     · Móvil: teléfono de 200 × 340 px, fijo arriba sobre papel. El texto pasa
+       por debajo, en lo que queda de pantalla entre el teléfono y la barra del
+       cotizador (72 px), y las líneas de tiempo de los pasos se recortan a ese
+       hueco con `view-timeline-inset`: «el centro» es el centro de lo que se
+       ve, no el de la pantalla. */
+  @supports (animation-timeline: view()) and (timeline-scope: none) {
+    @media (prefers-reduced-motion: no-preference) and (max-width: 899px) and (min-height: 600px),
+           (prefers-reduced-motion: no-preference) and (min-width: 900px) and (min-height: 640px) {
+      .escena {
+        timeline-scope: --paso-1, --paso-2, --paso-3, --paso-4;
+        gap: 0;
+      }
+      .paso {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        view-timeline-axis: block;
+        /* Cada paso se oscurece mientras su texto pasa por el centro: ink-mute
+           antes y después, ink en medio. Es la única marca de «paso activo»,
+           y no es una de las del §6.2: un filete verde diría «lo nuestro». */
+        color: var(--ink-mute);
+        animation: paso-activo linear both;
+        animation-range: cover 20% cover 80%;
+      }
+      .paso:nth-child(1) { view-timeline-name: --paso-1; animation-timeline: --paso-1; }
+      .paso:nth-child(2) { view-timeline-name: --paso-2; animation-timeline: --paso-2; }
+      .paso:nth-child(3) { view-timeline-name: --paso-3; animation-timeline: --paso-3; }
+      .paso:nth-child(4) { view-timeline-name: --paso-4; animation-timeline: --paso-4; }
+      .pasos { gap: 0; }
+
+      /* Los selectores del teléfono llevan `.mockup.escena` delante a
+         propósito: el estado quieto vive en `WhatsAppMockup.astro` con sus
+         propias clases de alcance, y estas reglas tienen que pesar más. */
+      .soporte { position: sticky; z-index: 2; }
+      .soporte :global(.mockup.escena .device) { aspect-ratio: auto; height: 511px; }
+      /* La conversación se apoya abajo y lo viejo sale por arriba, como en
+         cualquier chat. El hueco entre mensajes pasa de `gap` a un margen
+         DENTRO de cada mensaje, para que un mensaje cerrado no deje su hueco. */
+      .soporte :global(.mockup.escena .chat) {
+        justify-content: flex-end;
+        min-height: 0;
+        overflow: hidden;
+        gap: 0;
+      }
+      .soporte :global(.mockup.escena .linea) {
+        display: grid;
+        animation: mensaje-aparece linear both;
+      }
+      .soporte :global(.mockup.escena .caja) { min-height: 0; overflow: hidden; }
+      .soporte :global(.mockup.escena .bubble) { margin-top: var(--s-2); }
+      .soporte :global(.mockup.escena .linea[data-paso='1']) { animation-timeline: --paso-1; }
+      .soporte :global(.mockup.escena .linea[data-paso='2']) { animation-timeline: --paso-2; }
+      .soporte :global(.mockup.escena .linea[data-paso='3']) { animation-timeline: --paso-3; }
+      .soporte :global(.mockup.escena .linea[data-paso='4']) { animation-timeline: --paso-4; }
+      /* El primero de cada paso, cuando su texto llega a la parte baja del
+         centro; el segundo, cuando llega al centro. */
+      .soporte :global(.mockup.escena .linea[data-orden='1']) { animation-range: cover 28% cover 38%; }
+      .soporte :global(.mockup.escena .linea[data-orden='2']) { animation-range: cover 40% cover 50%; }
     }
 
-    /* Única regla del zig-zag: las filas PARES se recolocan. Las impares se
-       quedan en el orden del DOM. Da texto│tel · tel│texto · texto│tel ·
-       tel│texto. */
-    .step:nth-child(even) .body { grid-column: 2; grid-row: 1; }
-    .step:nth-child(even) .phone { grid-column: 1; grid-row: 1; }
+    @media (prefers-reduced-motion: no-preference) and (max-width: 899px) and (min-height: 600px) {
+      .soporte {
+        top: 0;
+        padding-block: var(--s-3);
+        background: var(--papel);
+      }
+      /* Lo que pasa por debajo se desvanece al llegar al teléfono, en vez de
+         cortarse en seco contra su fondo. */
+      .soporte::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        height: var(--s-6);
+        background: linear-gradient(var(--papel), rgba(246, 245, 241, 0));
+        pointer-events: none;
+      }
+      .soporte :global(.mockup.escena .device) { width: 200px; height: 340px; }
+      /* 364 = 340 del teléfono + 24 de su relleno; 72 = la barra del cotizador.
+         Cada paso mide el hueco que queda entre los dos, con tope de 400 px: en
+         una tableta vertical el hueco pasa de 580 y la sección se alargaba
+         hasta 3.000 px para cuatro frases. */
+      .paso {
+        min-height: clamp(220px, calc(100svh - 364px - 72px), 400px);
+        padding-block: var(--s-5);
+        view-timeline-inset: 364px 72px;
+      }
+    }
 
-    /* El texto se acerca al teléfono de su fila en vez de quedar pegado al
-       borde de la página: la pareja se lee como una unidad. */
-    .step:nth-child(odd) .body { justify-self: end; }
-    .step:nth-child(even) .body { justify-self: start; }
+    @media (prefers-reduced-motion: no-preference) and (min-width: 900px) and (min-height: 640px) {
+      .soporte { top: calc(50vh - 256px); }
+      /* La mitad de la pantalla, entre 320 y 420 px: en una pantalla alta cada
+         paso no necesita más para pasar por el centro con el teléfono quieto. */
+      .paso { min-height: clamp(320px, 50vh, 420px); }
+      /* Para que el último mensaje entre con el teléfono todavía quieto: el
+         teléfono se suelta cuando el final de la escena llega a su pie. */
+      .pasos { padding-bottom: 12vh; }
+    }
+  }
+
+  @keyframes paso-activo {
+    0%, 100% { color: var(--ink-mute); }
+    25%, 75% { color: var(--ink); }
+  }
+  @keyframes mensaje-aparece {
+    from { grid-template-rows: 0fr; opacity: 0; }
+    to   { grid-template-rows: 1fr; opacity: 1; }
   }
 </style>

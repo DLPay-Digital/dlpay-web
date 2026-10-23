@@ -11,9 +11,19 @@
  *   teléfono + pie explicativo, y OCULTO bajo 900px, porque en móvil la persona
  *   ya está en el teléfono desde el que va a escribir y dibujarle un teléfono
  *   dentro del teléfono no le aporta nada.
- * · `bare` — sólo el dispositivo, visible en todos los anchos. Lo usa
- *   `Process.astro`, donde el teléfono ES el contenido de cada paso y ocultarlo
- *   en móvil dejaría la sección sin la mitad de su narrativa.
+ * · `bare` — sólo el dispositivo, visible en todos los anchos. Lo usa la
+ *   portada de `/como-funciona`. Hasta el 2026-10-23 lo usaba también
+ *   `Process.astro`, con cuatro teléfonos en zig-zag.
+ * · `escena` — un solo teléfono con la conversación ENTERA, para
+ *   `Process.astro` desde el 2026-10-23 (Cowork, entrega `telefono-`). Cada
+ *   mensaje va en una `.linea` con `data-paso` y `data-orden`: son los ganchos
+ *   con que `Process.astro` lo hace crecer mientras bajas (ADR-0017). Acá sólo
+ *   vive su estado quieto, que es también el de sin soporte y el de movimiento
+ *   reducido: el teléfono crece hasta mostrar la conversación completa, de
+ *   arriba abajo, sin cortar nada. **El movimiento no está en este archivo, a
+ *   propósito**: sus condiciones —el navegador, la preferencia y el alto de la
+ *   pantalla— tienen que ser las mismas que las de los pasos, y por eso viven
+ *   en un solo sitio.
  *
  * ── REGLA DURA que sobrevive al refactor ────────────────────────────────────
  *
@@ -40,12 +50,14 @@ interface ChatMessage {
   /** `user` sale por la derecha; `dlpay` entra por la izquierda. */
   sender: 'user' | 'dlpay';
   text: string;
+  /** Sólo en `escena`: el paso del recorrido al que pertenece, de 1 a 4. */
+  paso?: number;
 }
 
 interface Props {
   /** Hilo narrativo. Sin él, se muestra el mensaje real del cotizador. */
   thread?: readonly ChatMessage[];
-  variant?: 'proof' | 'bare';
+  variant?: 'proof' | 'bare' | 'escena';
 }
 
 const { thread, variant = 'proof' } = Astro.props;
@@ -67,6 +79,9 @@ async function defaultThread(): Promise<readonly ChatMessage[]> {
 }
 
 const messages = thread ?? (await defaultThread());
+
+/** En `escena`, el orden de cada mensaje dentro de su paso: 1, 2… */
+const orden = messages.map((m, i) => messages.slice(0, i + 1).filter((x) => x.paso === m.paso).length);
 ---
 {/*
   El `data-enter` sólo lo lleva la variante `proof`, que es un bloque autónomo.
@@ -74,7 +89,17 @@ const messages = thread ?? (await defaultThread());
   `[data-enter]` haría que el contenedor se revele y, dentro, el teléfono se
   revele otra vez — dos fundidos para una sola cosa.
 */}
-<figure class:list={['mockup', variant]} data-enter={variant === 'proof' ? '' : undefined}>
+{/*
+  Sin `figcaption`, la figura queda vacía para un lector de pantalla —el
+  dispositivo va `aria-hidden`— y se anunciaba «figura» sin nada dentro: cuatro
+  veces seguidas en la Home, con el zig-zag. Desde el 2026-10-23 sólo `proof`,
+  que sí trae su pie, se expone.
+*/}
+<figure
+  class:list={['mockup', variant]}
+  data-enter={variant === 'proof' ? '' : undefined}
+  aria-hidden={variant === 'proof' ? undefined : 'true'}
+>
   <div class="device" aria-hidden="true">
     <div class="screen">
       <span class="island"></span>
@@ -83,9 +108,17 @@ const messages = thread ?? (await defaultThread());
         <span class="who">DLPay</span>
       </div>
       <div class="chat">
-        {messages.map((m) => (
-          <p class:list={['bubble', m.sender === 'user' ? 'out' : 'in']}>{m.text}</p>
-        ))}
+        {variant === 'escena'
+          ? messages.map((m, i) => (
+              <div class="linea" data-paso={m.paso} data-orden={orden[i]}>
+                <div class="caja">
+                  <p class:list={['bubble', m.sender === 'user' ? 'out' : 'in']}>{m.text}</p>
+                </div>
+              </div>
+            ))
+          : messages.map((m) => (
+              <p class:list={['bubble', m.sender === 'user' ? 'out' : 'in']}>{m.text}</p>
+            ))}
       </div>
     </div>
   </div>
@@ -133,7 +166,26 @@ const messages = thread ?? (await defaultThread());
        sección, sin perder legibilidad de las burbujas.
   */
   .bare .chat { justify-content: flex-end; }
+  /* 3· Lo que no cabe sale por ARRIBA, como en un chat, y no por abajo
+     (2026-10-23). Con el primer mensaje real del cotizador —más largo que la
+     frase que había— la conversación de `/como-funciona` ya no cabía, y como
+     la caja crecía hacia abajo, la pantalla cortaba el último mensaje, que es
+     el que importa. Con `min-height: 0` la conversación mide lo que queda de
+     pantalla, y `overflow: hidden` impide que lo de arriba pise la cabecera. */
+  .bare .chat { min-height: 0; overflow: hidden; }
   .bare .device { width: 196px; }
+
+  /* ── `escena`, quieto ──────────────────────────────────────────────────
+     Sin proporción fija: el teléfono mide lo que mide la conversación entera,
+     y nada se corta. La `.caja` se ensancha 8 px por lado para que la colita de
+     cada burbuja, que sobresale 6 px, quepa cuando `Process.astro` le ponga
+     `overflow: hidden` para hacerla crecer. */
+  .escena { margin: 0; }
+  .escena .device { width: 220px; aspect-ratio: auto; }
+  .caja { display: flex; flex-direction: column; margin-inline: -8px; padding-inline: 8px; }
+  @media (min-width: 900px) {
+    .escena .device { width: 236px; }
+  }
 
   /* ── El dispositivo ──────────────────────────────────────────────────────
      Puro CSS. Bisel en tinta, sin marcas ni botones de ningún fabricante. */
@@ -282,5 +334,19 @@ const messages = thread ?? (await defaultThread());
   .in::after { left: -6px; clip-path: polygon(100% 0, 0 0, 100% 100%); }
 
   .claim { color: var(--ink-mute); max-width: 46ch; font-size: var(--t-body); }
+
+  /* ── Colores forzados (2026-10-23) ─────────────────────────────────────
+     Todo el teléfono es fondo —el bisel, la pantalla, la cabecera, las
+     burbujas— y el sistema quita los fondos: quedaba el texto suelto, sin
+     aparato y sin saber quién dice qué. El contorno lo dan los bordes del
+     sistema, y lo que escribe el cliente va con el color de resalte, para que
+     se distinga de lo que contesta DLPay sin depender del lado. */
+  @media (forced-colors: active) {
+    .device { border: 2px solid CanvasText; }
+    .device::before, .device::after, .island, .bubble::after { display: none; }
+    .bar { border-bottom: 1px solid CanvasText; }
+    .bubble { border: 1px solid CanvasText; }
+    .out { border-color: Highlight; }
+  }
   .claim b { color: var(--ink); font-weight: 600; display: block; margin-bottom: var(--s-2); }
 </style>

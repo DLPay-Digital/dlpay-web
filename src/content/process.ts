@@ -124,20 +124,30 @@ export const checklist: readonly ChecklistItem[] = [
  * de la misma línea** en dos páginas: la Home y ésta. Es el fallo que D24 cerró
  * para el monto mínimo y el mismo que llevó `content/scope.ts` a existir.
  *
- * **No formatea cifras a propósito.** Recibe el monto y la tasa ya compuestos
- * por quien la llama, que es quien tiene la cadena `ConfigPriceSource → convert`
- * a mano. Así este archivo sigue siendo contenido puro, sin una sola
- * dependencia de `lib/pricing`, y nadie puede hacer que la Home y esta página
- * citen precios distintos.
+ * **No formatea cifras a propósito.** Recibe el primer mensaje y la tasa ya
+ * compuestos por quien la llama, que es quien tiene `lib/pricing` a mano. Así
+ * este archivo sigue siendo contenido puro, sin una sola dependencia de
+ * `lib/pricing`, y nadie puede hacer que la Home y esta página citen precios
+ * distintos.
  *
- * Ninguna de estas frases lleva marcador de Compliance, y conviene saber por
- * qué: los dos marcadores del paso 2 de `Process.astro` están en su TÍTULO
- * («Precio garantizado») y en su CUERPO («mesa de dinero»), no en las burbujas.
+ * **El primer mensaje no es una frase de este archivo desde el 2026-10-23.**
+ * Decía «Hola, necesito convertir {monto} CLP. ¿Me confirman el precio?», y el
+ * botón del cotizador ya escribía otra cosa: «Hola, quiero enviar CLP 2.000.000
+ * a Estados Unidos, en dólares (…)». El paso 1 dice que la operación «llega
+ * escrita automáticamente desde nuestro cotizador», así que la burbuja tiene que
+ * ser ese texto y no uno parecido: quien llama la pide a `mensajeInicial()`
+ * (`lib/pricing/mensaje-inicial.ts`), que la arma con la función del botón.
+ * Decidido por Sebastián el 2026-10-23.
+ *
+ * Ninguna de estas frases lleva marcador de Compliance. Los dos que tenía el
+ * paso 2 de `Process.astro` estaban en su TÍTULO («Precio garantizado») y en su
+ * CUERPO («mesa de dinero»), no en las burbujas, y se fueron con esas frases el
+ * 2026-10-23.
  */
-export function chatLines(monto: string, tasa: string) {
+export function chatLines(mensajeInicial: string, tasa: string) {
   return {
-    /** Lo que el botón del cotizador escribe solo. */
-    pide: `Hola, necesito convertir ${monto} CLP. ¿Me confirman el precio?`,
+    /** Lo que el botón del cotizador escribe solo: `mensajeInicial()`. */
+    pide: mensajeInicial,
     /** El ejecutivo, con el precio de verdad. */
     confirma: `Precio confirmado a ${tasa}. ¿Cerramos la operación?`,
     acepta: 'Sí, acepto.',

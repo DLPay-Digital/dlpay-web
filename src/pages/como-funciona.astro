@@ -20,8 +20,9 @@ import FiguraRiel from '../components/FiguraRiel.astro';
 import WhatsAppMockup from '../components/WhatsAppMockup.astro';
 import { detailedSteps, checklist, chatLines } from '../content/process.ts';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
-import { formatCLP, formatRate } from '../lib/pricing/format.ts';
-import { contact, platform, quoteLimits } from '../lib/config/site.ts';
+import { formatRate } from '../lib/pricing/format.ts';
+import { mensajeInicial } from '../lib/pricing/mensaje-inicial.ts';
+import { contact, platform } from '../lib/config/site.ts';
 
 /* El botón es «Preguntar primero» y está junto a «Crear mi cuenta», en la
    sección de registro y verificación. El mensaje nombra esa duda concreta. */
@@ -35,20 +36,23 @@ const wa = contact.whatsappUrl(
   La página que explica la conversación no enseñaba la conversación: el mockup
   existía desde hacía semanas y sólo lo usaban la Home y `/empresas`.
 
-  **El hilo no se teclea.** Las tres frases salen de `chatLines`, que es la
-  misma fuente de la que bebe `Process.astro`; el monto y la tasa salen de
-  `ConfigPriceSource` y `quoteLimits`, que es de donde salen las del cotizador.
-  Ninguna cifra de esta página puede contradecir a la Home.
+  **El hilo no se teclea.** Las frases salen de `chatLines`, que es la
+  misma fuente de la que bebe `Process.astro`; la tasa sale de
+  `ConfigPriceSource`, y el primer mensaje, desde el 2026-10-23, de
+  `mensajeInicial()`: es el texto que el botón del cotizador escribe solo, letra
+  por letra. Ninguna cifra de esta página puede contradecir a la Home.
 
   Es el momento que los pasos 02 y 03 describen con palabras: el mensaje que el
-  botón escribe solo, y el ejecutivo confirmando.
+  botón escribe solo, y el ejecutivo confirmando. **Son dos burbujas desde el
+  2026-10-23**: el mensaje real del cotizador es más largo que la frase que
+  había, y con «Sí, acepto.» de tercera el teléfono cortaba el principio del
+  mensaje, que es justamente lo que esta figura enseña.
 */
 const price = await new ConfigPriceSource().getPrice();
-const chat = chatLines(formatCLP(quoteLimits.samplePayClp), formatRate(price.rate));
+const chat = chatLines(await mensajeInicial(), formatRate(price.rate));
 const hilo = [
   { sender: 'user', text: chat.pide },
   { sender: 'dlpay', text: chat.confirma },
-  { sender: 'user', text: chat.acepta },
 ] as const;
 ---
 <Base
