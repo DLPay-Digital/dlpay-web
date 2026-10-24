@@ -57,7 +57,7 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   cuentan».** Sebastián pidió que las páginas que no son la Home dejaran de verse sin vida, y aprobó
   el análisis de Cowork contra Wise: **se trae el cómo cuenta, no el cómo se ve**. Las portadas
   actúan una vez (familia A), las figuras de línea hacen su verbo al bajar (familia C), y cada
-  página gana su pieza. Son **veinte piezas en un solo ADR**, una fila por pieza, y entran por
+  página gana su pieza. Son **veintidós piezas en un solo ADR**, una fila por pieza, y entran por
   tandas. **La Home no cambia**, `/tarifas` sigue sin JavaScript, y `tests/movimiento.test.ts`
   vigila que toda línea de tiempo quede dentro de sus dos guardas.
   **Una tercera, del 2026-09-25:** la **intro de marca** de la Home —830 ms de telón en los que el
@@ -506,6 +506,11 @@ marca, no un cambio de CSS. Ver ADR-0011.
 de terceros). Criterio permanente: **las cifras son las protagonistas y la tipografía no debe
 volverse excesivamente grande** — la escala es un techo, no un objetivo; si un titular compite con
 la cifra, se reduce el titular. Ver Design System §3 y §3.0.
+
+**Desde el 2026-10-24, Spline Sans Mono sólo pinta cifras** (Design System §3.0, regla 5):
+rótulos, metadatos y los rótulos de los dibujos van en Familjen Grotesk. Lo pidió Sebastián para
+que cada página tenga dos voces, la del titular y la de la bajada. Cambió también la Home, en sus
+dibujos y en el globo.
 
 Referencias (Global66, Buda, Wise, DolarApp, Fintual, Bithonor como contra-ejemplo): analizar
 **principios** de UX, jerarquía, conversión, densidad, navegación y comunicación de confianza. No

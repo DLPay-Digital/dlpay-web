@@ -103,7 +103,7 @@ Es la que rima con el corte diagonal del isotipo.
 | Rol | Familia | Pesos | Fallback |
 |---|---|---|---|
 | **Display, títulos y texto** | **Familjen Grotesk** | 400 · 500 · 600 · 700 | `'Helvetica Neue', Helvetica, Arial, sans-serif` |
-| **Cifras y datos** | **Spline Sans Mono** | 400 · 500 · 600 | `ui-monospace, 'SF Mono', Menlo, monospace` |
+| **Cifras** | **Spline Sans Mono** | 400 · 500 · 600 | `ui-monospace, 'SF Mono', Menlo, monospace` |
 
 **Dos familias, una sola para todo el texto.** No se añade una tercera sin una necesidad concreta
 y una enmienda a este documento.
@@ -135,6 +135,27 @@ modificar y usar comercialmente. Conservar el archivo de licencia junto a las fu
 3. **Cifras siempre tabulares** (`font-variant-numeric: tabular-nums`) en todo lo monetario.
 4. Familjen Grotesk se usa en **un solo eje de peso** por nivel; nada de mezclar pesos dentro de
    un mismo titular.
+5. **La letra de cifras, sólo en cifras** *(2026-10-24)*. Spline Sans Mono pinta montos, tasas,
+   porcentajes, fechas numéricas y números de paso, y los códigos de moneda cuando acompañan una
+   cifra o viven en el cotizador y sus tablas. **Todo lo que son palabras va en Familjen
+   Grotesk**: rótulos, metadatos, categorías, fuentes, la miga de pan, y los rótulos de los
+   dibujos, también un código de moneda que rotula un dibujo, como el «CLP» de «Mover dinero fuera
+   de Chile».
+   - **Por qué.** Lo pidió Sebastián viendo las figuras: los rótulos —«CHILE · EXTERIOR», «Tu
+     banco», «Quien recibe»— iban en mono, y la página tenía tres voces donde quería dos, la del
+     titular y la de la bajada. Antes de esto, Spline pintaba 511 textos visibles, y 190 eran
+     palabras; después, 249, y ninguno es una palabra.
+   - **Las mayúsculas espaciadas conservan su forma** («CHILE · EXTERIOR», «NUESTRA PARTE»),
+     sólo que en Familjen. Los rótulos en minúscula pierden el espaciado de la mono, como la
+     bajada.
+   - **Una cifra dentro de una frase va con la frase**: «9 min de lectura», «Paso 2 de 4»,
+     «Tu precio, 12 minutos». Y **una cifra con su unidad en palabras se parte**: «292» en mono y
+     «mil millones de dólares» en Familjen.
+   - **La excepción es el código**: un `<code>` en un artículo, y la dirección de una billetera en
+     la guía de recibir, que se comparan carácter a carácter.
+   - **La vigila un test**: `tests/tipografia.test.ts` falla si una regla nueva pide
+     `var(--f-num)` sin estar en su lista, con su motivo, o si algo con la clase `.num` no es una
+     cifra.
 
 ### 3.1 Escala tipográfica (ratio ~1.25, base 16px)
 
@@ -1430,7 +1451,7 @@ Cada uno se construye sólo cuando una página real lo necesita (Principio 5, CL
 | **Desglose de precio** | Transparencia | Lista label/valor, valores tabulares alineados a la derecha, divisores hairline. |
 | **Badge de estado** | Estado KYC / operación | Pill discreta (`--r-2`), color semántico + texto, nunca color solo. |
 | **Bloque de confianza** | "Por qué DLPay" | Icono line + H3 + 1 frase. 3 en fila (desktop) / apilados (móvil). Sin números inventados. |
-| **Paso** (step) | Proceso | Marcador (número tabular o chevron) + H3 + frase + tiempo (mono, `--ink-mute`). Numerado sólo porque es secuencia real. |
+| **Paso** (step) | Proceso | Marcador (número tabular o chevron) + H3 + frase + tiempo (`--ink-mute`). Numerado sólo porque es secuencia real. |
 | **Callout WhatsApp** | Contacto humano | Icono chat + texto + botón. Presente en fallbacks del cotizador y en "Cómo funciona". |
 | **Franja de bifurcación** | Personas / Empresas | Dos caminos claros; el de Empresas lleva a `/empresas`. Tardía en la Home. |
 | **Banda Empresas** | Pitch B2B | Sobre `--tinta-2`. Texto + CTA a `/empresas`. |
@@ -1474,8 +1495,9 @@ cada una, no qué significa.
 | **Bloque institucional** | Los emblemas de FinteChile y la UAF, en el pie | `Alliances.astro`. El claim regulatorio se dice **con palabras**, no colgado de un emblema, y el dato declara el alcance de su propio claim |
 | **Motor de movimiento** | Encender el Motion System en las páginas que lo usan | `Motion.astro`. No es una pieza visual: es el `IntersectionObserver` y su interruptor. Las cuatro legales y la 404 no lo llevan y siguen en cero JavaScript |
 | **Fila de artículo** | Una entrada de artículo en una lista | `FilaArticulo`. Marca y texto en un solo enlace. La usan el índice del blog y «Sigue leyendo». *2026-10-13.* **`grande`**: la portada real en vez de la marca, en cinco doceavos desde 900 px y arriba bajo 900. El texto va antes en el documento, así que el enlace se oye empezando por el titular. *2026-10-23.* |
+| **Acción de página** | El botón verde y su compañero de línea, en las portadas y las bandas de cierre | `Accion.astro`. `variante`: `verde` (por omisión) o `linea`; `sobre`: `papel` (por omisión) o `tinta`, que decide el contorno de la de línea —la tinta al 46 % sobre papel (3,06:1 medido sobre `--papel-2`), `--line-on-tinta` sobre tinta (3,50:1)—. **Estaba copiado en seis páginas**, y las copias se habían separado: el fantasma de `/como-funciona` seguía con `--line`, a 1,35:1, y quedó corregido al consumirlo. En colores forzados el verde lleva un borde `LinkText`. No cubre los botones de los instrumentos ni los de la Home. *2026-10-24.* |
 | **Ruta de guías** | Los pasos de «Tu primera operación», en `/blog` | `RutaGuias`. Pasos numerados con la gramática de «Cómo empezamos». Cuenta sólo lo publicado. *2026-10-13.* |
-| **El riel** | Navegar una página larga sabiendo dónde estás: el artículo, `/preguntas` y, con tres secciones o más, las legales (2026-10-23) | Desde 1112 px: 176 px de riel, 48 de hueco y 760 de lectura, pegado arriba a 32 px. Un rótulo en mono —«En esta página» en el artículo, «Las preguntas» en `/preguntas`, porque allí el glosario no está en la lista—, un filete `--line` a la izquierda y las entradas colgadas de él, de 44 px, en `--t-body-sm` y `--ink-mute`; en `/preguntas` con su recuento. **Marca dónde estás** (ADR-0018, piezas 17 y 19) con la marca del menú en claro: filete de 2 px en `--verde-deep` y texto en `--ink`, sin cambiar de grosor; en colores forzados, `Highlight` de 4 px. Sin JavaScript: ver el ADR. Un lector de pantalla no oye «actual», porque `aria-current` pediría JavaScript; el orden del documento no cambia. `tests/riel.test.ts` vigila que entradas y secciones estén en el mismo orden. En las legales, las secciones salen del propio HTML del documento (`lib/secciones.ts`), sólo los H2 de primer nivel |
+| **El riel** | Navegar una página larga sabiendo dónde estás: el artículo, `/preguntas` y, con tres secciones o más, las legales (2026-10-23) | Desde 1112 px: 176 px de riel, 48 de hueco y 760 de lectura, pegado arriba a 32 px. Un rótulo en la letra del texto —«En esta página» en el artículo, «Las preguntas» en `/preguntas`, porque allí el glosario no está en la lista—, un filete `--line` a la izquierda y las entradas colgadas de él, de 44 px, en `--t-body-sm` y `--ink-mute`; en `/preguntas` con su recuento. **Marca dónde estás** (ADR-0018, piezas 17 y 19) con la marca del menú en claro: filete de 2 px en `--verde-deep` y texto en `--ink`, sin cambiar de grosor; en colores forzados, `Highlight` de 4 px. Sin JavaScript: ver el ADR. Un lector de pantalla no oye «actual», porque `aria-current` pediría JavaScript; el orden del documento no cambia. `tests/riel.test.ts` vigila que entradas y secciones estén en el mismo orden. En las legales, las secciones salen del propio HTML del documento (`lib/secciones.ts`), sólo los H2 de primer nivel. **Desde el 2026-10-24 es `RielLateral.astro`**, el mismo para el artículo y las legales, y bajo 1112 `IndiceMovil.astro`. La página pone `data-riel-ambito` en un antepasado común y `data-riel-secciones` en el contenedor de los H2. El de `/preguntas` sigue siendo suyo: es la banda de entrada de la página, que se pega, y comparte la marca, no la pieza |
 | **Bandera** | El país junto a su nombre o su código | `Bandera.astro`. Ver §7.1. *2026-10-22.* |
 | **Selector con banderas** | Elegir destino o divisa en el cotizador | Sigue el patrón *combobox* de la ARIA APG: un botón de 52 px que abre un panel con buscador y la lista. La opción activa lleva `--papel-2` y un filete; la elegida, el código en `--verde-deep` y el punto. Spec: `cotizador-spec.md`, enmienda del 2026-10-22 (b). **Sustituye al `<select>` nativo, y no se usa fuera del cotizador**: un desplegable de verdad, con pocas opciones y sin banderas, sigue siendo un `<select>`. *2026-10-22.* |
 | **Destinos** | Trece destinos, cada uno en su moneda, en la Home bajo el globo | `Destinos.astro`. **Una banda decorativa** —la cápsula de Chile con el tramo verde y el isotipo, y las trece banderas— que se mueve al bajar (**ADR-0016, `motion-e6`**). Debajo, **trece tarjetas `<details>`**: bandera, país y moneda; al abrirse, el precio referencial legible, una tabla de cinco montos desde el mínimo y un enlace que lleva al cotizador con ese destino elegido. Sin JavaScript propio. Tres listas fijas en tres columnas desde 900 px, en orden alfabético de arriba abajo, **y no `columns: 3`**: con columnas de CSS, al abrir una tarjeta el navegador las rebalanceaba y saltaban de columna. **Las cifras salen de `convert()` y `formatAmount()`**, las del cotizador. *2026-10-22.* |
@@ -1565,6 +1587,11 @@ cada una, no qué significa.
   especificidad sin que nada avise: la cuña del cruce de `/empresas` seguía en `--ink-mute` —un
   gris que ignora los colores que eligió quien mira— porque su regla de color tenía más
   especificidad que la del modo.*
+
+  **Y los botones de relleno** *(2026-10-24)*: el sistema les quita el verde, así que todo botón
+  verde lleva un borde `LinkText` en este modo —el del cotizador lo tenía; ahora también el par de
+  acciones, los de la Home, el de la barra del cotizador y «Saltar al contenido»—. Sin él quedaba
+  el texto solo.
 - El cotizador operable por teclado; mensajes de error comprensibles y accionables.
 
 ---

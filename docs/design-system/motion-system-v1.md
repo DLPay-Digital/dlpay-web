@@ -281,7 +281,7 @@ desplazamiento», con sus reglas, en vez de una excepción por pieza.
 ### Enmienda externa — 2026-10-23 (b)
 
 **ADR-0018, «Las páginas que cuentan» (`vida`)**, la primera decisión tomada con el mapa del
-§0 bis y no como excepción. Cubre veinte piezas en las páginas que no son la Home:
+§0 bis y no como excepción. Cubre veintidós piezas en las páginas que no son la Home:
 
 - las portadas actúan una vez al cargar (familia A, narraciones de 1,8 a 2,6 s);
 - las figuras de línea hacen su verbo al bajar (familia C);

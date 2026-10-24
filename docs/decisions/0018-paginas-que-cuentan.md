@@ -54,7 +54,7 @@ con su semántica y las cifras de `lib/pricing`. Lo hace en tres capas:
 | **Figuras que cuentan** | Cada figura de línea hace **su verbo** al bajar, y el verbo es el significado de su marca | C |
 | **Una pieza por página** | La pieza propia de cada página, como el teléfono lo es de la Home | C, o ninguna |
 
-### Las veinte piezas
+### Las veintidós piezas
 
 | # | Página | Pieza | Qué hace | Familia | Tanda |
 |---|---|---|---|---|---|
