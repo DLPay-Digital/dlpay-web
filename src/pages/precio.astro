@@ -41,6 +41,7 @@ import Motion from '../components/Motion.astro';
 import Puente from '../components/Puente.astro';
 import FiguraMonto from '../components/FiguraMonto.astro';
 import EtiquetasPrecio from '../components/EtiquetasPrecio.astro';
+import Accion from '../components/Accion.astro';
 import { volumeTerms } from '../content/business.ts';
 import { faq as homeFaq } from '../content/home.ts';
 import { generalFaq } from '../content/general.ts';
@@ -375,7 +376,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
       <div class="inner">
         <h2 id="close-title" data-enter>¿Listo para ver tu precio?</h2>
         <p>Toma menos de un minuto y no necesitas cuenta para cotizar.</p>
-        <a class="cta" href="/#cotizador">Cotizar ahora</a>
+        <Accion href="/#cotizador">Cotizar ahora</Accion>
       </div>
     </section>
   </main>
@@ -428,7 +429,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
   dt { font-weight: 600; }
   dd {
     margin: 0;
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     color: var(--ink-mute);
     text-align: right;
@@ -608,7 +609,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     no está, pero el nombre se queda: renombrarlo no gana nada.
   */
   .seg-rot {
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     line-height: 1.55;
     color: var(--on-tinta-mute);
@@ -687,19 +688,8 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
      `/empresas` salía a 32. */
   .close h2 { color: var(--ink); margin-bottom: var(--s-3); }
   .close p { color: var(--ink-mute); margin: 0 auto var(--s-5); max-width: 47ch; }
-  .cta {
-    display: inline-flex;
-    align-items: center;
-    background: var(--verde);
-    color: var(--on-verde);
-    font-weight: 700;
-    font-size: var(--t-body);
-    padding: var(--s-4) var(--s-6);
-    border-radius: var(--r-2);
-    text-decoration: none;
-  }
-  .cta { transition: background-color var(--m-fast) var(--m-ease); }
-  .cta:hover { background: var(--verde-hi); }
+  /* La acción es `Accion.astro` desde el 2026-10-24: el par verde y de línea
+     estaba copiado en seis páginas. */
 
   @media (min-width: 900px) {
     h2 { font-size: var(--t-h2); }

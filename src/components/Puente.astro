@@ -38,7 +38,7 @@
  * del §4.5 queda intacto.
  */
 interface Props {
-  /** El rótulo pequeño de arriba, en la tipografía de cifras. */
+  /** El rótulo pequeño de arriba. En la letra del texto desde el 2026-10-24. */
   rotulo: string;
   titulo: string;
   cuerpo: string;
@@ -130,7 +130,7 @@ const tituloId = `puente-${slug}`;
   .caja { display: grid; gap: var(--s-7); padding: var(--s-8) 0; }
 
   .rot {
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-label);
     letter-spacing: var(--ls-label);
     color: var(--c-rot);
@@ -225,5 +225,11 @@ const tituloId = `puente-${slug}`;
       align-items: start;
     }
     .fig { align-self: end; }
+  }
+  /* Colores forzados (2026-10-24): el sistema quita el relleno verde, y sin un
+     borde el botón quedaba como texto suelto. `LinkText`, como el botón del
+     cotizador. */
+  @media (forced-colors: active) {
+    .btn { border: 1px solid LinkText; }
   }
 </style>

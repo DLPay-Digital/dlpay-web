@@ -33,6 +33,7 @@ import ComoEmpezamos from '../components/ComoEmpezamos.astro';
 import { caveatsBusiness, hingeBusiness, ourLegBusiness } from '../content/scope.ts';
 import Motion from '../components/Motion.astro';
 import Icon from '../components/Icon.astro';
+import Accion from '../components/Accion.astro';
 import Faq from '../components/Faq.astro';
 import { businessUseCases, checklist, differences, faq, onboarding } from '../content/business.ts';
 import { contact, platform } from '../lib/config/site.ts';
@@ -89,13 +90,13 @@ const waPlain = contact.whatsappUrl(
       wedges="continue"
     >
       <Fragment slot="cta">
-        <a class="cta" href={waPlain} target="_blank" rel="noopener">
+        <Accion href={waPlain} target="_blank" rel="noopener">
           <Icon name="whatsapp" class="wa-icon" />
           Habla con nosotros
-        </a>
+        </Accion>
         {/* Misma ruta que el botón de la cabecera: la plataforma de Guita, que
             es donde vive el registro. La web nueva no lo reconstruye. */}
-        <a class="ghost sobre-tinta" href={platform.registerUrl}>Crea tu cuenta</a>
+        <Accion variante="linea" sobre="tinta" href={platform.registerUrl}>Crea tu cuenta</Accion>
       </Fragment>
       <MacbookMockup slot="aside" />
     </PageHero>
@@ -199,11 +200,11 @@ const waPlain = contact.whatsappUrl(
           persona del equipo, no un formulario.
         </p>
         <div class="actions">
-          <a class="cta" href={wa} target="_blank" rel="noopener">
+          <Accion href={wa} target="_blank" rel="noopener">
             <Icon name="whatsapp" class="wa-icon" />
             Escribir por WhatsApp
-          </a>
-          <a class="ghost" href="/#cotizador">Ver el cotizador</a>
+          </Accion>
+          <Accion variante="linea" href="/#cotizador">Ver el cotizador</Accion>
         </div>
       </div>
     </section>
@@ -336,74 +337,9 @@ const waPlain = contact.whatsappUrl(
   .contact h2 { color: var(--ink); }
   .contact p { color: var(--ink-mute); max-width: 47ch; margin: 0 auto var(--s-6); }
   .actions { display: flex; flex-wrap: wrap; gap: var(--s-3); justify-content: center; }
-  .cta {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--s-2);
-    background: var(--verde);
-    color: var(--on-verde);
-    font-weight: 700;
-    font-size: var(--t-body);
-    padding: var(--s-4) var(--s-6);
-    border-radius: var(--r-2);
-    text-decoration: none;
-  }
-  .cta { transition: background-color var(--m-fast) var(--m-ease); }
-  .cta:hover { background: var(--verde-hi); }
-  .ghost {
-    display: inline-flex;
-    align-items: center;
-    /*
-      El contorno se recalculó al pasar la banda a papel (2026-09-24). Antes era
-      `--line-on-tinta`, que sobre una superficie clara no se ve.
-
-      **No sirve `--line`**, que es lo que usan los fantasmas sobre papel del
-      resto del sitio: mezclado sobre `--papel-2` da **1,34:1** y WCAG 1.4.11 pide
-      **3:1** al contorno de un control. Con alfa **0,46** da **3,00:1** acá y
-      3,06 sobre `--papel`, así que un solo valor sirve para las dos. Va escrito a mano por lo mismo que los otros literales de alfa
-      del proyecto: `color-mix()` queda por debajo del objetivo de CSS.
-
-      PENDIENTE — los fantasmas sobre papel que ya existían (`/como-funciona`
-      §kyc y `Steps.astro`) siguen con `--line` a 1,35:1. Es anterior a este
-      cambio y no se toca acá, pero está medido.
-    */
-    border: 1px solid rgba(11, 19, 32, 0.46);
-    color: var(--ink);
-    font-weight: 600;
-    font-size: var(--t-body-sm);
-    padding: var(--s-4) var(--s-5);
-    border-radius: var(--r-2);
-    text-decoration: none;
-  }
-  .ghost { transition: border-color var(--m-fast) var(--m-ease); }
-  .ghost:hover { border-color: var(--ink); }
-
-  /*
-    ── El fantasma del encabezado vive sobre TINTA ───────────────────────────
-
-    **Corrige un fallo introducido el 2026-09-24 y encontrado el 2026-09-25.**
-    Esta página tiene DOS `.ghost`: éste, en el encabezado sobre `--tinta`, y el
-    de la banda de cierre, sobre papel. Aquel día la banda de cierre pasó a
-    papel y recalculé el contorno para ella —`--ink` y un alfa de tinta al
-    0,46—, sin ver que la misma clase vestía al otro. Sobre la tinta del
-    encabezado eso daba **1,07:1 el texto y 1,00:1 el borde**: el botón «Crea tu
-    cuenta» era literalmente invisible.
-
-    Y así es como apareció: Sebastián reportó que el botón verde «se veía tirado
-    a la izquierda». No lo estaba —el par va centrado al píxel, 633 contra 632
-    del titular—; lo que pasaba es que **su vecino había desaparecido**, y una
-    pareja con un miembro invisible se lee como un botón descentrado. El síntoma
-    estaba a 76 px del problema.
-
-    Sobre tinta mandan los tokens de tinta: `--on-tinta` da 16,44:1 al texto y
-    `--line-on-tinta` 3,50:1 al contorno, por encima del 3:1 que WCAG 1.4.11
-    pide a un control.
-  */
-  .ghost.sobre-tinta {
-    border-color: var(--line-on-tinta);
-    color: var(--on-tinta);
-  }
-  .ghost.sobre-tinta:hover { border-color: var(--on-tinta); }
+  /* Las dos acciones —el verde y el de línea, sobre tinta en la portada y
+     sobre papel acá— son `Accion.astro` desde el 2026-10-24. Sus contornos y
+     la historia del fantasma invisible del encabezado viven allí. */
   .wa-icon { width: 16px; height: 16px; }
 
   /*
@@ -463,7 +399,7 @@ const waPlain = contact.whatsappUrl(
   }
   .sigue-txt { display: flex; flex-direction: column; min-width: 0; }
   .sigue-rot {
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     font-weight: 600;
     letter-spacing: var(--ls-label);

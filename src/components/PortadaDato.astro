@@ -211,7 +211,7 @@ const fechaISO = portada.fecha.toISOString();
   .inner { max-width: 760px; margin: 0 auto; padding: 0 var(--pad-section-m); }
 
   .etiqueta {
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     color: var(--on-tinta-mute);
     margin-bottom: var(--s-2);
@@ -239,7 +239,7 @@ const fechaISO = portada.fecha.toISOString();
     /* Que una cifra larga no parta ni empuje la barra fuera de la caja. */
     white-space: nowrap;
   }
-  .unidad { font-size: var(--t-body-sm); color: var(--on-tinta-mute); }
+  .unidad { font-family: var(--f-text); font-size: var(--t-body-sm); color: var(--on-tinta-mute); }
   /* En `cifra` la unidad respira: pegada a un número grande se leería como
      parte de él. En `rango` cierra la línea y no necesita tanto aire. */
   .cifra .unidad { margin-left: var(--s-3); }
@@ -275,10 +275,12 @@ const fechaISO = portada.fecha.toISOString();
     /* El mismo gris del texto secundario, diluido: es un filete de separación,
        no un contorno de control (Design System §2.2). */
     border-top: 1px solid rgba(157, 176, 170, 0.35);
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     color: var(--on-tinta-mute);
   }
+  /* La fecha es una cifra: tabular y en mono. La fuente, palabras. */
+  .pie time { font-family: var(--f-num); }
   /* La fuente puede ser larga; que envuelva en vez de desbordar. */
   .fuente { min-width: 0; }
 

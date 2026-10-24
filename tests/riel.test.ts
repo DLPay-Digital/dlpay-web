@@ -78,7 +78,7 @@ describe('el riel que sabe dónde estás', { skip: !existsSync(dist) && 'sin dis
       const indice = html.match(/<ol class="lat-indice[\s\S]*?<\/ol>/)?.[0];
       if (!indice) continue;
       vistos++;
-      const prosa = html.match(/<div class="prose[^"]*">([\s\S]*?)(?:<section class="sigue|<\/article>)/)?.[1] ?? '';
+      const prosa = html.match(/<div class="prose[^"]*"[^>]*>([\s\S]*?)(?:<section class="sigue|<\/article>)/)?.[1] ?? '';
       const { directos, anidados } = h2Directos(prosa);
       assert.deepEqual(anidados, [], `/blog/${slug}/: H2 dentro de otra etiqueta, que el riel no puede contar`);
       assert.deepEqual(anclas(indice), directos, `/blog/${slug}/: el riel y los H2 no están en el mismo orden`);
@@ -91,7 +91,7 @@ describe('el riel que sabe dónde estás', { skip: !existsSync(dist) && 'sin dis
     let conRiel = 0;
     for (const pagina of ['terminos', 'privacidad', 'canal-de-denuncias']) {
       const html = leer(join(pagina, 'index.html'));
-      const prosa = html.match(/<article class="prose[^"]*">([\s\S]*?)<footer class="meta/)?.[1];
+      const prosa = html.match(/<article class="prose[^"]*"[^>]*>([\s\S]*?)<footer class="meta/)?.[1];
       assert.ok(prosa, `/${pagina}/: no encontré el documento`);
       const { directos } = h2Directos(prosa);
       const indice = html.match(/<ol class="lat-indice[\s\S]*?<\/ol>/)?.[0];

@@ -1,0 +1,88 @@
+---
+/**
+ * El índice de una página larga bajo 1112 px: un `<details>` cerrado,
+ * «En esta página · N secciones» (Cowork, 2026-10-24).
+ *
+ * Desde 1112 lo sustituye `RielLateral.astro`, y la página lo esconde ahí:
+ * nunca hay dos índices a la vez en el árbol accesible. Estaba copiado en el
+ * artículo del blog y en las legales; las dos copias leen ahora de acá.
+ *
+ * Abre y cierra sin JavaScript. La caja es un filete `--line` («separador sin
+ * significado»), y el chevron gira al abrir, que es lo único que se mueve. El
+ * resumen mide 48 px de alto y cada entrada 44 (DS §10).
+ */
+import Icon from './Icon.astro';
+import type { Seccion } from '../lib/secciones.ts';
+
+interface Props {
+  secciones: Seccion[];
+  titulo?: string;
+  class?: string;
+}
+const { secciones, titulo = 'En esta página', class: clase } = Astro.props;
+---
+<details class:list={['indice-movil', clase]}>
+  <summary>
+    <span>{titulo}</span>
+    <span class="indice-n">{secciones.length} {secciones.length === 1 ? 'sección' : 'secciones'}</span>
+    <span class="indice-ico" aria-hidden="true"><Icon name="chevron" size={16} /></span>
+  </summary>
+  <ol role="list">
+    {secciones.map((s) => (
+      <li>{s.texto !== undefined ? <a href={`#${s.id}`}>{s.texto}</a> : <a href={`#${s.id}`} set:html={s.html} />}</li>
+    ))}
+  </ol>
+</details>
+
+<style>
+  .indice-movil {
+    margin-bottom: var(--s-7);
+    border: 1px solid var(--line);
+    border-radius: var(--r-3);
+  }
+  .indice-movil summary {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    min-height: 48px;
+    padding: 0 var(--s-4);
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .indice-movil summary::-webkit-details-marker { display: none; }
+  .indice-n { margin-left: auto; font-size: var(--t-dato-sm); font-weight: 400; color: var(--ink-mute); }
+  .indice-ico { display: grid; color: var(--ink-mute); transform: rotate(90deg); transition: transform var(--m-fast) var(--m-ease); }
+  .indice-ico :global(svg) { display: block; width: 16px; height: 16px; }
+  .indice-movil[open] .indice-ico { transform: rotate(-90deg); }
+  .indice-movil ol {
+    display: grid;
+    gap: var(--s-1);
+    margin: 0;
+    padding: 0 var(--s-4) var(--s-4);
+    list-style: none;
+    counter-reset: indice;
+  }
+  .indice-movil li { counter-increment: indice; }
+  /* Cada entrada, con su número delante: el número es una cifra, en la letra
+     de cifras; el texto, en la del texto. */
+  .indice-movil a {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    align-items: center;
+    min-height: 44px;
+    color: var(--ink);
+    font-size: var(--t-body-sm);
+    text-decoration: none;
+  }
+  .indice-movil a::before {
+    content: counter(indice, decimal-leading-zero);
+    font-family: var(--f-num);
+    font-size: var(--t-dato-sm);
+    color: var(--ink-mute);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .indice-ico { transition: none; }
+  }
+</style>

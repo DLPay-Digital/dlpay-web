@@ -206,14 +206,15 @@ const recibes = formatAmount(convert('to_foreign', quoteLimits.samplePayClp, pri
     width: 1.25px;
     --punteado-color: var(--on-tinta);
   }
-  /* Este rótulo va en la tipografía de TEXTO y a plena intensidad, y el de la
-     derecha en la de cifras: en `/tarifas` no son la misma voz. */
+  /* Este rótulo va a plena intensidad y el de la derecha, en dos tonos: en
+     `/tarifas` no son la misma voz. *Desde el 2026-10-24 los dos van en la
+     letra del texto: la de cifras queda para las cifras (Design System §3).* */
   .pie { margin: var(--s-2) 0 0; color: var(--on-tinta); }
   .fin {
     grid-area: 2 / 2;
     align-self: center;
     margin: 0;
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     line-height: 1.5;
   }

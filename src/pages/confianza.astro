@@ -16,6 +16,7 @@ import Icon from '../components/Icon.astro';
 import TelefonoAvisos from '../components/TelefonoAvisos.astro';
 import FiguraMecanismo from '../components/FiguraMecanismo.astro';
 import CarpetaRequisitos from '../components/CarpetaRequisitos.astro';
+import Accion from '../components/Accion.astro';
 import { mechanisms, honesty, requirements } from '../content/trust.ts';
 import { site, contact } from '../lib/config/site.ts';
 /*
@@ -190,10 +191,10 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
           <div class="contact-card">
             <h3>Hablar con alguien</h3>
             <p>Atención por WhatsApp, con una persona real.</p>
-            <a class="cta" href={wa} target="_blank" rel="noopener">
+            <Accion href={wa} target="_blank" rel="noopener">
               <Icon name="whatsapp" class="wa-icon" />
               Escribir por WhatsApp
-            </a>
+            </Accion>
           </div>
         </div>
       </div>
@@ -394,20 +395,8 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
     margin-bottom: var(--s-2);
   }
   .contact-card p { margin-bottom: var(--s-5); }
-  .cta {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--s-2);
-    background: var(--verde);
-    color: var(--on-verde);
-    font-weight: 700;
-    font-size: var(--t-body);
-    padding: var(--s-4) var(--s-6);
-    border-radius: var(--r-2);
-    text-decoration: none;
-  }
-  .cta { transition: background-color var(--m-fast) var(--m-ease); }
-  .cta:hover { background: var(--verde-hi); }
+  /* La acción es `Accion.astro` desde el 2026-10-24: el par verde y de línea
+     estaba copiado en seis páginas. */
   .wa-icon { width: 16px; height: 16px; }
 
   @media (min-width: 760px) {

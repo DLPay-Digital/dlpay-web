@@ -49,7 +49,8 @@
   /* El @import a Google Fonts que traía el borrador se retiró: CLAUDE.md §5 exige
      tipografías AUTO-HOSPEDADAS, «nunca desde un CDN de terceros», y Spline Sans
      Mono ya está servida desde /fonts/ para todo el sitio. Los rótulos usan
-     var(--f-num), que resuelve a esa misma fuente sin una petición externa. */
+     la letra del texto, `var(--f-text)`, también auto-hospedada: desde el
+     2026-10-24 la de cifras queda para las cifras (Design System §3). */
   .dlpay-globe-only { position: relative; }
   .dlpay-map-svg { display: block; width: 100%; height: auto; }
   .globe-ocean { fill: url(#ocean); }
@@ -128,8 +129,8 @@
     stroke-width: 2px;
     stroke-linejoin: round;
   }
-  .dlpay-globe-only :global(.dest-label) { font-family: var(--f-num); font-size: 10px; letter-spacing: 1.2px; fill: #22e88f; }
-  #chile-label text { font-family: var(--f-num); letter-spacing: 1.4px; fill: #22e88f; }
+  .dlpay-globe-only :global(.dest-label) { font-family: var(--f-text); font-size: 10px; letter-spacing: 1.2px; fill: #22e88f; }
+  #chile-label text { font-family: var(--f-text); letter-spacing: 1.4px; fill: #22e88f; }
   @keyframes chilePing { 0% { transform: scale(1); opacity: 0.7; } 65% { transform: scale(4); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
   @keyframes chilePingSlow { 0% { transform: scale(1); opacity: 0.4; } 70% { transform: scale(5.5); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
   .chile-ping { transform-box: fill-box; transform-origin: center; animation: chilePing 3.4s ease-out infinite; }

@@ -96,7 +96,7 @@ const alone = milestones === undefined;
         {milestones.map((m) => (
           <li class="milestone">
             <span class="what">{m.what}</span>
-            {m.data && <span class="data num">{m.data}</span>}
+            {m.data && <span class="data">{m.data}</span>}
           </li>
         ))}
       </ol>
@@ -176,7 +176,7 @@ const alone = milestones === undefined;
   }
   .what { font-weight: 600; display: block; }
   .data {
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     color: var(--ink-mute);
     display: block;
@@ -196,7 +196,7 @@ const alone = milestones === undefined;
 
   /* Dos mitades y dos colores: lo que afirmamos de nosotros en `--ink`, lo que
      pasa a ser del cliente en `--ink-mute`. */
-  .hinge { font-family: var(--f-num); font-size: var(--t-dato-sm); margin-bottom: var(--s-5); }
+  .hinge { font-family: var(--f-text); font-size: var(--t-dato-sm); margin-bottom: var(--s-5); }
   .until { font-weight: 600; color: var(--ink); }
   .from { color: var(--ink-mute); }
 

@@ -16,6 +16,8 @@ import PortadaDato from '../../components/PortadaDato.astro';
 import PortadaFigura from '../../components/PortadaFigura.astro';
 import FilaArticulo from '../../components/FilaArticulo.astro';
 import Icon from '../../components/Icon.astro';
+import RielLateral from '../../components/RielLateral.astro';
+import IndiceMovil from '../../components/IndiceMovil.astro';
 import {
   publishedPosts,
   rutaPublicada,
@@ -63,6 +65,7 @@ const { Content, headings } = await render(post);
    un índice sería ruido. Sólo H2: los H3 lo harían largo y no se escanea. */
 const indice = headings.filter((h) => h.depth === 2);
 const conIndice = indice.length >= 3;
+const secciones = indice.map((h) => ({ id: h.slug, texto: h.text }));
 /* El riel marca la sección que lees con una línea de tiempo por H2, y el CSS
    las nombra de la primera a la duodécima (ADR-0018, pieza 19). Con una
    decimotercera, ésa no se marcaría y nada avisaría: lo dice el build. Hoy el
@@ -185,7 +188,7 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
       El orden del documento es cabecera → riel → cuerpo, que es el orden en
       que se ven: así el foco de teclado no salta hacia atrás.
     */}
-    <article class:list={['post', { 'con-riel': conIndice || aquiEnRuta }]}>
+    <article class:list={['post', { 'con-riel': conIndice || aquiEnRuta }]} data-riel-ambito={conIndice ? '' : undefined}>
       {/*
         M6 (2026-09-23): la cabecera entra al cargar, en tres pasos. Es una
         animación CSS y no depende del observador, porque esto está sobre el
@@ -231,38 +234,26 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
       </header>
 
       {(conIndice || aquiEnRuta) && (
-        <aside class="riel-lateral" aria-label="Navegación del artículo">
-          <div class="riel-fijo">
-            {conIndice && (
-              <nav class="lat" aria-labelledby="lat-indice">
-                <p class="lat-t" id="lat-indice">En esta página</p>
-                <ol class="lat-indice" role="list">
-                  {indice.map((h) => (
-                    <li><a href={`#${h.slug}`}>{h.text}</a></li>
-                  ))}
-                </ol>
-              </nav>
-            )}
-            {aquiEnRuta && (
-              <nav class="lat" aria-labelledby="lat-ruta">
-                <p class="lat-t" id="lat-ruta">Tu primera operación</p>
-                <ol class="lat-ruta" role="list">
-                  {ruta.map((r) => (
-                    <li>
-                      <a
-                        href={`/blog/${r.post.id}/`}
-                        aria-current={r.post.id === post.id ? 'page' : undefined}
-                      >
-                        <span class="lat-n num" aria-hidden="true">{r.numero}</span>
-                        <span><span class="sr-only">Paso {r.numero}: </span>{r.post.data.ruta?.titulo}</span>
-                      </a>
-                    </li>
-                  ))}
-                </ol>
-              </nav>
-            )}
-          </div>
-        </aside>
+        <RielLateral secciones={conIndice ? secciones : []} etiqueta="Navegación del artículo">
+          {aquiEnRuta && (
+            <nav class="lat" aria-labelledby="lat-ruta">
+              <p class="lat-t" id="lat-ruta">Tu primera operación</p>
+              <ol class="lat-ruta" role="list">
+                {ruta.map((r) => (
+                  <li>
+                    <a
+                      href={`/blog/${r.post.id}/`}
+                      aria-current={r.post.id === post.id ? 'page' : undefined}
+                    >
+                      <span class="lat-n num" aria-hidden="true">{r.numero}</span>
+                      <span><span class="sr-only">Paso {r.numero}: </span>{r.post.data.ruta?.titulo}</span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )}
+        </RielLateral>
       )}
 
       <div class="cuerpo">
@@ -286,21 +277,10 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
           1100): nunca hay dos índices a la vez en el árbol accesible.
         */}
         {conIndice && (
-          <details class="indice-movil">
-            <summary>
-              <span>En esta página</span>
-              <span class="indice-n num">{indice.length} secciones</span>
-              <span class="indice-ico" aria-hidden="true"><Icon name="chevron" size={16} /></span>
-            </summary>
-            <ol role="list">
-              {indice.map((h) => (
-                <li><a href={`#${h.slug}`}>{h.text}</a></li>
-              ))}
-            </ol>
-          </details>
+          <IndiceMovil secciones={secciones} />
         )}
 
-        <div class="prose">
+        <div class="prose" data-riel-secciones={conIndice ? '' : undefined}>
           <Content />
         </div>
 
@@ -351,7 +331,7 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
     align-items: center;
     gap: var(--s-1) var(--s-3);
     margin-bottom: var(--s-4);
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     color: var(--ink-mute);
   }
@@ -376,7 +356,7 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
     margin: 0;
     padding: 0;
     list-style: none;
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
   }
   .miga-sep { margin: 0 var(--s-2); color: var(--ink-mute); }
@@ -400,7 +380,7 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
     padding-block: 12px;
     margin-top: calc(-1 * var(--s-5) - 12px);
     margin-bottom: calc(var(--s-7) - 12px);
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     font-weight: 600;
     color: var(--verde-deep);
@@ -505,7 +485,7 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
     justify-content: space-between;
     max-width: 420px;
     margin-top: var(--s-2);
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     color: var(--ink-mute);
   }
@@ -558,68 +538,14 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
   }
   .en-corto-t {
     margin-bottom: var(--s-3);
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     font-weight: 600;
     color: var(--ink);
   }
   .en-corto ul { display: grid; gap: var(--s-2); margin: 0 0 0 var(--s-4); color: var(--ink); }
 
-  /*
-    ── El índice en móvil ────────────────────────────────────────────────────
-    Un `<details>`: abre y cierra sin JavaScript. La caja es un filete `--line`
-    («separador sin significado»), y el chevron gira al abrir, que es lo único
-    que se mueve. El resumen mide 48 px de alto: objetivo táctil del §10.
-  */
-  .indice-movil {
-    margin-bottom: var(--s-7);
-    border: 1px solid var(--line);
-    border-radius: var(--r-3);
-  }
-  .indice-movil summary {
-    display: flex;
-    align-items: center;
-    gap: var(--s-3);
-    min-height: 48px;
-    padding: 0 var(--s-4);
-    cursor: pointer;
-    list-style: none;
-    font-weight: 600;
-    color: var(--ink);
-  }
-  .indice-movil summary::-webkit-details-marker { display: none; }
-  .indice-n { margin-left: auto; font-size: var(--t-dato-sm); font-weight: 400; color: var(--ink-mute); }
-  .indice-ico { display: grid; color: var(--ink-mute); transform: rotate(90deg); transition: transform var(--m-fast) var(--m-ease); }
-  .indice-ico :global(svg) { display: block; width: 16px; height: 16px; }
-  .indice-movil[open] .indice-ico { transform: rotate(-90deg); }
-  .indice-movil ol {
-    display: grid;
-    gap: var(--s-1);
-    margin: 0;
-    padding: 0 var(--s-4) var(--s-4);
-    list-style: none;
-    counter-reset: indice;
-  }
-  .indice-movil li { counter-increment: indice; }
-  /* Cada entrada, con su número tabular delante y 44 px de objetivo táctil. */
-  .indice-movil a {
-    display: grid;
-    grid-template-columns: 24px minmax(0, 1fr);
-    align-items: center;
-    min-height: 44px;
-    color: var(--ink);
-    font-size: var(--t-body-sm);
-    text-decoration: none;
-  }
-  .indice-movil a::before {
-    content: counter(indice, decimal-leading-zero);
-    font-family: var(--f-num);
-    font-size: var(--t-dato-sm);
-    color: var(--ink-mute);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .indice-ico { transition: none; }
-  }
+  /* El índice en móvil es `IndiceMovil.astro` desde el 2026-10-24. */
 
   /*
     ── «Sigue leyendo» ──────────────────────────────────────────────────────
@@ -640,8 +566,8 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
      de la última fila—, así que no lleva el suyo. */
   .sigue + .back { margin-top: var(--s-6); padding-top: 0; border-top: 0; }
 
-  /* El riel no existe bajo 1112: el índice lo hace el `<details>`. */
-  .riel-lateral { display: none; }
+  /* El riel es `RielLateral.astro` desde el 2026-10-24: el marcado, sus
+     estilos y las doce líneas de tiempo. Acá quedan la rejilla y la ruta. */
 
   @media (min-width: 900px) {
     .post { padding-inline: 0; }
@@ -675,43 +601,6 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
     .con-riel .indice-movil,
     .con-riel .en-ruta { display: none; }
 
-    .riel-fijo {
-      position: sticky;
-      top: var(--s-6);
-      display: grid;
-      gap: var(--s-7);
-    }
-    .lat-t {
-      margin-bottom: var(--s-3);
-      font-family: var(--f-num);
-      font-size: var(--t-dato-sm);
-      color: var(--ink-mute);
-    }
-    /* El índice: un filete `--line` a la izquierda y las entradas colgadas de
-       él. **Marca la sección que lees**, sin JavaScript: ver el bloque del
-       final de esta hoja. *Hasta el 2026-10-23 este comentario decía que
-       marcarla «pediría JavaScript»; no hacía falta.* */
-    .lat-indice {
-      display: grid;
-      gap: 0;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      border-left: 1px solid var(--line);
-    }
-    /* Cada entrada, con su caja de 44 px (§10). El relleno vertical hace de
-       hueco entre ellas. */
-    .lat-indice a {
-      display: flex;
-      align-items: center;
-      min-height: 44px;
-      padding: 6px 0 6px var(--s-4);
-      font-size: var(--t-body-sm);
-      line-height: 1.35;
-      color: var(--ink-mute);
-      text-decoration: none;
-    }
-    .lat-indice a:hover { color: var(--ink); }
     /* La ruta: los mismos nodos de `RutaGuias`, a 24 px. El paso en el que
        estás va en tinta y con su nodo trazado; los otros, en gris. */
     .lat-ruta { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
@@ -743,18 +632,6 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
     .lat-ruta a > span:last-child { padding-top: 2.5px; }
     .lat-ruta a[aria-current='page'] { color: var(--ink); font-weight: 600; }
     .lat-ruta a[aria-current='page'] .lat-n { border: 1.5px solid var(--ink); }
-    /* La marca de «dónde estás», quieta: transparente, 2 px sobre el filete de
-       1 y centrada en él. La enciende el bloque de abajo. */
-    .lat-indice a { position: relative; }
-    .lat-indice a::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: -1.5px;
-      width: 2px;
-      background: transparent;
-    }
   }
 
   /*
@@ -767,12 +644,10 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
     Es una magnitud —«barra llena verde», DS §6.2— en `--verde-deep`, que da
     5,4:1 sobre el papel y 3,1:1 sobre la tinta. 3 px, arriba de todo.
 
-    **El riel marca la sección que lees**, igual que el de `/preguntas`: cada H2
-    es una línea de tiempo con nombre, la vista se reduce a una línea a un
-    tercio de la pantalla, y cada entrada se enciende cuando su H2 cruza esa
-    línea y se apaga cuando la cruza el siguiente. La marca es la del menú en
-    claro: el filete en `--verde-deep` y el texto en `--ink`, sin cambiar de
-    grosor.
+    **El riel**, que marca la sección que lees, vive en `RielLateral.astro`
+    desde el 2026-10-24, con las legales. Esta hoja le pone el ámbito
+    (`data-riel-ambito` en el artículo) y le marca los H2 (`data-riel-secciones`
+    en el texto).
 
     Familia C, CSS entero. Sin soporte o con movimiento reducido no hay barra y
     el riel no marca: el artículo es el de siempre.
@@ -796,59 +671,10 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
         animation-range: contain 0% contain 100%;
       }
     }
-    @media (prefers-reduced-motion: no-preference) and (min-width: 1112px) {
-      .post.con-riel { timeline-scope: --h1, --h2, --h3, --h4, --h5, --h6, --h7, --h8, --h9, --h10, --h11, --h12; }
-      .prose :global(h2) { view-timeline-inset: 33% 66%; }
-      .prose :global(h2:nth-of-type(1)) { view-timeline-name: --h1; }
-      .prose :global(h2:nth-of-type(2)) { view-timeline-name: --h2; }
-      .prose :global(h2:nth-of-type(3)) { view-timeline-name: --h3; }
-      .prose :global(h2:nth-of-type(4)) { view-timeline-name: --h4; }
-      .prose :global(h2:nth-of-type(5)) { view-timeline-name: --h5; }
-      .prose :global(h2:nth-of-type(6)) { view-timeline-name: --h6; }
-      .prose :global(h2:nth-of-type(7)) { view-timeline-name: --h7; }
-      .prose :global(h2:nth-of-type(8)) { view-timeline-name: --h8; }
-      .prose :global(h2:nth-of-type(9)) { view-timeline-name: --h9; }
-      .prose :global(h2:nth-of-type(10)) { view-timeline-name: --h10; }
-      .prose :global(h2:nth-of-type(11)) { view-timeline-name: --h11; }
-      .prose :global(h2:nth-of-type(12)) { view-timeline-name: --h12; }
-      .lat-indice a::before {
-        animation: riel-marca linear both, riel-sin-marca linear both;
-        animation-range: entry 0% entry 100%, entry 0% entry 100%;
-      }
-      /* El texto no se anima directo: se anima `--riel-texto` y el color lo
-         lee. Así el `:hover` de arriba, que pinta en tinta, sigue ganando: una
-         animación le ganaría a cualquier regla. */
-      .lat-indice a {
-        color: var(--riel-texto, var(--ink-mute));
-        animation: riel-tinta linear both, riel-sin-tinta linear both;
-        animation-range: entry 0% entry 100%, entry 0% entry 100%;
-      }
-      .lat-indice li:nth-child(1) a, .lat-indice li:nth-child(1) a::before { animation-timeline: --h1, --h2; }
-      .lat-indice li:nth-child(2) a, .lat-indice li:nth-child(2) a::before { animation-timeline: --h2, --h3; }
-      .lat-indice li:nth-child(3) a, .lat-indice li:nth-child(3) a::before { animation-timeline: --h3, --h4; }
-      .lat-indice li:nth-child(4) a, .lat-indice li:nth-child(4) a::before { animation-timeline: --h4, --h5; }
-      .lat-indice li:nth-child(5) a, .lat-indice li:nth-child(5) a::before { animation-timeline: --h5, --h6; }
-      .lat-indice li:nth-child(6) a, .lat-indice li:nth-child(6) a::before { animation-timeline: --h6, --h7; }
-      .lat-indice li:nth-child(7) a, .lat-indice li:nth-child(7) a::before { animation-timeline: --h7, --h8; }
-      .lat-indice li:nth-child(8) a, .lat-indice li:nth-child(8) a::before { animation-timeline: --h8, --h9; }
-      .lat-indice li:nth-child(9) a, .lat-indice li:nth-child(9) a::before { animation-timeline: --h9, --h10; }
-      .lat-indice li:nth-child(10) a, .lat-indice li:nth-child(10) a::before { animation-timeline: --h10, --h11; }
-      .lat-indice li:nth-child(11) a, .lat-indice li:nth-child(11) a::before { animation-timeline: --h11, --h12; }
-      .lat-indice li:nth-child(12) a, .lat-indice li:nth-child(12) a::before { animation-timeline: --h12, none; }
-    }
   }
   @keyframes lectura-crece { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-  /* Las mismas cuatro de `/preguntas`: la segunda de cada par parte de lo que
-     dejó la primera, así que sólo dice adónde vuelve. */
-  @keyframes riel-marca { to { background-color: var(--riel-marca, var(--verde-deep)); } }
-  @keyframes riel-sin-marca { to { background-color: transparent; } }
-  @keyframes riel-tinta { to { --riel-texto: var(--ink); } }
-  @keyframes riel-sin-tinta { to { --riel-texto: var(--ink-mute); } }
 
   @media (forced-colors: active) {
     .lectura { forced-color-adjust: none; background: Highlight; }
-    /* La marca, el doble de ancha: aquí el texto no cambia de color y es la
-       única pista. Lo mismo en `/preguntas`. */
-    .lat-indice a::before { forced-color-adjust: none; --riel-marca: Highlight; width: 4px; left: -2.5px; }
   }
 </style>

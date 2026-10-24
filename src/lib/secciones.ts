@@ -22,8 +22,14 @@
 export interface Seccion {
   /** El `id` del H2: el que ya traía o uno sacado de su texto. */
   id: string;
-  /** El contenido del H2 sin etiquetas, con sus entidades tal cual: va con `set:html`. */
-  html: string;
+  /**
+   * El título de la sección, de una de dos formas. `html`: sin etiquetas pero
+   * con sus entidades tal cual, y va con `set:html` (las legales, que lo sacan
+   * de su HTML). `texto`: texto plano, que se escapa (el artículo, que lo trae
+   * de su Markdown).
+   */
+  html?: string;
+  texto?: string;
 }
 
 const VACIOS = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr']);

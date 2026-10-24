@@ -1,0 +1,178 @@
+---
+/**
+ * El riel: el índice de una página larga, a la izquierda desde 1112 px, que
+ * marca la sección que lees (Cowork, 2026-10-24; ADR-0018, piezas 19 y 22).
+ *
+ * ── Por qué es un componente ───────────────────────────────────────────────
+ *
+ * Estaba copiado en el artículo del blog y en las legales —el marcado, los
+ * estilos y las doce líneas de tiempo—, y sus comentarios ya decían «copia
+ * de…». Bajo 1112 lo sustituye `IndiceMovil.astro`.
+ *
+ * **El de `/preguntas` no entra**, y es a propósito: allí el índice es la
+ * banda de entrada de la página, con sus recuentos, que bajo 1112 es una
+ * rejilla de enlaces y desde 1112 se pega a la izquierda. Comparte la marca de
+ * «dónde estás», no la pieza.
+ *
+ * ── Cómo marca, sin JavaScript ─────────────────────────────────────────────
+ *
+ * Cada H2 es una línea de tiempo con nombre, --h1 a --h12, y la vista se
+ * reduce a una línea a un tercio de la pantalla. Cada entrada se enciende
+ * cuando su H2 cruza esa línea y se apaga cuando la cruza el siguiente. La
+ * marca es la del menú en claro: el filete en `--verde-deep` y el texto en
+ * `--ink`, sin cambiar de grosor; en colores forzados, `Highlight` de 4 px.
+ *
+ * **Lo que le toca a la página**, porque los H2 viven en ella:
+ *
+ * · `data-riel-secciones` en el contenedor del texto, **del que los H2 tienen
+ *   que ser hijos directos** (`tests/riel.test.ts` lo vigila): el CSS los
+ *   cuenta con `:nth-of-type`, que sólo cuenta hermanos.
+ * · `data-riel-ambito` en un antepasado común del riel y del texto, donde se
+ *   declaran las doce líneas de tiempo.
+ * · La rejilla —dónde va el riel—, que cambia de una página a otra.
+ *
+ * Familia C, CSS entero. Sin soporte o con movimiento reducido el riel está y
+ * no marca. Un lector de pantalla no oye «actual», porque `aria-current`
+ * pediría JavaScript.
+ *
+ * La ranura es para otra navegación dentro del riel: el artículo pone ahí la
+ * ruta «Tu primera operación». Su rótulo usa `.lat-t`, como el del índice.
+ */
+import type { Seccion } from '../lib/secciones.ts';
+
+interface Props {
+  secciones: Seccion[];
+  titulo?: string;
+  etiqueta: string;
+  class?: string;
+}
+const { secciones, titulo = 'En esta página', etiqueta, class: clase } = Astro.props;
+if (secciones.length > 12) {
+  throw new Error(`${secciones.length} secciones, y el riel marca hasta 12. Añade sus líneas de tiempo al CSS de RielLateral.astro.`);
+}
+---
+<aside class:list={['riel-lateral', clase]} aria-label={etiqueta}>
+  <div class="riel-fijo">
+    {secciones.length > 0 && (
+      <nav class="lat" aria-labelledby="lat-indice">
+        <p class="lat-t" id="lat-indice">{titulo}</p>
+        <ol class="lat-indice" role="list">
+          {secciones.map((s) => (
+            <li>{s.texto !== undefined ? <a href={`#${s.id}`}>{s.texto}</a> : <a href={`#${s.id}`} set:html={s.html} />}</li>
+          ))}
+        </ol>
+      </nav>
+    )}
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .riel-lateral { display: none; }
+
+  @media (min-width: 1112px) {
+    .riel-lateral { display: block; }
+    .riel-fijo {
+      position: sticky;
+      top: var(--s-6);
+      display: grid;
+      gap: var(--s-7);
+    }
+    /* `:global` para que lo use también el rótulo de lo que entra por la
+       ranura, que es marcado de la página. */
+    .riel-fijo :global(.lat-t) {
+      margin-bottom: var(--s-3);
+      font-family: var(--f-text);
+      font-size: var(--t-dato-sm);
+      color: var(--ink-mute);
+    }
+    /* El índice: un filete `--line` a la izquierda y las entradas colgadas de
+       él, cada una con su caja de 44 px (§10). */
+    .lat-indice {
+      display: grid;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-left: 1px solid var(--line);
+    }
+    .lat-indice a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 6px 0 6px var(--s-4);
+      font-size: var(--t-body-sm);
+      line-height: 1.35;
+      color: var(--ink-mute);
+      text-decoration: none;
+    }
+    .lat-indice a:hover { color: var(--ink); }
+    /* La marca de «dónde estás», quieta: transparente, 2 px sobre el filete de
+       1 y centrada en él. La enciende el bloque de abajo. */
+    .lat-indice a::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -1.5px;
+      width: 2px;
+      background: transparent;
+    }
+  }
+
+  @supports (animation-timeline: view()) and (timeline-scope: none) {
+    @media (prefers-reduced-motion: no-preference) and (min-width: 1112px) {
+      :global([data-riel-ambito]) { timeline-scope: --h1, --h2, --h3, --h4, --h5, --h6, --h7, --h8, --h9, --h10, --h11, --h12; }
+      :global([data-riel-secciones] > h2) { view-timeline-inset: 33% 66%; }
+      :global([data-riel-secciones] > h2:nth-of-type(1)) { view-timeline-name: --h1; }
+      :global([data-riel-secciones] > h2:nth-of-type(2)) { view-timeline-name: --h2; }
+      :global([data-riel-secciones] > h2:nth-of-type(3)) { view-timeline-name: --h3; }
+      :global([data-riel-secciones] > h2:nth-of-type(4)) { view-timeline-name: --h4; }
+      :global([data-riel-secciones] > h2:nth-of-type(5)) { view-timeline-name: --h5; }
+      :global([data-riel-secciones] > h2:nth-of-type(6)) { view-timeline-name: --h6; }
+      :global([data-riel-secciones] > h2:nth-of-type(7)) { view-timeline-name: --h7; }
+      :global([data-riel-secciones] > h2:nth-of-type(8)) { view-timeline-name: --h8; }
+      :global([data-riel-secciones] > h2:nth-of-type(9)) { view-timeline-name: --h9; }
+      :global([data-riel-secciones] > h2:nth-of-type(10)) { view-timeline-name: --h10; }
+      :global([data-riel-secciones] > h2:nth-of-type(11)) { view-timeline-name: --h11; }
+      :global([data-riel-secciones] > h2:nth-of-type(12)) { view-timeline-name: --h12; }
+      .lat-indice a::before {
+        animation: riel-marca linear both, riel-sin-marca linear both;
+        animation-range: entry 0% entry 100%, entry 0% entry 100%;
+      }
+      /* El texto no se anima directo: se anima `--riel-texto` y el color lo
+         lee. Así el `:hover`, que pinta en tinta, sigue ganando: una animación
+         le ganaría a cualquier regla. */
+      .lat-indice a {
+        color: var(--riel-texto, var(--ink-mute));
+        animation: riel-tinta linear both, riel-sin-tinta linear both;
+        animation-range: entry 0% entry 100%, entry 0% entry 100%;
+      }
+      .lat-indice li:nth-child(1) a, .lat-indice li:nth-child(1) a::before { animation-timeline: --h1, --h2; }
+      .lat-indice li:nth-child(2) a, .lat-indice li:nth-child(2) a::before { animation-timeline: --h2, --h3; }
+      .lat-indice li:nth-child(3) a, .lat-indice li:nth-child(3) a::before { animation-timeline: --h3, --h4; }
+      .lat-indice li:nth-child(4) a, .lat-indice li:nth-child(4) a::before { animation-timeline: --h4, --h5; }
+      .lat-indice li:nth-child(5) a, .lat-indice li:nth-child(5) a::before { animation-timeline: --h5, --h6; }
+      .lat-indice li:nth-child(6) a, .lat-indice li:nth-child(6) a::before { animation-timeline: --h6, --h7; }
+      .lat-indice li:nth-child(7) a, .lat-indice li:nth-child(7) a::before { animation-timeline: --h7, --h8; }
+      .lat-indice li:nth-child(8) a, .lat-indice li:nth-child(8) a::before { animation-timeline: --h8, --h9; }
+      .lat-indice li:nth-child(9) a, .lat-indice li:nth-child(9) a::before { animation-timeline: --h9, --h10; }
+      .lat-indice li:nth-child(10) a, .lat-indice li:nth-child(10) a::before { animation-timeline: --h10, --h11; }
+      .lat-indice li:nth-child(11) a, .lat-indice li:nth-child(11) a::before { animation-timeline: --h11, --h12; }
+      .lat-indice li:nth-child(12) a, .lat-indice li:nth-child(12) a::before { animation-timeline: --h12, none; }
+    }
+  }
+  /* Las mismas cuatro de `/preguntas`: la segunda de cada par parte de lo que
+     dejó la primera, así que sólo dice adónde vuelve. */
+  @keyframes riel-marca { to { background-color: var(--riel-marca, var(--verde-deep)); } }
+  @keyframes riel-sin-marca { to { background-color: transparent; } }
+  @keyframes riel-tinta { to { --riel-texto: var(--ink); } }
+  @keyframes riel-sin-tinta { to { --riel-texto: var(--ink-mute); } }
+
+  /* La marca, el doble de ancha: aquí el texto no cambia de color y es la
+     única pista. Lo mismo en `/preguntas`. */
+  @media (forced-colors: active) {
+    .lat-indice a::before { forced-color-adjust: none; --riel-marca: Highlight; width: 4px; left: -2.5px; }
+  }
+</style>

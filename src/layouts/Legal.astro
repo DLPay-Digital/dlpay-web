@@ -38,7 +38,8 @@ import Base from './Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
-import Icon from '../components/Icon.astro';
+import RielLateral from '../components/RielLateral.astro';
+import IndiceMovil from '../components/IndiceMovil.astro';
 import { site } from '../lib/config/site.ts';
 import { seccionesDelDocumento } from '../lib/secciones.ts';
 
@@ -81,38 +82,18 @@ if (secciones.length > 12) {
     */}
     <PageHero title={title} lead={lead} sequence />
     <div class="doc">
-      <div class:list={['marco', { 'con-riel': conRiel }]}>
+      <div class:list={['marco', { 'con-riel': conRiel }]} data-riel-ambito={conRiel ? '' : undefined}>
         {/* El orden del documento es riel → cuerpo, el orden en que se ven. */}
-        {conRiel && (
-          <aside class="riel-lateral" aria-label="Navegación del documento">
-            <div class="riel-fijo">
-              <nav class="lat" aria-labelledby="lat-indice">
-                <p class="lat-t" id="lat-indice">En esta página</p>
-                <ol class="lat-indice" role="list">
-                  {secciones.map((s) => <li><a href={`#${s.id}`} set:html={s.html} /></li>)}
-                </ol>
-              </nav>
-            </div>
-          </aside>
-        )}
+        {conRiel && <RielLateral secciones={secciones} etiqueta="Navegación del documento" />}
         <div class="cuerpo">
           {/* Bajo 1112, el índice es un `<details>`, como en el artículo:
               nunca hay dos índices a la vez en el árbol accesible. */}
           {conRiel && (
             <div class="indice-caja">
-              <details class="indice-movil">
-                <summary>
-                  <span>En esta página</span>
-                  <span class="indice-n num">{secciones.length} secciones</span>
-                  <span class="indice-ico" aria-hidden="true"><Icon name="chevron" size={16} /></span>
-                </summary>
-                <ol role="list">
-                  {secciones.map((s) => <li><a href={`#${s.id}`} set:html={s.html} /></li>)}
-                </ol>
-              </details>
+              <IndiceMovil secciones={secciones} />
             </div>
           )}
-          <article class="prose">
+          <article class="prose" data-riel-secciones={conRiel ? '' : undefined}>
             <Fragment set:html={documento.html} />
             <footer class="meta">
               <p>{site.legalName}, que opera bajo la marca {site.name}.</p>
@@ -190,65 +171,16 @@ if (secciones.length > 12) {
   /*
     ── El riel, el del artículo (2026-10-23) ────────────────────────────────
 
-    Copia de las reglas de `blog/[slug].astro`, con sus mismos valores: 176 px
-    de riel, 48 de hueco y 760 de lectura desde 1112, y el `<details>` debajo.
-    Sólo existe con `con-riel`: sin él, términos y privacidad no cambian.
+    `RielLateral.astro` y, bajo 1112, `IndiceMovil.astro`: los mismos del
+    artículo, desde el 2026-10-24 en un solo sitio. Acá queda la rejilla —176
+    px de riel, 48 de hueco y 760 de lectura desde 1112— y nada más. Sólo
+    existe con `con-riel`: sin él, términos y privacidad no cambian.
   */
   .con-riel .prose > :global(h2) { scroll-margin-top: var(--s-6); }
   .indice-caja { max-width: 760px; margin: 0 auto; padding: 0 var(--pad-section-m); }
-  .indice-movil {
-    margin-bottom: var(--s-7);
-    border: 1px solid var(--line);
-    border-radius: var(--r-3);
-  }
-  .indice-movil summary {
-    display: flex;
-    align-items: center;
-    gap: var(--s-3);
-    min-height: 48px;
-    padding: 0 var(--s-4);
-    cursor: pointer;
-    list-style: none;
-    font-weight: 600;
-    color: var(--ink);
-  }
-  .indice-movil summary::-webkit-details-marker { display: none; }
-  .indice-n { margin-left: auto; font-size: var(--t-dato-sm); font-weight: 400; color: var(--ink-mute); }
-  .indice-ico { display: grid; color: var(--ink-mute); transform: rotate(90deg); transition: transform var(--m-fast) var(--m-ease); }
-  .indice-ico :global(svg) { display: block; width: 16px; height: 16px; }
-  .indice-movil[open] .indice-ico { transform: rotate(-90deg); }
-  .indice-movil ol {
-    display: grid;
-    gap: var(--s-1);
-    margin: 0;
-    padding: 0 var(--s-4) var(--s-4);
-    list-style: none;
-    counter-reset: indice;
-  }
-  .indice-movil li { counter-increment: indice; }
-  .indice-movil a {
-    display: grid;
-    grid-template-columns: 24px minmax(0, 1fr);
-    align-items: center;
-    min-height: 44px;
-    color: var(--ink);
-    font-size: var(--t-body-sm);
-    text-decoration: none;
-  }
-  .indice-movil a::before {
-    content: counter(indice, decimal-leading-zero);
-    font-family: var(--f-num);
-    font-size: var(--t-dato-sm);
-    color: var(--ink-mute);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .indice-ico { transition: none; }
-  }
   @media (min-width: 900px) {
     .indice-caja { padding-inline: 0; }
   }
-
-  .riel-lateral { display: none; }
   @media (min-width: 1112px) {
     .marco.con-riel {
       display: grid;
@@ -257,94 +189,7 @@ if (secciones.length > 12) {
       max-width: 984px;
       margin: 0 auto;
     }
-    .con-riel .riel-lateral { display: block; }
     .con-riel .cuerpo { min-width: 0; }
     .con-riel .indice-caja { display: none; }
-    .riel-fijo { position: sticky; top: var(--s-6); }
-    .lat-t {
-      margin-bottom: var(--s-3);
-      font-family: var(--f-num);
-      font-size: var(--t-dato-sm);
-      color: var(--ink-mute);
-    }
-    .lat-indice {
-      display: grid;
-      gap: 0;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      border-left: 1px solid var(--line);
-    }
-    .lat-indice a {
-      position: relative;
-      display: flex;
-      align-items: center;
-      min-height: 44px;
-      padding: 6px 0 6px var(--s-4);
-      font-size: var(--t-body-sm);
-      line-height: 1.35;
-      color: var(--ink-mute);
-      text-decoration: none;
-    }
-    .lat-indice a:hover { color: var(--ink); }
-    .lat-indice a::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: -1.5px;
-      width: 2px;
-      background: transparent;
-    }
-  }
-
-  /* Marca la sección que lees, sin JavaScript: familia C, como el artículo.
-     Sólo los H2 hijos directos del documento llevan línea de tiempo. */
-  @supports (animation-timeline: view()) and (timeline-scope: none) {
-    @media (prefers-reduced-motion: no-preference) and (min-width: 1112px) {
-      .marco.con-riel { timeline-scope: --h1, --h2, --h3, --h4, --h5, --h6, --h7, --h8, --h9, --h10, --h11, --h12; }
-      .con-riel .prose > :global(h2) { view-timeline-inset: 33% 66%; }
-      .con-riel .prose > :global(h2:nth-of-type(1)) { view-timeline-name: --h1; }
-      .con-riel .prose > :global(h2:nth-of-type(2)) { view-timeline-name: --h2; }
-      .con-riel .prose > :global(h2:nth-of-type(3)) { view-timeline-name: --h3; }
-      .con-riel .prose > :global(h2:nth-of-type(4)) { view-timeline-name: --h4; }
-      .con-riel .prose > :global(h2:nth-of-type(5)) { view-timeline-name: --h5; }
-      .con-riel .prose > :global(h2:nth-of-type(6)) { view-timeline-name: --h6; }
-      .con-riel .prose > :global(h2:nth-of-type(7)) { view-timeline-name: --h7; }
-      .con-riel .prose > :global(h2:nth-of-type(8)) { view-timeline-name: --h8; }
-      .con-riel .prose > :global(h2:nth-of-type(9)) { view-timeline-name: --h9; }
-      .con-riel .prose > :global(h2:nth-of-type(10)) { view-timeline-name: --h10; }
-      .con-riel .prose > :global(h2:nth-of-type(11)) { view-timeline-name: --h11; }
-      .con-riel .prose > :global(h2:nth-of-type(12)) { view-timeline-name: --h12; }
-      .lat-indice a::before {
-        animation: riel-marca linear both, riel-sin-marca linear both;
-        animation-range: entry 0% entry 100%, entry 0% entry 100%;
-      }
-      .lat-indice a {
-        color: var(--riel-texto, var(--ink-mute));
-        animation: riel-tinta linear both, riel-sin-tinta linear both;
-        animation-range: entry 0% entry 100%, entry 0% entry 100%;
-      }
-      .lat-indice li:nth-child(1) a, .lat-indice li:nth-child(1) a::before { animation-timeline: --h1, --h2; }
-      .lat-indice li:nth-child(2) a, .lat-indice li:nth-child(2) a::before { animation-timeline: --h2, --h3; }
-      .lat-indice li:nth-child(3) a, .lat-indice li:nth-child(3) a::before { animation-timeline: --h3, --h4; }
-      .lat-indice li:nth-child(4) a, .lat-indice li:nth-child(4) a::before { animation-timeline: --h4, --h5; }
-      .lat-indice li:nth-child(5) a, .lat-indice li:nth-child(5) a::before { animation-timeline: --h5, --h6; }
-      .lat-indice li:nth-child(6) a, .lat-indice li:nth-child(6) a::before { animation-timeline: --h6, --h7; }
-      .lat-indice li:nth-child(7) a, .lat-indice li:nth-child(7) a::before { animation-timeline: --h7, --h8; }
-      .lat-indice li:nth-child(8) a, .lat-indice li:nth-child(8) a::before { animation-timeline: --h8, --h9; }
-      .lat-indice li:nth-child(9) a, .lat-indice li:nth-child(9) a::before { animation-timeline: --h9, --h10; }
-      .lat-indice li:nth-child(10) a, .lat-indice li:nth-child(10) a::before { animation-timeline: --h10, --h11; }
-      .lat-indice li:nth-child(11) a, .lat-indice li:nth-child(11) a::before { animation-timeline: --h11, --h12; }
-      .lat-indice li:nth-child(12) a, .lat-indice li:nth-child(12) a::before { animation-timeline: --h12, none; }
-    }
-  }
-  @keyframes riel-marca { to { background-color: var(--riel-marca, var(--verde-deep)); } }
-  @keyframes riel-sin-marca { to { background-color: transparent; } }
-  @keyframes riel-tinta { to { --riel-texto: var(--ink); } }
-  @keyframes riel-sin-tinta { to { --riel-texto: var(--ink-mute); } }
-
-  @media (forced-colors: active) {
-    .lat-indice a::before { forced-color-adjust: none; --riel-marca: Highlight; width: 4px; left: -2.5px; }
   }
 </style>

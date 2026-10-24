@@ -413,4 +413,10 @@ const received = convert('to_foreign', SAMPLE_PAY, price.rate);
        que las dos burbujas no comparten borde izquierdo ni derecho. */
     .theirs { margin-left: var(--s-6); }
   }
+  /* Colores forzados (2026-10-24): el sistema quita el relleno verde, y sin un
+     borde el botón quedaba como texto suelto. `LinkText`, como el botón del
+     cotizador. */
+  @media (forced-colors: active) {
+    .cta { border: 1px solid LinkText; }
+  }
 </style>

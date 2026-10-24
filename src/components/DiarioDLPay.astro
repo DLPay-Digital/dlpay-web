@@ -23,7 +23,9 @@
  * aquí no hay: cabecera centrada y grande, filete doble grueso-fino bajo ella,
  * las dos «orejas» arriba (número y sección), la línea de la fecha entre
  * filetes, el titular y el arranque de las columnas con su corondel. Todo en
- * Familjen Grotesk y Spline Sans Mono, en tinta sobre papel.
+ * Familjen Grotesk, en tinta sobre papel. *Las orejas y la fecha iban en
+ * Spline Sans Mono hasta el 2026-10-24: son palabras, y la letra de cifras
+ * queda para las cifras (Design System §3).*
  *
  * ── El papel y el relieve ──────────────────────────────────────────────────
  *
@@ -119,8 +121,10 @@ const gira = n > 1;
 
 /* «Martes, 29 de septiembre de 2026». `timeZone: 'UTC'` porque la fecha del
    frontmatter es medianoche UTC; en la hora de Chile retrocedería un día. */
-/* La fecha en dos partes: el día de la semana, que se suelta bajo 360 px, y el
-   resto. A 320 la línea entera en mono pedía 262 px y la hoja da 256. */
+/* La fecha en dos partes: el día de la semana y el resto. Bajo 360 px el día se
+   soltaba, porque en la letra de cifras la línea pedía 262 px y la hoja da
+   256. Desde el 2026-10-24 va en la letra del texto y cabe entera: el día ya no
+   se suelta, pero la fecha sigue en dos partes por si una más larga lo pide. */
 const sinDia = new Intl.DateTimeFormat('es-CL', {
   day: 'numeric',
   month: 'long',
@@ -500,7 +504,7 @@ const idPausa = `diario-pausa-${n}`;
     justify-content: space-between;
     gap: var(--s-4);
     padding-bottom: var(--s-2);
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-label);
     letter-spacing: .04em;
     text-transform: uppercase;
@@ -558,7 +562,7 @@ const idPausa = `diario-pausa-${n}`;
     display: block;
     padding: var(--s-2) 0;
     border-bottom: 1px solid var(--ink);
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-label);
     letter-spacing: var(--ls-label);
     text-align: center;
@@ -641,11 +645,11 @@ const idPausa = `diario-pausa-${n}`;
     .diario-pausa { display: none; }
   }
 
-  /* Bajo 360 la hoja da 256 px y la fecha larga en mono pide 262: partía el año
-     en otra línea. Se suelta el día de la semana y el relleno baja a 12. */
+  /* Bajo 360 la hoja da 256 px, y el relleno baja a 12. Hasta el 2026-10-24
+     se soltaba además el día de la semana, porque la fecha larga en la letra de
+     cifras pedía 262 px; en la del texto pide unos 190 y cabe. */
   @media (max-width: 359px) {
     .hoja-cara { padding: var(--s-3) var(--s-3) 0; }
-    .dia { display: none; }
   }
   @media (min-width: 900px) {
     .diario-boton { margin-bottom: var(--s-6); }

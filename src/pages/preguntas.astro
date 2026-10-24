@@ -84,6 +84,7 @@ import { faq as faqEmpresas } from '../content/business.ts';
 import { generalFaq } from '../content/general.ts';
 import { glossary } from '../content/glossary.ts';
 import TabletMockup from '../components/TabletMockup.astro';
+import Accion from '../components/Accion.astro';
 import { contact } from '../lib/config/site.ts';
 
 /*
@@ -406,7 +407,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
       <div class="inner">
         <h2 id="close-title" data-enter>¿Te quedó una duda que no está acá?</h2>
         <p>Escríbenos y te responde una persona del equipo. No hace falta cuenta para preguntar.</p>
-        <a class="cta" href={wa} target="_blank" rel="noopener">Escribir por WhatsApp</a>
+        <Accion href={wa} target="_blank" rel="noopener">Escribir por WhatsApp</Accion>
       </div>
     </section>
   </main>
@@ -499,7 +500,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
   }
   .salida a { color: var(--verde-deep); font-weight: 600; }
   .arriba { margin-top: var(--s-6); }
-  .arriba a { font-family: var(--f-num); font-size: var(--t-dato-sm); color: var(--verde-deep); }
+  .arriba a { font-family: var(--f-text); font-size: var(--t-dato-sm); color: var(--verde-deep); }
 
   .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
 
@@ -574,7 +575,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
   }
   .quienes {
     margin-left: auto;
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     color: var(--ink-mute);
   }
@@ -592,7 +593,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
   .qa { display: grid; grid-template-columns: 96px 1fr; gap: var(--s-4); align-items: baseline; }
   .qa.solo { grid-template-columns: 1fr; }
   .quien {
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     color: var(--ink-mute);
     text-transform: uppercase;
@@ -630,7 +631,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
   dt { font-size: var(--t-h3-m); font-weight: 700; margin-bottom: var(--s-2); }
   dd { margin: 0; color: var(--ink-mute); max-width: 47ch; }
   .dest {
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     color: var(--verde-deep);
     white-space: nowrap;
@@ -643,7 +644,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     margin-top: var(--s-2);
     padding-left: var(--s-3);
     border-left: 1px solid var(--line);
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     color: var(--ink-mute);
   }
@@ -670,19 +671,8 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     margin-bottom: var(--s-3);
   }
   .close p { color: var(--ink-mute); margin: 0 auto var(--s-5); max-width: 47ch; }
-  .cta {
-    display: inline-flex;
-    align-items: center;
-    background: var(--verde);
-    color: var(--on-verde);
-    font-weight: 700;
-    font-size: var(--t-body);
-    padding: var(--s-4) var(--s-6);
-    border-radius: var(--r-2);
-    text-decoration: none;
-  }
-  .cta { transition: background-color var(--m-fast) var(--m-ease); }
-  .cta:hover { background: var(--verde-hi); }
+  /* La acción es `Accion.astro` desde el 2026-10-24: el par verde y de línea
+     estaba copiado en seis páginas. */
 
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
@@ -708,7 +698,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     —176 px de riel, 48 de hueco y 760 de lectura, que son los 984 del
     contenedor— y el mismo breakpoint, por la misma razón: 1112 es el ancho en
     que esa rejilla cabe con los márgenes de sección. Las mismas piezas: el
-    rótulo en mono, un filete `--line` a la izquierda y las entradas colgadas de
+    rótulo en la letra del texto, un filete `--line` a la izquierda y las entradas colgadas de
     él, de 44 px (§10), en `--t-body-sm` y `--ink-mute`.
 
     **Lo que se mueve a la derecha son las preguntas, no el borde derecho**:
@@ -741,7 +731,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     .entrada-t {
       display: block;
       margin: 0 0 var(--s-3);
-      font-family: var(--f-num);
+      font-family: var(--f-text);
       font-size: var(--t-dato-sm);
       color: var(--ink-mute);
     }

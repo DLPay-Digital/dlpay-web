@@ -20,6 +20,7 @@ import FiguraRiel from '../components/FiguraRiel.astro';
 import SaltoAlChat from '../components/SaltoAlChat.astro';
 import BanderasSprite from '../components/BanderasSprite.astro';
 import Bandera from '../components/Bandera.astro';
+import Accion from '../components/Accion.astro';
 import { detailedSteps, checklist, chatLines } from '../content/process.ts';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { formatRate } from '../lib/pricing/format.ts';
@@ -152,7 +153,7 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
                   </div>
                   <p>{step.body}</p>
                   <span class="who">{us ? 'Lo hacemos nosotros' : 'Lo haces tú'}</span>
-                  <span class="time num">{step.time}</span>
+                  <span class="time">{step.time}</span>
                   {(() => {
                     const p = piezas[step.n];
                     if (!p) return null;
@@ -213,11 +214,11 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
               empezar, escríbenos y te acompañamos.
             </p>
             <div class="kyc-actions">
-              <a class="ghost" href={platform.registerUrl}>Crear mi cuenta</a>
-              <a class="ghost" href={wa} target="_blank" rel="noopener">
+              <Accion variante="linea" href={platform.registerUrl}>Crear mi cuenta</Accion>
+              <Accion variante="linea" href={wa} target="_blank" rel="noopener">
                 <Icon name="whatsapp" class="wa-icon" />
                 Preguntar primero
-              </a>
+              </Accion>
             </div>
           </div>
         </div>
@@ -303,7 +304,7 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
       <div class="inner">
         <h2 id="close-title">¿Listo para ver tu precio?</h2>
         <p>Toma menos de un minuto y no necesitas cuenta para cotizar.</p>
-        <a class="cta" href="/#cotizador">Cotizar ahora</a>
+        <Accion href="/#cotizador">Cotizar ahora</Accion>
       </div>
     </section>
   </main>
@@ -370,7 +371,7 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
   .handoff-mark { display: none; }
   .lane-heads { display: none; }
   .lane-heads p {
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     font-weight: 600;
     letter-spacing: var(--ls-label);
@@ -386,7 +387,7 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
   .step p { color: var(--ink-mute); max-width: 47ch; margin-bottom: var(--s-2); }
 
   /* En móvil no hay carriles, así que quién y cuándo viajan juntos en un solo
-     pie mono: dos datos del mismo orden, una sola línea.
+     pie: dos datos del mismo orden, una sola línea.
 
      **El punto va al final de «quién», no al principio de «cuándo»** (corregido
      el 2026-10-23, entrega `vida3-`). Cuando los dos no caben —en el paso 06 a
@@ -394,7 +395,7 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
      Ahora el punto se queda pegado a lo de antes (`nowrap`) y la línea nueva
      empieza por el tiempo. El punto es dibujo y no se lee: `/ ''`, con la
      forma sin texto alternativo delante para quien no la entienda. */
-  .who, .time { display: inline; font-family: var(--f-num); font-size: var(--t-dato-sm); }
+  .who, .time { display: inline; font-family: var(--f-text); font-size: var(--t-dato-sm); }
   .who { font-weight: 600; white-space: nowrap; }
   .who::after {
     content: '·';
@@ -455,20 +456,8 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
   .kyc p { color: var(--ink-mute); max-width: 47ch; margin-bottom: var(--s-3); }
   .kyc .note { font-size: var(--t-body-sm); }
   .kyc-actions { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
-  .ghost {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--s-2);
-    border: 1px solid var(--line);
-    border-radius: var(--r-2);
-    padding: var(--s-4) var(--s-5);
-    color: var(--ink);
-    text-decoration: none;
-    font-size: var(--t-body-sm);
-    font-weight: 600;
-  }
-  .ghost { transition: border-color var(--m-fast) var(--m-ease); }
-  .ghost:hover { border-color: var(--ink); }
+  /* La acción es `Accion.astro` desde el 2026-10-24: el par verde y de línea
+     estaba copiado en seis páginas. */
   .wa-icon { width: 15px; height: 15px; }
 
   /* El límite del servicio, dicho antes de que el usuario opere. Va sobre papel-2
@@ -487,19 +476,6 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
      bandas de cierre del sitio hablan al mismo volumen. */
   .close h2 { color: var(--ink); margin-bottom: var(--s-3); }
   .close p { color: var(--ink-mute); margin: 0 auto var(--s-5); max-width: 47ch; }
-  .cta {
-    display: inline-flex;
-    align-items: center;
-    background: var(--verde);
-    color: var(--on-verde);
-    font-weight: 700;
-    font-size: var(--t-body);
-    padding: var(--s-4) var(--s-6);
-    border-radius: var(--r-2);
-    text-decoration: none;
-  }
-  .cta { transition: background-color var(--m-fast) var(--m-ease); }
-  .cta:hover { background: var(--verde-hi); }
 
   @media (min-width: 760px) {
     .prep-grid { grid-template-columns: 1fr 1.3fr; gap: var(--s-8); }

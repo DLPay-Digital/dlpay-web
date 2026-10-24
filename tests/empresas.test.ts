@@ -32,7 +32,8 @@ describe('/empresas, de noche', { skip: !existsSync(dist) && 'sin dist/: corre `
   test('el llamado que te sigue abre el mismo mensaje que el botón del cierre', () => {
     const contacto = main.match(/<section class="contact[\s\S]*?<\/section>/)?.[0];
     assert.ok(contacto, '/empresas no tiene la banda de contacto');
-    const cierre = contacto.match(/<a class="cta[^"]*" href="([^"]+)"/)?.[1];
+    // El botón verde del cierre es `Accion.astro` desde el 2026-10-24.
+    const cierre = contacto.match(/<a class="accion verde[^"]*" href="([^"]+)"/)?.[1];
     const sigue = main.match(/<a class="sigue-cta[^"]*" href="([^"]+)"/)?.[1];
     assert.ok(cierre, 'la banda de contacto no tiene su botón');
     assert.ok(sigue, 'no está el llamado que te sigue');

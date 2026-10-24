@@ -41,7 +41,7 @@
 }
 .prose figure .g-rot {
   margin-bottom: var(--s-5);
-  font-family: var(--f-num);
+  font-family: var(--f-text);
   font-size: var(--t-dato-sm);
   color: var(--ink-mute);
 }
@@ -109,7 +109,7 @@
   background: repeating-linear-gradient(to right, var(--ink-mute) 0 3px, transparent 3px 7px);
 }
 .prose figure .g-hora {
-  font-family: var(--f-num);
+  font-family: var(--f-text);
   font-size: var(--t-dato-sm);
   font-weight: 600;
   color: var(--ink);
@@ -176,7 +176,7 @@
 }
 .prose figure.g-datos dl > div + div { border-top: 1px solid var(--line); }
 .prose figure.g-datos dt {
-  font-family: var(--f-num);
+  font-family: var(--f-text);
   font-size: var(--t-dato-sm);
   color: var(--ink-mute);
 }
@@ -255,7 +255,7 @@
 .prose figure .g-tramo-barra::after { bottom: 0; }
 .prose figure .g-tramo-que { align-self: end; font-weight: 600; color: var(--ink); }
 .prose figure .g-tramo-cifra {
-  font-family: var(--f-num);
+  font-family: var(--f-text);
   font-size: var(--t-dato-sm);
   color: var(--ink);
 }

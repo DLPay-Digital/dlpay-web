@@ -455,6 +455,9 @@ const infoIsCurrent = navInfo.some((item) => isCurrent(item.href));
   */
   @media (forced-colors: active) {
     .burger i, .menu[open] .burger i { forced-color-adjust: none; background: CanvasText; }
+    /* «Saltar al contenido» es un relleno verde: sin borde, al enfocarlo en este
+       modo quedaba el texto solo sobre la página (2026-10-24). */
+    .skip { border: 1px solid LinkText; }
   }
 
   /*

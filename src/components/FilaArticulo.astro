@@ -196,9 +196,10 @@ const esLarga = p !== undefined && p.tipo !== 'figura' && (cifra + p.unidad).len
        distancia de 4px es la única forma. */
     gap: var(--s-2);
     justify-items: start;
-    font-family: var(--f-num);
+    font-family: var(--f-text);
   }
   .cifra {
+    font-family: var(--f-num);
     font-size: var(--t-dato-m);
     font-weight: 500;
     line-height: 1;
@@ -222,7 +223,7 @@ const esLarga = p !== undefined && p.tipo !== 'figura' && (cifra + p.unidad).len
   /* 8 px entre la cifra y su unidad, medidos con la tinta. Eran 3, y «292mil
      millones» se leía como una sola palabra: es el mismo hueco que se corrigió en
      el panel de `/precio` el 2026-09-30. */
-  .cifra .u { font-size: var(--t-dato-sm); color: var(--ink-mute); margin-left: var(--s-2); }
+  .cifra .u { font-family: var(--f-text); font-size: var(--t-dato-sm); color: var(--ink-mute); margin-left: var(--s-2); }
   /* `white-space: normal` es imprescindible y no cosmético: `.cifra` lleva
      `nowrap` y eso lo hereda el bloque de la unidad, así que sin esto una unidad
      larga se sale de la columna en vez de repartirse en líneas. Con `%` no
@@ -244,17 +245,19 @@ const esLarga = p !== undefined && p.tipo !== 'figura' && (cifra + p.unidad).len
   .p-meta {
     display: flex;
     gap: var(--s-3);
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     color: var(--ink-mute);
   }
   .p-meta .cat { color: var(--verde-deep); font-weight: 600; }
+  /* La fecha es una cifra: tabular y en mono. La categoría, una palabra. */
+  .p-meta time { font-family: var(--f-num); }
 
   /* El antetítulo de «Sigue leyendo»: el paso de la ruta. Mismo cuerpo y
      familia que el metadato, en tinta y no en gris, porque es lo primero que
      tiene que leerse de esa fila. */
   .ante {
-    font-family: var(--f-num);
+    font-family: var(--f-text);
     font-size: var(--t-dato-sm);
     font-weight: 600;
     color: var(--ink);

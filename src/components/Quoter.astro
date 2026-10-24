@@ -891,6 +891,9 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     /* El botón de WhatsApp es un relleno, y el relleno se va: sin borde quedaba
        como un enlace suelto. Pasaba también antes del rediseño. */
     .cta { border: 1px solid LinkText; }
+    /* El de la barra, igual: sin el borde quedaba el texto «Ir al chat» solo
+       (2026-10-24). */
+    .dock-cta { border: 1px solid LinkText; }
     .tramo::before, .tramo-valor::before { border-color: Highlight; }
     .tramo-valor::before { box-shadow: none; }
   }
