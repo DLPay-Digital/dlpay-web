@@ -64,9 +64,17 @@ export const navInfo: EntradaMenu[] = [
     detail: 'Qué verificamos y qué no afirmamos',
   },
   {
+    /*
+      `detail` reformulado el 2026-10-26, a petición de Sebastián. Decía «Qué
+      mueve el precio del dólar», y tenía dos problemas: era la mitad del blog
+      —hay tres artículos de mercado y dos guías publicadas— y hablaba sólo del
+      dólar, que desde ADR-0013 es una divisa más entre doce. **No dice
+      «remesa»**: el sitio no usa esa palabra, por la decisión de enfoque del
+      2026-10-21 (CLAUDE.md §1).
+    */
     label: 'Blog',
     href: '/blog/',
-    detail: 'Qué mueve el precio del dólar',
+    detail: 'Qué mueve los precios, y guías para operar',
   },
   {
     label: 'Preguntas',

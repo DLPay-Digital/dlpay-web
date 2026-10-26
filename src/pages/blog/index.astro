@@ -151,12 +151,18 @@ const herramienta = {
   La segunda mitad se alinea además con la bajada nueva: el blog explica qué es
   el dólar digital, no sólo qué mueve el precio.
 
+  **Reformulada el 2026-10-26**, a petición de Sebastián, por el mismo motivo
+  que el `detail` del menú: hablaba sólo del dólar, y desde ADR-0013 es una
+  divisa más entre doce. Ahora nombra las dos mitades que el blog sí publica
+  —mercado y guías— y el momento en que se leen: antes de enviar. **Sigue sin
+  decir «remesa»** (CLAUDE.md §1) y sin prometer la categoría `DLPay`.
+
   Va en una constante y no en el atributo porque un comentario no cabe entre los
   atributos de un componente — el primer intento lo puso ahí y rompió la
   plantilla entera, con catorce «declarado y no usado» de regalo.
 */
 const DESCRIPCION =
-  'Análisis del mercado cambiario: lo que conviene entender del dólar y del dólar digital antes de operar.';
+  'Análisis del mercado cambiario y guías: lo que conviene entender antes de enviar dinero a otro país.';
 
 ---
 <Base
