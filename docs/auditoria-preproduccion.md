@@ -475,7 +475,7 @@ lista de bloqueantes. No son trabajo de ingeniería: necesitan que DLPay los apr
 | «10 días hábiles» de respuesta | `/canal-de-denuncias` | `canal-de-denuncias.astro` |
 | ~~«Precio garantizado»~~ — **retirado el 2026-10-23**: el paso 2 dice «Un ejecutivo confirma tu precio» | Home | — |
 | ~~«la mesa de dinero»~~ — **retirado el 2026-10-23**: el cuerpo del paso 2 usa la frase de la sección de destinos, validada el 2026-10-22 | Home | — |
-| «el mejor precio» — claim comparativo, en un H1 | `/empresas` | `empresas.astro` |
+| ~~«el mejor precio»~~ — **retirado el 2026-10-26**: el titular de `/empresas` pasa a «Pagos al exterior para tu empresa, con un ejecutivo asignado» | `/empresas` | — |
 | «no publicamos una tabla por tramos» — condiciones comerciales | `/empresas` y `/precio` | `business.ts`, constante `volumeTerms` |
 
 **La última se publica en dos páginas desde el 2026-09-23** y por eso es **una constante y no dos

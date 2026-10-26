@@ -88,9 +88,10 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
 - **Lo que falta para publicar es de Compliance.** Tres decisiones **bloquean** los textos legales: D9 (razón social), D19 (correo
   oficial) y D20 (alcance de los T&C). Pero no son lo único que necesita firma: hay además
   **claims ya publicados** con marcador `REQUIERE VALIDACIÓN DE COMPLIANCE` —el banco por nombre,
-  el tiempo de ~5 minutos, los 10 días hábiles y «el mejor precio»— que nadie ha aprobado.
+  el tiempo de ~5 minutos y los 10 días hábiles— que nadie ha aprobado.
   *El 2026-10-23 salieron de esa lista «Precio garantizado» y «la mesa de dinero»: **dejaron de
-  publicarse**, porque el paso 2 de la Home pasó a decir «Un ejecutivo confirma tu precio». No se
+  publicarse**, porque el paso 2 de la Home pasó a decir «Un ejecutivo confirma tu precio». **Y el
+  2026-10-26 salió «el mejor precio»**, con el titular de `/empresas`: quedan tres. No se
   firmaron; se retiraron. Quedan tachados en `auditoria-preproduccion.md` con su fecha, y
   `grep -rn "Precio garantizado\|mesa de dinero" src` sólo devuelve comentarios.* Decía «exclusivamente» y era inexacto: corregido el
   2026-09-15 a raíz de una auditoría externa. La lista completa está en *Bloqueantes de producción*
@@ -311,6 +312,15 @@ regulatoria de la tabla de arriba.
 El límite se declara **de frente** en `/como-funciona` y en `/confianza`, antes de que el usuario
 opere. Es una señal de confianza, no letra chica.
 
+**Lo que recibe una empresa es lo mismo que una persona** *(Sebastián, 2026-10-26)*: el dinero
+llega a destino en la moneda de ese país. Lo que cambia para una empresa es el acompañamiento —un
+ejecutivo asignado— y las condiciones, que se conversan según volumen y frecuencia; no lo que
+recibe. `/empresas` y una tarjeta de la Home decían que los proveedores «reciben en divisa
+digital» y pedían «la dirección de la billetera», textos de antes de ADR-0014, y se corrigieron.
+Lo vigila `tests/primera-visita.test.ts`. **Queda una pieza:** el portátil de la portada de
+`/empresas` enseña «Retirar divisa digital», porque es una captura de la plataforma y no se
+teclea; espera una captura nueva.
+
 ### Dos modos de operar, y el sitio describe uno  ·  *añadido el 2026-09-29*
 
 **Hay dos.** El **asistido**, que es el que el sitio cuenta: el cliente escribe por WhatsApp, un
@@ -344,6 +354,12 @@ un segundo recorrido, un cuarto estado en la línea de tenencia de `/confianza`,
 junto al proceso de inscripción en la CMF, porque **mantener saldos de clientes es la actividad que
 ese registro contempla**. Mientras no se haga, **la única página que menciona el autoservicio es
 `/preguntas`**, en la respuesta de volver a pesos, y eso está al revés de como debería ser.
+
+**Cómo los distingue Sebastián** *(2026-10-26)*: son dos acciones distintas. **Crear la cuenta**
+es la del cliente que decide operar por su cuenta, directo en la web. **WhatsApp** es para quien
+tiene una duda —antes de seguir, durante o después—. El pendiente de arriba sigue abierto: el
+sitio todavía no le dice a un cliente nuevo en qué se diferencian los dos botones que ve juntos
+en el cotizador, «Continuar por WhatsApp» y «o crea tu cuenta para operar en línea».
 
 Este posicionamiento **coincide con los servicios que los T&C publicados ya declaran**
 (tesorería transfronteriza, pagos B2B, liquidaciones internacionales), y con ello cierra el
@@ -597,6 +613,18 @@ pierde es el ejemplo concreto.
 `PUBLIC_QUOTE_SAMPLE_RATE` vuelve a vivir sólo dentro del cotizador. Sigue abierta, pero deja de
 ser *la* cifra de una página.
 
+**El 2026-10-26 `/precio` cambió de titular y perdió dos secciones** (recorrido de primera
+visita; lo aprobó Sebastián):
+
+- **El titular pasa a ser «Un solo cobro, y va dentro del precio».** «Un solo número» prometía un
+  número que la página no enseña, y un cliente nuevo lo buscaba.
+- **Salen «Cómo trabajamos el precio» y el puente «Las condiciones se acuerdan contigo»**, que
+  repetían «Qué cuesta y qué no». De ellos queda una línea al final de esa sección: «Las
+  operaciones de mayor volumen se conversan con el ejecutivo», con el enlace a `/tarifas`.
+- **`volumeTerms` se publica ahora sólo en `/empresas`.** Sigue siendo una constante en
+  `business.ts`, con su marcador.
+- **`FiguraMonto.astro` queda sin uso**: era la figura de ese puente.
+
 **La FAQ sigue viviendo en la Home y en `/empresas`**, no como página propia: `/preguntas` las
 reúne desde la misma fuente tipada, no las muda.
 
@@ -692,6 +720,10 @@ cambia una palabra: todo sigue saliendo de `home.ts`.
   `/tarifas`, con la cifra que **sale de la cadena `ConfigPriceSource → convert`**, la misma del
   cotizador, nunca tecleada. Comprobado sobre el build: el puente dice **exactamente** lo que el
   cotizador trae cargado al abrir.
+  **El 2026-10-26 cambió el titular**, a «El precio que ves ya lo incluye todo», con el rótulo «el
+  precio del cotizador» en vez de «el número que viste». «Ese número» daba por hecho que el cliente
+  acababa de cotizar, y el cotizador queda nueve pantallas más arriba (recorrido de primera visita;
+  lo aprobó Sebastián). La figura y su cifra no cambian.
 
 **Se borró `UseCaseFigure.astro`**, sin consumidores. Sus citas en comentarios y documentos **no se
 borraron: se fecharon**, porque lo que decían —el dibujo del punteado, la relación 14,4 del riel— es
@@ -774,6 +806,13 @@ saliendo de `trust.ts` y `alliances.ts`.
   Pasa a **un registro**, una fila por afirmación. **El filete conserva su significado** —«existe, es
   real, no es nuestro»— y pasa de uno por bloque a una sola línea de margen.
 - **«Quiénes somos»**: el texto sube de 14 a 16 px, el cuerpo de la página.
+- **«Quiénes somos», otra vez el 2026-10-26**: sube a justo después de la portada y se
+  desarrolla —una sociedad chilena, qué hacemos, para quién, y la tarjeta para hablar con
+  alguien—, con frases que el sitio ya publica (recorrido de primera visita; lo aprobó
+  Sebastián). No hay un dato nuevo, y D11 sigue cerrada: no hay nombres ni fotos del equipo.
+  Las cuatro cabeceras de la página van centradas, también «Lo que no vas a leer acá», que se
+  quedaba a la izquierda por decisión del 2026-09-25: la regla pasó a ser del sitio (Design
+  System §4.3.3).
 
 **Dos cosas que la figura NO dice, y las dos son decisiones ya tomadas:**
 

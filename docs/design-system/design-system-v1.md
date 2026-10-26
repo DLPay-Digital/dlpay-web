@@ -365,6 +365,31 @@ reconocerlos antes de repetirlos.
    tarjetas con titulares de distinto largo, cada raya sale de un ancho distinto. La
    regla va con **ancho fijo** (28px), en un pseudo-elemento.
 
+### 4.3.3 Las cabeceras de sección van centradas  ·  *2026-10-26*
+
+**La cabecera de una sección —antetítulo, titular y bajada— va centrada sobre su contenido**, en
+todas las páginas y en todos los anchos. Lo que va debajo conserva su alineación: **las listas,
+las tablas, las preguntas, los pasos y los párrafos largos, a la izquierda**, porque centrados se
+leen mal. La bajada centra su caja, no sólo su texto: `margin-inline: auto` con su medida de
+46ch, o queda pegada a la izquierda con el texto centrado dentro.
+
+- **Por qué.** El recorrido de primera visita midió la Home a 1280: cinco titulares centrados y
+  cinco a la izquierda, que además empezaban en tres columnas distintas. El ojo buscaba el
+  titular en cada sección, y eso era buena parte de la sensación de piezas pegadas. Sebastián
+  eligió centrar, «ya que todas las webs en las que nos basamos tienen el contenido centrado».
+- **Las excepciones son una sola forma, no varias: la composición a dos columnas**, el texto
+  junto a una figura o junto a otro bloque. Ahí el texto va con su columna, alineado a la
+  izquierda, como en la portada de la Home: el puente (`Puente.astro`), «De la cotización al
+  dinero en destino» y la banda de empresas de la Home, «Cómo empezamos» de `/empresas` y «Ten
+  esto a mano» de `/como-funciona`.
+- **Y no son cabeceras de sección**, así que no se centran:
+  - los rótulos de grupo de `/preguntas`, que encabezan una lista y llevan su público al lado;
+  - los encabezados de los documentos: los artículos del blog, las legales, `/tarifas` y
+    `/cuanto-te-cobran`, que se leen como texto corrido;
+  - los grupos del índice del blog.
+- **Cuándo se rompe.** Una sección nueva con la cabecera a la izquierda y el contenido a todo el
+  ancho debajo. Si su texto no va junto a una figura, se centra.
+
 ### 4.4 Radios (discretos — nada de "pill")
 
 | Token | Valor | Uso |
@@ -491,6 +516,12 @@ tarjeta": borde/fill/radio/sombra se gastan por rol, para levantar **una** cosa.
 artículo de activos tokenizados—. Están partidos por la diagonal de la marca —papel donde está el
 texto, que es la página en la que estás, y tinta donde está la figura, que es la otra— con un
 `linear-gradient` de parada dura.
+
+**Desde el 2026-10-26 quedan dos: la Home a `/tarifas` y `/tarifas` a `/confianza`.** Salieron el
+de `/precio`, que repetía «Qué cuesta y qué no» una pantalla más abajo, y el de `/como-funciona`
+al artículo de activos tokenizados, que sigue en el blog (recorrido de primera visita; lo aprobó
+Sebastián). Sus figuras, `FiguraMonto.astro` y `FiguraRiel.astro`, quedan sin uso. El párrafo
+siguiente se escribió con los cuatro: hoy sólo uno apunta a `/tarifas`.
 
 **Dos de los cuatro apuntan a `/tarifas` y enseñan figuras distintas**, y eso no es casualidad: lo
 que se repite en la familia es **el corte**, no el dibujo. Dos puentes con la misma figura serían
@@ -817,7 +848,7 @@ que quede el porqué porque el siguiente va a proponer los mismos tres dibujos.
 
 **1 · El glifo ya estaba tomado, y por nosotros.** La ficha de anillo doble con el canto dividido en
 24 unidades —la construcción de `activo-tokenizado`— se publicó el 2026-09-28 en `FiguraRiel.astro`,
-que vive en `/como-funciona`, y allí su rótulo dice **«dólar digital»**. Es la misma construcción a
+que vivió en el puente de `/como-funciona` hasta el 2026-10-26, y allí su rótulo decía **«dólar digital»**. Es la misma construcción a
 otro radio: 24/30 contra 38/46, las mismas 24 marcas. Así que hoy, en el vocabulario publicado,
 **esa ficha significa nuestro producto**. Una portada que la use para representar la categoría
 stablecoin dice «stablecoin = el dólar digital de DLPay», en un artículo cuya frase central es «no
@@ -1024,7 +1055,7 @@ bisagra del portátil. Un filete `--ink-mute` significa «existe, es real, no es
 | `/precio`, la banda | `.frontera` | el instante en que el cliente acepta |
 | `/precio`, la banda | `.caduca` | el instante en que se cumplen los 12 minutos |
 | `/tarifas` ×3 | `.limite`, `.sw sw-linea`, `.fm-corte` (de `FiguraMecanismo`, «El monto») | dónde acaba el precio · el spread · dónde se conversa |
-| Home y `/precio`, los puentes | `.limite` y `.corte` | los mismos dos, copiados a sus figuras |
+| la Home, el puente | `.limite` y `.corte` | los mismos dos, copiados a su figura. **El de `/precio` salió con su puente el 2026-10-26** |
 | `/empresas` ×2 | `.fc-frontera` de `FiguraCaso` | la frontera de Chile, en el cruce y en la cajonera |
 | `/confianza` y la Home, «Confianza que se comprueba» | `.fm-frontera` de `FiguraMecanismo` | cuándo la transferencia está **acreditada** — antes no movemos nada |
 | ~~`/como-funciona`, «Dónde termina nuestra operación»~~ | ~~`.ea-limite` de `EjeDeAlcance`~~ | **Retirada el 2026-10-22.** Marcaba la frontera antes de «lo conviertes a moneda local en destino», y ADR-0014 cruzó esa frontera: el servicio llega hasta ahí. Sin límite que marcar, no hay marca |
@@ -1475,7 +1506,7 @@ cada una, no qué significa.
 | **Encabezado de página** | Las ocho rutas que no son la Home | `PageHero`. Dos composiciones: a dos columnas y **apilada y centrada**, ésta con la pieza del `aside` montada sobre la costura con la sección siguiente. **2026-10-23: las cuñas pueden seguir** sobre la sección siguiente con `wedges="continue"`, por la misma diagonal y hasta salir por el borde izquierdo. Es sólo para cuando esa sección es de noche (§6.4, regla 4). Hoy lo usa `/empresas`. La sección siguiente posiciona su contenido (`position: relative`) para quedar encima de ellas |
 | **Dispositivos en CSS: teléfono, portátil, tableta y teléfono de avisos** | Enseñar el producto sin imágenes. El teléfono de chat (`/como-funciona`, Home) una **operación negociándose**; el portátil (`/empresas`) la plataforma; la tableta (`/preguntas`) **una duda resolviéndose**; el teléfono bloqueado con avisos (`/confianza`, desde el 2026-09-30) **una operación comprobándose desde fuera** | Cero archivos. **El texto nunca se teclea**: las cifras salen de `lib/pricing` y la pregunta de la tableta se busca en `general.ts` por su texto. Los cuatro van `aria-hidden` y **el chasis va claro**, que es lo único que recorta un objeto contra la tinta. **Dos teléfonos y no uno, a propósito:** aquél tiene la app abierta y una conversación; éste está bloqueado y enseña tres avisos de tres remitentes, de los que **sólo uno es nuestro**. Si el hilo de la tableta empieza a hablar de montos, deja de ser tableta y pasa a ser teléfono. **2026-10-23: el teléfono de la Home es uno solo.** «Así se ve tu operación» dejó los cuatro del zig-zag por la variante `escena`, con la conversación entera. **El primer mensaje es `mensajeInicial()`**, el texto que el botón del cotizador escribe solo, y `tests/telefono.test.ts` lo compara sobre el build. **El teléfono crece al bajar** (ADR-0017). **Las figuras sin pie van `aria-hidden` enteras**: antes se anunciaba «figura» vacía. **En colores forzados el teléfono lleva contorno**, la cabecera una línea y las burbujas su borde, con lo que escribe el cliente en el color de resalte; antes el sistema quitaba los fondos y no quedaba aparato. **2026-10-23 (b): los aparatos de las portadas actúan una vez al cargar** (ADR-0018) — los avisos de `/confianza` llegan en orden; el portátil de `/empresas` se usa; la tableta de `/preguntas` contesta; la tarjeta de `/tarifas` llena su barra. **Con movimiento reducido, cada uno es el de siempre desde el primer cuadro.** **2026-10-23 (c): el teléfono de chat gana un slot, `caja`** —lo que va debajo del chat, dentro del teléfono—. Hoy lo usa la portada de `/como-funciona` para la caja de texto con tu mensaje sin enviar. **Es un slot y no una prop para que la hoja del teléfono no crezca**: la Home la lleva en línea mientras pese menos de 4 KB, y con la caja dentro pasaba de ese límite. Los estilos de la caja viven en quien la pone |
 | **El salto** | La portada de `/como-funciona` (ADR-0018, pieza 14) | `SaltoAlChat`. **Una composición, no un componente nuevo**: la tarjeta del cotizador en pequeño («en la web»), la cuña del §6.2 y el teléfono con el chat recién abierto y tu mensaje escrito sin enviar («con tu ejecutivo»). Los dos rótulos son el par de las etiquetas de precio. **No es el cotizador**: nada se enfoca ni se pulsa, va `aria-hidden` y lo dice el pie, como el portátil de `/empresas`. Desde 900 px en fila, apoyada abajo, con la cuña a la altura del botón; debajo, en columna con la cuña de pie. En colores forzados la tarjeta y sus cajas llevan borde y la cuña pasa a `CanvasText`. Al cargar, una vez: el botón se hunde, la cuña se traza y el mensaje aparece en la caja (1,73 s) |
-| **Figura de mecanismo** | Los tres mecanismos de `/confianza` | `FiguraMecanismo`. El edificio de por medio, la placa del escritorio y las dos etiquetas, en el lado que el zigzag dejaba vacío. La lámina es `Lamina.astro` desde el 2026-10-05; hasta entonces repetía las de `FiguraCaso`, porque dos usos no justifican extraer una pieza. **El banco no lleva nombre** —BCI es un claim con marcador— y **lo nuestro empieza después de la frontera «acreditada»**. Y, desde el 2026-10-02, los tres bloques de «Confianza que se comprueba» en la Home, con un cuarto objeto, `precio` —una sola etiqueta y un gancho vacío—; bajo 280 px de lámina, que sólo se da en la Home, los rótulos secundarios se retiran — **sólo con `compacta`, que pasa la Home**. **Y desde el 2026-10-05, las dos piezas de «Qué mueve el precio» en `/tarifas`:** `clock` tal cual para «El mercado» y un quinto objeto, `monto`, para «El monto» —la línea, el corte y «acá se conversa» de siempre, y al otro lado el escritorio de tu ejecutivo—. El puente de `/precio` (`FiguraMonto`) **copia de él la línea, el corte y esas dos palabras**, así que sigue anticipando su destino. *2026-10-02 y 2026-10-05.* |
+| **Figura de mecanismo** | Los tres mecanismos de `/confianza` | `FiguraMecanismo`. El edificio de por medio, la placa del escritorio y las dos etiquetas, en el lado que el zigzag dejaba vacío. La lámina es `Lamina.astro` desde el 2026-10-05; hasta entonces repetía las de `FiguraCaso`, porque dos usos no justifican extraer una pieza. **El banco no lleva nombre** —BCI es un claim con marcador— y **lo nuestro empieza después de la frontera «acreditada»**. Y, desde el 2026-10-02, los tres bloques de «Confianza que se comprueba» en la Home, con un cuarto objeto, `precio` —una sola etiqueta y un gancho vacío—; bajo 280 px de lámina, que sólo se da en la Home, los rótulos secundarios se retiran — **sólo con `compacta`, que pasa la Home**. **Y desde el 2026-10-05, las dos piezas de «Qué mueve el precio» en `/tarifas`:** `clock` tal cual para «El mercado» y un quinto objeto, `monto`, para «El monto» —la línea, el corte y «acá se conversa» de siempre, y al otro lado el escritorio de tu ejecutivo—. El puente de `/precio` (`FiguraMonto`) **copiaba de él la línea, el corte y esas dos palabras**, hasta que salió de la página el 2026-10-26; `FiguraMonto` quedó sin uso. *2026-10-02 y 2026-10-05.* |
 | **Lámina** | La superficie de las figuras de objeto: `/empresas`, `/confianza`, `/tarifas` y la Home | `Lamina.astro`. 460×280 y nunca más ancha, `--papel-2`, radio `--r-3`, contenedor de consulta: el dibujo en `cqw` y el texto en px. Todo lo de dentro va en absoluto. **Borde transparente de 1 px**: en colores forzados es el contorno. Extraída en su tercer uso el 2026-10-05, con las láminas idénticas píxel a píxel. |
 | **Carpeta** | Lo que traes tú: «Ten esto a mano» en `/empresas` y `/como-funciona`, y «Qué te pedimos» en `/confianza` | `Carpeta.astro`. Pestaña en la diagonal de la marca, con rótulo o vacía; cuerpo con fondo; con `items`, el kit de placas de 48 px. **Placa cuadrada = lo que traes tú.** Extraída en su tercer uso el 2026-10-02, con las dos páginas anteriores idénticas píxel a píxel. |
 | **Figura de uso** | Los tres usos de la Home | `FiguraUso`. Cruza, convierte y reparte como objetos sobre `Lamina.astro`: la topología es el dato y se conserva. Rótulos a 13 px; bajo 262 px de lámina se retiran los pies de pieza. *2026-10-02.* |
@@ -1495,7 +1526,7 @@ cada una, no qué significa.
 | **Bloque institucional** | Los emblemas de FinteChile y la UAF, en el pie | `Alliances.astro`. El claim regulatorio se dice **con palabras**, no colgado de un emblema, y el dato declara el alcance de su propio claim |
 | **Motor de movimiento** | Encender el Motion System en las páginas que lo usan | `Motion.astro`. No es una pieza visual: es el `IntersectionObserver` y su interruptor. Las cuatro legales y la 404 no lo llevan y siguen en cero JavaScript |
 | **Fila de artículo** | Una entrada de artículo en una lista | `FilaArticulo`. Marca y texto en un solo enlace. La usan el índice del blog y «Sigue leyendo». *2026-10-13.* **`grande`**: la portada real en vez de la marca, en cinco doceavos desde 900 px y arriba bajo 900. El texto va antes en el documento, así que el enlace se oye empezando por el titular. *2026-10-23.* |
-| **Acción de página** | El botón verde y su compañero de línea, en las portadas y las bandas de cierre | `Accion.astro`. `variante`: `verde` (por omisión) o `linea`; `sobre`: `papel` (por omisión) o `tinta`, que decide el contorno de la de línea —la tinta al 46 % sobre papel (3,06:1 medido sobre `--papel-2`), `--line-on-tinta` sobre tinta (3,50:1)—. **Estaba copiado en seis páginas**, y las copias se habían separado: el fantasma de `/como-funciona` seguía con `--line`, a 1,35:1, y quedó corregido al consumirlo. En colores forzados el verde lleva un borde `LinkText`. No cubre los botones de los instrumentos ni los de la Home. *2026-10-24.* |
+| **Acción de página** | El botón verde y su compañero de línea, en las portadas y las bandas de cierre | `Accion.astro`. `variante`: `verde` (por omisión) o `linea`; `sobre`: `papel` (por omisión) o `tinta`, que decide el contorno de la de línea —la tinta al 46 % sobre papel (3,00:1 sobre `--papel-2` y 3,06:1 sobre `--papel`), `--line-on-tinta` sobre tinta (3,50:1)—. **Estaba copiado en seis páginas**, y las copias se habían separado: el fantasma de `/como-funciona` seguía con `--line`, a 1,35:1, y quedó corregido al consumirlo. En colores forzados el verde lleva un borde `LinkText`. No cubre los botones de los instrumentos ni los de la Home. *2026-10-24.* |
 | **Ruta de guías** | Los pasos de «Tu primera operación», en `/blog` | `RutaGuias`. Pasos numerados con la gramática de «Cómo empezamos». Cuenta sólo lo publicado. *2026-10-13.* |
 | **El riel** | Navegar una página larga sabiendo dónde estás: el artículo, `/preguntas` y, con tres secciones o más, las legales (2026-10-23) | Desde 1112 px: 176 px de riel, 48 de hueco y 760 de lectura, pegado arriba a 32 px. Un rótulo en la letra del texto —«En esta página» en el artículo, «Las preguntas» en `/preguntas`, porque allí el glosario no está en la lista—, un filete `--line` a la izquierda y las entradas colgadas de él, de 44 px, en `--t-body-sm` y `--ink-mute`; en `/preguntas` con su recuento. **Marca dónde estás** (ADR-0018, piezas 17 y 19) con la marca del menú en claro: filete de 2 px en `--verde-deep` y texto en `--ink`, sin cambiar de grosor; en colores forzados, `Highlight` de 4 px. Sin JavaScript: ver el ADR. Un lector de pantalla no oye «actual», porque `aria-current` pediría JavaScript; el orden del documento no cambia. `tests/riel.test.ts` vigila que entradas y secciones estén en el mismo orden. En las legales, las secciones salen del propio HTML del documento (`lib/secciones.ts`), sólo los H2 de primer nivel. **Desde el 2026-10-24 es `RielLateral.astro`**, el mismo para el artículo y las legales, y bajo 1112 `IndiceMovil.astro`. La página pone `data-riel-ambito` en un antepasado común y `data-riel-secciones` en el contenedor de los H2. El de `/preguntas` sigue siendo suyo: es la banda de entrada de la página, que se pega, y comparte la marca, no la pieza |
 | **Bandera** | El país junto a su nombre o su código | `Bandera.astro`. Ver §7.1. *2026-10-22.* |
