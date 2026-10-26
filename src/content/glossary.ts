@@ -21,8 +21,10 @@
  * ── El enlace, y el que falta ──────────────────────────────────────────────
  *
  * `href` es OPCIONAL a propósito y `red` no lo lleva, porque el sitio no explica
- * ese término en ninguna parte. Que el hueco se vea es parte de la información:
- * el día que exista la página que lo explique, este archivo lo dirá.
+ * ese término en ninguna parte. El hueco queda anotado acá, y el día que exista
+ * la página que lo explique, este archivo lo dirá. **En la página ya no se ve**
+ * desde el 2026-10-26: decía «El sitio todavía no lo explica en ninguna parte»,
+ * y un cliente lo leía como una nota olvidada (lo aprobó Sebastián).
  *
  * El texto del enlace nombra el DESTINO —«Tarifas», «Confianza»— y no dice
  * «dónde se explica»: con la misma frase repetida siete veces la columna se
@@ -102,7 +104,7 @@ export const glossary: readonly Term[] = [
   },
   {
     // Copy nuevo, aprobado el 2026-09-23. SIN enlace: el sitio no lo explica en
-    // ninguna parte, y el hueco es información.
+    // ninguna parte. Ver la cabecera: el hueco se anota acá, no en la página.
     term: 'Red',
     definition:
       'El canal por el que viaja la divisa digital. Hay varias, y la que se usa cambia el tiempo y el costo del traspaso, no el valor de lo que recibes.',

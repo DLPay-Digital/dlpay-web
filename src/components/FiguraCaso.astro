@@ -17,9 +17,12 @@
  *   tu proveedor al otro. Entre los dos, una línea directa: nada en medio. Lo
  *   que viaja es una unidad de valor —el punto lleno— rotulada USD, y la cuña
  *   cae justo en la frontera, donde el valor cambia de manos.
- *   La línea es `--ink-mute` y NO verde, a propósito: ese pago lo hace la
- *   empresa desde su billetera, no DLPay (CLAUDE.md §1). Verde sería decir que
- *   el tramo es nuestro.
+ *   **La línea es verde desde el 2026-10-26**: el tramo es nuestro. Era
+ *   `--ink-mute` porque, antes de ADR-0014, ese pago lo hacía la empresa desde
+ *   su billetera; hoy DLPay se ocupa del recorrido entero y el proveedor recibe
+ *   en la moneda de su país, lo mismo que una persona (Sebastián). Es el mismo
+ *   dibujo que «Mover dinero fuera de Chile» en la Home: línea verde y la cuña
+ *   en `--ink-mute`, donde el valor cambia de manos.
  * · **Tesorería: la cajonera.** La caja de la empresa —rotulada «Tu empresa»,
  *   porque DLPay no guarda saldos (CLAUDE.md §1)— con dos cajones: CLP,
  *   con el icono del banco, y USD, con el de la billetera, medio abierto
@@ -241,6 +244,8 @@ const CUNA = 'M0 10h15.4l8.4-7 8.4 14 8.4-7h15.4';
   .fc-linea { height: 3px; margin-top: -1.5px; background: var(--ink-mute); top: var(--fc-y); }
   .fc-linea-a { left: calc(20% + var(--fc-pieza) / 2); right: calc(50% + 7.5cqw); }
   .fc-linea-b { left: calc(50% + 7.5cqw); right: calc(20% + var(--fc-pieza) / 2); }
+  /* El tramo es nuestro desde ADR-0014: verde, como en `FiguraUso`. */
+  .fc-proveedores .fc-linea { background: var(--verde-deep); }
   .fc-proveedores .fc-cuna {
     left: 50%;
     top: var(--fc-y);

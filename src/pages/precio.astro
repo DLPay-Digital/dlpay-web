@@ -38,11 +38,8 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
 import Motion from '../components/Motion.astro';
-import Puente from '../components/Puente.astro';
-import FiguraMonto from '../components/FiguraMonto.astro';
 import EtiquetasPrecio from '../components/EtiquetasPrecio.astro';
 import Accion from '../components/Accion.astro';
-import { volumeTerms } from '../content/business.ts';
 import { faq as homeFaq } from '../content/home.ts';
 import { generalFaq } from '../content/general.ts';
 import { contact } from '../lib/config/site.ts';
@@ -114,6 +111,13 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
   <Header />
   <main id="main">
     {/*
+      **El titular, desde el 2026-10-26: «Un solo cobro, y va dentro del
+      precio».** Decía «Un solo número», y la página no enseña ninguno: lo
+      retiró a propósito el 2026-10-01. Un cliente nuevo leía la promesa de un
+      número y no lo encontraba (recorrido de primera visita, Cowork). La frase
+      nueva no es nueva: es la afirmación de la página, la de su descripción y la
+      fila que cobra. Lo aprobó Sebastián.
+
       La bajada decía «Lo que ves al cotizar es lo que pagas», y la Home y
       `/preguntas` publican lo contrario: el precio de la web es referencial y el
       que se aplica es el que confirma el ejecutivo. Lo que sí es verdad —y es
@@ -121,7 +125,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
       que pagas**. Cadena nueva: necesita firma.
     */}
     <PageHero
-      title="Un solo número"
+      title="Un solo cobro, y va dentro del precio"
       lead="El precio que aceptas es el que pagas. Acá ves dónde está el cobro y dónde no lo hay."
       sequence
       layout="stacked"
@@ -148,9 +152,15 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     <section class="costos" aria-labelledby="costos-title">
       <div class="inner">
         <h2 id="costos-title" data-enter>Qué cuesta y qué no</h2>
+        {/*
+          Empezaba «Un solo cobro en toda la operación, y va dentro del
+          precio», y desde el 2026-10-26 eso es el titular de la página, una
+          pantalla más arriba. Dice lo mismo con lo que ya publica la fila que
+          cobra: es el spread y va dentro del precio que ves.
+        */}
         <p class="bajada">
-          Un solo cobro en toda la operación, y va dentro del precio. Todo lo demás no tiene costo,
-          incluido el costo de red del traspaso, que lo asumimos nosotros.
+          El único cobro es el spread, y ya va dentro del precio que ves. Todo lo demás no tiene
+          costo, incluido el costo de red del traspaso, que lo asumimos nosotros.
         </p>
         <dl>
           {costs.map((row) => (
@@ -166,6 +176,20 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
               `/tarifas`, de donde sale esta salvedad (ADR-0014). */}
           Si el banco o el servicio con el que recibe quien recibe aplica algún cobro propio,
           ése es ajeno a DLPay. Tu ejecutivo te lo advierte si lo hay.
+        </p>
+        {/*
+          Lo que traía el puente «Las condiciones se acuerdan contigo», que salió
+          el 2026-10-26 junto con «Cómo trabajamos el precio»: las dos repetían
+          esta sección (recorrido de primera visita; lo aprobó Sebastián). Quedan
+          su frase, que ya estaba publicada, y su destino.
+          · La frase larga de las condiciones por volumen (`volumeTerms`) sigue
+            en la FAQ de `/empresas`, con su marcador en `business.ts`.
+          · «Partimos de una referencia de mercado y le aplicamos nuestro
+            spread» lo dice `/tarifas`, que es adonde lleva el enlace.
+        */}
+        <p class="volumen">
+          Las operaciones de mayor volumen se conversan con el ejecutivo.
+          <a href="/tarifas/">Ver las tarifas</a>
         </p>
       </div>
     </section>
@@ -273,11 +297,15 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
             <p class="seg-rot r-caduca"><b>Caduca</b>Si se pasa, se cotiza de nuevo.</p>
           </div>
 
+          {/*
+            El pie explicaba el dibujo —«La línea verde no sube ni baja… La gris
+            no termina…»— y un cliente lo leía como instrucciones de lectura.
+            Desde el 2026-10-26 dice lo que el dibujo significa, con la misma
+            afirmación que la bajada de la banda: 12 minutos y el mercado que
+            sigue. Lo aprobó Sebastián.
+          */}
           <figcaption>
-            La línea verde no sube ni baja: <strong>es la misma altura desde el punto en que
-            aceptas y durante los 12 minutos siguientes</strong>. Ahí termina, y el segundo punteado
-            es dónde. La gris no termina: se sale del cuadro porque sigue moviéndose, y eso es
-            exactamente lo que hace que la verde signifique algo.
+            Mientras corren los 12 minutos, tu precio no se mueve, aunque el mercado sí.
           </figcaption>
         </figure>
       </div>
@@ -317,61 +345,6 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
       </div>
     </section>
 
-    <section class="tres" aria-labelledby="tres-title">
-      <div class="inner">
-        <h2 id="tres-title" class="sr-only">Cómo trabajamos el precio</h2>
-        <div class="bloques">
-          <div class="bloque" data-enter>
-            <h3>Precio transparente</h3>
-            <p>
-              Ves cuánto recibes antes de transferir, y ese número ya incluye lo nuestro. No hay una
-              comisión que aparezca al final ni un tipo de cambio inflado por dentro para esconder
-              un cobro.
-            </p>
-          </div>
-          <div class="bloque" data-enter>
-            <h3>Conversión justa</h3>
-            <p>
-              Partimos de una referencia de mercado y le aplicamos nuestro spread. No inventamos un
-              precio propio: el punto de partida es el mismo que puedes mirar tú.
-            </p>
-          </div>
-          <div class="bloque" data-enter>
-            <h3>Volumen y frecuencia</h3>
-            {/* Importado de `business.ts`: la misma frase que publica la FAQ de
-                /empresas, con su marcador de Compliance en un solo sitio. */}
-            <p>{volumeTerms}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    {/*
-      El puente a `/tarifas`, justo bajo la tarjeta «Volumen y frecuencia», que
-      es la frase que lo justifica. Las dos secciones vecinas son de primer
-      nivel, así que acá no hubo que partir nada: `.tres` es papel y `.close` es
-      papel-2, y la mitad de tinta no toca oscuro por ningún lado.
-
-      **Es el segundo puente que apunta a `/tarifas` y enseña otra figura.** El
-      de la Home enseña la barra del precio; éste, «El monto». Lo que se repite
-      entre los dos es el corte, no el dibujo — ver la cabecera de
-      `FiguraMonto.astro`.
-
-      El titular es la cláusula final del cuerpo de «El monto» en `/tarifas`,
-      subida a titular. Eso le cambia el peso a una frase publicada, y por eso
-      tiene firma: Sebastián la aprobó como Compliance el 2026-09-28, con el
-      aviso delante.
-    */}
-    <Puente
-      rotulo="volumen y frecuencia"
-      titulo="Las condiciones se acuerdan contigo"
-      cuerpo="Las operaciones de mayor volumen se conversan con el ejecutivo."
-      href="/tarifas/"
-      cta="Ver las tarifas"
-    >
-      <FiguraMonto />
-    </Puente>
-
     <section class="close" aria-labelledby="close-title">
       <div class="inner">
         <h2 id="close-title" data-enter>¿Listo para ver tu precio?</h2>
@@ -396,14 +369,14 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
 
   .inner { max-width: 760px; margin: 0 auto; padding: 0 var(--pad-section-m); }
   /*
-    La alternancia de superficies, con la sección nueva: tinta → papel-2 → tinta
-    → **papel** (las preguntas) → **papel-2** (`.tres`, que era papel) → el
-    puente, cuya mitad clara es papel → papel-2. Ninguna superficie toca a otra
-    igual.
+    La alternancia de superficies: tinta → papel-2 → tinta → **papel** (las
+    preguntas) → **papel-2** (el cierre). Ninguna superficie toca a otra igual.
+    Hasta el 2026-10-26 había dos secciones más entre las preguntas y el
+    cierre, `.tres` y el puente a `/tarifas`; salieron porque repetían «Qué
+    cuesta y qué no».
   */
   .costos { background: var(--papel-2); padding: var(--s-9) 0; }
   .dudas { background: var(--papel); padding: var(--s-9) 0; }
-  .tres { background: var(--papel-2); padding: var(--s-9) 0; }
 
   h2 {
     font-size: var(--t-h2-m);
@@ -414,6 +387,15 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
   }
   /* Intro de sección: medida única de 46ch (Design System §3). */
   .bajada { color: var(--ink-mute); max-width: 46ch; margin-bottom: var(--s-7); }
+  /*
+    ── Las cabeceras, centradas (2026-10-26) ───────────────────────────────
+    La regla del sitio (Design System §4.3.3): el antetítulo, el titular y la
+    bajada de cada sección van centrados sobre su contenido; la tabla, las
+    preguntas y las notas, a la izquierda. `margin-inline: auto` centra la
+    caja de la bajada, no sólo su texto.
+  */
+  .costos h2, .dudas h2 { text-align: center; }
+  .costos .bajada { margin-inline: auto; text-align: center; }
 
   .costos .bajada { margin-bottom: var(--s-6); }
   dl { margin: 0; border-top: 1px solid var(--line); }
@@ -440,9 +422,9 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
   /* 47ch = el tope de 65 caracteres del Design System §3. */
   .nota { color: var(--ink-mute); max-width: 47ch; margin-top: var(--s-5); }
 
-  .bloques { display: grid; gap: var(--s-6); }
-  .bloque h3 { font-size: var(--t-h3-m); font-weight: 600; margin-bottom: var(--s-2); }
-  .bloque p { color: var(--ink-mute); max-width: 47ch; }
+  /* La frase de las condiciones por volumen y su enlace a `/tarifas`. */
+  .volumen { color: var(--ink-mute); max-width: 47ch; margin-top: var(--s-4); }
+  .volumen a { color: var(--verde-deep); font-weight: 600; }
 
   /* ── Las preguntas del precio ──────────────────────────────────────────── */
   .dudas h2 { margin-bottom: var(--s-6); }
@@ -498,12 +480,12 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     letter-spacing: var(--ls-h2);
     margin-bottom: 0;
   }
-  .cab { margin-bottom: var(--s-7); }
+  .cab { margin-bottom: var(--s-7); text-align: center; }
   .cab .lead {
     color: var(--on-tinta-mute);
     font-size: var(--t-body-sm);
     max-width: 47ch;
-    margin-top: var(--s-3);
+    margin: var(--s-3) auto 0;
   }
 
   figure.seguro { margin: 0; }
@@ -694,16 +676,9 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
   @media (min-width: 900px) {
     h2 { font-size: var(--t-h2); }
     .curva { height: 232px; }
-    /* El titular y la bajada, hombro con hombro. */
-    .cab {
-      display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
-      gap: var(--s-7);
-      align-items: end;
-      margin-bottom: var(--s-8);
-    }
-    .cab .lead { margin-top: 0; max-width: 42ch; }
-    .seguro-banda h2 { max-width: 16ch; }
+    /* El titular y la bajada iban hombro con hombro; desde el 2026-10-26 van
+       centrados, uno sobre la otra, como todas las cabeceras del sitio. */
+    .cab { margin-bottom: var(--s-8); }
     /*
       Cada rótulo bajo su tramo: los porcentajes son los del `viewBox` y no se
       eligen a ojo. En móvil se apilan porque a ese ancho no caben tres.
@@ -738,13 +713,9 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     .seg-rot.r-acepta { left: 26%; }
     .seg-rot.r-precio { left: 52%; }
     .seg-rot.r-caduca { left: 78%; }
-    .bloque h3 { font-size: var(--t-h3); }
     /* Pregunta a la izquierda, respuesta a la derecha: la rejilla de `.costos`. */
     .duda { display: grid; grid-template-columns: minmax(0, 17em) 1fr; gap: var(--s-6); align-items: baseline; }
     .duda h3 { font-size: var(--t-h3); margin-bottom: 0; }
-    /* Tres bloques en fila: son tres afirmaciones del mismo rango, no una
-       secuencia. Dentro del tope de cuatro hermanos con escalonado. */
-    .bloques { grid-template-columns: repeat(3, 1fr); gap: var(--s-7); }
     /*
       El salto a la escala de escritorio, EXPLÍCITO. La regla `h2` de arriba no
       los alcanza: `.seguro-banda h2` tiene más especificidad y se quedaba en

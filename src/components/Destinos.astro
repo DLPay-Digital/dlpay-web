@@ -142,7 +142,9 @@ const columnas = [lugares.slice(0, 5), lugares.slice(5, 9), lugares.slice(9)];
 <style>
   .destinos { background: var(--papel); padding: var(--s-8) 0; }
   .inner { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-section-m); }
-  .head { max-width: 46rem; }
+  /* Centrada desde el 2026-10-26: la regla de las cabeceras del sitio
+     (Design System §4.3.3). La banda y las tarjetas siguen a lo ancho. */
+  .head { max-width: 46rem; margin-inline: auto; text-align: center; }
   h2 { font-size: var(--t-h2-m); line-height: var(--lh-h2); letter-spacing: var(--ls-h2); }
   .head p { margin-top: var(--s-3); color: var(--ink-mute); font-size: var(--t-body); line-height: var(--lh-body); }
 

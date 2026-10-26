@@ -61,7 +61,11 @@ export const useCases: UseCase[] = [
   {
     figure: 'reparte',
     title: 'Pagar desde tu empresa',
-    body: 'A proveedores, servicios o equipos en el exterior que operan con divisa digital. Con un ejecutivo que conoce tu operación.',
+    /* Decía «…en el exterior que operan con divisa digital» hasta el
+       2026-10-26. Lo que recibe una empresa es lo mismo que una persona: la
+       moneda de su país (ADR-0014; Sebastián). REQUIERE VALIDACIÓN DE
+       COMPLIANCE, como el resto de esa afirmación en el sitio. */
+    body: 'A proveedores, servicios o equipos en el exterior, en la moneda de su país. Con un ejecutivo que conoce tu operación.',
   },
 ];
 

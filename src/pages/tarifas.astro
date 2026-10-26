@@ -110,7 +110,7 @@
  *   3. «el precio que ves»
  *   4. «acá termina» · «y no se suma nada»
  *   5. «La barra no está partida porque el número tampoco lo está: no se ven
- *      por separado.»
+ *      por separado.» *Retirada el 2026-10-26: explicaba el dibujo.*
  *   6. «El punteado es un límite. Cruzarlo cambiaría el precio, y no lo cruza
  *      nada.»
  *   7. «El spread ya está adentro del número»
@@ -236,11 +236,15 @@ const wa = contact.whatsappUrl(
           </div>
         </figure>
 
+        {/*
+          La leyenda tenía dos frases y desde el 2026-10-26 tiene una. Salió la
+          de la barra —«La barra no está partida porque el número tampoco lo
+          está…»—: explicaba cómo leer el dibujo, y lo que significa ya lo dice
+          el titular de la sección, «El spread ya está adentro del número»
+          (recorrido de primera visita; lo aprobó Sebastián). La cadena 5 de la
+          cabecera deja de publicarse.
+        */}
         <div class="leyenda">
-          <p>
-            <span class="sw sw-barra" aria-hidden="true"></span>
-            <span><b>La barra no está partida</b> porque el número tampoco lo está: no se ven por separado.</span>
-          </p>
           <p>
             <span class="sw sw-linea punteado-v" aria-hidden="true"></span>
             <span><b>El punteado es un límite.</b> Cruzarlo cambiaría el precio, y no lo cruza nada.</span>
@@ -639,20 +643,18 @@ const wa = contact.whatsappUrl(
     color: var(--ink-mute);
   }
   .leyenda b { font-weight: 600; color: var(--ink); }
-  /* Las dos muestras también son CSS: son la barra y el punteado a tamaño de
-     texto, y dibujarlas en SVG habría metido otro `viewBox` que escalar. */
+  /* La muestra también es CSS: es el punteado a tamaño de texto, y dibujarla
+     en SVG habría metido otro `viewBox` que escalar. Eran dos —la barra y el
+     punteado— hasta el 2026-10-26. */
   .sw { width: 34px; flex: none; }
-  .sw-barra { height: 8px; border-radius: 2px; background: var(--verde-deep); }
   .sw-linea {
     /* 17 px = trazo, hueco, trazo, hueco, trazo (3 + 4 + 3 + 4 + 3): empieza y
        termina en tinta. Con los 12 px de antes el ritmo 3/4 dejaba dos trazos,
        y la muestra se leía como dos puntos («:»). Cowork, 2026-10-13. */
     height: 17px;
     --punteado-color: var(--ink);
-    /* Centrada en los 34 px de .sw, como la barra de arriba: así los dos
-       textos de la leyenda arrancan en la misma columna. Antes, 0 de ancho +
-       1 px de borde + 32 de margen daban 33, y el segundo texto iba 1 px
-       corrido. */
+    /* Centrada en los 34 px de .sw. Cuando la leyenda tenía también la barra,
+       así los dos textos arrancaban en la misma columna. */
     margin: 0 16.375px;
     width: 1.25px;
   }
@@ -755,7 +757,7 @@ const wa = contact.whatsappUrl(
     pintan, y salía como un rectángulo de 12×6.
   */
   @media (forced-colors: active) {
-    .barra, .sw-barra { forced-color-adjust: none; background: CanvasText; }
+    .barra { forced-color-adjust: none; background: CanvasText; }
     .llave::after { forced-color-adjust: none; border-top-color: CanvasText; }
   }
   /*
@@ -772,8 +774,9 @@ const wa = contact.whatsappUrl(
       primer cuadro: el cotizador no entra (regla dura 2) y las cifras no se
       animan (regla dura 3);
     · **la barra no se parte al llenarse**: crece entera, desde la izquierda,
-      porque «la barra no está partida porque el número tampoco lo está» es
-      la frase de la leyenda de abajo.
+      porque el número tampoco está partido. Lo decía la leyenda hasta el
+      2026-10-26; ahora lo dice el titular, «El spread ya está adentro del
+      número».
 
     CSS entero: la página sigue en cero bytes de JavaScript
     (`tests/zero-js.test.ts`). Sólo la tarjeta de la portada; la del monto

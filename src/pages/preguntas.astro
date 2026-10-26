@@ -366,10 +366,15 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     <section class="palabras" id="las-palabras" aria-labelledby="palabras-t">
       <div class="inner">
         <h2 id="palabras-t" data-enter>Las palabras</h2>
-        <p class="bajada">
-          Ocho términos que usamos en todo el sitio. Cinco están definidos con las mismas palabras
-          que ya usamos en otra página; tres son nuevos.
-        </p>
+        {/*
+          Decía «Ocho términos que usamos en todo el sitio. Cinco están
+          definidos con las mismas palabras que ya usamos en otra página; tres
+          son nuevos.» Es cierto y es útil para quien mantiene el sitio, pero a
+          un cliente le hablaba de la web y no de las palabras. Desde el
+          2026-10-26, lo aprobó Sebastián. Lo de las cinco y las tres sigue
+          escrito en la cabecera de `glossary.ts`.
+        */}
+        <p class="bajada">Las palabras que usamos, en simple.</p>
         {/* `<dl>`, `<dt>` y `<dd>` de verdad: un lector de pantalla anuncia
             «lista de descripción, 8 elementos» y permite saltar de término en
             término, cosa que una retícula de `<div>` no da. */}
@@ -379,14 +384,13 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
               <dt>{t.term}</dt>
               <dd>
                 {t.definition}
-                {t.href && t.linkLabel ? (
-                  <a class="dest" href={t.href}>→ {t.linkLabel}</a>
-                ) : (
-                  /* La ausencia se VE. `glossary.ts` lo dice en su cabecera: el
-                     sitio no explica «red» en ninguna parte, y que el hueco se
-                     note es parte de la información. */
-                  <span class="sin-dest">El sitio todavía no lo explica en ninguna parte</span>
-                )}
+                {/* Un término sin página que lo explique —hoy sólo «Red»— queda
+                    sin enlace, y nada más. Hasta el 2026-10-26 decía «El sitio
+                    todavía no lo explica en ninguna parte»: la idea era que el
+                    hueco se viera, y un cliente lo leía como una nota que había
+                    quedado a medio hacer (recorrido de primera visita; lo aprobó
+                    Sebastián). El hueco sigue anotado en `glossary.ts`. */}
+                {t.href && t.linkLabel && <a class="dest" href={t.href}>→ {t.linkLabel}</a>}
               </dd>
             </div>
           ))}
@@ -617,6 +621,11 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     margin-bottom: var(--s-3);
   }
   .bajada { color: var(--ink-mute); max-width: 46ch; margin-bottom: var(--s-7); }
+  /* «Las palabras», centrada desde el 2026-10-26 (Design System §4.3.3): es la
+     cabecera de una sección. Los grupos de preguntas de arriba no: cada uno es
+     el rótulo de una lista, con su público al lado. */
+  .palabras h2 { text-align: center; }
+  .palabras .bajada { margin-inline: auto; text-align: center; }
   /*
     La misma columna que los grupos de arriba. Al quitar el índice, las dos
     secciones dejaron de acabar en el mismo sitio —901 contra 1.125 px— y el
@@ -636,17 +645,6 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
     color: var(--verde-deep);
     white-space: nowrap;
     margin-left: var(--s-2);
-  }
-  /* La ausencia, dicha. Va en el gris del texto secundario y no en verde:
-     no es un destino, es la falta de uno. */
-  .sin-dest {
-    display: block;
-    margin-top: var(--s-2);
-    padding-left: var(--s-3);
-    border-left: 1px solid var(--line);
-    font-family: var(--f-text);
-    font-size: var(--t-dato-sm);
-    color: var(--ink-mute);
   }
 
   /*

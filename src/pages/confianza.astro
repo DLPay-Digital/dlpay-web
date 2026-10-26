@@ -17,8 +17,12 @@ import TelefonoAvisos from '../components/TelefonoAvisos.astro';
 import FiguraMecanismo from '../components/FiguraMecanismo.astro';
 import CarpetaRequisitos from '../components/CarpetaRequisitos.astro';
 import Accion from '../components/Accion.astro';
+import Bandera from '../components/Bandera.astro';
+import BanderasSprite from '../components/BanderasSprite.astro';
 import { mechanisms, honesty, requirements } from '../content/trust.ts';
 import { site, contact } from '../lib/config/site.ts';
+import { destinos } from '../lib/pricing/currencies.ts';
+import { banderaDeDestino, type CodigoBandera } from '../lib/banderas.ts';
 /*
   La mención institucional se IMPORTA, nunca se teclea. `alliances.ts` declara
   que cualquier cambio de redacción es un claim nuevo que vuelve a necesitar
@@ -34,6 +38,10 @@ const fintechile = publishedAlliances.find((a) => a.id === 'fintechile');
 /* La tarjeta se llama «Hablar con alguien» y promete «una persona real». El
    mensaje dice eso mismo desde el otro lado. */
 const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes de operar.');
+
+/* Las banderas de «Qué hacemos»: los destinos del cotizador, derivados del
+   catálogo como en la Home. Si entra un destino, aparece acá solo. */
+const banderas = [...new Set(destinos().map((d) => banderaDeDestino(d.destino)).filter((c): c is CodigoBandera => !!c))];
 ---
 <Base
   title="Confianza"
@@ -41,6 +49,7 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
   path="/confianza/"
 >
   <Motion />
+  <BanderasSprite codigos={banderas} />
   <Header />
   <main id="main">
     {/*
@@ -99,6 +108,80 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
       */}
       <div class="tel-caja" slot="aside"><TelefonoAvisos /></div>
     </PageHero>
+
+    {/*
+      ── «Quiénes somos», arriba y desarrollada (2026-10-26) ─────────────────
+
+      Era la última sección de la página, después de «Lo que no vas a leer
+      acá», y tenía dos frases. En el recorrido de primera visita era lo
+      primero que quería saber quien duda, y llegaba al final. Sebastián pidió
+      subirla y desarrollarla **con lo que el sitio ya publica**: no hay un
+      dato nuevo, y cada frase dice de dónde sale.
+
+      · «Una sociedad chilena»: las dos frases que tenía la sección.
+      · «Qué hacemos»: la bajada de la Home («nos ocupamos de que llegue a
+        destino») y su sección de destinos, en la moneda de cada uno. Las
+        banderas salen del catálogo del cotizador.
+      · «Para quién»: el pie («para personas y para empresas») y `/empresas`
+        («el producto es el mismo», «un ejecutivo asignado que conoce tu
+        operación»).
+      · La tarjeta de contacto, como estaba, con la frase que antes iba suelta.
+
+      Va justo después de la portada y antes de «Qué pasa con tu plata»: quién
+      eres antes de cómo cuidas el dinero.
+    */}
+    <section class="who" aria-labelledby="who-title">
+      <div class="inner">
+        <header class="head">
+          <h2 id="who-title" data-enter>Quiénes somos</h2>
+          <p>Quién está detrás de DLPay.</p>
+        </header>
+        <ul class="who-list" role="list">
+          <li class="who-item" data-enter>
+            <IconBadge name="empresa" size="sm" />
+            <h3>Una sociedad chilena</h3>
+            <p>
+              {site.name} es la marca comercial de <strong>{site.legalName}</strong>. El equipo está en
+              Chile y opera bajo el marco legal chileno.
+            </p>
+          </li>
+          <li class="who-item" data-enter>
+            {/* Las banderas son la cifra dicha de otra forma: el lector de
+                pantalla oye el recuento, no trece imágenes. */}
+            <span class="who-banderas" aria-hidden="true">
+              {banderas.map((c) => <Bandera code={c} size={32} />)}
+            </span>
+            <h3>Qué hacemos</h3>
+            {/* REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega en la
+                moneda del destino (ADR-0014): la misma frase que la Home. */}
+            <p>
+              Cambiamos tus pesos y nos ocupamos de que el dinero llegue a destino, en la moneda de
+              ese país. Hoy son {destinos().length} destinos.
+            </p>
+          </li>
+          <li class="who-item" data-enter>
+            <IconBadge name="people" size="sm" />
+            <h3>Para quién</h3>
+            <p>
+              Para personas y para empresas, con el mismo producto. Una empresa tiene además un
+              ejecutivo asignado que conoce su operación.
+            </p>
+            <a class="who-mas" href="/empresas/">DLPay Empresas <Icon name="chevron" size={14} /></a>
+          </li>
+        </ul>
+        <div class="contact-card">
+          <h3>Hablar con alguien</h3>
+          <p>
+            Si quieres saber con quién estás hablando antes de operar, escríbenos y te atiende una
+            persona del equipo.
+          </p>
+          <Accion href={wa} target="_blank" rel="noopener">
+            <Icon name="whatsapp" class="wa-icon" />
+            Escribir por WhatsApp
+          </Accion>
+        </div>
+      </div>
+    </section>
 
     <section class="mech" aria-labelledby="mech-title">
       <div class="inner">
@@ -174,31 +257,6 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
       </div>
     </section>
 
-    <section class="who" aria-labelledby="who-title">
-      <div class="inner">
-        <div class="who-grid">
-          <div>
-            <h2 id="who-title">Quiénes somos</h2>
-            <p>
-              {site.name} es la marca comercial de <strong>{site.legalName}</strong>, una
-              sociedad chilena. El equipo está en Chile y opera bajo el marco legal chileno.
-            </p>
-            <p class="note">
-              Si quieres saber con quién estás hablando antes de operar, escríbenos y te
-              atiende una persona del equipo.
-            </p>
-          </div>
-          <div class="contact-card">
-            <h3>Hablar con alguien</h3>
-            <p>Atención por WhatsApp, con una persona real.</p>
-            <Accion href={wa} target="_blank" rel="noopener">
-              <Icon name="whatsapp" class="wa-icon" />
-              Escribir por WhatsApp
-            </Accion>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
   <Footer />
 </Base>
@@ -212,20 +270,21 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
   .head { max-width: 46ch; margin-bottom: var(--s-7); }
 
   /*
-    ── Dos cabeceras centradas, y sólo dos ───────────────────────────────────
+    ── Las cabeceras, centradas (2026-10-26) ─────────────────────────────────
 
-    Pedido por Sebastián el 2026-09-25 para «Qué pasa con tu plata» y «Qué te
-    pedimos, y por qué». **La tercera —«Lo que no vas a leer acá»— se queda a la
-    izquierda**, que es lo que pidió: centrar las tres habría sido una decisión
-    distinta de la que tomó.
+    Hasta hoy había dos centradas —«Qué pasa con tu plata» y «Qué te pedimos, y
+    por qué», pedidas por Sebastián el 2026-09-25— y «Lo que no vas a leer acá»
+    se quedaba a la izquierda, también por decisión suya. **El 2026-10-26 la
+    regla pasó a ser del sitio** (Design System §4.3.3): el antetítulo, el titular
+    y la bajada de cada sección van centrados; las listas, las tablas y los
+    párrafos largos, a la izquierda. Así que ahora son las cuatro.
 
     `margin-inline: auto` además del `text-align`: el `max-width: 46ch` conserva
     la medida de lectura de la bajada, y sin el margen la caja quedaría pegada a
     la izquierda con el texto centrado dentro — que es el error clásico de
     centrar sólo el texto.
   */
-  .mech .head,
-  .req .head { text-align: center; margin-inline: auto; }
+  .head { text-align: center; margin-inline: auto; }
   h2 {
     font-size: var(--t-h2-m);
     font-weight: 700;
@@ -378,34 +437,73 @@ const wa = contact.whatsappUrl('Hola, quiero hablar con alguien del equipo antes
   }
   .honesty-list p { color: var(--on-tinta-mute); max-width: 47ch; }
 
-  .who { background: var(--papel); padding: var(--s-9) 0; }
-  .who-grid { display: grid; gap: var(--s-7); }
-  .who p { color: var(--ink-mute); max-width: 47ch; margin-bottom: var(--s-3); }
-  .who strong { color: var(--ink); font-weight: 600; }
+  /*
+    «Quiénes somos», justo después de la portada. Papel-2: la portada es tinta
+    y «Qué pasa con tu plata», que viene después, es papel. La tarjeta de
+    contacto va al revés, en papel.
+  */
+  .who { background: var(--papel-2); padding: var(--s-9) 0; }
+  .who-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-7);
+  }
+  .who-item { max-width: 47ch; }
+  .who-item :global(.badge) { margin-bottom: var(--s-3); }
+  .who-item h3 {
+    font-size: var(--t-h3-m);
+    font-weight: 600;
+    line-height: var(--lh-h3);
+    margin-bottom: var(--s-2);
+  }
+  .who-item p { color: var(--ink-mute); }
+  .who-item strong { color: var(--ink); font-weight: 600; }
+  /* Las banderas, solapadas en fila: el recuento se ve sin leerse. 32 px para
+     que la fila tenga el peso de las insignias de al lado; trece, solapadas
+     12 px, miden 272, y caben en la columna a cualquier ancho. El anillo es
+     el fondo de la sección, que las separa sin dibujar un borde. */
+  .who-banderas { display: flex; margin-bottom: var(--s-3); padding-left: 12px; }
+  .who-banderas :global(.bandera) { margin-left: -12px; box-shadow: 0 0 0 2px var(--papel-2); border-radius: 50%; }
+  .who-mas {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-1);
+    min-height: 44px;
+    margin-top: var(--s-1);
+    color: var(--verde-deep);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .who-mas:hover { text-decoration: underline; text-underline-offset: 4px; }
 
   .contact-card {
-    background: var(--papel-2);
+    max-width: 560px;
+    margin: var(--s-8) auto 0;
+    background: var(--papel);
     border: 1px solid var(--line);
     border-radius: var(--r-3);
-    padding: var(--s-5);
+    padding: var(--s-6) var(--s-5);
+    text-align: center;
   }
   .contact-card h3 {
     font-size: var(--t-h3-m);
     font-weight: 600;
     margin-bottom: var(--s-2);
   }
-  .contact-card p { margin-bottom: var(--s-5); }
+  .contact-card p { color: var(--ink-mute); max-width: 44ch; margin: 0 auto var(--s-5); }
   /* La acción es `Accion.astro` desde el 2026-10-24: el par verde y de línea
      estaba copiado en seis páginas. */
   .wa-icon { width: 16px; height: 16px; }
 
   @media (min-width: 760px) {
-    .who-grid { grid-template-columns: 1.4fr 1fr; gap: var(--s-8); align-items: start; }
+    .who-list { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-7); }
   }
   @media (min-width: 900px) {
     .inner { padding-inline: var(--pad-section); }
     h2 { font-size: var(--t-h2); }
-    .item h3, .honesty-list h3, .contact-card h3 { font-size: var(--t-h3); }
+    .item h3, .honesty-list h3, .contact-card h3, .who-item h3 { font-size: var(--t-h3); }
     .item-texto :global(.badge) { margin-top: -5px; }
 
     /* El registro: la afirmación a la izquierda y su porqué al lado. */

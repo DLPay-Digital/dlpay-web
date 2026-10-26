@@ -24,11 +24,24 @@ export interface Difference {
   company: string;
 }
 
+/*
+  ── Lo que recibe una empresa (2026-10-26) ────────────────────────────────
+
+  **Lo mismo que una persona**: el dinero llega a destino en la moneda de ese
+  país (ADR-0014). Lo dijo Sebastián al responder al recorrido de primera
+  visita: lo que cambia para una empresa es el acompañamiento y las
+  condiciones por volumen, no lo que recibe. Estos textos venían de antes de
+  ADR-0014 —«le pagas en forma digital», «reciben en divisa digital», «la
+  dirección de la billetera donde quieres recibir»— y contradecían a la Home.
+
+  REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega en la moneda del
+  país de destino, igual que en el resto del sitio (ADR-0014).
+*/
 export const businessUseCases: UseCase[] = [
   {
     title: 'Pagos a proveedores en el exterior',
     emblem: 'proveedores',
-    body: 'Conviertes a la divisa que tu proveedor necesita y le pagas en forma digital, sin la cadena de bancos corresponsales ni sus horarios. Si tu proveedor sólo recibe por banco, conversémoslo antes.',
+    body: 'Le pagas a tu proveedor y el dinero llega en la moneda de su país, sin la cadena de bancos corresponsales ni sus horarios. Si tu proveedor sólo recibe por banco, conversémoslo antes.',
   },
   {
     title: 'Tesorería en moneda extranjera',
@@ -38,7 +51,7 @@ export const businessUseCases: UseCase[] = [
   {
     title: 'Pagos recurrentes al exterior',
     emblem: 'recurrentes',
-    body: 'Servicios, equipos o proveedores fijos que reciben en divisa digital. Tu ejecutivo ya conoce la operación y el ida y vuelta se acorta cada mes.',
+    body: 'Servicios, equipos o proveedores fijos en el exterior, que reciben en la moneda de su país. Tu ejecutivo ya conoce la operación y el ida y vuelta se acorta cada mes.',
   },
   {
     title: 'Cambio de divisas por volumen',
@@ -77,12 +90,14 @@ export const differences: Difference[] = [
  * `/como-funciona` tiene su «Ten esto a mano» para una persona y `/empresas` no
  * tenía equivalente. Los tres salen de material ya aprobado: los dos primeros de
  * `trust.ts` —el segundo adaptado al titular empresa— y el tercero literal del
- * `checklist` de `process.ts`.
+ * `checklist` de `process.ts`. *El tercero pedía «la dirección de la billetera
+ * donde quieres recibir» hasta el 2026-10-26; desde entonces es el mismo de una
+ * persona, porque lo que recibe una empresa es lo mismo.*
  */
 export const checklist: readonly ChecklistItem[] = [
   { icon: 'documento', text: 'Los documentos de la sociedad y de quienes la representan legalmente' },
   { icon: 'bank', text: 'Una cuenta bancaria a nombre de la empresa' },
-  { icon: 'wallet', text: 'La dirección de la billetera donde quieres recibir' },
+  { icon: 'people', text: 'Los datos de quien recibe en el país de destino' },
 ];
 
 /**
@@ -95,10 +110,12 @@ export const checklist: readonly ChecklistItem[] = [
 /**
  * Las condiciones por volumen, en UN solo sitio.
  *
- * Se publica en dos páginas —la pregunta «¿Desde qué volumen conviene?» de
+ * Se publicaba en dos páginas —la pregunta «¿Desde qué volumen conviene?» de
  * `/empresas` y el bloque «Volumen y frecuencia» de `/precio`— y por eso es una
  * constante y no dos literales: es una condición comercial, y dos copias que
- * divergen serían dos condiciones distintas publicadas a la vez.
+ * divergen serían dos condiciones distintas publicadas a la vez. *Desde el
+ * 2026-10-26 la usa sólo `/empresas`*: el bloque de `/precio` salió porque
+ * repetía su primera sección. Sigue siendo una constante, por si vuelve.
  *
  * PENDIENTE DE DECISIÓN — D6 (monto mínimo real) y D5 (transparencia del
  * spread). Y REQUIERE VALIDACIÓN DE COMPLIANCE: toca condiciones comerciales,

@@ -15,8 +15,6 @@ import Icon from '../components/Icon.astro';
 import EjeDeAlcance from '../components/EjeDeAlcance.astro';
 import Carpeta from '../components/Carpeta.astro';
 import { caveats, hinge } from '../content/scope.ts';
-import Puente from '../components/Puente.astro';
-import FiguraRiel from '../components/FiguraRiel.astro';
 import SaltoAlChat from '../components/SaltoAlChat.astro';
 import BanderasSprite from '../components/BanderasSprite.astro';
 import Bandera from '../components/Bandera.astro';
@@ -93,9 +91,15 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
       mismo.** Lo eligió Sebastián el 2026-09-25 sabiendo lo que arrastra: esta
       variante centra el titular y la bajada, que hasta hoy iban a la izquierda.
     */}
+    {/*
+      La bajada empezaba «El recorrido es el mismo cambies pesos por dólares o
+      al revés», de cuando el sitio era sólo dólares. Desde el 2026-10-26 nombra
+      las dos direcciones que tiene hoy el paso 01 —enviar a otro país o volver
+      a pesos— sin nombrar una moneda (lo aprobó Sebastián).
+    */}
     <PageHero
       title="Cómo funciona una operación"
-      lead="El recorrido es el mismo cambies pesos por dólares o al revés. La web te deja listo y una persona cierra. Acá está todo, en orden y con los tiempos reales."
+      lead="El recorrido es el mismo si envías a otro país o si vuelves a pesos. La web te deja listo y una persona cierra. Acá está todo, en orden y con los tiempos reales."
       sequence
       layout="stacked"
     >
@@ -183,48 +187,17 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
       </div>
     </section>
 
-    <section class="prep" aria-labelledby="prep-title">
-      <div class="inner">
-        <div class="prep-grid">
-          <div>
-            <h2 id="prep-title" data-enter>Ten esto a mano</h2>
-            {/*
-              **La carpeta de `/empresas`**, la misma pieza (`Carpeta.astro`) y
-              con su kit: cada cosa en su placa de 48 px. Es el mismo contenido
-              —«Ten esto a mano», lo que traes tú— y tenía que ser el mismo
-              objeto. Hasta el 2026-10-02 era una lista con iconos sueltos de
-              20 px.
-
-              **La pestaña va vacía**, como en `/confianza`: el titular está
-              justo encima y repetirlo sería decirlo dos veces. Los iconos
-              siguen saliendo del dato (`process.ts`) y no de la posición.
-            */}
-            <Carpeta fondo="papel-2" items={checklist} />
-          </div>
-
-          <div class="kyc">
-            <h2>Registro y verificación</h2>
-            <p>
-              Antes de tu primera operación pedimos registro y verificación de identidad,
-              a personas y a empresas. Es un requisito de seguridad y cumplimiento, y es
-              lo que permite mover dinero con un banco de por medio.
-            </p>
-            <p class="note">
-              El registro se hace en la plataforma de DLPay. Si tienes dudas antes de
-              empezar, escríbenos y te acompañamos.
-            </p>
-            <div class="kyc-actions">
-              <Accion variante="linea" href={platform.registerUrl}>Crear mi cuenta</Accion>
-              <Accion variante="linea" href={wa} target="_blank" rel="noopener">
-                <Icon name="whatsapp" class="wa-icon" />
-                Preguntar primero
-              </Accion>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
+    {/*
+      **«Hasta dónde llega nuestra operación» va pegada al paso 06** desde el
+      2026-10-26: es el final del recorrido, y antes llegaba después de «Ten
+      esto a mano», como si fuera otro tema (recorrido de primera visita; lo
+      aprobó Sebastián). Y salió de esta página **el puente al artículo de
+      activos tokenizados**, que era su última banda: su botón era el primer
+      verde de la página, antes de «Cotizar ahora», y llevaba el dólar digital
+      —que es el riel, no el mensaje (CLAUDE.md §1)— al cierre de la página que
+      explica el producto. El artículo sigue en el blog, con su figura y su
+      titular firmado.
+    */}
     <section class="scope" aria-labelledby="scope-title">
       <div class="inner">
         <h2 id="scope-title">Hasta dónde llega nuestra operación</h2>
@@ -259,46 +232,49 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
       </div>
     </section>
 
-    {/*
-      El puente al artículo de activos tokenizados. Cierra un circuito que
-      estaba abierto por un lado: la página usaba «dólar digital» CUATRO veces
-      en su `<main>` y no lo explicaba ninguna, su casa está escrita en
-      `content/glossary.ts` —que manda ese término a este artículo— y el enlace
-      de vuelta ya existía, porque el artículo termina mandando acá.
+    <section class="prep" aria-labelledby="prep-title">
+      <div class="inner">
+        <div class="prep-grid">
+          <div>
+            <h2 id="prep-title" data-enter>Ten esto a mano</h2>
+            {/*
+              **La carpeta de `/empresas`**, la misma pieza (`Carpeta.astro`) y
+              con su kit: cada cosa en su placa de 48 px. Es el mismo contenido
+              —«Ten esto a mano», lo que traes tú— y tenía que ser el mismo
+              objeto. Hasta el 2026-10-02 era una lista con iconos sueltos de
+              20 px.
 
-      **Tras ADR-0013 el circuito sigue cerrado y por el mismo sitio.** Las
-      cuatro menciones pasaron a «la divisa» y la entrada del glosario pasó a
-      «Divisa» —a secas desde el 2026-10-22—, y **dejó de apuntar a este
-      artículo**: ahora lleva a `/como-funciona`, porque explica la palabra y no
-      el riel. Quien busca el riel llega acá por este puente y por la entrada
-      «Stablecoin». Lo único que NO se
-      tocó es el titular del puente, que nombra el dólar: lleva firma de
-      Compliance del 2026-09-22 y es cierto del artículo al que lleva.
+              **La pestaña va vacía**, como en `/confianza`: el titular está
+              justo encima y repetirlo sería decirlo dos veces. Los iconos
+              siguen saliendo del dato (`process.ts`) y no de la posición.
+            */}
+            <Carpeta fondo="papel" items={checklist} />
+          </div>
 
-      Y con esto la página deja de ser la única de contenido del sitio sin un
-      solo enlace interno: hasta hoy su `<main>` salía a tres sitios —la app de
-      registro, WhatsApp y el cotizador— y a ninguna otra página.
+          <div class="kyc">
+            <h2>Registro y verificación</h2>
+            <p>
+              Antes de tu primera operación pedimos registro y verificación de identidad,
+              a personas y a empresas. Es un requisito de seguridad y cumplimiento, y es
+              lo que permite mover dinero con un banco de por medio.
+            </p>
+            <p class="note">
+              El registro se hace en la plataforma de DLPay. Si tienes dudas antes de
+              empezar, escríbenos y te acompañamos.
+            </p>
+            <div class="kyc-actions">
+              <Accion variante="linea" href={platform.registerUrl}>Crear mi cuenta</Accion>
+              <Accion variante="linea" href={wa} target="_blank" rel="noopener">
+                <Icon name="whatsapp" class="wa-icon" />
+                Preguntar primero
+              </Accion>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      **El rótulo es `hinge.from`, no una copia.** Es la misma frase que la
-      bisagra del eje de arriba, y viene del mismo sitio: `content/scope.ts`. Es
-      la tercera vez que aparece en la página —el paso 06, la bisagra y acá— y
-      las tres son deliberadas, pero ninguna se puede desincronizar de las otras.
-      La figura, en cambio, SÍ es una copia del artículo: eso es cruzar de
-      página, y ahí la regla es la contraria. Ver la cabecera de `FiguraRiel`.
 
-      El titular ya tenía firma: Sebastián lo aprobó como Compliance el
-      2026-09-22 junto con la figura, y lleva su marcador en el `.md` del
-      artículo. Lo único nuevo es la etiqueta del botón.
-    */}
-    <Puente
-      rotulo={hinge.from}
-      titulo="El peso no está tokenizado; el dólar digital sí"
-      cuerpo="Es el mismo dólar existiendo como unidades sobre una red."
-      href="/blog/activos-tokenizados-que-son-y-quien-los-construye/"
-      cta="Leer el artículo"
-    >
-      <FiguraRiel />
-    </Puente>
 
     <section class="close" aria-labelledby="close-title">
       <div class="inner">
@@ -350,7 +326,11 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
   /* El relleno superior absorbe el saliente: sin él, el primer titular quedaría
      debajo del teléfono. */
   .detail { background: var(--papel-2); padding: calc(var(--montaje) + var(--s-8)) 0 var(--s-9); }
-  .head { max-width: 46ch; margin-bottom: var(--s-7); }
+  /* Centrada desde el 2026-10-26 (Design System §4.3.3): la cabecera de una
+     sección va centrada sobre su contenido. «Ten esto a mano» no: son dos
+     columnas, la carpeta y el registro, y cada texto va con la suya. */
+  .head { max-width: 46ch; margin: 0 auto var(--s-7); text-align: center; }
+  .scope h2 { text-align: center; }
   h2 {
     font-size: var(--t-h2-m);
     font-weight: 700;
@@ -447,7 +427,10 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
     color: var(--ink-mute);
   }
 
-  .prep { background: var(--papel); padding: var(--s-9) 0; }
+  /* Papel-2 desde el 2026-10-26: «Hasta dónde llega» pasó a ir encima y es
+     papel, así que la carpeta va al revés, en papel (su `fondo` es el del
+     objeto, el contrario de la banda). */
+  .prep { background: var(--papel-2); padding: var(--s-9) 0; }
   .prep-grid { display: grid; gap: var(--s-8); }
   /* 24 px entre el titular y la pestaña: los 12 del margen del h2 se funden
      con éstos. */
@@ -460,9 +443,10 @@ const banderaDestino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
      estaba copiado en seis páginas. */
   .wa-icon { width: 15px; height: 15px; }
 
-  /* El límite del servicio, dicho antes de que el usuario opere. Va sobre papel-2
-     y con un borde de aviso: es información que protege, no letra chica. */
-  .scope { background: var(--papel-2); padding: var(--s-9) 0; }
+  /* El límite del servicio, dicho antes de que el usuario opere, y con un borde
+     de aviso: es información que protege, no letra chica. Sobre papel desde el
+     2026-10-26, cuando pasó a ir justo después de los pasos, que son papel-2. */
+  .scope { background: var(--papel); padding: var(--s-9) 0; }
 
   /*
     La banda de cierre va sobre papel (Design System §6.3, revisado el

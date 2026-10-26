@@ -71,18 +71,20 @@ const waPlain = contact.whatsappUrl(
   <Header />
   <main id="main">
     {/*
-      REQUIERE VALIDACIÓN DE COMPLIANCE — "el mejor precio" es un claim
-      comparativo sobre el precio, y los claims de precio, spread y condiciones
-      comerciales los aprueba DLPay, no ingeniería (CLAUDE.md §3). Se cruza
-      además con D5, la transparencia del spread, que sigue abierta. Copy pedido
-      por Sebastián el 2026-09-10; queda publicado bajo esa decisión.
+      **El titular, desde el 2026-10-26: «Pagos al exterior para tu empresa,
+      con un ejecutivo asignado».** Decía «La misma mesa, el mejor precio»: «la
+      mesa» es una palabra del equipo, y «el mejor precio» era un claim
+      comparativo que llevaba `REQUIERE VALIDACIÓN DE COMPLIANCE` y nadie había
+      firmado. El nuevo describe la página con lo que ella ya afirma —«un
+      ejecutivo asignado que conoce tu operación»— y no compara con nadie (lo
+      aprobó Sebastián; recorrido de primera visita).
 
       La bajada, en cambio, NO abre claim nuevo: dice lo mismo que ya afirma
       `/tarifas` —un solo precio con el spread dentro y ninguna comisión que se
       sume al final—, así que las dos páginas se sostienen entre sí.
     */}
     <PageHero
-      title="La misma mesa, el mejor precio"
+      title="Pagos al exterior para tu empresa, con un ejecutivo asignado"
       lead="Un solo precio, con el spread ya incluido. Sin comisiones que aparezcan después."
       titleSize="hero"
       sequence
@@ -239,11 +241,13 @@ const waPlain = contact.whatsappUrl(
     margin: 0 auto;
     padding: 0 var(--pad-section-m);
   }
-  /* Centrado de las dos cabeceras con `.head` —«Para qué lo usan» y «Qué cambia
+  /* Centrado de las cabeceras con `.head` —«Para qué lo usan» y «Qué cambia
      respecto de una persona»—, titular y bajada. `margin-inline: auto` es lo que
      centra la CAJA: con sólo `text-align`, el `max-width` la dejaría pegada a la
-     izquierda. Las otras dos cabeceras de la página no llevan esta clase y siguen
-     alineadas a la izquierda. */
+     izquierda. Desde el 2026-10-26 la regla es del sitio (Design System §4.3.3) y
+     se centra también «Hasta dónde llega nuestra parte», abajo. «Cómo
+     empezamos» no: es una composición a dos columnas, el titular junto a la
+     carpeta, y su texto va con su columna. */
   .head { max-width: 46ch; margin: 0 auto var(--s-7); text-align: center; }
   h2 {
     font-size: var(--t-h2-m);
@@ -315,8 +319,9 @@ const waPlain = contact.whatsappUrl(
     font-weight: 700;
     line-height: var(--lh-h2);
     letter-spacing: var(--ls-h2);
-    margin-bottom: var(--s-7);
+    margin: 0 auto var(--s-7);
     max-width: 24ch;
+    text-align: center;
   }
 
   /*
