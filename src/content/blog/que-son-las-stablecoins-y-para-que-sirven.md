@@ -24,7 +24,7 @@ portada:
 # NO es un pictograma, y la decisión está razonada en el Design System §6.1
 # («El techo de la enmienda»). En corto: para este asunto no hay figura posible.
 # La ficha de anillo con el canto dividido en unidades, que sería el dibujo
-# obvio, se publicó el 2026-09-28 en `FiguraRiel.astro`, dentro de
+# obvio, se publicó el 2026-09-28 en `FiguraRiel.astro` (borrado el 2026-10-26), dentro de
 # `/como-funciona`, y allí su rótulo dice «dólar digital»: usarla acá diría
 # «stablecoin = el dólar digital de DLPay», en el artículo cuya frase central es
 # «no emitimos stablecoins». Y lo único que distingue al

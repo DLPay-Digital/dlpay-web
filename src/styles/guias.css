@@ -7,7 +7,8 @@
   ── Por qué un archivo y no `:global` en la plantilla ──────────────────────
 
   Las figuras viven en el Markdown como HTML crudo —los artículos son `.md`,
-  no `.mdx`, y no pueden usar componentes; ver `FiguraRiel.astro`—, así que sus
+  no `.mdx`, y no pueden usar componentes; lo explicaba `FiguraRiel.astro`, borrado
+  el 2026-10-26—, así que sus
   estilos tienen que ser globales. La figura del riel ya los tenía dentro de
   la plantilla, con `:global`, y se quedan allí. Con tres figuras más, la
   plantilla pasaba a ser sobre todo estilos de contenido: van acá, cada uno

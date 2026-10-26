@@ -4133,3 +4133,29 @@ vive sobre todo en el alto contraste de Windows.
 **Y queda anotado en `phase-4` §6** lo que esto no arregla: el botón del menú mide **28×44 px** donde
 el §10 pide 44. Pasa el mínimo de WCAG 2.2 (24), y ensancharlo movería la cabecera en el modo normal,
 así que no entra aquí.
+
+---
+
+## `orden-` · el recorrido de primera visita  ·  *2026-10-26*
+
+Integrada en `ff26955` y `045cc41`. Base `b28f2de`. Las cabeceras de sección centradas, `/precio`,
+`/como-funciona` y `/confianza` ordenadas, lo que recibe una empresa, y fuera cuatro textos
+internos.
+
+**Lo que encontré yo y la entrega no traía:** con el titular nuevo de `/empresas` deja de
+publicarse **«el mejor precio»**, uno de los cuatro claims que esperaban firma de Compliance.
+Tachado en `auditoria-preproduccion.md` y fuera de la lista de `CLAUDE.md` §0.1, donde quedan tres.
+
+**Y una cifra que yo había escrito mal** en la entrega `tipo-`: el contorno de «Acción de página»
+mide 3,06:1 sobre `--papel` y 3,00:1 sobre `--papel-2`, no al revés. La medida era correcta; le
+puse el token equivocado. Corregido en el §8.1.
+
+### Lo que Sebastián decidió el mismo día, y cierra tres cosas
+
+| | decisión |
+|---|---|
+| **El prototipo de la Home reordenada** | **No se aplica. La Home se queda tal cual.** El prototipo y su prompt quedan en `Claude outputs/` sin usar. No hace falta volver sobre el hallazgo de los rótulos del globo, que era su condición |
+| **El globo** | **Se queda como está.** Sus ocho rótulos nombran países que no son destinos, y el desajuste se acepta mientras viva en su propia banda, donde el titular lo acota. Escrito en el Design System §8.1 |
+| **`FiguraMonto.astro` y `FiguraRiel.astro`** | **Borradas**, por decisión suya. Quedan en el historial, y sus citas en comentarios se fecharon en vez de borrarse, como se hizo con `UseCaseFigure` |
+| **«La misma mesa, otro tamaño de operación»** | **Se queda** en la banda de empresas de la Home. Es la única frase del sitio que usa «la mesa» desde que salió del titular de `/empresas`; acá no acompaña a ningún claim. Escrito en `Business.astro` |
+| **La descripción del blog** | Reformulada: el menú y la `description` del índice hablaban sólo del dólar. **Sin usar «remesa»**, por el enfoque del 2026-10-21 |
