@@ -3,9 +3,9 @@
  * COTIZADOR — el elemento central de la web.
  * Especificación: docs/design-system/cotizador-spec.md
  *
- * Flujo: qué quieres hacer -> a dónde -> cuánto -> cuánto llega -> precio
- * referencial -> WhatsApp con todo prellenado -> un ejecutivo confirma el
- * precio final y coordina el destino.
+ * Flujo: cuánto -> a dónde (o qué divisa tienes) -> cuánto llega -> lo que
+ * cobramos y el precio referencial -> WhatsApp con todo prellenado -> un
+ * ejecutivo confirma el precio final y coordina el destino.
  *
  * Lo que NO hace: ejecutar una operación, bloquear un precio, prometer un
  * precio final. El tipo `Quote` lo impide (`isReferential: true` es literal).
@@ -52,6 +52,24 @@
  *
  * Cada destino trae su tarifa ya resuelta en pesos (`data-tarifas`): la isla
  * no importa el tarifario ni ve de qué monto en dólares sale el costo de envío.
+ *
+ * ── Compacto, desde el 2026-10-28 (Cowork, entrega `compacto-`) ────────────
+ *
+ * Sebastián: «que el diseño de nuestro cotizador se vea elegante y sin tanta
+ * palabrería», con la eficiencia del de Global66 y no su dibujo. Tres cambios,
+ * los tres suyos:
+ *
+ * 1. **Sin el interruptor «Enviar / Pasar a pesos» ni «¿A dónde envías?».** La
+ *    dirección se decide desde las divisas: la ficha de cada monto es el
+ *    selector, y un botón junto al precio da vuelta la operación. La decisión
+ *    2 de arriba, del 2026-10-22, queda reemplazada.
+ * 2. **Lo que cobramos, en una línea**: «Cobramos CLP 19.495 · Ver detalle».
+ *    El detalle —costo de envío, comisión y monto a convertir— se despliega en
+ *    el tramo (eligió el plegable contra un diálogo).
+ * 3. **«Sin comisiones ocultas.» se queda a la vista**, al pie del tramo.
+ *
+ * La tarjeta baja de 733 a 545 px a 390, y la cifra que llega entra en la
+ * primera pantalla de un iPhone de 390×844.
  */
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import {
@@ -148,171 +166,25 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
   <h2 class="sr-only" id="quoter-title">Cotizador de envíos y divisas</h2>
 
   {/*
-    ── El interruptor: el envío manda, la vuelta a pesos se queda chica ──────
+    ── La dirección la deciden las divisas (2026-10-28) ──────────────────────
 
-    Hasta el 2026-10-22 eran dos botones a lo ancho de la tarjeta, rellenos de
-    tinta el elegido: lo primero que se veía era una elección entre dos cosas
-    del mismo peso. Desde ADR-0014 no lo son —el envío es el servicio, la vuelta
-    es la otra mitad de una casa de cambio— y Sebastián pidió que la vuelta
-    siguiera pero más discreta.
+    Hasta el 2026-10-27 había arriba un interruptor «Enviar / Pasar a pesos» y
+    debajo «¿A dónde envías?», un selector a lo ancho. Sebastián los retiró:
+    «dejando a libre disposición lo que quiera hacer el cliente cambiando desde
+    las divisas». **Ahora cada monto lleva su ficha de moneda, y la ficha es el
+    selector**, como en Global66:
 
-    **Sigue siendo un grupo de dos radios**, que es lo que es: una elección
-    entre dos, no pestañas que cambian de panel. El área que se pulsa es la
-    `label` entera, de 44 px de alto (DS §10); lo que se ve más chico es la
-    ficha de dentro.
+    - la de arriba dice qué pones: pesos, o la divisa que tienes;
+    - la de abajo dice a dónde llega: un destino, o Chile en pesos;
+    - elegir una divisa en una pone la otra en pesos, porque un lado es siempre
+      el peso chileno;
+    - el botón de las flechas, junto al precio, da vuelta la operación.
 
-    «Enviar» se lee completo como «Enviar al extranjero»: el resto va en
-    `sr-only` porque a 320 px las dos opciones enteras no caben en una fila, y
-    a la vista la pregunta de abajo, «¿A dónde envías?», ya lo completa.
+    **La de abajo elige un país y enseña un código.** El dólar llega a tres
+    destinos y cuesta distinto en cada uno, así que la lista es de países; la
+    ficha enseña la bandera, que los distingue, y el código, que es la unidad de
+    la cifra. El país lo dice además la nota del riel, más abajo, con palabras.
   */}
-  <fieldset class="modo">
-    <legend class="sr-only">¿Qué quieres hacer?</legend>
-    <label class="modo-op">
-      <input type="radio" name="intent" value="to_foreign" checked />
-      <span>Enviar<span class="sr-only"> al extranjero</span></span>
-    </label>
-    <label class="modo-op">
-      <input type="radio" name="intent" value="to_clp" />
-      <span>Pasar a pesos</span>
-    </label>
-  </fieldset>
-
-  {/*
-    ── A dónde: el país, con su bandera, y la moneda sale sola ──────────────
-
-    Era «¿A qué moneda?» con doce opciones, y desde la entrega `cotizador-`
-    fue «¿A dónde envías?» con un `<select>` nativo de trece países. **Desde la
-    entrega `wise-` (2026-10-22) es un selector propio, con bandera y buscador**,
-    como el de Wise: una lista del sistema no puede dibujar una bandera, y la
-    bandera es lo que hace que el destino se encuentre de un vistazo.
-
-    **Cómo se usa sin ratón**, y por eso es más largo que un `<select>`:
-    - el botón dice lo elegido y abre el panel (`aria-haspopup="listbox"`);
-    - en el panel el foco va al buscador, que es un `combobox` y gobierna la
-      lista con `aria-activedescendant`: las flechas mueven, Intro elige,
-      Escape cierra y devuelve el foco al botón;
-    - escribir filtra por país, por código y por nombre de la moneda, con o
-      sin tildes;
-    - el foco que sale del selector lo cierra.
-
-    En «Pasar a pesos» la pregunta es otra —qué divisa tienes, no a dónde va—,
-    así que se cambia de selector y no de texto. Sin JavaScript se ve el
-    primero, con Estados Unidos elegido, y el botón no abre nada: sin la isla
-    tampoco hay cálculo, igual que antes con el nativo.
-  */}
-  <div class="field" data-campo-destino>
-    <span class="label" id="destino-rot">¿A dónde envías?</span>
-    <div class="selector" data-selector="destino">
-      <button
-        type="button"
-        class="selector-boton"
-        id="destino-boton"
-        aria-haspopup="listbox"
-        aria-expanded="false"
-        aria-controls="destino-panel"
-        aria-labelledby="destino-rot destino-boton"
-        data-boton
-      >
-        <span class="selector-actual" data-actual>
-          <Bandera code={banderaDeDestino(DEFAULT_DESTINO) ?? 'us'} size={24} />
-          <span class="selector-nombre">{DEFAULT_DESTINO}</span>
-          <span class="selector-codigo num">{DEFAULT_CURRENCY}</span>
-        </span>
-        <Icon name="chevron" size={20} class="selector-ico" />
-      </button>
-      <div class="selector-panel" id="destino-panel" data-panel hidden>
-        <input
-          class="selector-buscar"
-          type="text"
-          role="combobox"
-          aria-label="Busca un país o una moneda"
-          aria-autocomplete="list"
-          aria-expanded="true"
-          aria-controls="destino-lista"
-          autocomplete="off"
-          spellcheck="false"
-          placeholder="Busca un país o una moneda"
-          data-buscar
-        />
-        <ul class="selector-lista" role="listbox" id="destino-lista" aria-label="Destinos" data-lista>
-          {lugares.map((l, i) => (
-            <li
-              role="option"
-              id={`dst-${i}`}
-              class="selector-op"
-              aria-selected={l.destino === DEFAULT_DESTINO ? 'true' : 'false'}
-              data-valor={l.destino}
-              data-c={l.code}
-              data-texto={`${l.destino} ${l.code} ${currencyInfo(l.code).name} ${currencyInfo(l.code).plural}`}
-            >
-              <Bandera code={banderaDeDestino(l.destino) ?? 'us'} size={24} />
-              <span class="op-nombre">{l.destino}</span>
-              <span class="op-codigo num">{l.code}</span>
-            </li>
-          ))}
-        </ul>
-        <p class="selector-vacio" data-vacio hidden>Ningún destino coincide.</p>
-        <p class="sr-only" role="status" data-estado data-uno="destino" data-varios="destinos" data-ninguno="Ningún destino coincide."></p>
-      </div>
-    </div>
-  </div>
-
-  <div class="field" data-campo-divisa hidden>
-    <span class="label" id="divisa-rot">¿Qué divisa tienes?</span>
-    <div class="selector" data-selector="divisa">
-      <button
-        type="button"
-        class="selector-boton"
-        id="divisa-boton"
-        aria-haspopup="listbox"
-        aria-expanded="false"
-        aria-controls="divisa-panel"
-        aria-labelledby="divisa-rot divisa-boton"
-        data-boton
-      >
-        <span class="selector-actual" data-actual>
-          <Bandera code={banderaDeDivisa(DEFAULT_CURRENCY) ?? 'us'} size={24} />
-          <span class="selector-nombre">{mayuscula(currencyInfo(DEFAULT_CURRENCY).name)}</span>
-          <span class="selector-codigo num">{DEFAULT_CURRENCY}</span>
-        </span>
-        <Icon name="chevron" size={20} class="selector-ico" />
-      </button>
-      <div class="selector-panel" id="divisa-panel" data-panel hidden>
-        <input
-          class="selector-buscar"
-          type="text"
-          role="combobox"
-          aria-label="Busca una moneda"
-          aria-autocomplete="list"
-          aria-expanded="true"
-          aria-controls="divisa-lista"
-          autocomplete="off"
-          spellcheck="false"
-          placeholder="Busca una moneda"
-          data-buscar
-        />
-        <ul class="selector-lista" role="listbox" id="divisa-lista" aria-label="Divisas" data-lista>
-          {divisas.map((d, i) => (
-            <li
-              role="option"
-              id={`dvs-${i}`}
-              class="selector-op"
-              aria-selected={d.code === DEFAULT_CURRENCY ? 'true' : 'false'}
-              data-valor={d.code}
-              data-c={d.code}
-              data-texto={`${d.name} ${d.plural} ${d.code} ${d.destinations.join(' ')}`}
-            >
-              <Bandera code={banderaDeDivisa(d.code) ?? 'us'} size={24} />
-              <span class="op-nombre">{mayuscula(d.name)}</span>
-              <span class="op-codigo num">{d.code}</span>
-            </li>
-          ))}
-        </ul>
-        <p class="selector-vacio" data-vacio hidden>Ninguna moneda coincide.</p>
-        <p class="sr-only" role="status" data-estado data-uno="moneda" data-varios="monedas" data-ninguno="Ninguna moneda coincide."></p>
-      </div>
-    </div>
-  </div>
 
   {/* Las banderas de las fichas de moneda, para que la isla las copie: el
       dibujo se escribe una vez, en el servidor, y no viaja en el JavaScript. */}
@@ -323,24 +195,12 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
   {/*
     ── Los dos montos y, entre ellos, el recorrido ───────────────────────────
 
-    Cada monto es una caja con su etiqueta y su moneda arriba, en una fila, y la
-    cifra debajo a todo el ancho: así la cifra gana el espacio de la ficha, que
-    a 320 px es lo que decide si «2.000.000» cabe. La moneda se lee también con
-    lector de pantalla, porque el campo la tiene en `aria-describedby`; antes
-    el campo decía «Conviertes, 2.000.000» y no en qué.
-
-    Entre las dos corre el tramo verde: lo nuestro, de punta a punta desde
-    ADR-0014 (DS §6.2). Sobre él, el punto —la unidad de valor, la misma que el
-    precio cotiza: «1 USD»— marca dónde está el precio, y el precio y la nota
-    del spread van al lado, que es donde pasan: entre lo que pones y lo que
-    llega. **No estrena ninguna marca**: son las dos del §6.2 con el
-    significado que ya tienen.
-
-    **Lo que esto cambia del spec §2:** el precio referencial deja de ser la
-    segunda cifra grande de la tarjeta, al pie, con su propia fila. La cifra que
-    responde la pregunta es la que llega; el precio es la explicación de esa
-    cifra y se lee junto a ella. Sigue diciendo «Precio referencial» con esas
-    dos palabras (spec §48).
+    Cada monto es una caja con su etiqueta y su ficha arriba, en una fila, y la
+    cifra debajo a todo el ancho: a 320 px es lo que decide si «2.000.000»
+    cabe. Entre las dos corre el tramo verde —lo nuestro, de punta a punta
+    desde ADR-0014 (DS §6.2)—, y sobre él el punto marca el precio. **No
+    estrena ninguna marca**: el botón de las flechas es un control, no una
+    marca, y por eso va al lado del precio y no sobre el tramo.
 
     REQUIERE VALIDACIÓN DE COMPLIANCE — «Envías» y «Llega aprox.» afirman lo
     mismo que la nota del riel, más abajo: que el dinero llega a destino. No
@@ -350,7 +210,73 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     <div class="monto">
       <div class="monto-cabeza">
         <label class="monto-label" for="give-input" data-label-give>Envías</label>
-        <span class="moneda num" id="cur-give"><Bandera code="cl" size={16} /><span data-cur-give>CLP</span></span>
+        <div class="selector" data-selector="give">
+          <button
+            type="button"
+            class="moneda"
+            id="give-boton"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="give-panel"
+            aria-label="Moneda que envías: peso chileno, CLP"
+            data-boton
+          >
+            <span class="moneda-actual" data-actual>
+              <Bandera code="cl" size={16} />
+              <span class="selector-codigo num" id="cur-give" data-cur-give>CLP</span>
+            </span>
+            <Icon name="chevron" size={14} class="selector-ico" />
+          </button>
+          <div class="selector-panel" id="give-panel" data-panel hidden>
+            <input
+              class="selector-buscar"
+              type="text"
+              role="combobox"
+              aria-label="Busca una moneda"
+              aria-autocomplete="list"
+              aria-expanded="true"
+              aria-controls="give-lista"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="Busca una moneda"
+              data-buscar
+            />
+            <ul class="selector-lista" role="listbox" id="give-lista" aria-label="Lo que pones" data-lista>
+              <li
+                role="option"
+                id="giv-clp"
+                class="selector-op"
+                aria-selected="true"
+                data-valor="CLP"
+                data-c="CLP"
+                data-nombre="peso chileno"
+                data-texto="Peso chileno CLP pesos chilenos Chile"
+              >
+                <Bandera code="cl" size={24} />
+                <span class="op-nombre">Peso chileno</span>
+                <span class="op-codigo num">CLP</span>
+              </li>
+              {divisas.map((d, i) => (
+                <li
+                  role="option"
+                  id={`giv-${i}`}
+                  class:list={['selector-op', i === 0 && 'op-otra']}
+                  aria-selected="false"
+                  data-valor={d.code}
+                  data-c={d.code}
+                  data-nombre={d.name}
+                  data-texto={`${d.name} ${d.plural} ${d.code} ${d.destinations.join(' ')}`}
+                >
+                  <Bandera code={banderaDeDivisa(d.code) ?? 'us'} size={24} />
+                  <span class="op-nombre">{mayuscula(d.name)}</span>
+                  <span class="op-codigo num">{d.code}</span>
+                </li>
+              ))}
+            </ul>
+            <p class="selector-vacio" data-vacio hidden>Ninguna moneda coincide.</p>
+            <p class="sr-only" role="status" data-estado data-uno="moneda" data-varios="monedas" data-ninguno="Ninguna moneda coincide."></p>
+          </div>
+        </div>
       </div>
       <input
         id="give-input"
@@ -365,56 +291,57 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 
     <div class="tramo" data-tramo>
       {/*
-        ── Lo que se cobra, en el tramo (2026-10-27) ─────────────────────────
+        ── Lo que cobramos, en una línea, y el detalle a un toque (2026-10-28) ─
 
-        Dos líneas y el subtotal, en el orden en que le pasan al dinero. Es una
-        `dl` porque son pares de nombre y cifra, y así la anuncia un lector de
-        pantalla. Las cifras van en pesos y con su código, «CLP», como manda el
-        DS §5 donde hay una divisa concreta; «$» queda para las cifras de
-        ejemplo.
+        Las tres filas del tarifario —costo de envío, comisión y monto a
+        convertir— llenaban el tramo. Ahora el tramo dice el total, «Cobramos
+        CLP 19.495», que es la cifra que un cliente compara, y el detalle se abre
+        desde esa misma línea. **El total no se esconde**: lo que se pliega es de
+        qué está hecho. «Sin comisiones ocultas» sigue a la vista.
 
-        **El porcentaje se escribe junto a la comisión**: es lo que cambia con
-        el destino y con el monto, y lo que un cliente compara. El tramo no se
-        nombra acá: se ve en `/tarifas`.
-
-        De vuelta a pesos la isla mueve el precio arriba y el subtotal al
-        principio de la lista —«En pesos»—, porque ahí la conversión va primero.
-
-        REQUIERE VALIDACIÓN DE COMPLIANCE — «Costo de envío», «Comisión de
-        cambio» y sus cifras; y «de mercado, sin recargo».
+        REQUIERE VALIDACIÓN DE COMPLIANCE — «Cobramos», «Costo de envío»,
+        «Comisión de cambio» y sus cifras; y «sin recargo».
       */}
-      <dl class="cargos" data-cargos>
-        <div class="cargo" data-cargo="envio">
-          <dt>Costo de envío</dt>
-          <dd class="num" data-c-envio>− CLP {formatCLP(cargosIniciales.envio)}</dd>
-        </div>
-        <div class="cargo" data-cargo="comision">
-          <dt>Comisión de cambio <span class="pct num" data-c-pct>{formatComision(cargosIniciales.comisionPb)}</span></dt>
-          <dd class="num" data-c-comision>− CLP {formatCLP(cargosIniciales.comision)}</dd>
-        </div>
-        <div class="cargo subtotal" data-cargo="subtotal">
-          <dt data-c-sub-rot>Monto a convertir</dt>
-          <dd class="num" data-c-sub>CLP {formatCLP(cargosIniciales.aConvertir)}</dd>
-        </div>
-      </dl>
-      <p class="tramo-precio" data-precio>
-        {/*
-          «Precio referencial», con esas dos palabras (spec §48), y desde el
-          2026-10-27 «de mercado, sin recargo»: es la tasa, y el cobro va
-          arriba, aparte.
-        */}
-        <span class="tramo-rot">Precio referencial de mercado, sin recargo</span>
-        {/*
-          **La forma del precio cambió el 2026-10-22.** Era «919,70 CLP por
-          dólar», con la unidad escrita a mano y luego derivada del catálogo; en
-          las monedas débiles daba «0,23 CLP por peso colombiano». Ahora sale de
-          `precioLegible`, la misma función que escribe el mensaje de WhatsApp.
-        */}
-        <span class="tramo-valor num" data-rate-display>{precioLegible(price.rate, DEFAULT_CURRENCY)}</span>
-      </p>
-      {/* Decía «Sin comisiones ocultas: el precio ya incluye el spread.» hasta
-          el 2026-10-27. La segunda mitad salió por pedido de Sebastián: con el
-          tarifario el precio no incluye nada, y lo que cobramos está arriba. */}
+      <details class="cobro" data-cobro>
+        <summary class="cobro-fila">
+          <span class="cobro-in">
+            <span class="cobro-total"><span class="cobro-rot">Cobramos</span> <span class="num" data-c-total>CLP {formatCLP(cargosIniciales.envio + cargosIniciales.comision)}</span></span>
+            <span class="cobro-ver">Ver detalle<Icon name="chevron" size={14} class="cobro-ico" /></span>
+          </span>
+        </summary>
+        <dl class="cargos" data-cargos>
+          <div class="cargo" data-cargo="envio">
+            <dt>Costo de envío</dt>
+            <dd class="num" data-c-envio>− CLP {formatCLP(cargosIniciales.envio)}</dd>
+          </div>
+          <div class="cargo" data-cargo="comision">
+            <dt>Comisión de cambio <span class="pct num" data-c-pct>{formatComision(cargosIniciales.comisionPb)}</span></dt>
+            <dd class="num" data-c-comision>− CLP {formatCLP(cargosIniciales.comision)}</dd>
+          </div>
+          <div class="cargo subtotal" data-cargo="subtotal">
+            <dt data-c-sub-rot>Monto a convertir</dt>
+            <dd class="num" data-c-sub>CLP {formatCLP(cargosIniciales.aConvertir)}</dd>
+          </div>
+        </dl>
+      </details>
+      <div class="tramo-fila" data-precio>
+        <p class="tramo-precio">
+          {/* «Precio referencial», con esas dos palabras (spec §48), y «sin
+              recargo»: el cobro va aparte, en la línea de arriba. «de mercado»
+              pasa al detalle. */}
+          <span class="tramo-rot">Precio referencial, sin recargo</span>
+          <span class="tramo-valor num" data-rate-display>{precioLegible(price.rate, DEFAULT_CURRENCY)}</span>
+        </p>
+        <button
+          type="button"
+          class="vuelta"
+          aria-label={`Cambiar a pasar ${currencyInfo(DEFAULT_CURRENCY).plural} a pesos`}
+          title={`Cambiar a pasar ${currencyInfo(DEFAULT_CURRENCY).plural} a pesos`}
+          data-vuelta
+        >
+          <Icon name="intercambiar" size={20} />
+        </button>
+      </div>
       <p class="tramo-nota" id="quoter-note">
         <strong>Sin comisiones ocultas.</strong>
       </p>
@@ -423,7 +350,73 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     <div class="monto monto-llega">
       <div class="monto-cabeza">
         <label class="monto-label" for="get-input" data-label-get>Llega aprox.</label>
-        <span class="moneda num" id="cur-get"><Bandera code={banderaDeDestino(DEFAULT_DESTINO) ?? 'us'} size={16} /><span data-cur-get>USD</span></span>
+        <div class="selector" data-selector="get">
+          <button
+            type="button"
+            class="moneda"
+            id="get-boton"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="get-panel"
+            aria-label={`Destino: ${DEFAULT_DESTINO}, ${DEFAULT_CURRENCY}`}
+            data-boton
+          >
+            <span class="moneda-actual" data-actual>
+              <Bandera code={banderaDeDestino(DEFAULT_DESTINO) ?? 'us'} size={16} />
+              <span class="selector-codigo num" id="cur-get" data-cur-get>{DEFAULT_CURRENCY}</span>
+            </span>
+            <Icon name="chevron" size={14} class="selector-ico" />
+          </button>
+          <div class="selector-panel" id="get-panel" data-panel hidden>
+            <input
+              class="selector-buscar"
+              type="text"
+              role="combobox"
+              aria-label="Busca un país o una moneda"
+              aria-autocomplete="list"
+              aria-expanded="true"
+              aria-controls="get-lista"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="Busca un país o una moneda"
+              data-buscar
+            />
+            <ul class="selector-lista" role="listbox" id="get-lista" aria-label="A dónde llega" data-lista>
+              {lugares.map((l, i) => (
+                <li
+                  role="option"
+                  id={`dst-${i}`}
+                  class="selector-op"
+                  aria-selected={l.destino === DEFAULT_DESTINO ? 'true' : 'false'}
+                  data-valor={l.destino}
+                  data-c={l.code}
+                  data-nombre={l.destino}
+                  data-texto={`${l.destino} ${l.code} ${currencyInfo(l.code).name} ${currencyInfo(l.code).plural}`}
+                >
+                  <Bandera code={banderaDeDestino(l.destino) ?? 'us'} size={24} />
+                  <span class="op-nombre">{l.destino}</span>
+                  <span class="op-codigo num">{l.code}</span>
+                </li>
+              ))}
+              <li
+                role="option"
+                id="dst-clp"
+                class="selector-op op-otra"
+                aria-selected="false"
+                data-valor="Chile"
+                data-c="CLP"
+                data-nombre="Chile, en pesos"
+                data-texto="Chile pesos CLP peso chileno pasar a pesos"
+              >
+                <Bandera code="cl" size={24} />
+                <span class="op-nombre">Chile, en pesos</span>
+                <span class="op-codigo num">CLP</span>
+              </li>
+            </ul>
+            <p class="selector-vacio" data-vacio hidden>Ningún destino coincide.</p>
+            <p class="sr-only" role="status" data-estado data-uno="destino" data-varios="destinos" data-ninguno="Ningún destino coincide."></p>
+          </div>
+        </div>
       </div>
       <input
         id="get-input"
@@ -438,21 +431,20 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
   </div>
 
   <p class="alert" data-alert hidden aria-live="polite"></p>
+  {/* Lo que no se ve al darse vuelta la operación: sin el interruptor no hay
+      un radio que diga en qué sentido estás, así que se dice al cambiar. */}
+  <p class="sr-only" aria-live="polite" data-sentido></p>
 
   {/*
-    La nota del riel, **sin cambios** desde ADR-0014: el spec §42 pide una nota
-    permanente dentro del cotizador, y lo que mitiga hoy es el plazo. El largo
-    historial de esta nota —de «Recibes dólar digital en tu billetera…» a esta
-    línea— está en `cotizador-spec.md`, en la enmienda del 2026-09-28.
+    La nota del riel (spec §42), que mitiga el plazo y dice en qué llega.
+    **Desde el 2026-10-28 nombra el destino**: la ficha de abajo enseña sólo la
+    bandera y el código, y el código del dólar sirve a tres países.
 
-    REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega a destino en la
-    moneda de ese destino.
+    REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega a destino en esa
+    moneda.
   */}
-  {/* Desde el 2026-10-27 la isla la cambia en dos casos: China, que llega en
-      dólares y no en yuanes, y la vuelta a pesos. El servidor escribe la del
-      destino de partida, que es la de siempre. */}
   <p class="rail" data-rail>
-    Llega <strong>en la moneda del destino</strong>. El plazo te lo confirma tu ejecutivo.
+    Llega <strong>a {DEFAULT_DESTINO}, en {currencyInfo(DEFAULT_CURRENCY).plural}</strong>. El plazo te lo confirma tu ejecutivo.
   </p>
 
   <a class="cta" href={wa} target="_blank" rel="noopener" data-cta>
@@ -500,109 +492,52 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     border: 1px solid var(--line);
   }
 
-  /* ── El interruptor ──────────────────────────────────────────────────── */
-  .modo {
+  /* ── El selector con bandera (entrega `wise-`) ─────────────────────── */
+  /* ── La ficha de moneda, que es el selector (2026-10-28) ───────────────
+     Era una ficha quieta junto a la etiqueta del monto, y el destino se elegía
+     en un botón a lo ancho, arriba. Ahora la ficha es el botón: bandera, código
+     y la flecha que dice que se abre. Se ve de 32 px y se pulsa en 44 (DS §10):
+     el `::after` agranda el área sin agrandar el dibujo. */
+  .selector { position: static; }
+  .moneda {
+    position: relative;
+    flex: none;
     display: inline-flex;
-    border: 0;
-    margin: 0 0 var(--s-4);
-    padding: 0;
-    background: var(--papel-2);
-    border-radius: var(--r-2);
-  }
-  .modo-op { position: relative; display: flex; min-height: 44px; cursor: pointer; }
-  .modo-op input {
-    position: absolute;
-    opacity: 0;
-    width: 1px;
-    height: 1px;
-    min-height: 0;
-  }
-  /* La ficha visible va a 4 px del borde del área que se pulsa: se ve chica y
-     el blanco de 44 px es la etiqueta entera. */
-  .modo-op > span {
-    display: flex;
     align-items: center;
-    margin: 4px;
-    padding: 0 var(--s-3);
+    gap: 6px;
+    min-height: 32px;
+    padding: 0 6px 0 5px;
     border: 1px solid transparent;
     border-radius: var(--r-1);
-    font-size: var(--t-label);
-    font-weight: 600;
-    color: var(--ink-mute);
-    transition: background-color var(--m-fast) var(--m-ease),
-                border-color var(--m-fast) var(--m-ease),
-                color var(--m-fast) var(--m-ease);
-  }
-  /* La elegida se dice con un borde de 4,98:1 contra el papel-2 que la rodea
-     (WCAG 1.4.11): el blanco sobre papel-2 sólo da 1,2:1, y el cambio de gris a
-     tinta en el texto, 2,9:1. Con `--line` el estado no llegaba al 3:1. */
-  .modo-op input:checked + span {
-    background: #fff;
-    border-color: var(--ink-mute);
-    color: var(--ink);
-  }
-  .modo-op:hover input:not(:checked) + span { color: var(--ink); }
-  .modo-op input:focus-visible + span {
-    outline: 2px solid var(--focus);
-    outline-offset: 1px;
-  }
-
-  /* ── Los desplegables ───────────────────────────────────────────────── */
-  .field { margin-bottom: var(--s-4); }
-  .field[hidden] { display: none; }
-  .label {
-    display: block;
-    font-size: var(--t-label);
-    font-weight: 600;
-    letter-spacing: var(--ls-label);
-    color: var(--ink-mute);
-    margin-bottom: var(--s-2);
-  }
-  /* ── El selector con bandera (entrega `wise-`) ─────────────────────── */
-  .selector { position: relative; }
-  .selector-boton {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--s-3);
-    width: 100%;
-    min-height: 52px;
-    padding: 0 var(--s-3);
-    border: 1px solid var(--line);
-    border-radius: var(--r-2);
-    background: #fff;
+    background: var(--papel-2);
     font: inherit;
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: .02em;
     color: var(--ink);
-    text-align: left;
     cursor: pointer;
     transition: border-color var(--m-fast) var(--m-ease),
                 box-shadow var(--m-fast) var(--m-ease);
   }
-  .selector-boton:hover { border-color: var(--ink-mute); }
-  .selector-boton:focus { outline: none; }
-  .selector-boton:focus-visible,
-  .selector-boton[aria-expanded='true'] {
+  .moneda::after { content: ''; position: absolute; inset: -6px -4px; }
+  .moneda:hover { border-color: var(--ink-mute); }
+  .moneda:focus { outline: none; }
+  .moneda:focus-visible,
+  .moneda[aria-expanded='true'] {
     border-color: var(--verde-deep);
     box-shadow: 0 0 0 3px rgba(10, 114, 80, 0.18);
   }
-  .selector-actual { display: flex; align-items: center; gap: var(--s-3); min-width: 0; }
-  .selector-nombre {
-    font-size: var(--t-body);
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .selector-codigo { font-size: var(--t-label); font-weight: 500; color: var(--ink-mute); }
+  .moneda-actual { display: inline-flex; align-items: center; gap: 6px; }
+  .moneda .selector-codigo { font-size: inherit; font-weight: 600; color: var(--ink); }
   /* La flecha del set apunta a la derecha; girada, dice «se despliega», y de
      cabeza, «se recoge». */
-  .selector-boton :global(.selector-ico) {
+  .moneda :global(.selector-ico) {
     flex: none;
     color: var(--ink-mute);
     transform: rotate(90deg);
     transition: transform var(--m-fast) var(--m-ease);
   }
-  .selector-boton[aria-expanded='true'] :global(.selector-ico) { transform: rotate(-90deg); }
+  .moneda[aria-expanded='true'] :global(.selector-ico) { transform: rotate(-90deg); }
 
   /* El panel cuelga del botón y tapa lo que hay debajo dentro de la tarjeta.
      Lleva la sombra de los menús, `--elev-pop`, que el DS reserva para esto. */
@@ -619,6 +554,9 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     padding: var(--s-2);
   }
   .selector-panel[hidden] { display: none; }
+  /* Abre hacia donde cabe (lo decide la isla, `caber`): el héroe esconde lo
+     que se sale, y la ficha de abajo, abierta hacia abajo, se cortaba. */
+  .selector-panel.arriba { top: auto; bottom: calc(100% + 6px); }
   .selector-buscar {
     display: block;
     width: 100%;
@@ -674,9 +612,21 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     border: 4px solid var(--verde-deep);
   }
   .selector-vacio { padding: var(--s-3); font-size: var(--t-body-sm); color: var(--ink-mute); }
+  /* Lo que cambia de lado —la primera divisa arriba, Chile abajo— va tras un
+     filete: es la otra operación. */
+  .selector-op.op-otra { position: relative; margin-top: 9px; }
+  .selector-op.op-otra::before {
+    content: '';
+    position: absolute;
+    left: var(--s-3);
+    right: var(--s-3);
+    top: -5px;
+    border-top: 1px solid var(--line);
+  }
 
   /* ── Los montos y el tramo ──────────────────────────────────────────── */
   .monto {
+    position: relative;
     border: 1px solid var(--line);
     border-radius: var(--r-2);
     background: #fff;
@@ -689,7 +639,11 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
      del campo. verde-deep da 4.9:1; el verde de marca sólo 1.9:1. El anillo es
      `--verde-deep` al 18%, a mano porque `color-mix()` está por debajo del
      `cssTarget` del proyecto. */
-  .monto:focus-within {
+  /* Con la ficha dentro de la caja, `:focus-within` encendía el anillo de la
+     caja cuando el foco estaba en la ficha o en su buscador: dos anillos. La
+     clase la pone la isla cuando el foco está en la cifra (`:has()` está por
+     encima del `cssTarget` del proyecto). */
+  .monto.is-foco {
     border-color: var(--verde-deep);
     box-shadow: 0 0 0 3px rgba(10, 114, 80, 0.18);
   }
@@ -732,22 +686,6 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
      cifra, no contando dígitos (ver `ajustar`). */
   .amount.largo { font-size: var(--t-h3); }
   .amount.muy-largo { font-size: var(--t-body); }
-  /* La moneda, en una ficha: el código en la letra de las cifras, sobre el
-     papel de la tarjeta. Es dato, no adorno, y no se pulsa. */
-  .moneda {
-    flex: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px var(--s-2) 3px 4px;
-    border-radius: var(--r-1);
-    background: var(--papel-2);
-    font-size: var(--t-label);
-    font-weight: 600;
-    letter-spacing: .02em;
-    color: var(--ink);
-  }
-
   /* El tramo: 3 px de verde de una caja a la otra, a la altura de las cifras.
      El punto (`.tramo-valor::before`) es un borde y no un fondo, para que en
      colores forzados siga ahí. */
@@ -766,10 +704,57 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     bottom: 0;
     border-left: 3px solid var(--verde-deep);
   }
-  /* ── Lo que se cobra (2026-10-27) ───────────────────────────────────────
-     Filas de nombre y cifra, en la letra de la etiqueta y con la cifra a la
-     derecha, como el desglose de un recibo. Si no caben en una línea —320 px
-     con el espaciado de WCAG 1.4.12— la cifra baja a la suya, alineada igual. */
+  /* ── Lo que cobramos: una línea, y el detalle a un toque (2026-10-28) ───
+     La línea es el control: el `summary` de un `details`, que abre y cierra
+     sin JavaScript y que un lector de pantalla anuncia como botón con su
+     estado. Mide 44 px de alto (DS §10) y se come el relleno de arriba del
+     tramo, para que el blanco no agrande la tarjeta. El `flex` va en un `span`
+     de dentro: Safari no dejaba de ser bloque a un `summary`.
+
+     Sebastián eligió este, «plegable», el 2026-10-28, contra un diálogo como el
+     «Detalle completo» de Global66: un toque abre y otro cierra, el detalle se
+     lee donde le pasa al dinero y sus cifras cambian mientras escribes. */
+  .cobro { margin: calc(-1 * var(--s-3)) 0 var(--s-1); }
+  .cobro-fila {
+    display: block;
+    color: var(--ink);
+    cursor: pointer;
+    list-style: none;
+  }
+  .cobro-fila::-webkit-details-marker { display: none; }
+  .cobro-in {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: var(--s-3);
+    min-height: 44px;
+    font-size: var(--t-label);
+    line-height: 1.45;
+  }
+  .cobro-rot { color: var(--ink-mute); }
+  .cobro-total .num { font-weight: 600; white-space: nowrap; }
+  .cobro-ver {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: auto;
+    font-weight: 600;
+    color: var(--verde-deep);
+    white-space: nowrap;
+  }
+  .cobro-fila:hover .cobro-ver { text-decoration: underline; }
+  .cobro-fila :global(.cobro-ico) {
+    transform: rotate(90deg);
+    transition: transform var(--m-fast) var(--m-ease);
+  }
+  .cobro[open] .cobro-fila :global(.cobro-ico) { transform: rotate(-90deg); }
+  .cobro-fila:focus { outline: none; }
+  .cobro-fila:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r-1); }
+
+  /* El detalle: filas de nombre y cifra, en la letra de la etiqueta y con la
+     cifra a la derecha, como el desglose de un recibo. Si no caben en una
+     línea —320 px con el espaciado de WCAG 1.4.12— la cifra baja a la suya. */
   .cargos {
     display: grid;
     gap: var(--s-1);
@@ -795,20 +780,43 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
   }
   .cargo.subtotal dt,
   .cargo.subtotal dd { color: var(--ink); font-weight: 600; }
-  /* De vuelta a pesos el subtotal va primero: ahí abre la cuenta y no la
-     cierra, así que el filete pasa abajo. */
-  .tramo.a-pesos .cargos { margin: var(--s-3) 0 0; }
+  /* De vuelta a pesos el precio va primero y la línea del cobro después; el
+     subtotal abre la cuenta y no la cierra, así que el filete pasa abajo. */
+  .tramo.a-pesos .cobro { margin: var(--s-1) 0 0; }
+  .tramo.a-pesos .tramo-nota { margin-top: 0; }
   .tramo.a-pesos .cargo.subtotal {
     padding: 0 0 var(--s-1);
     border-top: 0;
     border-bottom: 1px solid var(--line);
   }
 
+  /* El precio y, a su derecha, el botón que da vuelta la operación: está donde
+     ocurre la conversión. Redondo y de 44 px, en el blanco de las cajas. */
+  .tramo-fila { display: flex; align-items: center; gap: var(--s-3); }
   .tramo-precio {
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 2px;
   }
+  .vuelta {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color var(--m-fast) var(--m-ease);
+  }
+  .vuelta:hover { border-color: var(--ink-mute); }
+  .vuelta:focus { outline: none; }
+  .vuelta:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   .tramo-rot {
     font-size: var(--t-label);
     font-weight: 600;
@@ -823,6 +831,14 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     line-height: 1.25;
     color: var(--ink);
   }
+  /* Con el botón de vuelta al lado, «1 USD = 919,70 CLP» no cabía en una línea
+     a 320–360 px ni en la columna del héroe a 900–940: se partía en «1 USD =»
+     y «919,70 CLP». Como las cifras de los montos, baja un escalón, y otro, y
+     si ni así cabe —el espaciado de WCAG 1.4.12— se parte (`ajustar`). No es
+     `nowrap`: un texto que no se parte empuja el ancho mínimo de la tarjeta, y
+     a 320 la tarjeta se salía 9 px del héroe, que la cortaba. */
+  .tramo-valor.largo { font-size: var(--t-body); }
+  .tramo-valor.muy-largo { font-size: var(--t-body-sm); }
   /* El punto va colgado de la cifra del precio y no de la caja del tramo: así
      cae a la altura de esa línea sea cual sea el tamaño de letra. Su centro
      es el del tramo: 40 − 13 − 1,5 + 6,5 = 32 px a la izquierda del texto. */
@@ -999,11 +1015,6 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     .selector-op.activa { outline: 2px solid Highlight; outline-offset: -2px; }
     .selector-op[aria-selected='true']::after { border-color: Highlight; }
     .moneda { border: 1px solid CanvasText; }
-    .modo { border: 1px solid CanvasText; }
-    /* El borde transparente de la opción sin elegir se pintaría: se le da el
-       color del fondo para que sólo la elegida tenga caja. */
-    .modo-op > span { border-color: Canvas; }
-    .modo-op input:checked + span { border-color: Highlight; color: Highlight; }
     /* El botón de WhatsApp es un relleno, y el relleno se va: sin borde quedaba
        como un enlace suelto. Pasaba también antes del rediseño. */
     .cta { border: 1px solid LinkText; }
@@ -1036,8 +1047,6 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     const divisas: IslandCurrency[] = JSON.parse(root.dataset.divisas ?? '[]');
     const tarifas: Record<string, TarifaIsla> = JSON.parse(root.dataset.tarifas ?? '{}');
     const tarifaPesos: TarifaIsla = JSON.parse(root.dataset.tarifaPesos ?? '{"e":0,"p":[0,0,0],"m":true}');
-    const campoDestino = root.querySelector<HTMLElement>('[data-campo-destino]');
-    const campoDivisa = root.querySelector<HTMLElement>('[data-campo-divisa]');
     const banderas = document.querySelector<HTMLTemplateElement>('#cot-banderas');
 
     /** Una bandera de 16 px, copiada de la plantilla que dibujó el servidor. */
@@ -1100,9 +1109,34 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
           estado.textContent = v.length === 0 ? d.ninguno ?? '' : `${v.length} ${v.length === 1 ? d.uno : d.varios}`;
         }, 500);
       };
+      /**
+       * El panel abre hacia abajo, y hacia arriba si abajo no cabe y arriba hay
+       * más sitio. «Caber» es dentro del primer contenedor que esconde lo que
+       * se sale —el héroe—, no de la pantalla: la pantalla se puede desplazar,
+       * el héroe no deja ver lo que corta. Si tampoco cabe así, la lista se
+       * acorta, con un piso de tres opciones.
+       */
+      const caber = (): void => {
+        if (!panel || !lista) return;
+        panel.classList.remove('arriba');
+        lista.style.maxHeight = '';
+        let corte: HTMLElement | null = cont?.parentElement ?? null;
+        while (corte && getComputedStyle(corte).overflow === 'visible') corte = corte.parentElement;
+        const borde = corte ? corte.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
+        const caja = (panel.offsetParent ?? cont)?.getBoundingClientRect();
+        if (!caja) return;
+        const alto = panel.offsetHeight;
+        const abajo = borde.bottom - caja.bottom - 6;
+        const arriba = caja.top - borde.top - 6;
+        const sube = abajo < alto && arriba > abajo;
+        panel.classList.toggle('arriba', sube);
+        const sitio = sube ? arriba : abajo;
+        if (alto > sitio) lista.style.maxHeight = `${Math.max(132, lista.offsetHeight - (alto - sitio))}px`;
+      };
       const abrir = (): void => {
         if (!panel || !boton || !buscar) return;
         panel.hidden = false;
+        caber();
         boton.setAttribute('aria-expanded', 'true');
         buscar.value = '';
         filtrar();
@@ -1118,7 +1152,8 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       /** Marca una opción como elegida y copia su bandera, su nombre y su código al botón. */
       const marcar = (op: HTMLElement): void => {
         ops.forEach((o) => o.setAttribute('aria-selected', o === op ? 'true' : 'false'));
-        const flag = op.querySelector('[data-bandera]')?.cloneNode(true);
+        // La de la ficha es la de 16 px de la plantilla, no la de 24 de la lista.
+        const flag = bandera(op.querySelector<HTMLElement>('[data-bandera]')?.dataset.bandera);
         const nombre = op.querySelector('.op-nombre')?.textContent ?? '';
         const codigo = op.querySelector('.op-codigo')?.textContent ?? '';
         const vieja = actual?.querySelector('[data-bandera]');
@@ -1185,12 +1220,25 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       divisas[0] ?? { c: 'USD', r: Number(root.dataset.rate), n: 'dólar' };
 
     // Se crean más abajo, cuando ya existen las funciones a las que avisan.
-    let selDestino: ReturnType<typeof crearSelector>;
-    let selDivisa: ReturnType<typeof crearSelector>;
-    const codigoDestino = (): string | undefined =>
-      root.querySelector<HTMLElement>('[data-selector="destino"] [role="option"][aria-selected="true"]')?.dataset.c;
+    let selGive: ReturnType<typeof crearSelector>;
+    let selGet: ReturnType<typeof crearSelector>;
+    const opsGet = [...root.querySelectorAll<HTMLElement>('[data-selector="get"] [role="option"]')];
+    /** El destino elegido abajo. Se recuerda mientras se pasa a pesos, para volver a él. */
+    let destino: string = opsGet.find((o) => o.getAttribute('aria-selected') === 'true')?.dataset.valor ?? '';
+    const codigoDe = (d: string): string | undefined => opsGet.find((o) => o.dataset.valor === d)?.dataset.c;
+    /**
+     * El destino al que se vuelve con una divisa: el último elegido si llega en
+     * ella; si no, uno que la reciba en su moneda. Con el dólar en tres
+     * destinos, el primero por orden alfabético sería China, que no llega en
+     * la suya: de dólares se vuelve a Estados Unidos.
+     */
+    const destinoPara = (codigo: string): string => {
+      if (codigoDe(destino) === codigo) return destino;
+      const de = opsGet.filter((o) => o.dataset.c === codigo);
+      return (de.find((o) => tarifas[o.dataset.valor ?? '']?.m === true) ?? de[0])?.dataset.valor ?? destino;
+    };
 
-    let divisa: IslandCurrency = divisaDe(codigoDestino());
+    let divisa: IslandCurrency = divisaDe(codigoDe(destino));
     let rate = divisa.r;
     const minPay = Number(root.dataset.min);
     const maxRaw = Number(root.dataset.max);
@@ -1213,9 +1261,15 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     const dockLabel = dock?.querySelector<HTMLElement>('[data-dock-label]');
     const dockAmount = dock?.querySelector<HTMLElement>('[data-dock-amount]');
     const dockCta = dock?.querySelector<HTMLAnchorElement>('[data-dock-cta]');
-    const intentInputs = root.querySelectorAll<HTMLInputElement>('input[name="intent"]');
+    const botonVuelta = root.querySelector<HTMLButtonElement>('[data-vuelta]');
+    const sentidoEl = root.querySelector<HTMLElement>('[data-sentido]');
+    const giveBoton = root.querySelector<HTMLElement>('#give-boton');
+    const getBoton = root.querySelector<HTMLElement>('#get-boton');
+    const cobroEl = root.querySelector<HTMLElement>('[data-cobro]');
+    const cTotal = root.querySelector<HTMLElement>('[data-c-total]');
+    const envioRow = root.querySelector<HTMLElement>('[data-cargo="envio"]');
+    const comisionRow = root.querySelector<HTMLElement>('[data-cargo="comision"]');
     const tramoEl = root.querySelector<HTMLElement>('[data-tramo]');
-    const cargosEl = root.querySelector<HTMLElement>('[data-cargos]');
     const precioEl = root.querySelector<HTMLElement>('[data-precio]');
     const subtotalEl = root.querySelector<HTMLElement>('[data-cargo="subtotal"]');
     const cEnvio = root.querySelector<HTMLElement>('[data-c-envio]');
@@ -1240,7 +1294,7 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 
     /** La tarifa que aplica: la del destino elegido, o la de la vuelta a pesos. */
     const tarifaIsla = (): TarifaIsla =>
-      intent === 'to_clp' ? tarifaPesos : tarifas[selDestino?.valor() ?? ''] ?? tarifaPesos;
+      intent === 'to_clp' ? tarifaPesos : tarifas[destino] ?? tarifaPesos;
     const tarifa = (): TarifaCliente => {
       const t = tarifaIsla();
       return { envio: t.e, comision: t.p };
@@ -1258,27 +1312,31 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     const pesos = (v: number, resta = false): string => `${resta ? '− ' : ''}CLP ${formatCLP(v)}`;
 
     /**
-     * El desglose del tramo. De vuelta a pesos el precio sube y el subtotal pasa
-     * a abrir la lista, porque ahí primero se convierte y después se descuenta.
-     * Se mueven los nodos, no se reordenan con CSS: así el lector de pantalla
-     * lee en el mismo orden que se ve (WCAG 1.3.2).
+     * Lo que cobramos: el total en la línea y, en el detalle, de qué está hecho.
+     * De vuelta a pesos el precio sube antes de la línea del cobro y el
+     * subtotal pasa a abrir la lista, porque ahí primero se convierte y después
+     * se descuenta. Se mueven los nodos, no se reordenan con CSS: así el lector
+     * de pantalla lee en el mismo orden que se ve (WCAG 1.3.2).
      */
     const pintarCargos = (envio: boolean): void => {
       const { cargos } = cargosDe(intent, giveAmount, rate, tarifa());
+      if (cTotal) cTotal.textContent = pesos(cargos.envio + cargos.comision);
       if (cEnvio) cEnvio.textContent = pesos(cargos.envio, true);
       if (cPct) cPct.textContent = formatComision(cargos.comisionPb);
       if (cComision) cComision.textContent = pesos(cargos.comision, true);
       if (cSubRot) cSubRot.textContent = envio ? 'Monto a convertir' : 'En pesos';
       if (cSub) cSub.textContent = pesos(cargos.aConvertir);
       tramoEl?.classList.toggle('a-pesos', !envio);
-      if (tramoEl && cargosEl && precioEl && subtotalEl) {
-        if (envio) {
-          cargosEl.append(subtotalEl);
-          cargosEl.after(precioEl);
-        } else {
-          cargosEl.prepend(subtotalEl);
-          tramoEl.prepend(precioEl);
-        }
+      if (subtotalEl && envioRow && comisionRow) {
+        if (envio) comisionRow.after(subtotalEl);
+        else envioRow.before(subtotalEl);
+      }
+      // Se mueve la línea del cobro y no el precio: el precio lleva el botón
+      // que da vuelta la operación, y un nodo que se saca y se vuelve a poner
+      // pierde el foco. Con el teclado, el foco se quedaba en la nada.
+      if (cobroEl && precioEl) {
+        if (envio) precioEl.before(cobroEl);
+        else precioEl.after(cobroEl);
       }
     };
 
@@ -1295,11 +1353,10 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       if (!envio) {
         antes = 'Recibes ';
         fuerte.textContent = 'en pesos';
-      } else if (!tarifaIsla().m) {
-        fuerte.textContent = `en ${currencyInfo(divisa.c).plural}`;
-        despues = ', no en la moneda local. El plazo te lo confirma tu ejecutivo.';
       } else {
-        fuerte.textContent = 'en la moneda del destino';
+        // Desde el 2026-10-28 nombra el destino: la ficha enseña sólo el código.
+        fuerte.textContent = `a ${destino}, en ${currencyInfo(divisa.c).plural}`;
+        if (!tarifaIsla().m) despues = ', no en la moneda local. El plazo te lo confirma tu ejecutivo.';
       }
       railEl.replaceChildren(antes, fuerte, despues);
     };
@@ -1323,13 +1380,21 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
         if (el.scrollWidth > el.clientWidth + 1) el.classList.add('largo');
         if (el.scrollWidth > el.clientWidth + 1) el.classList.replace('largo', 'muy-largo');
       }
+      // El precio, igual, pero midiendo si se partió en dos líneas.
+      if (rateEl) {
+        const partido = (): boolean =>
+          rateEl.getBoundingClientRect().height > parseFloat(getComputedStyle(rateEl).lineHeight) * 1.5;
+        rateEl.classList.remove('largo', 'muy-largo');
+        if (partido()) rateEl.classList.add('largo');
+        if (partido()) rateEl.classList.replace('largo', 'muy-largo');
+      }
     };
     window.addEventListener('resize', ajustar, { passive: true });
 
     const render = (): void => {
       const { give, get } = currenciesFor(intent, divisa.c);
       const envio = intent === 'to_foreign';
-      const destino = envio ? selDestino.valor() : undefined;
+      const destinoMsg = envio ? destino : undefined;
       const quote = buildQuote({
         intent,
         giveAmount,
@@ -1341,13 +1406,19 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       pintarCargos(envio);
       pintarRiel(envio);
 
+      // Las fichas copian bandera y código de la opción elegida (`marcar`); acá
+      // se les da el nombre que leen los lectores de pantalla, que el código
+      // solo no dice: «USD» sirve a tres destinos.
       giveCur.textContent = give;
       getCur.textContent = get;
-      // Las banderas de las fichas: Chile para los pesos; para la otra, la del
-      // destino en un envío y la de la divisa de vuelta a pesos.
-      const otra = envio ? selDestino.bandera() : selDivisa.bandera();
-      ponerBandera(giveCur.parentElement, envio ? 'cl' : otra);
-      ponerBandera(getCur.parentElement, envio ? otra : 'cl');
+      const nombre = currencyInfo(divisa.c).name;
+      giveBoton?.setAttribute('aria-label', envio ? 'Moneda que envías: peso chileno, CLP' : `Moneda que conviertes: ${nombre}, ${divisa.c}`);
+      getBoton?.setAttribute('aria-label', envio ? `Destino: ${destino}, ${divisa.c}` : 'Recibes en: peso chileno, CLP');
+      const vuelta = envio
+        ? `Cambiar a pasar ${currencyInfo(divisa.c).plural} a pesos`
+        : `Cambiar a enviar pesos a ${destinoPara(divisa.c)}`;
+      botonVuelta?.setAttribute('aria-label', vuelta);
+      botonVuelta?.setAttribute('title', vuelta);
       giveLabel.textContent = envio ? 'Envías' : 'Conviertes';
       getLabel.textContent = envio ? 'Llega aprox.' : 'Recibes aprox.';
       giveInput.inputMode = give === 'CLP' ? 'numeric' : 'decimal';
@@ -1387,7 +1458,7 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       ajustar();
 
       // El fallback de cualquier problema es WhatsApp, nunca un error seco
-      const href = whatsappUrl(waNumber, quote, giveAmount, destino);
+      const href = whatsappUrl(waNumber, quote, giveAmount, destinoMsg);
       cta.href = href;
       cta.textContent = fuera ? 'Escríbenos por WhatsApp' : 'Continuar por WhatsApp';
 
@@ -1396,8 +1467,8 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       if (dock && dockLabel && dockAmount && dockCta) {
         dockCta.href = href;
         dockCta.textContent = fuera ? 'Escríbenos' : 'Continuar';
-        dockLabel.textContent = fuera ? 'Fuera de rango' : envio ? `Llega a ${destino ?? ''}` : 'Recibes';
-        ponerBandera(dock, fuera ? undefined : envio ? selDestino.bandera() : 'cl');
+        dockLabel.textContent = fuera ? 'Fuera de rango' : envio ? `Llega a ${destino}` : 'Recibes';
+        ponerBandera(dock, fuera ? undefined : envio ? selGet.bandera() : 'cl');
         const dockShown = fuera ? '—' : formatAmount(received(), get);
         if (dockAmount.textContent !== dockShown) {
           dockAmount.textContent = dockShown;
@@ -1446,46 +1517,67 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       getInput.value = fmt(received(), currenciesFor(intent, divisa.c).get);
       ajustar();
     });
+    // El anillo de la caja, sólo con el foco en la cifra (ver el CSS de `.is-foco`).
+    for (const el of [giveInput, getInput]) {
+      el.addEventListener('focus', () => el.closest('.monto')?.classList.add('is-foco'));
+      el.addEventListener('blur', () => el.closest('.monto')?.classList.remove('is-foco'));
+    }
 
-    selDestino = crearSelector(root.querySelector('[data-selector="destino"]'), (op) => {
-      usarDivisa(op.dataset.c);
+    /**
+     * Cambia de sentido conservando el monto en PESOS, como hacía el
+     * interruptor que había hasta el 2026-10-28. Con `codigo`, además cambia de
+     * divisa. Deja las dos fichas de acuerdo: un lado es siempre el peso.
+     */
+    const cambiarA = (nuevo: Intent, codigo?: string): void => {
+      const clpBefore = clpAmount(intent, giveAmount, rate);
+      intent = nuevo;
+      if (codigo) { divisa = divisaDe(codigo); rate = divisa.r; }
+      if (intent === 'to_foreign') {
+        destino = destinoPara(divisa.c);
+        selGet.poner((o) => o.dataset.valor === destino);
+        selGive.poner((o) => o.dataset.c === 'CLP');
+      } else {
+        selGive.poner((o) => o.dataset.c === divisa.c);
+        selGet.poner((o) => o.dataset.c === 'CLP');
+      }
+      const { give, get } = currenciesFor(intent, divisa.c);
+      giveAmount = give === 'CLP' ? clpBefore : rate > 0 ? clpBefore / rate : 0;
+      giveInput.value = fmt(giveAmount, give);
+      getInput.value = fmt(received(), get);
+      settle(giveInput);
+      settle(getInput);
+      if (sentidoEl) {
+        sentidoEl.textContent = intent === 'to_foreign'
+          ? `Ahora envías pesos a ${destino}.`
+          : `Ahora conviertes ${currencyInfo(divisa.c).plural} a pesos.`;
+      }
+    };
+
+    /* La ficha de arriba: pesos, o la divisa que tienes. Elegir una divisa pasa
+       a pesos; elegir pesos vuelve a enviar. */
+    selGive = crearSelector(root.querySelector('[data-selector="give"]'), (op) => {
+      const c = op.dataset.c ?? 'CLP';
+      if (c === 'CLP') { if (intent === 'to_clp') cambiarA('to_foreign'); }
+      else if (intent === 'to_foreign') cambiarA('to_clp', c);
+      else usarDivisa(c);
       render();
     });
-    selDivisa = crearSelector(root.querySelector('[data-selector="divisa"]'), (op) => {
-      usarDivisa(op.dataset.c);
+    /* La de abajo: un destino, o Chile en pesos. Elegir un destino vuelve a
+       enviar; elegir Chile pasa a pesos la divisa del destino que estaba. */
+    selGet = crearSelector(root.querySelector('[data-selector="get"]'), (op) => {
+      const c = op.dataset.c ?? 'CLP';
+      if (c === 'CLP') { if (intent === 'to_foreign') cambiarA('to_clp', divisa.c); }
+      else {
+        destino = op.dataset.valor ?? destino;
+        if (intent === 'to_clp') cambiarA('to_foreign', c);
+        else usarDivisa(c);
+      }
       render();
     });
-
-    /* Al cambiar de modo se cambia de desplegable y se conserva lo elegido: de
-       un envío a Colombia se pasa a «tienes pesos colombianos», y de vuelta, si
-       entretanto elegiste euros, el destino pasa a Europa. El monto en pesos
-       se conserva, como siempre. */
-    intentInputs.forEach((input) =>
-      input.addEventListener('change', () => {
-        const clpBefore = clpAmount(intent, giveAmount, rate);
-        intent = input.value as Intent;
-        const envio = intent === 'to_foreign';
-        if (campoDestino) campoDestino.hidden = !envio;
-        if (campoDivisa) campoDivisa.hidden = envio;
-        // Con el dólar en tres destinos, el primero por orden alfabético sería
-        // China, que además no llega en su moneda. Se prefiere un destino que
-        // llegue en la suya: de dólares se vuelve a Estados Unidos.
-        if (envio && selDestino.codigo() !== divisa.c) {
-          const enSu = (o: HTMLElement): boolean => tarifas[o.dataset.valor ?? '']?.m === true;
-          if (!selDestino.poner((o) => o.dataset.c === divisa.c && enSu(o))) {
-            selDestino.poner((o) => o.dataset.c === divisa.c);
-          }
-        }
-        if (!envio) selDivisa.poner((o) => o.dataset.c === divisa.c);
-        const { give, get } = currenciesFor(intent, divisa.c);
-        giveAmount = give === 'CLP' ? clpBefore : rate > 0 ? clpBefore / rate : 0;
-        giveInput.value = fmt(giveAmount, give);
-        getInput.value = fmt(received(), get);
-        settle(giveInput);
-        settle(getInput);
-        render();
-      })
-    );
+    botonVuelta?.addEventListener('click', () => {
+      cambiarA(intent === 'to_foreign' ? 'to_clp' : 'to_foreign');
+      render();
+    });
 
     /**
      * Un destino que llega de fuera: `?destino=Colombia` en la dirección, o un
@@ -1496,16 +1588,11 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
      */
     const irADestino = (nombre: string | null | undefined): boolean => {
       if (!nombre) return false;
-      const pedido = (o: HTMLElement): boolean => normal(o.dataset.valor ?? '') === normal(nombre);
-      const opciones = root.querySelectorAll<HTMLElement>('[data-selector="destino"] [role="option"]');
-      if (![...opciones].some(pedido)) return false;
-      // Primero el modo y después el destino. Al volver al envío, el cambio de
-      // modo elige el destino de la divisa que estaba —de dólares sale Estados
-      // Unidos— y, al revés, pisaba el destino pedido.
-      const envio = root.querySelector<HTMLInputElement>('input[name="intent"][value="to_foreign"]');
-      if (envio && !envio.checked) { envio.checked = true; envio.dispatchEvent(new Event('change')); }
-      selDestino.poner(pedido);
-      usarDivisa(selDestino.codigo());
+      const op = opsGet.find((o) => o.dataset.c !== 'CLP' && normal(o.dataset.valor ?? '') === normal(nombre));
+      if (!op) return false;
+      destino = op.dataset.valor ?? destino;
+      if (intent === 'to_clp') cambiarA('to_foreign', op.dataset.c);
+      else { selGet.poner((o) => o === op); usarDivisa(op.dataset.c); }
       return true;
     };
     irADestino(new URLSearchParams(location.search).get('destino'));
@@ -1517,7 +1604,7 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       render();
       const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       root.scrollIntoView({ behavior: quieto ? 'auto' : 'smooth', block: 'start' });
-      root.querySelector<HTMLButtonElement>('[data-selector="destino"] [data-boton]')?.focus({ preventScroll: true });
+      getBoton?.focus({ preventScroll: true });
     });
 
     render();

@@ -20,7 +20,8 @@ export type IconName =
   | 'documento'
   | 'empresa'
   | 'wallet'
-  | 'candado';
+  | 'candado'
+  | 'intercambiar';
 
 interface Props {
   name: IconName;
@@ -64,6 +65,14 @@ const paths: Record<IconName, string> = {
     Si algún día se usa, primero tiene que existir la frase que lo sostenga.
   */
   candado: '<path d="M5.5 10h13a1.5 1.5 0 011.5 1.5v8a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 014 19.5v-8A1.5 1.5 0 015.5 10z"/><path d="M8 10V7a4 4 0 018 0v3"/><path d="M12 14.5v2.5"/>',
+  /*
+    El botón que invierte la operación en el cotizador (entrega `compacto-`,
+    2026-10-28): de enviar pesos a pasar una divisa a pesos, y de vuelta. Es la
+    necesidad que el DS §7 pide antes de dibujar un icono: Sebastián retiró el
+    interruptor «Enviar / Pasar a pesos» y la dirección se cambia desde las
+    divisas. Dos flechas, una que sube y una que baja, en el trazo del set.
+  */
+  intercambiar: '<path d="M8 19V5M4.5 8.5L8 5l3.5 3.5"/><path d="M16 5v14M12.5 15.5L16 19l3.5-3.5"/>',
 };
 ---
 <svg
