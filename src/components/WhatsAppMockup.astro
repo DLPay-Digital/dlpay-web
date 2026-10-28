@@ -52,8 +52,8 @@
  * caja viven en quien la pone.
  */
 import Logo from './Logo.astro';
-import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
-import { buildQuote, whatsappMessage } from '../lib/pricing/quote.ts';
+import { whatsappMessage } from '../lib/pricing/quote.ts';
+import { cotizacionInicial } from '../lib/pricing/mensaje-inicial.ts';
 import { quoteLimits } from '../lib/config/site.ts';
 
 interface ChatMessage {
@@ -74,18 +74,10 @@ const { thread, variant = 'proof' } = Astro.props;
 
 /** El hilo por omisión se deriva; nunca se teclea. Ver la regla dura arriba. */
 async function defaultThread(): Promise<readonly ChatMessage[]> {
-  const price = await new ConfigPriceSource().getPrice();
-  /* Mismo origen que el cotizador, por construcción y no por disciplina (D24). */
-  const { minPayClp: minPay, maxPayClp: maxPay, samplePayClp: samplePay } = quoteLimits;
-  const quote = buildQuote({
-    intent: 'to_foreign',
-    giveAmount: samplePay,
-    price,
-    minPay,
-    ...(maxPay !== undefined ? { maxPay } : {}),
-  });
-
-  return [{ sender: 'user', text: whatsappMessage(quote, samplePay) }];
+  /* Mismo origen que el cotizador, por construcción y no por disciplina (D24),
+     y con la tarifa del destino de partida desde el 2026-10-27. */
+  const quote = await cotizacionInicial();
+  return [{ sender: 'user', text: whatsappMessage(quote, quoteLimits.samplePayClp) }];
 }
 
 const messages = thread ?? (await defaultThread());

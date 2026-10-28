@@ -2,6 +2,15 @@
 /**
  * /precio — dónde está el cobro y dónde no lo hay.
  *
+ * > **Rehecha el 2026-10-27 con el tarifario de Sebastián.** Lo que sigue hasta
+ * > «Y por qué no reemplaza a `/tarifas`» razonaba «un solo cobro, dentro del
+ * > precio», que era el modelo. Desde ese día **la tasa es la de mercado, sin
+ * > recargo, y hay dos cobros a la vista**: el costo de envío y la comisión de
+ * > cambio (`lib/pricing/tarifario.ts`). La página dice eso. Del razonamiento
+ * > de abajo siguen valiendo los puntos 2 y 3 —no hay saldo que mantener ni
+ * > comparativas sin base— y el 4 se dio vuelta: los tramos existen y están
+ * > publicados en `/tarifas`.
+ *
  * ── Qué afirma, y por qué NO afirma «gratis» ───────────────────────────────
  *
  * El encargo pedía mostrar que «todo es gratis». Cuatro partes de eso chocaban
@@ -41,12 +50,15 @@ import Motion from '../components/Motion.astro';
 import EtiquetasPrecio from '../components/EtiquetasPrecio.astro';
 import Accion from '../components/Accion.astro';
 import { faq as homeFaq } from '../content/home.ts';
+import { TARIFAS } from '../lib/pricing/tarifario.ts';
+import { formatComision } from '../lib/pricing/format.ts';
 import { generalFaq } from '../content/general.ts';
 import { contact } from '../lib/config/site.ts';
 
 /*
-  La tabla es dato, no prosa: seis filas iguales y una distinta. Escrita como
-  lista y no como párrafos, el ojo ve el patrón y ve la excepción sin leer.
+  La tabla es dato, no prosa: cinco filas iguales y dos distintas (seis y una
+  hasta el 2026-10-27). Escrita como lista y no como párrafos, el ojo ve el
+  patrón y ve la excepción sin leer.
 
   La fila del costo de red entró por decisión de Sebastián del 2026-09-23 y
   faltaba: una tabla de costos que se salta un costo deja de ser una tabla de
@@ -58,14 +70,23 @@ import { contact } from '../lib/config/site.ts';
   caso «ya transferí y quiero cancelar» no tiene respuesta publicada —la
   cabecera de `general.ts` explica por qué— y la fila no puede insinuarla.
 */
+/*
+  **Desde el 2026-10-27 cobran dos filas, no una** (tarifario). La de «Que el
+  dinero llegue a destino · Sin costo» salió: el costo de envío es justo eso, y
+  dejarla habría publicado lo contrario de la fila que cobra. Las dos que
+  cobran dicen el rango con las cifras del tarifario, no tecleadas.
+  REQUIERE VALIDACIÓN DE COMPLIANCE — las dos filas que cobran.
+*/
+const pbs = TARIFAS.flatMap((t) => t.comision);
+const rangoComision = `del ${formatComision(Math.min(...pbs))} al ${formatComision(Math.max(...pbs))}`;
 const costs: readonly { what: string; cost: string; isCharge?: boolean }[] = [
   { what: 'Registrarte y verificar tu identidad', cost: 'Sin costo' },
   { what: 'Cotizar, las veces que quieras', cost: 'Sin costo · sin cuenta' },
   { what: 'Hablar con tu ejecutivo', cost: 'Sin costo' },
   { what: 'Cancelar antes de transferir', cost: 'Sin costo · basta con no transferir' },
-  { what: 'Que el dinero llegue a destino', cost: 'Sin costo' },
   { what: 'El costo de red del traspaso', cost: 'Sin costo · lo asumimos nosotros' },
-  { what: 'Convertir', cost: 'El spread, ya incluido en el precio que ves', isCharge: true },
+  { what: 'Enviar a destino', cost: 'Costo de envío · fijo, según el destino', isCharge: true },
+  { what: 'Convertir', cost: `Comisión de cambio · ${rangoComision}, según el destino y el monto`, isCharge: true },
 ];
 
 /*
@@ -104,7 +125,7 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
 ---
 <Base
   title="Precio"
-  description="Un solo cobro en toda la operación y va dentro del precio. Qué cuesta y qué no en DLPay: registro, cotización, ejecutivo y costo de red, sin costo."
+  description="La tasa de mercado, sin recargo, y dos cobros a la vista: el costo de envío y la comisión de cambio. Qué cuesta y qué no en DLPay: registro, cotización, ejecutivo y costo de red, sin costo."
   path="/precio/"
 >
   <Motion />
@@ -124,9 +145,17 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
       lo que la banda de los 12 minutos demuestra— es que **el que aceptas es el
       que pagas**. Cadena nueva: necesita firma.
     */}
+    {/*
+      **Y otra vez el 2026-10-27, con el tarifario: «Dos cobros, y los ves
+      antes de transferir».** «Un solo cobro, y va dentro del precio» describía
+      el modelo anterior. El nuevo titular dice el número de cobros y dónde
+      se ven, que es lo que esta página demuestra. La bajada conserva su primera
+      frase, que sigue siendo cierta, y nombra la tasa.
+      REQUIERE VALIDACIÓN DE COMPLIANCE — titular y bajada.
+    */}
     <PageHero
-      title="Un solo cobro, y va dentro del precio"
-      lead="El precio que aceptas es el que pagas. Acá ves dónde está el cobro y dónde no lo hay."
+      title="Dos cobros, y los ves antes de transferir"
+      lead="El precio que aceptas es el que pagas, y la tasa es la de mercado, sin recargo. Acá ves dónde está el cobro y dónde no lo hay."
       sequence
       layout="stacked"
     >
@@ -158,9 +187,12 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
           pantalla más arriba. Dice lo mismo con lo que ya publica la fila que
           cobra: es el spread y va dentro del precio que ves.
         */}
+        {/* Desde el 2026-10-27: «El único cobro es el spread, y ya va dentro del
+            precio que ves» describía el modelo anterior. */}
         <p class="bajada">
-          El único cobro es el spread, y ya va dentro del precio que ves. Todo lo demás no tiene
-          costo, incluido el costo de red del traspaso, que lo asumimos nosotros.
+          Cobramos dos cosas, y las dos se ven en el cotizador antes de que transfieras: el costo
+          de envío y la comisión de cambio. Todo lo demás no tiene costo, incluido el costo de red
+          del traspaso, que lo asumimos nosotros.
         </p>
         <dl>
           {costs.map((row) => (
@@ -187,8 +219,11 @@ const wa = contact.whatsappUrl('Hola, tengo una duda que no encontré en la web.
           · «Partimos de una referencia de mercado y le aplicamos nuestro
             spread» lo dice `/tarifas`, que es adonde lleva el enlace.
         */}
+        {/* Desde el 2026-10-27 empieza por los tramos, que ahora están
+            publicados. La segunda frase es la de siempre. */}
         <p class="volumen">
-          Las operaciones de mayor volumen se conversan con el ejecutivo.
+          La comisión baja con el monto, en tres tramos. Las operaciones de mayor volumen se
+          conversan con el ejecutivo.
           <a href="/tarifas/">Ver las tarifas</a>
         </p>
       </div>

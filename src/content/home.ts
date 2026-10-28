@@ -79,7 +79,13 @@ export const trust: TrustBlock[] = [
   {
     icon: 'clock',
     title: 'El precio, sin letra chica',
-    body: 'El precio que ves ya incluye nuestro spread. No hay comisiones que aparezcan después ni un tipo de cambio inflado por dentro.',
+    // **Reescrito el 2026-10-27, con el tarifario.** Decía «El precio que ves
+    // ya incluye nuestro spread. No hay comisiones que aparezcan después ni un
+    // tipo de cambio inflado por dentro». El modelo pasó a ser el contrario: la
+    // tasa no lleva nada y lo que cobramos va aparte, a la vista. Se conserva
+    // lo que sigue siendo cierto —ningún cobro aparece después— y el título.
+    // REQUIERE VALIDACIÓN DE COMPLIANCE — «de mercado, sin recargo».
+    body: 'La tasa es la de mercado, sin recargo. Lo que cobramos son dos líneas que ves antes de transferir: el costo de envío y la comisión de cambio. Nada aparece después.',
   },
   {
     icon: 'people',
@@ -170,7 +176,14 @@ export const dosCaminos = {
     filas: [
       { que: 'Cuándo se mueve', banco: 'En días hábiles y horario bancario', dlpay: 'Sin los horarios ni los días hábiles de la cadena bancaria' },
       { que: 'Por dónde pasa', banco: 'Una cadena de bancos corresponsales', dlpay: 'Un solo recorrido, del que nos ocupamos nosotros' },
-      { que: 'Qué pagas', banco: 'Comisiones y un tipo de cambio por separado', dlpay: 'Un solo número, que ya lo incluye todo' },
+      /* **Reescrita el 2026-10-27, con el tarifario.** Decía «Comisiones y un
+         tipo de cambio por separado» frente a «Un solo número, que ya lo
+         incluye todo», y desde ese día DLPay también cobra en dos líneas. Lo
+         que distingue no es cuántas son, sino dónde están: el banco carga
+         parte del cobro en el tipo de cambio, y acá la tasa no lleva nada.
+         REQUIERE VALIDACIÓN DE COMPLIANCE — es una afirmación sobre los bancos
+         en general, y «sin recargo» sobre nosotros. */
+      { que: 'Qué pagas', banco: 'Comisiones, y un recargo dentro del tipo de cambio', dlpay: 'La tasa de mercado, y dos cobros a la vista' },
       { que: 'Con quién hablas', banco: 'Formularios y sucursal', dlpay: 'Un ejecutivo por WhatsApp' },
     ],
   },
@@ -193,12 +206,18 @@ export const faq: FaqItem[] = [
     // canal** porque cambia por país y D16 está reabierta.
     q: '¿Qué recibe la persona a la que le envío?',
     concern: 'alcance',
-    a: 'Recibe en la moneda de su país. Nos ocupamos del recorrido completo: tú transfieres en pesos acá y el dinero llega allá. Cómo lo recibe y en cuánto tiempo depende del destino, y te lo confirma tu ejecutivo antes de que transfieras.',
+    // **China, en dólares, desde el 2026-10-27**: su tarifa paga dólares y no
+    // yuanes. Es la única excepción a «la moneda de su país», y esta es la
+    // respuesta que lo afirma más de frente, así que la dice acá.
+    a: 'Recibe en la moneda de su país, salvo en China, donde llega en dólares. Nos ocupamos del recorrido completo: tú transfieres en pesos acá y el dinero llega allá. Cómo lo recibe y en cuánto tiempo depende del destino, y te lo confirma tu ejecutivo antes de que transfieras.',
   },
   {
     q: '¿El precio de la web es el precio final?',
     concern: 'precio',
-    a: 'No. Es un precio referencial de mercado. Tu ejecutivo te confirma el precio final al momento de cerrar, porque el mercado se mueve. Preferimos decírtelo antes que después.',
+    // **Reescrita el 2026-10-27.** Con el tarifario el precio tiene dos
+    // partes y sólo una se mueve: la tasa. El costo de envío y la comisión son
+    // los de la tarifa. REQUIERE VALIDACIÓN DE COMPLIANCE.
+    a: 'No del todo. La tasa es la de mercado en ese momento, y tu ejecutivo te confirma la final al cerrar, porque el mercado se mueve. El costo de envío y la comisión de cambio son los de la tarifa, y los ves antes de transferir. Preferimos decírtelo antes que después.',
   },
   {
     // **Esta pregunta cambió de oficio el 2026-10-22.** Era «¿Qué es la

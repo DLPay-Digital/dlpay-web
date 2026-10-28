@@ -35,9 +35,11 @@ dejaría de ser un ejemplo. La aritmética está comprobada:
     Diferencia: 9,90.
   · 10.000.000 / 1.010 = 9.900,99. Diferencia con 10.000: 99,01.
 
-Lo que se afirma de DLPay son frases ya publicadas y firmadas: la
-composición, de `/tarifas`; «un solo cobro…», de `/precio`; el precio
-referencial y el ejecutivo, de los artículos del blog.
+Lo que se afirma de DLPay son frases ya publicadas: desde el 2026-10-27, el
+tarifario de `/tarifas` —tasa de mercado sin recargo, costo de envío y
+comisión de cambio—, que reemplaza a «un solo cobro…» de `/precio`; el precio
+referencial y el ejecutivo, de los artículos del blog. El párrafo nuevo
+necesita la misma firma que el resto del borrador.
 
 La herramienta «¿Cuánto te están cobrando por el dólar?» (`/cuanto-te-cobran/`)
 hace esta misma cuenta con los números de quien la usa, y se enlaza en «La
@@ -117,11 +119,13 @@ spread en porcentaje y en pesos.
 
 ## Qué hacemos en la mesa
 
-DLPay toma una referencia de mercado y le aplica su spread. El resultado es
-el precio que ves en el cotizador: un solo número, con el spread ya
-incorporado. No hay una comisión aparte que se sume al final: un solo cobro
-en toda la operación, y va dentro del precio. Cómo se compone, en detalle,
-está en [tarifas](/tarifas/).
+DLPay convierte a la tasa de mercado, sin recargo: medido con esta misma
+cuenta, el spread da cero. Lo que cobramos va aparte y a la vista, en dos
+líneas que el cotizador enseña antes de que transfieras: un costo de envío,
+fijo según el destino, y una comisión de cambio, un porcentaje que baja con el
+monto. Para compararnos con otro precio, súmalas y mira cuánto recibes al
+final, que es la comparación justa. Cuánto es cada una, por destino y por
+monto, está en [tarifas](/tarifas/).
 
 El precio que aparece en el cotizador es referencial, y el precio final lo
 confirma un ejecutivo antes de cerrar cada operación, porque el mercado se

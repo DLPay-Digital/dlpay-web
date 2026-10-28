@@ -39,6 +39,35 @@ export function formatForeign(value: number, decimals: 0 | 2): string {
   }).format(value);
 }
 
+/**
+ * Una comisión guardada en puntos básicos, como la escribe el sitio: 105 →
+ * «1,05 %». Siempre con dos decimales, para que los tres tramos de una tabla
+ * se lean alineados (1,20 % · 1,05 % · 0,95 %). Lo usan el cotizador, las
+ * tarjetas de Destinos, la Home, `/precio` y `/tarifas` (tarifario del
+ * 2026-10-27).
+ *
+ * **No se llama `formatPorcentaje`**, porque ese nombre ya lo tiene
+ * `lib/spread.ts`, que recibe el porcentaje y no los puntos básicos: dos
+ * funciones con el mismo nombre y distinta unidad son un 100× esperando a que
+ * alguien importe la equivocada. **El espacio antes del «%» es el fino que no
+ * corta (U+202F)**, el mismo de aquella: con un espacio normal, en una columna
+ * estrecha el «%» bajaba solo a su renglón.
+ */
+export function formatComision(pb: number): string {
+  return `${formatComisionCifra(pb)}\u202f%`;
+}
+
+/**
+ * La misma cifra sin el «%»: la tabla de `/tarifas` lo dice una vez en la
+ * cabecera, y así sus cinco columnas caben a 320 px.
+ */
+export function formatComisionCifra(pb: number): string {
+  return new Intl.NumberFormat(LOCALE, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(pb / 100);
+}
+
 /** Precio con 2 decimales: 919,70 */
 export function formatRate(value: number): string {
   return new Intl.NumberFormat(LOCALE, {

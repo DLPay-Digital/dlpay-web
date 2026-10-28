@@ -9,7 +9,8 @@
  * va cuando quiere el detalle. Aquí la Home dice qué pasa y ofrece la acción.
  *
  * REGLA DURA — las cifras no se escriben a mano. Salen de `ConfigPriceSource` y
- * de `convert()`, la misma función que usa el cotizador para la pantalla y para
+ * de la tarifa del destino (`cotizacionInicial`, desde el 2026-10-27; antes,
+ * `convert()`), la misma cuenta que usa el cotizador para la pantalla y para
  * el mensaje de WhatsApp. Un número escrito aparte habría divergido en el primer
  * cambio de precio: ya pasó con la aritmética del cotizador (auditoría
  * 2026-09-04, B1) y con el monto mínimo (D24). Si mañana entra una fuente de
@@ -26,16 +27,22 @@
  * paso del DS §6, y no la cuña del §6.2. C4 del diagnóstico de marcas.)
  */
 import Icon from './Icon.astro';
-import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
-import { convert, formatAmount } from '../lib/pricing/quote.ts';
-import { formatCLP, formatRate } from '../lib/pricing/format.ts';
+import { formatAmount } from '../lib/pricing/quote.ts';
+import { formatCLP, formatComision, formatRate } from '../lib/pricing/format.ts';
+import { cotizacionInicial } from '../lib/pricing/mensaje-inicial.ts';
 import { quoteLimits } from '../lib/config/site.ts';
-
-const price = await new ConfigPriceSource().getPrice();
 
 /** El mismo monto que carga el cotizador: un solo origen (D24). */
 const SAMPLE_PAY = quoteLimits.samplePayClp;
-const received = convert('to_foreign', SAMPLE_PAY, price.rate);
+
+/* **Desde el 2026-10-27, la cotización de partida con su tarifa** (ver
+   `mensaje-inicial.ts`). Lo que llega ya no es pesos ÷ tasa, así que la
+   tarjeta dice también qué se descontó: sin esa línea, quien divide 2.000.000
+   por la tasa del pie llega a otra cifra. */
+const inicial = await cotizacionInicial();
+const price = inicial.price;
+const received = inicial.getAmount;
+const { envio, comisionPb } = inicial.cargos;
 ---
 <section class="feature" id="como-funciona" aria-labelledby="feature-title">
   <div class="inner">
@@ -102,6 +109,10 @@ const received = convert('to_foreign', SAMPLE_PAY, price.rate);
 
         <p class="card-foot">
           <span class="num">1 USD = {formatRate(price.rate)} CLP</span>
+          {/* REQUIERE VALIDACIÓN DE COMPLIANCE — el costo de envío y la
+              comisión, como en el cotizador. En la letra del texto: es una
+              frase, aunque lleve cifras (DS §3.0, regla 5). */}
+          <span class="ref">Ya descontados CLP {formatCLP(envio)} de envío y {formatComision(comisionPb)} de comisión.</span>
           <span class="ref">Precio referencial. Lo confirma un ejecutivo.</span>
         </p>
       </div>

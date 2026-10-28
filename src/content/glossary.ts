@@ -75,20 +75,46 @@ export const glossary: readonly Term[] = [
     linkLabel: 'En el blog',
   },
   {
-    // Palabras de `home.ts`, respuesta «¿El precio de la web es el precio final?».
+    // Palabras de `home.ts`, respuesta «¿El precio de la web es el precio
+    // final?», reescrita el 2026-10-27 con el tarifario.
     term: 'Precio referencial',
     definition:
-      'El precio que ves en la web. Es una referencia de mercado: tu ejecutivo te confirma el precio final al momento de cerrar, porque el mercado se mueve.',
+      'La tasa que ves en la web: la de mercado en ese momento, sin recargo. Tu ejecutivo te confirma la final al cerrar, porque el mercado se mueve.',
+    href: '/tarifas/',
+    linkLabel: 'Tarifas',
+  },
+  /*
+    **Las dos entradas de lo que cobramos, desde el 2026-10-27.** Son los dos
+    nombres que el cotizador pone en el tramo, y un cliente que los lee ahí por
+    primera vez los busca acá. Dicen lo mismo que `/tarifas`, con sus palabras.
+    REQUIERE VALIDACIÓN DE COMPLIANCE.
+  */
+  {
+    term: 'Costo de envío',
+    definition:
+      'Un monto fijo por operación, según el destino. Cubre el costo fijo del envío y nada más: se calcula en dólares y se pasa a pesos con el dólar del día.',
     href: '/tarifas/',
     linkLabel: 'Tarifas',
   },
   {
-    // Palabras de `/tarifas`, «Cómo se compone el precio».
-    term: 'Spread',
+    term: 'Comisión de cambio',
     definition:
-      'La diferencia que DLPay aplica sobre la referencia de mercado. Ya viene incorporada en el número que ves: no hay una comisión aparte que se sume al final.',
+      'Un porcentaje de lo que envías, después del costo de envío. Depende del destino y baja con el monto. Es todo lo que DLPay cobra por cambiar.',
     href: '/tarifas/',
     linkLabel: 'Tarifas',
+  },
+  {
+    // **Reescrita el 2026-10-27.** Decía «La diferencia que DLPay aplica sobre
+    // la referencia de mercado. Ya viene incorporada en el número que ves», y
+    // con el tarifario DLPay dejó de cobrar así. La palabra se queda porque el
+    // blog y `/cuanto-te-cobran` la explican, y es la que un cliente necesita
+    // para leer el precio de otro. REQUIERE VALIDACIÓN DE COMPLIANCE — que
+    // DLPay no aplica spread.
+    term: 'Spread',
+    definition:
+      'La diferencia entre el tipo de cambio que te ofrecen y el de mercado: un cobro que va dentro del precio y no se ve. DLPay no lo aplica: usa la tasa de mercado y cobra aparte, a la vista.',
+    href: '/cuanto-te-cobran/',
+    linkLabel: 'Cuánto te cobran',
   },
   {
     // Copy nuevo, aprobado el 2026-09-23. **Reescrito el 2026-10-22**: decía

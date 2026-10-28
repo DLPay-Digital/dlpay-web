@@ -8,6 +8,7 @@
  */
 
 import type {
+  Cargos,
   Currency,
   Direction,
   ForeignCurrency,
@@ -16,6 +17,7 @@ import type {
   Quote,
   QuoteState,
 } from './types.ts';
+import type { TarifaCliente, Tramo } from './tarifario.ts';
 import { DEFAULT_CURRENCY, currencyInfo } from './currencies.ts';
 import { formatCLP, formatForeign, formatRate, formatUSD } from './format.ts';
 
@@ -41,14 +43,106 @@ export function directionFor(intent: Intent): Direction {
   return intent === 'to_clp' ? 'sell' : 'buy';
 }
 
+/**
+ * La conversión a la tasa, **sin cobros**. Desde el 2026-10-27 no es lo que
+ * llega —eso es `cargosDe`—, sino la mitad de la cuenta: lo que vale un monto
+ * a la tasa de mercado. Se conserva porque la usan la vuelta a pesos y los
+ * tests de la tasa.
+ */
 export function convert(intent: Intent, giveAmount: number, rate: number): number {
   if (rate <= 0) return 0;
   return directionFor(intent) === 'buy' ? giveAmount / rate : giveAmount * rate;
 }
 
-/** El monto en pesos de la operación, sea el que se entrega o el que se recibe. */
+/**
+ * El monto en pesos de la operación, el que decide el mínimo y el tramo: lo
+ * que envías, o lo que vale tu divisa a la tasa de mercado. En pesos enteros.
+ */
 export function clpAmount(intent: Intent, giveAmount: number, rate: number): number {
-  return directionFor(intent) === 'buy' ? giveAmount : convert(intent, giveAmount, rate);
+  if (!(giveAmount > 0)) return 0;
+  return Math.round(directionFor(intent) === 'buy' ? giveAmount : convert(intent, giveAmount, rate));
+}
+
+/** El tramo de un monto en pesos (copia de `tramoDe`, para que la isla no importe el tarifario). */
+function tramoClp(clp: number): Tramo {
+  return clp < 500_000 ? 0 : clp < 2_000_000 ? 1 : 2;
+}
+
+/**
+ * Lo que se cobra y lo que llega, con la cuenta del Excel (tarifario del
+ * 2026-10-27; ver `tarifario.ts`).
+ *
+ * **Envío** (`to_foreign`): de los pesos que envías se descuentan el costo de
+ * envío y la comisión —un porcentaje de lo que queda después del costo de
+ * envío—, y lo que sobra se convierte a la tasa.
+ *
+ * **Vuelta a pesos** (`to_clp`): la divisa se convierte a pesos a la tasa, y de
+ * esos pesos se descuentan el costo de envío y la comisión, con la misma
+ * cuenta. El tramo se mide en esos pesos.
+ *
+ * La comisión se redondea al peso, como el `ROUND(…; 0)` del Excel. El
+ * porcentaje va en puntos básicos para que el redondeo sea exacto.
+ *
+ * Nunca devuelve un negativo: si el monto no alcanza a cubrir el costo de
+ * envío, no llega nada, y eso lo dice el estado `below_min` mucho antes. Sin
+ * monto, o sin tasa, no hay cargos: el campo está vacío, no equivocado.
+ */
+export function cargosDe(
+  intent: Intent,
+  giveAmount: number,
+  rate: number,
+  tarifa: TarifaCliente
+): { cargos: Cargos; llega: number } {
+  const clp = clpAmount(intent, giveAmount, rate);
+  const tramo = tramoClp(clp);
+  const comisionPb = tarifa.comision[tramo];
+  const base = Math.max(clp - tarifa.envio, 0);
+  const comision = Math.round((base * comisionPb) / 10_000);
+  const neto = base - comision;
+  // El costo de envío es fijo y se muestra entero aunque el monto no lo cubra:
+  // es lo que costaría, y por eso un monto así está bajo el mínimo.
+  const cargos: Cargos = { envio: tarifa.envio, comision, comisionPb, tramo, aConvertir: clp };
+  if (!(rate > 0) || clp <= 0) return { cargos: { ...cargos, envio: 0, comision: 0 }, llega: 0 };
+  return directionFor(intent) === 'buy'
+    ? { cargos: { ...cargos, aConvertir: neto }, llega: neto / rate }
+    : { cargos, llega: neto };
+}
+
+/**
+ * La inversa de `cargosDe`: cuánto hay que poner para que llegue `objetivo`.
+ *
+ * No se despeja con una fórmula porque la cuenta tiene escalones —el
+ * redondeo de la comisión y el salto de tramo—, así que se busca: **el menor
+ * monto en pesos con el que llega al menos `objetivo`**. Lo que llega crece
+ * con lo que pones (al pasar de tramo, de golpe, porque la comisión baja), así
+ * que la búsqueda binaria vale.
+ *
+ * En un salto de tramo hay cifras a las que no se llega exactamente: con
+ * 499.999 llega un poco menos que con 500.000, y entre las dos no hay nada.
+ * Ahí devuelve 500.000, y el campo que llega muestra un poco más de lo que se
+ * escribió. Es lo honesto: no hay un monto que dé esa cifra.
+ */
+export function invertir(
+  intent: Intent,
+  objetivo: number,
+  rate: number,
+  tarifa: TarifaCliente
+): number {
+  if (!(objetivo > 0) || !(rate > 0)) return 0;
+  const buy = directionFor(intent) === 'buy';
+  // De pesos (lo que se busca) al monto que pone la persona.
+  const dar = (clp: number): number => (buy ? clp : clp / rate);
+  const llega = (clp: number): number => cargosDe(intent, dar(clp), rate, tarifa).llega;
+  const necesitaClp = buy ? objetivo * rate : objetivo;
+  let lo = 0;
+  let hi = Math.ceil(necesitaClp / 0.9) + tarifa.envio + 100;
+  while (llega(hi) < objetivo) hi *= 2;
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (llega(mid) >= objetivo - 1e-9) hi = mid;
+    else lo = mid + 1;
+  }
+  return dar(lo);
 }
 
 export function resolveState(clp: number, minPay: number, maxPay?: number): QuoteState {
@@ -61,21 +155,25 @@ export function buildQuote(input: {
   intent: Intent;
   giveAmount: number;
   price: PriceReference;
+  /** La tarifa del destino, o la de la vuelta a pesos (`tarifario.ts`). */
+  tarifa: TarifaCliente;
   minPay: number;
   maxPay?: number;
 }): Quote {
-  const { intent, giveAmount, price, minPay, maxPay } = input;
+  const { intent, giveAmount, price, tarifa, minPay, maxPay } = input;
   const clp = clpAmount(intent, giveAmount, price.rate);
+  const { cargos, llega } = cargosDe(intent, giveAmount, price.rate, tarifa);
 
   return {
     intent,
     direction: directionFor(intent),
     payAmount: clp,
     payCurrency: 'CLP',
-    getAmount: convert(intent, giveAmount, price.rate),
+    getAmount: llega,
     getCurrency: currenciesFor(intent, price.currency).get,
     price,
-    spreadIncluded: true,
+    rateWithoutMarkup: true,
+    cargos,
     isReferential: true,
     minPay,
     ...(maxPay !== undefined ? { maxPay } : {}),
@@ -211,10 +309,17 @@ export function whatsappMessage(quote: Quote, giveAmount: number, destino?: stri
 
     De 164 a 131 caracteres; la burbuja baja de 10 a 9 líneas a 390 px y de 10
     a 8 a 1280.
+
+    **«netos», desde el 2026-10-27.** Con el tarifario, lo que llega ya no es
+    pesos ÷ tasa: van descontados el costo de envío y la comisión. Sin la
+    palabra, el ejecutivo que hace la división de cabeza con la tasa del
+    paréntesis llega a otra cifra y no sabe cuál vale. Son seis caracteres; el
+    desglose entero no cabe en la burbuja y no hace falta: el ejecutivo lo
+    rehace con la tarifa.
   */
   return (
     `Hola, quiero ${what[intent]}. ${envio ? 'Llegan' : 'Recibo'} aprox. ` +
-    `${formatAmount(quote.getAmount, get)} (${precioLegible(price.rate, price.currency)}). ` +
+    `${formatAmount(quote.getAmount, get)} netos (${precioLegible(price.rate, price.currency)}). ` +
     `¿Me confirman el precio final?`
   );
 }

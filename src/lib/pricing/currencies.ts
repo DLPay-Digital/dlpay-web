@@ -1,5 +1,6 @@
 /**
- * El catálogo de divisas del cotizador (ADR-0013, 2026-10-21).
+ * El catálogo de divisas del cotizador (ADR-0013, 2026-10-21; rehecho con el
+ * tarifario el 2026-10-27).
  *
  * Hasta hoy el sitio cambiaba pesos por dólares y nada más, así que la moneda
  * no era un dato: era una constante repartida por el código. Con doce divisas
@@ -20,12 +21,23 @@
  * resto. Es el `PENDIENTE DE DECISIÓN` que ADR-0013 deja abierto, y la
  * protección es la misma de arriba: una divisa sin tasa no se puede ofrecer.
  *
- * ── Trece destinos, doce divisas ──────────────────────────────────────────
+ * ── Once destinos, nueve divisas (2026-10-27) ──────────────────────────────
  *
- * La lista la dio Sebastián el 2026-10-21 y es abierta. **Ecuador no añade
- * moneda**: está dolarizado, así que entra como destino del dólar. Por eso
- * `destinations` es una lista y no un nombre — la relación entre país y divisa
- * no es uno a uno, y el día que entre otro país dolarizado se añade ahí.
+ * **La lista ya no la decide este archivo: la decide el tarifario**
+ * (`tarifario.ts`). Sebastián fijó el 2026-10-27 que se cotiza donde hay una
+ * tarifa, así que el catálogo tiene las divisas de esos destinos y nada más:
+ *
+ * - **salen** Bolivia, Ecuador, Japón, Paraguay, Uruguay y Venezuela, que no
+ *   tienen tarifa, y con ellos BOB, JPY, PYG, UYU y VES;
+ * - **China llega en dólares** («USD China» en el tarifario), así que sale
+ *   también el yuan;
+ * - **entran** México (MXN), Costa Rica (CRC), Sudáfrica (ZAR) y Panamá, que
+ *   llega en dólares.
+ *
+ * Del 21 al 27 de octubre fueron trece destinos y doce divisas; el historial
+ * guarda la lista. `destinations` sigue siendo una lista y no un nombre: el
+ * dólar sirve a tres —Estados Unidos, China y Panamá—, y cada uno con su
+ * propia tarifa, porque lo que cuesta enviar depende de a dónde y no de en qué.
  */
 
 /** Las divisas de destino. El peso chileno no es una de ellas: es el origen. */
@@ -33,15 +45,12 @@ export type ForeignCurrency =
   | 'USD'
   | 'EUR'
   | 'ARS'
-  | 'BOB'
   | 'BRL'
-  | 'CNY'
   | 'COP'
-  | 'JPY'
+  | 'CRC'
+  | 'MXN'
   | 'PEN'
-  | 'PYG'
-  | 'UYU'
-  | 'VES';
+  | 'ZAR';
 
 /** La moneda que ve el usuario: el peso de origen o la divisa de destino. */
 export type Currency = 'CLP' | ForeignCurrency;
@@ -82,9 +91,9 @@ export interface CurrencyInfo {
    *
    * Lo que impide que esto se publique: `assertRatesConfirmed`, que detiene el
    * build con `PUBLIC_ALLOW_INDEXING=true` mientras alguna divisa siga
-   * corriendo con su muestra. El sitio público necesita las doce confirmadas.
+   * corriendo con su muestra. El sitio público necesita las nueve confirmadas.
    *
-   * REQUIERE VALIDACIÓN DE COMPLIANCE — las doce tasas (D7).
+   * REQUIERE VALIDACIÓN DE COMPLIANCE — las nueve tasas (D7).
    */
   sample: number;
   /**
@@ -125,19 +134,25 @@ export interface IslandCurrency {
 
 export const DEFAULT_CURRENCY: ForeignCurrency = 'USD';
 
+/*
+  **Las tres muestras nuevas (MXN, CRC, ZAR) siguen la regla de las otras**:
+  orden de magnitud sobre la muestra del dólar, 919,70, y no sobre un precio de
+  hoy. MXN sale de la relación peso mexicano/dólar que publicaba Global66 el
+  2026-10-27 (≈ 18,7); CRC (≈ 505) y ZAR (≈ 17,6) no se pudieron mirar y son
+  las menos fiables de las nueve. **Las muestras de antes no se tocaron**,
+  aunque algunas ya envejecieron —el dólar del tarifario de Sebastián es 982—:
+  moverlas es D7, y el build no deja publicar ninguna.
+*/
 export const currencies: readonly CurrencyInfo[] = [
-  { code: 'USD', name: 'dólar',           plural: 'dólares',         destinations: ['Estados Unidos', 'Ecuador'], sample: 919.70,  decimals: 2, envVar: 'PUBLIC_QUOTE_SAMPLE_RATE' },
-  { code: 'EUR', name: 'euro',            plural: 'euros',           destinations: ['Europa'],                    sample: 993,     decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_EUR' },
-  { code: 'ARS', name: 'peso argentino',  plural: 'pesos argentinos', destinations: ['Argentina'],                 sample: 0.92,    decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_ARS' },
-  { code: 'BOB', name: 'boliviano',       plural: 'bolivianos',      destinations: ['Bolivia'],                   sample: 133,     decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_BOB' },
-  { code: 'BRL', name: 'real',            plural: 'reales',          destinations: ['Brasil'],                    sample: 165,     decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_BRL' },
-  { code: 'CNY', name: 'yuan',            plural: 'yuanes',          destinations: ['China'],                     sample: 129,     decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_CNY' },
-  { code: 'COP', name: 'peso colombiano', plural: 'pesos colombianos', destinations: ['Colombia'],                  sample: 0.23,    decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_COP' },
-  { code: 'JPY', name: 'yen',             plural: 'yenes',           destinations: ['Japón'],                     sample: 5.98,    decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_JPY' },
-  { code: 'PEN', name: 'sol',             plural: 'soles',           destinations: ['Perú'],                      sample: 248,     decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_PEN' },
-  { code: 'PYG', name: 'guaraní',         plural: 'guaraníes',       destinations: ['Paraguay'],                  sample: 0.12,    decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_PYG' },
-  { code: 'UYU', name: 'peso uruguayo',   plural: 'pesos uruguayos', destinations: ['Uruguay'],                   sample: 23,      decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_UYU' },
-  { code: 'VES', name: 'bolívar',         plural: 'bolívares',       destinations: ['Venezuela'],                 sample: 25,      decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_VES' },
+  { code: 'USD', name: 'dólar',           plural: 'dólares',           destinations: ['Estados Unidos', 'China', 'Panamá'], sample: 919.70, decimals: 2, envVar: 'PUBLIC_QUOTE_SAMPLE_RATE' },
+  { code: 'EUR', name: 'euro',            plural: 'euros',             destinations: ['Europa'],     sample: 993,  decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_EUR' },
+  { code: 'ARS', name: 'peso argentino',  plural: 'pesos argentinos',  destinations: ['Argentina'],  sample: 0.92, decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_ARS' },
+  { code: 'BRL', name: 'real',            plural: 'reales',            destinations: ['Brasil'],     sample: 165,  decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_BRL' },
+  { code: 'COP', name: 'peso colombiano', plural: 'pesos colombianos', destinations: ['Colombia'],   sample: 0.23, decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_COP' },
+  { code: 'CRC', name: 'colón',           plural: 'colones',           destinations: ['Costa Rica'], sample: 1.82, decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_CRC' },
+  { code: 'MXN', name: 'peso mexicano',   plural: 'pesos mexicanos',   destinations: ['México'],     sample: 49.2, decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_MXN' },
+  { code: 'PEN', name: 'sol',             plural: 'soles',             destinations: ['Perú'],       sample: 248,  decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_PEN' },
+  { code: 'ZAR', name: 'rand',            plural: 'rands',             destinations: ['Sudáfrica'],  sample: 52.3, decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_ZAR' },
 ];
 
 const byCode = new Map(currencies.map((c) => [c.code, c]));
@@ -157,14 +172,14 @@ export function isForeignCurrency(value: unknown): value is ForeignCurrency {
 /**
  * La tasa de muestra de una divisa, o `undefined` si nadie la definió.
  *
- * `undefined` no es un fallo: es el estado normal de once de las doce mientras
- * D7 siga abierta, y es lo que mantiene esa divisa fuera del selector.
+ * `undefined` no es un fallo: es el estado normal de casi todas mientras D7 siga
+ * abierta, y lo que hace es dejar esa divisa en su muestra.
  */
 export function rateFor(code: ForeignCurrency, env: Record<string, unknown>): number {
   return confirmedRate(code, env) ?? currencyInfo(code).sample;
 }
 
-/** La tasa que alguien confirmó, o nada. Lo segundo es hoy el caso de las doce. */
+/** La tasa que alguien confirmó, o nada. Lo segundo es hoy el caso de las nueve. */
 export function confirmedRate(
   code: ForeignCurrency,
   env: Record<string, unknown>
@@ -182,7 +197,8 @@ export function unconfirmed(env: Record<string, unknown>): readonly ForeignCurre
 /**
  * Las divisas que el cotizador ofrece.
  *
- * **Son las doce desde el 2026-10-22**, porque todas tienen tasa: la confirmada
+ * **Son todas las del catálogo desde el 2026-10-22** —nueve desde el 27—,
+ * porque todas tienen tasa: la confirmada
  * si alguien la puso, y si no, la de muestra. Hasta ese día sólo aparecían las
  * que tuvieran variable de entorno, y eso dejaba el selector con una sola
  * opción — correcto, y también invisible.
@@ -209,10 +225,12 @@ export const DEFAULT_DESTINO = 'Estados Unidos';
  * `cotizador-`, 2026-10-22).
  *
  * El cotizador dejó de preguntar «¿a qué moneda?» y pregunta «¿a dónde
- * envías?»: así se piensa un envío, y la moneda sale sola. Son trece, uno más
- * que las divisas, porque el dólar sirve a dos —Estados Unidos y Ecuador—.
- * **Se derivan del catálogo y no se escriben aparte**: una divisa nueva trae
- * sus destinos consigo y aparece acá sin tocar nada más.
+ * envías?»: así se piensa un envío, y la moneda sale sola. **Son once desde el
+ * 2026-10-27**, dos más que las divisas, porque el dólar sirve a tres
+ * —Estados Unidos, China y Panamá—. Se derivan del catálogo y no se escriben
+ * aparte, y **cada uno tiene que tener su tarifa** en `tarifario.ts`:
+ * `tests/tarifario.test.ts` falla si un destino queda sin ella o una tarifa
+ * sin destino.
  */
 export function destinos(): readonly Destino[] {
   return availableCurrencies()
@@ -225,7 +243,7 @@ export function destinos(): readonly Destino[] {
  *
  * ── Por qué existe ─────────────────────────────────────────────────────────
  *
- * Las doce tasas del catálogo son **marcadores de posición**: órdenes de
+ * Las tasas del catálogo son **marcadores de posición**: órdenes de
  * magnitud sobre la tasa de muestra del dólar, no precios. Sirven para que el
  * cotizador se pueda ver y probar mientras D7 sigue abierta, que es lo que
  * Sebastián pidió el 2026-10-22.

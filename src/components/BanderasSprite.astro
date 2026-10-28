@@ -1,7 +1,8 @@
 ---
 /**
- * Las catorce banderas, una sola vez por página (Cowork, entrega `wise-`,
- * 2026-10-22).
+ * Las banderas, una sola vez por página (Cowork, entrega `wise-`,
+ * 2026-10-22). Eran catorce; desde el 2026-10-27 son doce: los once destinos
+ * del tarifario y Chile.
  *
  * Cada `<Bandera>` es un `<use>` que apunta a uno de estos `<symbol>`. **Va una
  * vez en cada página que use banderas, y hoy es sólo la Home**: el cotizador y
@@ -19,7 +20,7 @@
  * sola vez.
  *
  * **`codigos`, desde el 2026-10-23** (entrega `vida2-`): una página que pinta
- * dos banderas no tiene por qué cargar las catorce. `/como-funciona` pasa
+ * dos banderas no tiene por qué cargarlas todas. `/como-funciona` pasa
  * `['cl', 'us']` y se ahorra 6,4 KB de HTML (1,7 KB comprimido). Sin la prop
  * van todas, como en la Home. El test de arriba sigue valiendo igual: si una página pinta una
  * bandera que no pidió, falla y dice cuál.
@@ -27,7 +28,7 @@
 import { BANDERAS, CODIGOS_BANDERA, type CodigoBandera } from '../lib/banderas.ts';
 
 interface Props {
-  /** Las que pinta la página. Sin la prop, las catorce. */
+  /** Las que pinta la página. Sin la prop, todas. */
   codigos?: readonly CodigoBandera[];
 }
 const { codigos = CODIGOS_BANDERA } = Astro.props;

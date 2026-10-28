@@ -2,6 +2,13 @@
 /**
  * La figura del puente a `/tarifas`: **el número, y lo que tiene dentro.**
  *
+ * > **Desde el 2026-10-27 (tarifario) lo que tiene dentro cambió de sentido.**
+ * > La llave abarcaba «la referencia de mercado y nuestro spread, los dos
+ * > adentro». Con el tarifario la tasa no lleva nada y el cobro va aparte: lo
+ * > que la llave abarca ahora es **lo que llega, ya sin los dos cobros**, y eso
+ * > dice el pie. La forma no cambia: sigue sin partirse, porque después de esa
+ * > cifra no se descuenta nada más. Lo de abajo es la historia de la pieza.
+ *
  * Es la figura de `pages/tarifas.astro`, **copiada y no factorizada**, a pedido
  * explícito de la entrega: si mañana la de destino cambia, el puente se queda
  * como está hasta que alguien lo mire. Un puente que se actualiza solo puede
@@ -73,16 +80,18 @@
  * rancia — pasó el 2026-10-02 y se diagnosticó como un fallo de color que no
  * era. Si alguien «simplifica» ese fondo, rompe la pieza.
  */
-import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
-import { convert, formatAmount } from '../lib/pricing/quote.ts';
-import { quoteLimits } from '../lib/config/site.ts';
+import { formatAmount } from '../lib/pricing/quote.ts';
+import { cotizacionInicial } from '../lib/pricing/mensaje-inicial.ts';
 
-const price = await new ConfigPriceSource().getPrice();
 /* Sigue en USD a propósito (Sebastián, 2026-10-22): el puente enseña la cifra
    que el cotizador da al abrir, y el cotizador abre en Estados Unidos
    (`DEFAULT_DESTINO`). Si cambia el destino con que abre, esto cambia con él.
-   Las demás cifras de ejemplo van con «$» (DS §5). */
-const recibes = formatAmount(convert('to_foreign', quoteLimits.samplePayClp, price.rate), 'USD').replace('US$ ', '');
+   Las demás cifras de ejemplo van con «$» (DS §5).
+
+   **Desde el 2026-10-27 es la cotización de partida, con su tarifa**: lo que
+   llega ya va sin el costo de envío ni la comisión, así que la división por
+   la tasa que hacía este archivo daba otra cifra que el cotizador. */
+const recibes = formatAmount((await cotizacionInicial()).getAmount, 'USD').replace('US$ ', '');
 ---
 <div class="ft">
   <div class="llave" data-enter></div>
@@ -92,7 +101,10 @@ const recibes = formatAmount(convert('to_foreign', quoteLimits.samplePayClp, pri
       <span class="num"><span class="cifra">{recibes} </span><span class="div">USD</span></span>
     </div>
     <div class="limite punteado-v"></div>
-    <p class="pie">el precio que ves</p>
+    {/* Decía «el precio que ves» hasta el 2026-10-27: con el tarifario, lo que
+        se ve es lo que llega, ya sin los dos cobros. REQUIERE VALIDACIÓN DE
+        COMPLIANCE. */}
+    <p class="pie">ya sin los dos cobros</p>
   </div>
   <p class="fin" data-enter><b>acá termina</b><span>y no se suma nada</span></p>
 </div>

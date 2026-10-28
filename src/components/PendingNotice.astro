@@ -39,7 +39,17 @@ const { title } = Astro.props;
     line-height: var(--lh-h3);
     margin-bottom: var(--s-3);
   }
-  .pending :global(p) { color: var(--ink-mute); margin-bottom: var(--s-3); }
+  /*
+    **16 px y no 12 entre párrafos, desde el 2026-10-27, y es la medida que ya
+    se veía.** Esta regla decía `--s-3` y la de la prosa de las legales —y la
+    del cuerpo de `/tarifas`— decía `--s-4`, con la misma especificidad: ganaba
+    la que llegara última, y llegaba última la de la página porque esta hoja se
+    compartía con `/tarifas` y Vite la ponía antes. Cuando `/tarifas` dejó de
+    usar el aviso (tarifario), la hoja cambió de lugar y los tres avisos de las
+    legales perdieron 4 px. Ahora el aviso dice lo que se publicaba, y el orden
+    deja de importar.
+  */
+  .pending :global(p) { color: var(--ink-mute); margin-bottom: var(--s-4); }
   .pending :global(p:last-child) { margin-bottom: 0; }
   @media (min-width: 900px) {
     h2 { font-size: var(--t-h3); }

@@ -1,14 +1,19 @@
 /**
  * Contrato del cotizador (docs/design-system/cotizador-spec.md §6).
  *
- * La UI sólo consume un objeto `Quote`. No conoce la fuente del precio ni la
- * fórmula del spread. La cadena Market Price -> Pricing/Spread -> Quote -> UI
- * se respeta a nivel de TIPOS, no de infraestructura: no hay servicio, ni caché
+ * La UI sólo consume un objeto `Quote`. No conoce la fuente del precio ni de
+ * dónde sale la tarifa. La cadena Market Price -> Tarifa -> Quote -> UI se
+ * respeta a nivel de TIPOS, no de infraestructura: no hay servicio, ni caché
  * distribuida, ni cola. Un módulo, una interfaz, una config.
+ *
+ * **Desde el 2026-10-27 la cadena ya no dice «Pricing/Spread».** La tasa es la
+ * de mercado, sin recargo, y lo que DLPay cobra va aparte y a la vista: un
+ * costo de envío y una comisión de cambio (`tarifario.ts`).
  */
 
 import type { Currency, ForeignCurrency } from './currencies.ts';
-export type { Currency, ForeignCurrency };
+import type { Tramo } from './tarifario.ts';
+export type { Currency, ForeignCurrency, Tramo };
 
 export type Direction = 'buy' | 'sell';
 
@@ -82,17 +87,43 @@ export interface PriceReference {
   asOf: Date;
 }
 
+/**
+ * Lo que DLPay cobra en una cotización, en pesos (tarifario del 2026-10-27).
+ *
+ * Son dos líneas y nada más, y las dos se ven en el cotizador: no hay un
+ * tercer cobro en otra parte. Ver la cuenta en `tarifario.ts`.
+ */
+export interface Cargos {
+  /** El costo de envío, en pesos. */
+  envio: number;
+  /** La comisión de cambio, en pesos. */
+  comision: number;
+  /** El porcentaje que se aplicó, en puntos básicos: 105 = 1,05 %. */
+  comisionPb: number;
+  tramo: Tramo;
+  /**
+   * Los pesos que se convierten a la tasa de mercado (envío), o los que salen
+   * de convertir la divisa (vuelta a pesos), antes de descontar nada.
+   */
+  aConvertir: number;
+}
+
 export interface Quote {
   intent: Intent;
   direction: Direction;
   payAmount: number;
   payCurrency: 'CLP';
-  /** Estimado, nunca comprometido. */
+  /** Estimado, nunca comprometido. Ya descontados los dos cargos. */
   getAmount: number;
   getCurrency: Currency;
   price: PriceReference;
-  /** El precio mostrado ya incluye el spread. */
-  spreadIncluded: true;
+  /**
+   * **La tasa es la de mercado y no lleva recargo.** Literal, como
+   * `isReferential`: hasta el 2026-10-27 este campo era `spreadIncluded: true`
+   * —«el precio mostrado ya incluye el spread»—, y era el modelo contrario.
+   */
+  rateWithoutMarkup: true;
+  cargos: Cargos;
   /** V1 NUNCA entrega una cotización cerrada. Literal, no booleano variable. */
   isReferential: true;
   minPay?: number;

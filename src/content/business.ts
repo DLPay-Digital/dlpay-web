@@ -125,8 +125,17 @@ export const checklist: readonly ChecklistItem[] = [
  * se cierren, la frase cambia acá y cambia en las dos páginas — y este
  * comentario es lo que hará que alguien la revise entonces.
  */
+/*
+  **Reescrita el 2026-10-27, con el tarifario.** Decía «Las condiciones se
+  conversan según volumen y frecuencia: no publicamos una tabla por tramos», y
+  desde ese día la tabla existe y está en `/tarifas`: la comisión baja en tres
+  tramos. Lo que no cambió es que una empresa que opera montos grandes o
+  seguido conversa sus condiciones con el ejecutivo, que es lo que `/precio`
+  publica desde el 2026-10-26. La segunda frase se conserva tal cual.
+  PENDIENTE DE DECISIÓN — que sobre la tabla todavía se conversen condiciones.
+*/
 export const volumeTerms =
-  'Las condiciones se conversan según volumen y frecuencia: no publicamos una tabla por tramos. La operación pesa donde el spread de un banco pesa de verdad y una app retail no alcanza.';
+  'La comisión de cambio baja con el monto, en tres tramos que publicamos en las tarifas. Sobre eso, si tu empresa opera montos grandes o de forma recurrente, las condiciones se conversan con tu ejecutivo. La operación pesa donde el spread de un banco pesa de verdad y una app retail no alcanza.';
 
 export const faq: readonly FaqItem[] = [
   {

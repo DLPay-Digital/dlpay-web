@@ -62,17 +62,16 @@
  */
 import WhatsAppMockup from './WhatsAppMockup.astro';
 import Bandera from './Bandera.astro';
-import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
-import { buildQuote } from '../lib/pricing/quote.ts';
 import { currencyInfo, DEFAULT_CURRENCY, DEFAULT_DESTINO } from '../lib/pricing/currencies.ts';
 import { formatCLP, formatForeign } from '../lib/pricing/format.ts';
-import { mensajeInicial } from '../lib/pricing/mensaje-inicial.ts';
+import { cotizacionInicial, mensajeInicial } from '../lib/pricing/mensaje-inicial.ts';
 import { banderaDeDestino } from '../lib/banderas.ts';
 import { quoteLimits } from '../lib/config/site.ts';
 
-const price = await new ConfigPriceSource(DEFAULT_CURRENCY).getPrice();
-const { minPayClp: minPay, maxPayClp: maxPay, samplePayClp: monto } = quoteLimits;
-const quote = buildQuote({ intent: 'to_foreign', giveAmount: monto, price, minPay, ...(maxPay !== undefined ? { maxPay } : {}) });
+/* La cotización con que abre el cotizador, con su tarifa (2026-10-27): lo que
+   llega ya va sin el costo de envío ni la comisión. */
+const quote = await cotizacionInicial();
+const monto = quoteLimits.samplePayClp;
 const mensaje = await mensajeInicial();
 const destino = banderaDeDestino(DEFAULT_DESTINO) ?? 'us';
 

@@ -19,9 +19,18 @@
  *    cotizador.
  *
  * **Lo que NO se trae de Wise**, porque el sitio no puede decirlo: «llega en 20
- * segundos» (ADR-0014 §3, ningún plazo de la entrega final), las comisiones
- * desglosadas (aquí el precio ya incluye el spread), las reseñas y las cifras de
- * clientes (no las hay), y «regulado por» (§6).
+ * segundos» (ADR-0014 §3, ningún plazo de la entrega final), las reseñas y las
+ * cifras de clientes (no las hay), y «regulado por» (§6). *Las comisiones
+ * desglosadas, que tampoco se traían porque el precio incluía el spread, sí
+ * entran desde el 2026-10-27*: con el tarifario cada tarjeta dice su costo de
+ * envío, su comisión y cuánto se cobra en cada monto.
+ *
+ * ── Once destinos, desde el 2026-10-27 ─────────────────────────────────────
+ * Eran trece. Con el tarifario se cotiza donde hay tarifa (Sebastián): salen
+ * Bolivia, Ecuador, Japón, Paraguay, Uruguay y Venezuela, y entran Costa Rica,
+ * México, Panamá y Sudáfrica. **El titular deja de decir «cada uno en su
+ * moneda»** —que había validado Sebastián el 2026-10-22— porque deja de ser
+ * cierto: China llega en dólares. Su tarjeta lo dice.
  *
  * ── El movimiento: motion-e6 (ADR-0016) ─────────────────────────────────────
  * Va ligado al desplazamiento (`animation-timeline: view()`), no al reloj: no
@@ -38,27 +47,42 @@ import Bandera from './Bandera.astro';
 import Icon from './Icon.astro';
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import { currencyInfo, destinos } from '../lib/pricing/currencies.ts';
-import { convert, formatAmount, precioLegible } from '../lib/pricing/quote.ts';
+import { cargosDe, formatAmount, precioLegible } from '../lib/pricing/quote.ts';
+import { formatComision } from '../lib/pricing/format.ts';
+import { TRAMOS_CLP, tarifaClienteDe, tarifaDe } from '../lib/pricing/tarifario.ts';
 import { quoteLimits } from '../lib/config/site.ts';
 import { banderaDeDestino } from '../lib/banderas.ts';
 
-/* Cinco montos habituales, desde el mínimo real (D6: CLP 500.000). Wise empieza
-   en 1 peso; acá un monto bajo el mínimo enseñaría una operación que no se hace. */
-const MONTOS = [1, 2, 4, 10, 20].map((k) => k * quoteLimits.minPayClp);
+/* Cinco montos: el mínimo, uno chico y el comienzo de cada tramo con uno entre
+   medio (2026-10-27). Hasta ese día eran 1, 2, 4, 10 y 20 veces el mínimo, que
+   era 500.000; con 20.000 esa serie se quedaba entera en el primer tramo y no
+   enseñaba que la comisión baja. Wise empieza en 1 peso; acá un monto bajo el
+   mínimo enseñaría una operación que no se hace. */
+const MONTOS = [quoteLimits.minPayClp, 100_000, TRAMOS_CLP[0], 1_000_000, TRAMOS_CLP[1]];
 
 const lugares = await Promise.all(
   destinos().map(async (l) => {
     const { rate } = await new ConfigPriceSource(l.code).getPrice();
+    const tarifa = await tarifaClienteDe(l.destino);
     const info = currencyInfo(l.code);
+    const [p1, , p3] = tarifa.comision;
     return {
       ...l,
       bandera: banderaDeDestino(l.destino) ?? 'us',
       moneda: info.name.charAt(0).toUpperCase() + info.name.slice(1),
+      enSuMoneda: tarifaDe(l.destino)?.enSuMoneda ?? true,
+      plural: info.plural,
       precio: precioLegible(rate, l.code),
-      filas: MONTOS.map((clp) => ({
-        envias: formatAmount(clp, 'CLP'),
-        llega: formatAmount(convert('to_foreign', clp, rate), l.code),
-      })),
+      envio: formatAmount(tarifa.envio, 'CLP'),
+      comision: p1 === p3 ? formatComision(p1) : `${formatComision(p1)} a ${formatComision(p3)}`,
+      filas: MONTOS.map((clp) => {
+        const { cargos, llega } = cargosDe('to_foreign', clp, rate, tarifa);
+        return {
+          envias: formatAmount(clp, 'CLP'),
+          cobro: formatAmount(cargos.envio + cargos.comision, 'CLP'),
+          llega: formatAmount(llega, l.code),
+        };
+      }),
     };
   })
 );
@@ -67,15 +91,24 @@ const lugares = await Promise.all(
    de su columna. Con columnas de CSS el navegador las rebalanceaba al abrir, y
    una tarjeta saltaba de una columna a otra. Bajo 900 px las tres listas van
    una tras otra y el orden se lee seguido. */
-const columnas = [lugares.slice(0, 5), lugares.slice(5, 9), lugares.slice(9)];
+const columnas = [lugares.slice(0, 4), lugares.slice(4, 8), lugares.slice(8)];
+
+/* El titular cuenta los destinos y no los teclea: eran trece hasta el
+   2026-10-27 y «Trece» estaba escrito a mano. Con una lista abierta, el número
+   sale de la lista. */
+const LETRAS = ['Cero', 'Un', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis', 'Siete', 'Ocho', 'Nueve', 'Diez', 'Once', 'Doce', 'Trece', 'Catorce', 'Quince'];
+const enLetras = (n: number): string => LETRAS[n] ?? String(n);
 ---
 <section class="destinos" aria-labelledby="destinos-title">
   <div class="inner">
     <header class="head">
-      <h2 id="destinos-title" data-enter>Trece destinos, cada uno en su moneda</h2>
+      {/* REQUIERE VALIDACIÓN DE COMPLIANCE — «ya descontados el costo de envío y
+          la comisión», y las cifras de cada tarjeta (tarifario, 2026-10-27). */}
+      <h2 id="destinos-title" data-enter>{enLetras(lugares.length)} destinos, y cuánto llega a cada uno</h2>
       <p data-enter>
-        Elige uno y mira cuánto llega. Son montos referenciales: el precio final te lo
-        confirma tu ejecutivo antes de que transfieras.
+        Elige uno y mira cuánto llega, ya descontados el costo de envío y la comisión. Son
+        montos referenciales: el precio final te lo confirma tu ejecutivo antes de que
+        transfieras.
       </p>
     </header>
   </div>
@@ -114,14 +147,20 @@ const columnas = [lugares.slice(0, 5), lugares.slice(5, 9), lugares.slice(9)];
             </summary>
             <div class="d-cuerpo">
               <p class="d-precio"><span>Precio referencial</span> <span class="num">{l.precio}</span></p>
+              <p class="d-tarifa">
+                Costo de envío <span class="num">{l.envio}</span> · comisión <span class="num">{l.comision}</span>
+              </p>
+              {!l.enSuMoneda && (
+                <p class="d-aviso">Llega en {l.plural}, no en la moneda local.</p>
+              )}
               <table class="d-tabla">
-                <caption class="sr-only">Cuánto llega a {l.destino}, aproximado</caption>
+                <caption class="sr-only">Cuánto se cobra y cuánto llega a {l.destino}, aproximado</caption>
                 <thead>
-                  <tr><th scope="col">Envías</th><th scope="col">Llega aprox.</th></tr>
+                  <tr><th scope="col">Envías</th><th scope="col">Cobro</th><th scope="col">Llega aprox.</th></tr>
                 </thead>
                 <tbody>
                   {l.filas.map((f) => (
-                    <tr><td class="num">{f.envias}</td><td class="num">{f.llega}</td></tr>
+                    <tr><td class="num">{f.envias}</td><td class="num">{f.cobro}</td><td class="num">{f.llega}</td></tr>
                   ))}
                 </tbody>
               </table>
@@ -135,7 +174,7 @@ const columnas = [lugares.slice(0, 5), lugares.slice(5, 9), lugares.slice(9)];
       </ul>
       ))}
     </div>
-    <p class="nota">Los montos usan el mismo precio referencial que el cotizador.</p>
+    <p class="nota">Los montos usan el mismo precio referencial y la misma tarifa que el cotizador. Las tarifas completas están en <a href="/tarifas/">tarifas</a>.</p>
   </div>
 </section>
 
@@ -258,6 +297,24 @@ const columnas = [lugares.slice(0, 5), lugares.slice(5, 9), lugares.slice(9)];
     color: var(--ink-mute);
   }
   .d-precio .num { font-weight: 600; color: var(--ink); white-space: nowrap; }
+  /* La tarifa del destino, bajo el precio y en su misma letra (2026-10-27).
+     Si no cabe en una línea se parte por el «·», no dentro de una cifra. */
+  .d-tarifa {
+    padding: 0 0 var(--s-2);
+    font-size: var(--t-label);
+    line-height: 1.45;
+    color: var(--ink-mute);
+  }
+  .d-tarifa .num { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  /* China llega en dólares: se dice en la tarjeta, en tinta, sin color de
+     alerta —no es un error, es un dato—. */
+  .d-aviso {
+    padding: 0 0 var(--s-2);
+    font-size: var(--t-label);
+    line-height: 1.45;
+    font-weight: 600;
+    color: var(--ink);
+  }
   .destino :global(.d-ico) { flex: none; color: var(--ink-mute); transform: rotate(90deg); transition: transform var(--m-fast) var(--m-ease); }
   .destino[open] :global(.d-ico) { transform: rotate(-90deg); }
   @media (prefers-reduced-motion: reduce) { .destino :global(.d-ico) { transition: none; } }
@@ -272,7 +329,16 @@ const columnas = [lugares.slice(0, 5), lugares.slice(5, 9), lugares.slice(9)];
     padding: var(--s-2) 0;
     border-bottom: 1px solid var(--line);
   }
-  .d-tabla th:last-child, .d-tabla td:last-child { text-align: right; }
+  .d-tabla th:not(:first-child), .d-tabla td:not(:first-child) { text-align: right; padding-left: var(--s-2); }
+  .d-tabla td:nth-child(2) { color: var(--ink-mute); }
+  /* Con la columna «Cobro» (2026-10-27) son tres cifras por fila. Bajo 360 px
+     y con el espaciado de WCAG 1.4.12, «ARS 2.146.739,13» empujaba la tabla
+     fuera de la tarjeta (medido a 320 y 324): ahí la tabla baja a la letra de
+     la etiqueta y junta las columnas. */
+  @media (max-width: 359px) {
+    .d-tabla { font-size: var(--t-label); }
+    .d-tabla th:not(:first-child), .d-tabla td:not(:first-child) { padding-left: var(--s-1); }
+  }
   .d-tabla td { padding: var(--s-2) 0; border-bottom: 1px solid var(--line); color: var(--ink); }
   .d-tabla td:last-child { font-weight: 600; }
   /* `d-ir` y no `d-cta`: es un enlace con borde, y en el DS «cta» es sólo el

@@ -3,8 +3,9 @@
  * configurable por variable de entorno.
  *
  * NO es una fuente de mercado y NO refleja el precio real de DLPay. La fuente
- * oficial y la metodología de spread son decisión de DLPay y siguen pendientes
- * (CLAUDE.md §13, D7).
+ * oficial sigue pendiente (CLAUDE.md §13, D7). **La metodología ya no**: desde
+ * el 2026-10-27 la tasa es la de mercado sin recargo, y lo que DLPay cobra va
+ * aparte, en `tarifario.ts`. Esta clase sigue entregando sólo la tasa.
  */
 
 import type { PriceReference, PriceSource } from './types.ts';

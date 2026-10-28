@@ -34,6 +34,24 @@
  * las figuras significa «lo nuestro» (DS §6.2). Desde ADR-0014 es de punta a
  * punta, así que acá también. El precio y la nota del spread viven en ese
  * tramo, que es donde ocurren: entre un monto y el otro.
+ *
+ * ── El tarifario, desde el 2026-10-27 (Cowork, entrega `tarifario-`) ───────
+ *
+ * Sebastián cambió el modelo de precio: **la tasa es la de mercado, sin
+ * recargo, y lo que DLPay cobra son dos líneas a la vista** —un costo de envío
+ * fijo y una comisión de cambio por tramo— (`lib/pricing/tarifario.ts`). La
+ * nota «el precio ya incluye el spread» salió, por pedido suyo, y queda «Sin
+ * comisiones ocultas».
+ *
+ * Las dos líneas van **en el tramo**, que es donde pasan: lo que envías baja
+ * por el tramo, pierde el costo de envío y la comisión, y lo que queda se
+ * convierte en el punto, que sigue marcando el precio. De vuelta a pesos, el
+ * orden se da vuelta porque la cuenta también: primero se convierte y después
+ * se descuenta. Global66 enseña el desglose debajo de los dos montos; acá va
+ * entre ellos porque es lo que le pasa al dinero entre uno y otro.
+ *
+ * Cada destino trae su tarifa ya resuelta en pesos (`data-tarifas`): la isla
+ * no importa el tarifario ni ve de qué monto en dólares sale el costo de envío.
  */
 import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
 import {
@@ -43,8 +61,9 @@ import {
   currencyInfo,
   destinos,
 } from '../lib/pricing/currencies.ts';
-import { formatCLP, formatForeign } from '../lib/pricing/format.ts';
+import { formatCLP, formatForeign, formatComision } from '../lib/pricing/format.ts';
 import { buildQuote, precioLegible, whatsappUrl } from '../lib/pricing/quote.ts';
+import { tarifasParaIsla } from '../lib/pricing/tarifario.ts';
 import { contact, platform, quoteLimits } from '../lib/config/site.ts';
 import Icon from './Icon.astro';
 import Bandera from './Bandera.astro';
@@ -57,7 +76,8 @@ interface Props {
 const { variant = 'floating' } = Astro.props;
 
 /**
- * Las doce divisas del catálogo (ADR-0013, ampliado el 2026-10-22).
+ * Las divisas del catálogo (ADR-0013, ampliado el 2026-10-22; nueve desde el
+ * 2026-10-27, con el tarifario).
  *
  * Todas tienen tasa: la que Sebastián confirme en el entorno, o la de muestra
  * mientras no la haya. Lo que impide que una muestra llegue al sitio público no
@@ -80,7 +100,16 @@ const tasas = await Promise.all(
 /* Límites y monto inicial: UN solo origen para toda la web (D24). Los
    pendientes D6 y D21 están anotados donde vive el valor, en environment.ts. */
 const { minPayClp: minPay, maxPayClp: maxPay, samplePayClp: initialPay } = quoteLimits;
-const initialGet = initialPay / price.rate;
+
+/**
+ * La tarifa de cada destino y la de la vuelta a pesos, ya en pesos: el costo de
+ * envío (`e`), los tres porcentajes en puntos básicos (`p`) y si llega en la
+ * moneda de ese país (`m`; China llega en dólares). Es lo único del tarifario
+ * que viaja al navegador.
+ */
+const { porDestino: tarifas, aPesos: tarifaPesos } = await tarifasParaIsla(lugares.map((l) => l.destino));
+const deInicio = tarifas[DEFAULT_DESTINO];
+const tarifaInicial = { envio: deInicio?.e ?? 0, comision: deInicio?.p ?? tarifaPesos.p };
 
 /**
  * El enlace se arma también en el servidor, con la MISMA función que usa el
@@ -92,9 +121,12 @@ const initialQuote = buildQuote({
   intent: 'to_foreign',
   giveAmount: initialPay,
   price,
+  tarifa: tarifaInicial,
   minPay,
   ...(maxPay !== undefined ? { maxPay } : {}),
 });
+const initialGet = initialQuote.getAmount;
+const cargosIniciales = initialQuote.cargos;
 const wa = whatsappUrl(contact.whatsappNumber, initialQuote, initialPay, DEFAULT_DESTINO);
 
 const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
@@ -109,6 +141,8 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
   data-wa={contact.whatsappNumber}
   data-source={price.source}
   data-divisas={JSON.stringify(tasas)}
+  data-tarifas={JSON.stringify(tarifas)}
+  data-tarifa-pesos={JSON.stringify(tarifaPesos)}
   aria-labelledby="quoter-title"
 >
   <h2 class="sr-only" id="quoter-title">Cotizador de envíos y divisas</h2>
@@ -329,9 +363,47 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       />
     </div>
 
-    <div class="tramo">
-      <p class="tramo-precio">
-        <span class="tramo-rot">Precio referencial</span>
+    <div class="tramo" data-tramo>
+      {/*
+        ── Lo que se cobra, en el tramo (2026-10-27) ─────────────────────────
+
+        Dos líneas y el subtotal, en el orden en que le pasan al dinero. Es una
+        `dl` porque son pares de nombre y cifra, y así la anuncia un lector de
+        pantalla. Las cifras van en pesos y con su código, «CLP», como manda el
+        DS §5 donde hay una divisa concreta; «$» queda para las cifras de
+        ejemplo.
+
+        **El porcentaje se escribe junto a la comisión**: es lo que cambia con
+        el destino y con el monto, y lo que un cliente compara. El tramo no se
+        nombra acá: se ve en `/tarifas`.
+
+        De vuelta a pesos la isla mueve el precio arriba y el subtotal al
+        principio de la lista —«En pesos»—, porque ahí la conversión va primero.
+
+        REQUIERE VALIDACIÓN DE COMPLIANCE — «Costo de envío», «Comisión de
+        cambio» y sus cifras; y «de mercado, sin recargo».
+      */}
+      <dl class="cargos" data-cargos>
+        <div class="cargo" data-cargo="envio">
+          <dt>Costo de envío</dt>
+          <dd class="num" data-c-envio>− CLP {formatCLP(cargosIniciales.envio)}</dd>
+        </div>
+        <div class="cargo" data-cargo="comision">
+          <dt>Comisión de cambio <span class="pct num" data-c-pct>{formatComision(cargosIniciales.comisionPb)}</span></dt>
+          <dd class="num" data-c-comision>− CLP {formatCLP(cargosIniciales.comision)}</dd>
+        </div>
+        <div class="cargo subtotal" data-cargo="subtotal">
+          <dt data-c-sub-rot>Monto a convertir</dt>
+          <dd class="num" data-c-sub>CLP {formatCLP(cargosIniciales.aConvertir)}</dd>
+        </div>
+      </dl>
+      <p class="tramo-precio" data-precio>
+        {/*
+          «Precio referencial», con esas dos palabras (spec §48), y desde el
+          2026-10-27 «de mercado, sin recargo»: es la tasa, y el cobro va
+          arriba, aparte.
+        */}
+        <span class="tramo-rot">Precio referencial de mercado, sin recargo</span>
         {/*
           **La forma del precio cambió el 2026-10-22.** Era «919,70 CLP por
           dólar», con la unidad escrita a mano y luego derivada del catálogo; en
@@ -340,8 +412,11 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
         */}
         <span class="tramo-valor num" data-rate-display>{precioLegible(price.rate, DEFAULT_CURRENCY)}</span>
       </p>
+      {/* Decía «Sin comisiones ocultas: el precio ya incluye el spread.» hasta
+          el 2026-10-27. La segunda mitad salió por pedido de Sebastián: con el
+          tarifario el precio no incluye nada, y lo que cobramos está arriba. */}
       <p class="tramo-nota" id="quoter-note">
-        <strong>Sin comisiones ocultas:</strong> el precio ya incluye el spread.
+        <strong>Sin comisiones ocultas.</strong>
       </p>
     </div>
 
@@ -373,7 +448,10 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     REQUIERE VALIDACIÓN DE COMPLIANCE — que el dinero llega a destino en la
     moneda de ese destino.
   */}
-  <p class="rail">
+  {/* Desde el 2026-10-27 la isla la cambia en dos casos: China, que llega en
+      dólares y no en yuanes, y la vuelta a pesos. El servidor escribe la del
+      destino de partida, que es la de siempre. */}
+  <p class="rail" data-rail>
     Llega <strong>en la moneda del destino</strong>. El plazo te lo confirma tu ejecutivo.
   </p>
 
@@ -688,6 +766,44 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     bottom: 0;
     border-left: 3px solid var(--verde-deep);
   }
+  /* ── Lo que se cobra (2026-10-27) ───────────────────────────────────────
+     Filas de nombre y cifra, en la letra de la etiqueta y con la cifra a la
+     derecha, como el desglose de un recibo. Si no caben en una línea —320 px
+     con el espaciado de WCAG 1.4.12— la cifra baja a la suya, alineada igual. */
+  .cargos {
+    display: grid;
+    gap: var(--s-1);
+    margin: 0 0 var(--s-3);
+  }
+  .cargo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    column-gap: var(--s-3);
+    font-size: var(--t-label);
+    line-height: 1.45;
+  }
+  .cargo dt { color: var(--ink-mute); }
+  .cargo dd { margin: 0 0 0 auto; color: var(--ink); white-space: nowrap; }
+  .cargo .pct { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  /* El subtotal cierra la cuenta antes del punto: un filete de 1 px arriba, como
+     la raya de una suma. Es un borde, así que sigue en colores forzados. */
+  .cargo.subtotal {
+    padding-top: var(--s-1);
+    border-top: 1px solid var(--line);
+  }
+  .cargo.subtotal dt,
+  .cargo.subtotal dd { color: var(--ink); font-weight: 600; }
+  /* De vuelta a pesos el subtotal va primero: ahí abre la cuenta y no la
+     cierra, así que el filete pasa abajo. */
+  .tramo.a-pesos .cargos { margin: var(--s-3) 0 0; }
+  .tramo.a-pesos .cargo.subtotal {
+    padding: 0 0 var(--s-1);
+    border-top: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
   .tramo-precio {
     display: flex;
     flex-direction: column;
@@ -900,22 +1016,26 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 </style>
 
 <script>
-  import { formatCLP, formatForeign, parseAmount } from '../lib/pricing/format.ts';
+  import { formatCLP, formatForeign, formatComision, parseAmount } from '../lib/pricing/format.ts';
   import {
     buildQuote,
+    cargosDe,
     clpAmount,
-    convert,
     currenciesFor,
     formatAmount,
+    invertir,
     precioLegible,
     whatsappUrl,
   } from '../lib/pricing/quote.ts';
   import type { Currency, Intent } from '../lib/pricing/types.ts';
+  import type { TarifaCliente, TarifaIsla } from '../lib/pricing/tarifario.ts';
   import { currencyInfo, type IslandCurrency } from '../lib/pricing/currencies.ts';
 
   const root = document.querySelector<HTMLElement>('#cotizador');
   if (root) {
     const divisas: IslandCurrency[] = JSON.parse(root.dataset.divisas ?? '[]');
+    const tarifas: Record<string, TarifaIsla> = JSON.parse(root.dataset.tarifas ?? '{}');
+    const tarifaPesos: TarifaIsla = JSON.parse(root.dataset.tarifaPesos ?? '{"e":0,"p":[0,0,0],"m":true}');
     const campoDestino = root.querySelector<HTMLElement>('[data-campo-destino]');
     const campoDivisa = root.querySelector<HTMLElement>('[data-campo-divisa]');
     const banderas = document.querySelector<HTMLTemplateElement>('#cot-banderas');
@@ -1094,6 +1214,16 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     const dockAmount = dock?.querySelector<HTMLElement>('[data-dock-amount]');
     const dockCta = dock?.querySelector<HTMLAnchorElement>('[data-dock-cta]');
     const intentInputs = root.querySelectorAll<HTMLInputElement>('input[name="intent"]');
+    const tramoEl = root.querySelector<HTMLElement>('[data-tramo]');
+    const cargosEl = root.querySelector<HTMLElement>('[data-cargos]');
+    const precioEl = root.querySelector<HTMLElement>('[data-precio]');
+    const subtotalEl = root.querySelector<HTMLElement>('[data-cargo="subtotal"]');
+    const cEnvio = root.querySelector<HTMLElement>('[data-c-envio]');
+    const cPct = root.querySelector<HTMLElement>('[data-c-pct]');
+    const cComision = root.querySelector<HTMLElement>('[data-c-comision]');
+    const cSubRot = root.querySelector<HTMLElement>('[data-c-sub-rot]');
+    const cSub = root.querySelector<HTMLElement>('[data-c-sub]');
+    const railEl = root.querySelector<HTMLElement>('[data-rail]');
 
     /* Los decimales los trae la divisa elegida: «1.250,00 yenes» escribiría una
        fracción que esa moneda no usa, y en dinero eso se lee como precisión
@@ -1108,10 +1238,71 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     let giveAmount = parseAmount(giveInput.value);
     let lastRate = '';
 
+    /** La tarifa que aplica: la del destino elegido, o la de la vuelta a pesos. */
+    const tarifaIsla = (): TarifaIsla =>
+      intent === 'to_clp' ? tarifaPesos : tarifas[selDestino?.valor() ?? ''] ?? tarifaPesos;
+    const tarifa = (): TarifaCliente => {
+      const t = tarifaIsla();
+      return { envio: t.e, comision: t.p };
+    };
+
     // La pantalla y el mensaje calculan con la MISMA función. Antes el
     // componente tenía su propia aritmética, sin la guarda de tasa del módulo:
     // con una tasa corrupta la pantalla habría mostrado Infinity y el mensaje 0.
-    const received = (): number => convert(intent, giveAmount, rate);
+    // Desde el 2026-10-27 esa función descuenta además la tarifa.
+    const received = (): number => cargosDe(intent, giveAmount, rate, tarifa()).llega;
+
+    /** Una cifra en pesos de una línea: «CLP 18.995», y «− CLP 18.995» si se
+        descuenta. Con su código y no con «$»: en el cotizador hay una divisa
+        concreta, y ahí los pesos son «CLP» (DS §5). */
+    const pesos = (v: number, resta = false): string => `${resta ? '− ' : ''}CLP ${formatCLP(v)}`;
+
+    /**
+     * El desglose del tramo. De vuelta a pesos el precio sube y el subtotal pasa
+     * a abrir la lista, porque ahí primero se convierte y después se descuenta.
+     * Se mueven los nodos, no se reordenan con CSS: así el lector de pantalla
+     * lee en el mismo orden que se ve (WCAG 1.3.2).
+     */
+    const pintarCargos = (envio: boolean): void => {
+      const { cargos } = cargosDe(intent, giveAmount, rate, tarifa());
+      if (cEnvio) cEnvio.textContent = pesos(cargos.envio, true);
+      if (cPct) cPct.textContent = formatComision(cargos.comisionPb);
+      if (cComision) cComision.textContent = pesos(cargos.comision, true);
+      if (cSubRot) cSubRot.textContent = envio ? 'Monto a convertir' : 'En pesos';
+      if (cSub) cSub.textContent = pesos(cargos.aConvertir);
+      tramoEl?.classList.toggle('a-pesos', !envio);
+      if (tramoEl && cargosEl && precioEl && subtotalEl) {
+        if (envio) {
+          cargosEl.append(subtotalEl);
+          cargosEl.after(precioEl);
+        } else {
+          cargosEl.prepend(subtotalEl);
+          tramoEl.prepend(precioEl);
+        }
+      }
+    };
+
+    /**
+     * La nota del riel. La de siempre, salvo en dos casos: un destino que no
+     * llega en su moneda (China, en dólares) y la vuelta a pesos.
+     * REQUIERE VALIDACIÓN DE COMPLIANCE — igual que la del servidor.
+     */
+    const pintarRiel = (envio: boolean): void => {
+      if (!railEl) return;
+      const fuerte = document.createElement('strong');
+      let antes = 'Llega ';
+      let despues = '. El plazo te lo confirma tu ejecutivo.';
+      if (!envio) {
+        antes = 'Recibes ';
+        fuerte.textContent = 'en pesos';
+      } else if (!tarifaIsla().m) {
+        fuerte.textContent = `en ${currencyInfo(divisa.c).plural}`;
+        despues = ', no en la moneda local. El plazo te lo confirma tu ejecutivo.';
+      } else {
+        fuerte.textContent = 'en la moneda del destino';
+      }
+      railEl.replaceChildren(antes, fuerte, despues);
+    };
 
     /** M2 sobre un elemento: reinicia la animación leyendo offsetWidth. Nunca
         sobre el campo enfocado: animar lo que alguien escribe es pelear con su
@@ -1143,9 +1334,12 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
         intent,
         giveAmount,
         price: precio(),
+        tarifa: tarifa(),
         minPay,
         ...(maxPay !== undefined ? { maxPay } : {}),
       });
+      pintarCargos(envio);
+      pintarRiel(envio);
 
       giveCur.textContent = give;
       getCur.textContent = get;
@@ -1173,9 +1367,12 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       getBox.classList.toggle('invalid', fuera && get === 'CLP');
       // Se muestra la región ANTES de escribirle. Un lector de pantalla no
       // vigila regiones ocultas: escribiendo primero, el aviso no se anunciaba.
+      // «CLP 20.000» y no «20.000 CLP» desde el 2026-10-27: el código va
+      // delante, como en el aviso del máximo de aquí abajo, en el desglose y en
+      // el mensaje de WhatsApp. Este era el único que lo ponía detrás.
       const aviso =
         quote.state === 'below_min'
-          ? `Monto mínimo: ${formatCLP(minPay)} CLP. Puedes escribirnos igual y te orientamos.`
+          ? `Monto mínimo: CLP ${formatCLP(minPay)}. Puedes escribirnos igual y te orientamos.`
           : quote.state === 'above_max' && maxPay !== undefined
             ? `Para montos sobre CLP ${formatCLP(maxPay)} te atiende un ejecutivo. Escríbenos.`
             : '';
@@ -1239,8 +1436,9 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     getInput.addEventListener('input', () => {
       const { give } = currenciesFor(intent, divisa.c);
       const target = parseAmount(getInput.value);
-      // La inversa de `convert`, con la misma guarda de tasa.
-      giveAmount = rate > 0 ? (give === 'CLP' ? target * rate : target / rate) : 0;
+      // La inversa de `cargosDe`, con la misma guarda de tasa: cuánto hay que
+      // poner para que llegue lo escrito, ya con la tarifa descontada.
+      giveAmount = invertir(intent, target, rate, tarifa());
       giveInput.value = fmt(giveAmount, give);
       render();
     });
@@ -1269,7 +1467,15 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
         const envio = intent === 'to_foreign';
         if (campoDestino) campoDestino.hidden = !envio;
         if (campoDivisa) campoDivisa.hidden = envio;
-        if (envio && selDestino.codigo() !== divisa.c) selDestino.poner((o) => o.dataset.c === divisa.c);
+        // Con el dólar en tres destinos, el primero por orden alfabético sería
+        // China, que además no llega en su moneda. Se prefiere un destino que
+        // llegue en la suya: de dólares se vuelve a Estados Unidos.
+        if (envio && selDestino.codigo() !== divisa.c) {
+          const enSu = (o: HTMLElement): boolean => tarifas[o.dataset.valor ?? '']?.m === true;
+          if (!selDestino.poner((o) => o.dataset.c === divisa.c && enSu(o))) {
+            selDestino.poner((o) => o.dataset.c === divisa.c);
+          }
+        }
         if (!envio) selDivisa.poner((o) => o.dataset.c === divisa.c);
         const { give, get } = currenciesFor(intent, divisa.c);
         giveAmount = give === 'CLP' ? clpBefore : rate > 0 ? clpBefore / rate : 0;
@@ -1294,8 +1500,8 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       const opciones = root.querySelectorAll<HTMLElement>('[data-selector="destino"] [role="option"]');
       if (![...opciones].some(pedido)) return false;
       // Primero el modo y después el destino. Al volver al envío, el cambio de
-      // modo elige el destino de la divisa que estaba —de dólares sale Ecuador—
-      // y, al revés, pisaba el destino pedido.
+      // modo elige el destino de la divisa que estaba —de dólares sale Estados
+      // Unidos— y, al revés, pisaba el destino pedido.
       const envio = root.querySelector<HTMLInputElement>('input[name="intent"][value="to_foreign"]');
       if (envio && !envio.checked) { envio.checked = true; envio.dispatchEvent(new Event('change')); }
       selDestino.poner(pedido);

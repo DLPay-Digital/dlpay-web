@@ -16,10 +16,13 @@
  * dice lo que promete la bajada de la página —«acá ves dónde está el cobro y
  * dónde no lo hay»— de un vistazo: **cinco etiquetas y una sola cobra.**
  *
- * · **La de delante** es la fila «Convertir» de la tabla de costos, con sus
- *   palabras: «El spread, ya incluido en el precio que ves». Encima, «Un solo
- *   cobro», que es como la página lo nombra. Y al pie, la frase de la bajada de
- *   `.costos`: «Todo lo demás no tiene costo».
+ * · **La de delante** son las dos filas que cobran en la tabla de costos
+ *   (desde el 2026-10-27, con el tarifario): «Dos cobros» y cuáles son, «El
+ *   costo de envío y la comisión de cambio». Hasta ese día era la fila
+ *   «Convertir» —«Un solo cobro · El spread, ya incluido en el precio que
+ *   ves»—. Al pie, la frase de la bajada de `.costos`: «Todo lo demás no tiene
+ *   costo». **Sigue siendo una etiqueta y no dos**: lo que el abanico enseña es
+ *   que todo lo que cobra está en un solo lugar, adelante.
  * · **Las de detrás** son las cuatro que la `description` de la página ya
  *   publica —«registro, cotización, ejecutivo y costo de red, sin costo»—, con
  *   esas palabras. **No son la tabla entera, y no lo pretenden**: la tabla está
@@ -100,12 +103,15 @@ const libres = ['Registro', 'Cotización', 'Ejecutivo', 'Costo de red'] as const
     <ul class="et-lista" role="list">
       <li class="et frente">
         <span class="et-forma" aria-hidden="true"></span>
+        {/* Desde el 2026-10-27 (tarifario): «Convertir · Un solo cobro · El
+            spread, ya incluido en el precio que ves.» La etiqueta de delante
+            sigue siendo la única que cobra, y ahora nombra los dos cobros. */}
         <p class="et-cab">
-          <span>Convertir</span>
+          <span>Enviar</span>
           <span class="et-isotipo" aria-hidden="true"><Logo /></span>
         </p>
-        <p class="et-cobro">Un solo cobro</p>
-        <p class="et-dentro">El spread, ya incluido en el precio que ves.</p>
+        <p class="et-cobro">Dos cobros</p>
+        <p class="et-dentro">El costo de envío y la comisión de cambio.</p>
         <p class="et-resto">Todo lo demás no tiene costo.</p>
       </li>
       {libres.map((que, i) => (

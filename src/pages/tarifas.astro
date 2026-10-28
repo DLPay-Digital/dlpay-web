@@ -2,6 +2,15 @@
 /**
  * /tarifas — divulgación tarifaria.
  *
+ * > **La tabla se publica el 2026-10-27**, con el tarifario de Sebastián
+ * > (`lib/pricing/tarifario.ts`). Hasta ese día esta página explicaba «un solo
+ * > número, con el spread ya incorporado» y marcaba la tabla como «en
+ * > publicación». El modelo pasó a ser el contrario —**la tasa es la de
+ * > mercado, sin recargo, y lo que DLPay cobra son dos líneas a la vista**— y
+ * > la tabla existe: once destinos, la vuelta a pesos y tres tramos. Lo que la
+ * > cabecera cuenta de abajo es la historia de la página; donde dice «spread
+ * > adentro», hoy dice otra cosa, y cada bloque lo anota en su sitio.
+ *
  * Los T&C publicados obligan a DLPay a mantener esta página con la tabla de
  * comisiones, tipo de cambio y spread (Fase 0, Frente 11). Se publica lo que SÍ
  * está respaldado —cómo se compone el precio y qué lo mueve— y se marca de
@@ -150,40 +159,60 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PageHero from '../components/PageHero.astro';
-import PendingNotice from '../components/PendingNotice.astro';
 import Puente from '../components/Puente.astro';
 import TelefonoAvisos from '../components/TelefonoAvisos.astro';
 import FiguraMecanismo from '../components/FiguraMecanismo.astro';
-import { ConfigPriceSource } from '../lib/pricing/config-price-source.ts';
-import { convert, formatAmount } from '../lib/pricing/quote.ts';
-import { formatCLP } from '../lib/pricing/format.ts';
-import { contact, quoteLimits, site } from '../lib/config/site.ts';
-
-const price = await new ConfigPriceSource().getPrice();
+import { formatAmount, precioLegible } from '../lib/pricing/quote.ts';
+import { formatCLP, formatComision, formatComisionCifra } from '../lib/pricing/format.ts';
+import { cotizacionInicial } from '../lib/pricing/mensaje-inicial.ts';
+import { TARIFAS, TARIFA_A_PESOS, TRAMOS_CLP, resolverTarifa } from '../lib/pricing/tarifario.ts';
+import { quoteLimits, site } from '../lib/config/site.ts';
 
 /* El mínimo que ESTA página publica es, por construcción, el mismo que el
    cotizador aplica: ambos leen `quoteLimits` (D24). El pendiente D6 vive junto
    al valor, en `environment.ts`. */
 const minPay = quoteLimits.minPayClp;
 
-/* Y la muestra del cotizador en miniatura, por el mismo motivo: es el monto que
-   el cotizador carga al abrir, convertido con el precio del build. */
+/* Y la muestra del cotizador en miniatura, por el mismo motivo: es la
+   cotización con que abre el cotizador —desde el 2026-10-27, con su tarifa—,
+   así que sus cargos y lo que llega son los mismos que allá. */
 const samplePay = quoteLimits.samplePayClp;
-const sampleGet = convert('to_foreign', samplePay, price.rate);
+const inicial = await cotizacionInicial();
+const sampleGet = inicial.getAmount;
+const { cargos } = inicial;
 
 /*
-  Este enlace vive DENTRO del aviso «Tabla de tarifas: en publicación», así que
-  el mensaje pide justo lo que el aviso dice que todavía no está publicado. El
-  spread se nombra a propósito: los T&C comprometen informarlo, y pedirlo por
-  chat es lo que el propio aviso invita a hacer mientras D5 siga abierta.
+  ── La tabla (2026-10-27) ───────────────────────────────────────────────
+
+  Sale del tarifario y no se teclea: cada costo de envío se resuelve con la
+  tasa del build, igual que en el cotizador. El aviso «Tabla de tarifas: en
+  publicación» —y su enlace a WhatsApp para consultar «el precio y el
+  spread»— salió con ella.
 */
-const wa = contact.whatsappUrl(
-  'Hola, quiero consultar el precio y el spread aplicables a mi operación.'
+const tabla = await Promise.all(
+  TARIFAS.map(async (t) => {
+    const r = await resolverTarifa(t);
+    return { destino: t.destino, code: t.code, enSuMoneda: t.enSuMoneda, envio: r.envio, comision: r.comision };
+  })
 );
+const aPesos = await resolverTarifa(TARIFA_A_PESOS);
+const [t2, t3] = TRAMOS_CLP;
+
+/* El borde de un tramo en palabras —«500 mil», «2 millones»—, para la
+   cabecera de la tabla: con «2.000.000», que no se puede partir, las cinco
+   columnas no cabían a 320 px. Es el mismo número, dicho como se dice. Va sin
+   signo: la cabecera dice que son pesos, y «$» es de las cifras de ejemplo
+   (DS §5). */
+const enPalabras = (n: number): string =>
+  n % 1_000_000 === 0
+    ? `${n / 1_000_000} ${n === 1_000_000 ? 'millón' : 'millones'}`
+    : n % 1000 === 0
+      ? `${formatCLP(n / 1000)} mil`
+      : formatCLP(n);
 ---
 <Base
   title="Tarifas"
-  description="Cómo se compone el precio en DLPay: un solo precio que ya incluye el spread, sin comisiones que aparezcan después. Qué mueve ese precio y qué es referencial."
+  description="Las tarifas de DLPay: la tasa de mercado sin recargo, el costo de envío y la comisión de cambio de cada destino, en tres tramos. Qué mueve el precio y qué es referencial."
   path="/tarifas/"
   zeroJs
 >
@@ -191,7 +220,7 @@ const wa = contact.whatsappUrl(
   <main id="main">
     <PageHero
       title="Tarifas"
-      lead="Un solo número, y ese número ya lo incluye todo. Acá está cómo se compone y qué lo mueve."
+      lead="La tasa de mercado, sin recargo, y dos cobros a la vista. Acá está cuánto es cada uno, por destino y por monto."
       sequence
       layout="stacked"
     >
@@ -215,21 +244,33 @@ const wa = contact.whatsappUrl(
             <span class="rot">Das</span>
             <span class="num"><span class="cifra">{formatCLP(samplePay)}</span><span class="div"> CLP</span></span>
           </div>
+          {/* Lo que pasa entre las dos filas, como en el tramo del cotizador
+              (2026-10-27). Es una `dl` porque son pares de nombre y cifra.
+              REQUIERE VALIDACIÓN DE COMPLIANCE. */}
+          <dl class="desglose">
+            <div><dt>Costo de envío</dt><dd class="num">− CLP {formatCLP(cargos.envio)}</dd></div>
+            <div><dt>Comisión de cambio <span class="num">{formatComision(cargos.comisionPb)}</span></dt><dd class="num">− CLP {formatCLP(cargos.comision)}</dd></div>
+            <div><dt>Tasa de mercado, sin recargo</dt><dd class="num">{precioLegible(inicial.price.rate, inicial.price.currency)}</dd></div>
+          </dl>
           <div class="fila destacada">
             <span class="rot">Recibes</span>
             <span class="num"><span class="cifra">{formatAmount(sampleGet, 'USD').replace('US$ ', '')}</span><span class="div"> USD</span></span>
           </div>
         </div>
 
+        {/* El rótulo y el pie cambiaron el 2026-10-27: decían «la referencia de
+            mercado y nuestro spread, los dos adentro» y «el precio que ves».
+            Con el tarifario, la barra es lo que llega, ya sin los dos cobros, y
+            el argumento del punteado sigue entero: después no se suma nada. */}
         <figure class="figura">
-          <p class="fig-rot">la referencia de mercado y nuestro spread, los dos adentro</p>
+          <p class="fig-rot">lo que llega, con los dos cobros ya descontados</p>
           {/* La llave abarca la barra ENTERA. Ver la nota 1 de la cabecera. */}
           <div class="llave" aria-hidden="true"></div>
           <div class="fig-cuerpo">
             <div class="tramo">
               <div class="barra" aria-hidden="true"></div>
               <div class="limite punteado-v" aria-hidden="true"></div>
-              <p class="fig-pie">el precio que ves</p>
+              <p class="fig-pie">lo que ves al cotizar</p>
             </div>
             {/* Y a la derecha del punteado no hay nada. Ver la nota 2. */}
             <p class="fin"><b>acá termina</b><span>y no se suma nada</span></p>
@@ -257,16 +298,21 @@ const wa = contact.whatsappUrl(
       <div class="inner">
         <section class="bloque" aria-labelledby="compone-t">
           <p class="eyebrow" data-enter>cómo se compone</p>
-          <h2 id="compone-t">El spread ya está adentro del número</h2>
+          {/* **Reescrita el 2026-10-27, con el tarifario.** Decía «El spread ya
+              está adentro del número» y que DLPay «toma una referencia de
+              mercado y le aplica su spread». Se conserva la frase que sigue
+              siendo cierta: no hay un tipo de cambio inflado por dentro.
+              REQUIERE VALIDACIÓN DE COMPLIANCE. */}
+          <h2 id="compone-t">Una tasa sin recargo, y dos cobros a la vista</h2>
           <p>
-            DLPay toma una <strong>referencia de mercado</strong> y le aplica su
-            <strong>spread</strong>. El resultado es el precio que ves en el cotizador: un solo
-            número, con el spread ya incorporado.
+            DLPay convierte a la <strong>tasa de mercado</strong>, sin recargo. Lo que cobra va
+            aparte y lo ves antes de transferir: un <strong>costo de envío</strong>, fijo según el
+            destino, y una <strong>comisión de cambio</strong>, un porcentaje que baja con el monto.
           </p>
           <p class="mute">
-            Esto significa que <strong>no hay una comisión aparte que se sume al final</strong>.
-            Tampoco hay un tipo de cambio inflado por dentro para esconder un cobro. Lo que ves al
-            cotizar es la base de lo que el ejecutivo te confirma.
+            La cuenta es siempre la misma: de lo que envías se descuenta el costo de envío; sobre
+            lo que queda se calcula la comisión, y el resto se convierte. No hay un tipo de cambio
+            inflado por dentro para esconder un cobro, ni un cobro que aparezca después.
           </p>
         </section>
 
@@ -307,13 +353,16 @@ const wa = contact.whatsappUrl(
             </div>
             <div class="mini">
               {/* Ni escalones ni barras ascendentes: afirmarían tramos, y los
-                  tramos son D5. La línea y el corte de siempre, y al otro lado
+                  tramos eran D5. La línea y el corte de siempre, y al otro lado
                   el escritorio: con quién se conversa, no dónde cambia el
-                  precio. Ver la regla 3 de la cabecera. */}
+                  precio. Ver la regla 3 de la cabecera. *Desde el 2026-10-27
+                  los tramos existen y están en la tabla de abajo*: el texto lo
+                  dice, y el objeto se queda porque sigue diciendo con quién
+                  se conversa lo que la tabla no cubre. */}
               <dt><div class="mini-fig"><FiguraMecanismo kind="monto" /></div>El monto</dt>
               <dd>
-                Las operaciones de mayor volumen se conversan con el ejecutivo. Si operas montos
-                grandes o de forma recurrente, las condiciones se acuerdan contigo.
+                La comisión de cambio baja con el monto, en tres tramos: están en la tabla de abajo.
+                Si operas montos grandes o de forma recurrente, las condiciones se acuerdan contigo.
               </dd>
             </div>
           </dl>
@@ -350,19 +399,84 @@ const wa = contact.whatsappUrl(
           </div>
         </section>
 
-        <section class="bloque">
-          <PendingNotice title="Tabla de tarifas: en publicación">
-            <p>
-              Los Términos y Condiciones de DLPay comprometen la publicación de una tabla con las
-              comisiones aplicables, el tipo de cambio y el spread informado. Esa tabla está en
-              revisión y se publica en esta misma página.
-            </p>
-            <p>
-              Mientras tanto, el precio aplicable a tu operación te lo informa tu ejecutivo antes de
-              que transfieras, y no cambia después de que lo aceptas.
-              <a href={wa} target="_blank" rel="noopener">Consúltalo por WhatsApp</a>.
-            </p>
-          </PendingNotice>
+        {/*
+          ── La tabla de tarifas (2026-10-27) ───────────────────────────────
+
+          Lo que los T&C comprometen publicar. Hasta este día el bloque era un
+          aviso, «Tabla de tarifas: en publicación».
+
+          **Es una tabla de verdad**, con su cabecera en dos filas —la comisión
+          abarca los tres tramos— y `scope` en cada `th`. En un teléfono no cabe
+          entera con el espaciado de WCAG 1.4.12, así que va en una región que
+          se desplaza sola y se alcanza con el teclado: la página no se
+          desborda, se desborda la tabla.
+
+          **El último párrafo termina en «antes de que transfieras»** porque es
+          la frase que el puente de abajo repite en su rótulo. Antes la decía el
+          aviso.
+
+          REQUIERE VALIDACIÓN DE COMPLIANCE — la tabla entera; que los T&C
+          quedan cumplidos con ella (dicen «el spread informado», y no hay); y
+          que China llega en dólares.
+        */}
+        <section class="bloque" aria-labelledby="tabla-t">
+          <p class="eyebrow" data-enter>la tabla</p>
+          <h2 id="tabla-t">Tarifas por destino</h2>
+          {/* La región se llama distinto que la sección: dos regiones con el
+              mismo nombre se anuncian como una sola cosa repetida (axe,
+              «landmark-unique»). */}
+          <div class="tabla-caja" role="region" aria-label="Tabla de tarifas, se desplaza a lo ancho" tabindex="0">
+            <table class="tabla">
+              <caption class="sr-only">Costo de envío y comisión de cambio por destino, y para pasar a pesos</caption>
+              <thead>
+                <tr>
+                  <th scope="col" rowspan="2">Destino</th>
+                  <th scope="col" rowspan="2">Costo de envío, en CLP</th>
+                  {/* `scope="col"` con `colspan`, y no `colgroup`: sin elementos
+                      `<colgroup>` en la tabla, Chrome anunciaba esta cabecera
+                      como una celda más (medido en el árbol de accesibilidad). */}
+                  <th scope="col" colspan="3">Comisión de cambio en %, según los pesos que envías</th>
+                </tr>
+                <tr>
+                  <th scope="col">menos de {enPalabras(t2)}</th>
+                  <th scope="col">desde {enPalabras(t2)}</th>
+                  <th scope="col">desde {enPalabras(t3)}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tabla.map((t) => (
+                  <tr>
+                    <th scope="row">
+                      {t.destino}<span class="t-cod"><span class="sr-only">, </span><span class="num">{t.code}</span>{!t.enSuMoneda && <><span class="t-nota" aria-hidden="true">*</span><span class="sr-only">, llega en dólares</span></>}</span>
+                    </th>
+                    <td class="num">{formatCLP(t.envio)}</td>
+                    {t.comision.map((pb) => <td class="num">{formatComisionCifra(pb)}</td>)}
+                  </tr>
+                ))}
+              </tbody>
+              <tbody class="t-vuelta">
+                <tr>
+                  <th scope="row">Pasar a pesos<span class="t-cod"><span class="sr-only">, </span><span class="num">CLP</span></span></th>
+                  <td class="num">{formatCLP(aPesos.envio)}</td>
+                  {aPesos.comision.map((pb) => <td class="num">{formatComisionCifra(pb)}</td>)}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="mute t-pie">
+            <span aria-hidden="true">* </span>A China llega en dólares, no en yuanes. En «Pasar a
+            pesos», el tramo se mide en los pesos que salen de convertir tu divisa.
+          </p>
+          <p class="mute">
+            El costo de envío se fija en dólares —en euros para Europa— y se pasa a pesos con el
+            dólar del día, redondeado hacia arriba a múltiplos de 50 pesos: si el dólar se mueve, puede
+            moverse con él. La comisión es un porcentaje de lo que envías después del costo de
+            envío, y el tramo lo decide el monto que envías.
+          </p>
+          <p class="mute">
+            El precio final de tu operación te lo confirma tu ejecutivo antes de que transfieras, y
+            no cambia después de que lo aceptas.
+          </p>
         </section>
       </div>
     </div>
@@ -433,7 +547,9 @@ const wa = contact.whatsappUrl(
                   el servicio de quien recibe (ADR-0014, 2026-10-22). Hasta esa
                   fecha esta nota hablaba de lo que el cliente hacía DESPUÉS de
                   nosotros, y ya no hay un después: el recorrido es nuestro. */}
-              Nuestro precio cubre el cambio y el envío a destino. Si el banco o el servicio
+              {/* «Nuestro precio cubre…» hasta el 2026-10-27: con el tarifario son
+                  los dos cobros los que lo cubren. */}
+              Los dos cobros cubren el cambio y el envío a destino. Si el banco o el servicio
               con el que recibe quien recibe aplica algún cobro propio, ése es ajeno a DLPay.
               Tu ejecutivo te lo advierte si lo hay.
             </p>
@@ -581,6 +697,70 @@ const wa = contact.whatsappUrl(
      papel. El fondo elige el verde (DS §6.2). */
   .destacada .num { color: var(--verde); }
   .destacada .div { color: var(--on-tinta-mute); }
+
+  /* ── Lo que pasa entre «Das» y «Recibes» (2026-10-27) ─────────────────────
+     Las filas del tramo del cotizador, en su letra: rótulo a la izquierda,
+     cifra a la derecha, y la cifra baja a su renglón si no caben. Sin
+     superficie propia: van entre las dos filas, que sí la tienen. **En
+     `--t-label`, la del tramo del cotizador**, y no en `--t-body-sm` como los
+     rótulos de esta tarjeta: a 14 px, a 390, «− CLP 18.995» bajaba sola bajo
+     «Comisión de cambio 0,95 %» y la fila no se leía como las otras. */
+  .desglose { display: grid; gap: var(--s-1); margin: 0; padding: 0 var(--s-4); }
+  .desglose div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    column-gap: var(--s-3);
+    font-size: var(--t-label);
+    line-height: 1.45;
+  }
+  .desglose dt { color: var(--ink-mute); }
+  .desglose dt .num { color: var(--ink); font-weight: 600; }
+  .desglose dd { margin: 0 0 0 auto; color: var(--ink); white-space: nowrap; }
+
+  /* ── La tabla de tarifas (2026-10-27) ──────────────────────────────────────
+     A todo el ancho del texto y en la letra de las cifras para las cifras. La
+     caja se desplaza si la tabla no cabe —a 320 px con el espaciado de 1.4.12—
+     y lleva foco para que se pueda desplazar con el teclado; el anillo es el
+     del sitio (`:focus-visible` de tokens.css), sin regla propia. */
+  .tabla-caja {
+    margin: var(--s-5) 0 var(--s-4);
+    overflow-x: auto;
+    border-radius: var(--r-2);
+  }
+  /* La cifra va sin «%»: lo dice la cabecera, y así las cinco columnas caben a
+     320 px. El código de la moneda baja bajo el nombre, en su renglón. */
+  .tabla { width: 100%; border-collapse: collapse; font-size: var(--t-label); }
+  .tabla th, .tabla td { padding: var(--s-2) var(--s-1); border-bottom: 1px solid var(--line); vertical-align: baseline; }
+  .tabla thead th {
+    font-size: var(--t-label);
+    font-weight: 600;
+    color: var(--ink-mute);
+    text-align: right;
+    line-height: 1.3;
+  }
+  /* Sólo «Destino»: en la segunda fila, el primer `th` es «menos de 500 mil»,
+     que va a la derecha como su columna. */
+  .tabla thead tr:first-child th:first-child { text-align: left; }
+  .tabla thead tr:first-child th[colspan] { text-align: center; }
+  .tabla tbody th { text-align: left; font-weight: 600; color: var(--ink); }
+  .tabla td { text-align: right; color: var(--ink); white-space: nowrap; }
+  .tabla th:first-child, .tabla td:first-child { padding-left: 0; }
+  .tabla th:last-child, .tabla td:last-child { padding-right: 0; }
+  .t-cod { display: block; font-weight: 400; color: var(--ink-mute); white-space: nowrap; }
+  .t-nota { color: var(--ink); }
+  /* La vuelta a pesos, separada de los destinos por una raya de tinta: es
+     otra operación. Un pixel, el grosor de la raya de tinta de las tablas del
+     Diario (el sistema no tiene una de dos), y como borde inferior de la última
+     fila de destinos: con `border-collapse`, un borde superior del mismo grosor
+     en la fila siguiente pierde contra el de arriba y no se vería. */
+  .tabla tbody:not(.t-vuelta) tr:last-child > * { border-bottom-color: var(--ink); }
+  .t-pie { font-size: var(--t-body-sm); }
+  @media (min-width: 640px) {
+    .tabla { font-size: var(--t-body-sm); }
+    .tabla th, .tabla td { padding-inline: var(--s-3); }
+  }
 
   /* ── La figura de composición ──────────────────────────────────────────── */
   .figura { margin: var(--s-6) 0 0; }
@@ -764,10 +944,11 @@ const wa = contact.whatsappUrl(
     ── El número se llena hasta el límite (ADR-0018, 2026-10-23) ──────────
 
     **Una vez, al cargar**, la figura de la tarjeta cuenta su argumento: la
-    barra —la referencia y el spread, juntos— se llena de una vez hasta el
-    punteado (0,7–1,6 s); después aparece la llave que la abarca entera
-    (1,6 s), y al final «acá termina y no se suma nada» (1,9 s). Familia A,
-    narración corta, termina a los 2,2 s.
+    barra —lo que llega, ya sin los dos cobros, desde el 2026-10-27; antes, la
+    referencia y el spread juntos— se llena de una vez hasta el punteado
+    (0,7–1,6 s); después aparece la llave que la abarca entera (1,6 s), y al
+    final «acá termina y no se suma nada» (1,9 s). Familia A, narración corta,
+    termina a los 2,2 s.
 
     Lo que NO se mueve, y es a propósito:
     · **las dos filas del cotizador y sus cifras**. Están encendidas desde el
@@ -775,8 +956,10 @@ const wa = contact.whatsappUrl(
       animan (regla dura 3);
     · **la barra no se parte al llenarse**: crece entera, desde la izquierda,
       porque el número tampoco está partido. Lo decía la leyenda hasta el
-      2026-10-26; ahora lo dice el titular, «El spread ya está adentro del
-      número».
+      2026-10-26, y el titular «El spread ya está adentro del número» hasta el
+      2026-10-27. Con el tarifario la barra es lo que llega, ya sin los dos
+      cobros, y sigue sin partirse: los cobros están en las filas de arriba,
+      no dentro de la barra.
 
     CSS entero: la página sigue en cero bytes de JavaScript
     (`tests/zero-js.test.ts`). Sólo la tarjeta de la portada; la del monto

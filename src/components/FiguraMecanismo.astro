@@ -156,8 +156,8 @@ const { kind, compacta = false } = Astro.props;
       <span class="fm-hilo fm-hilo-uno"></span>
       <span class="fm-etiqueta fm-final fm-una">
         <span class="fm-ojal"></span>
-        <span class="fm-et-rot">el precio que ves</span>
-        <span class="fm-et-grande">un solo número</span>
+        <span class="fm-et-rot">lo que cobramos</span>
+        <span class="fm-et-grande">dos cobros</span>
       </span>
       {/* El gancho vacío: donde colgaría un cobro aparte, no cuelga nada. */}
       <span class="fm-hilo fm-hilo-vacio"></span>
@@ -443,10 +443,12 @@ const { kind, compacta = false } = Astro.props;
     ── Una etiqueta y un gancho vacío (`precio`, en la Home) ────────────────
     La misma etiqueta que la «final» de `clock`, sola, y a su derecha el hilo
     sin nada colgado: el vacío es el argumento, como el de `/tarifas` a la
-    derecha del punteado. Sus tres cadenas están publicadas en `/tarifas`: «el
-    precio que ves» y «y no se suma nada» las firmó Sebastián el 2026-09-25, y
-    «un solo número» abre el lead de esa página («Un solo número, y ese número
-    ya lo incluye todo»).
+    derecha del punteado. «y no se suma nada» la firmó Sebastián el
+    2026-09-25. **Desde el 2026-10-27 la etiqueta dice «lo que cobramos · dos
+    cobros»**: decía «el precio que ves · un solo número», y con el tarifario
+    lo que cobramos son dos líneas a la vista —el costo de envío y la comisión
+    de cambio—. El argumento del gancho vacío no cambia: después de esas dos
+    no se suma nada. REQUIERE VALIDACIÓN DE COMPLIANCE.
   */
   .fm-precio { --fm-riel: 15%; --fm-cuelga: 27%; --fm-ancho: 52cqw; --fm-alto: 34cqw; --fm-a: 32%; --fm-b: 82%; }
   .fm-una { left: calc(var(--fm-a) - var(--fm-ancho) / 2); }
@@ -531,7 +533,8 @@ const { kind, compacta = false } = Astro.props;
     etiqueta del precio se salía de la lámina—, y se retiran, como los pies de
     `FiguraUso` bajo 260. Queda el objeto, y el `h3` y el párrafo que van
     debajo lo dicen con palabras. Lo que se queda es lo que es parte del
-    objeto: la placa «Tu ejecutivo» y la etiqueta «un solo número».
+    objeto: la placa «Tu ejecutivo» y la etiqueta del precio («dos cobros»
+    desde el 2026-10-27; antes, «un solo número»).
 
     La consulta dice 278 y no 280 porque mide la caja de contenido, dentro del
     borde transparente de 1 px. Se queda en 277,98 para que la Home no cambie:

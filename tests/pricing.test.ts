@@ -21,6 +21,11 @@ import {
   whatsappUrl,
 } from '../src/lib/pricing/quote.ts';
 import type { PriceReference } from '../src/lib/pricing/types.ts';
+import type { TarifaCliente } from '../src/lib/pricing/tarifario.ts';
+
+/* La lógica de este archivo es la de la conversión y los estados: va con una
+   tarifa en cero. El tarifario se prueba en `tarifario.test.ts`. */
+const SIN_TARIFA: TarifaCliente = { envio: 0, comision: [0, 0, 0] };
 
 const price: PriceReference = {
   rate: 919.7,
@@ -185,34 +190,36 @@ describe('estados del cotizador', () => {
   });
 
   test('convertir a pesos bajo el mínimo se evalúa por el equivalente en pesos', () => {
-    const quote = buildQuote({ intent: 'to_clp', giveAmount: 10, price, minPay: MIN });
+    const quote = buildQuote({ tarifa: SIN_TARIFA, intent: 'to_clp', giveAmount: 10, price, minPay: MIN });
     assert.equal(quote.state, 'below_min');
   });
 });
 
 describe('objeto Quote', () => {
   test('V1 nunca emite una cotización cerrada', () => {
-    const quote = buildQuote({ intent: 'to_foreign', giveAmount: 2_000_000, price, minPay: MIN });
+    const quote = buildQuote({ tarifa: SIN_TARIFA, intent: 'to_foreign', giveAmount: 2_000_000, price, minPay: MIN });
     assert.equal(quote.isReferential, true);
-    assert.equal(quote.spreadIncluded, true);
+    // Hasta el 2026-10-27, `spreadIncluded: true`. Con el tarifario la tasa
+    // no lleva recargo y el cobro va en `cargos`.
+    assert.equal(quote.rateWithoutMarkup, true);
   });
 
   test('payAmount es siempre el monto en pesos, sea cual sea la intención', () => {
-    const send = buildQuote({ intent: 'to_foreign', giveAmount: 2_000_000, price, minPay: MIN });
-    const back = buildQuote({ intent: 'to_clp', giveAmount: 2174.62, price, minPay: MIN });
+    const send = buildQuote({ tarifa: SIN_TARIFA, intent: 'to_foreign', giveAmount: 2_000_000, price, minPay: MIN });
+    const back = buildQuote({ tarifa: SIN_TARIFA, intent: 'to_clp', giveAmount: 2174.62, price, minPay: MIN });
     assert.equal(send.payAmount, 2_000_000);
     assert.ok(Math.abs(back.payAmount - 2_000_000) < 5);
   });
 
   test('la moneda recibida acompaña a la intención', () => {
-    assert.equal(buildQuote({ intent: 'to_foreign', giveAmount: 1000, price, minPay: MIN }).getCurrency, 'USD');
-    assert.equal(buildQuote({ intent: 'to_clp', giveAmount: 10, price, minPay: MIN }).getCurrency, 'CLP');
+    assert.equal(buildQuote({ tarifa: SIN_TARIFA, intent: 'to_foreign', giveAmount: 1000, price, minPay: MIN }).getCurrency, 'USD');
+    assert.equal(buildQuote({ tarifa: SIN_TARIFA, intent: 'to_clp', giveAmount: 10, price, minPay: MIN }).getCurrency, 'CLP');
   });
 });
 
 describe('mensaje de WhatsApp', () => {
   test('convertir a dólares se nombra como cambio, no como compra de cripto', () => {
-    const quote = buildQuote({ intent: 'to_foreign', giveAmount: 2_000_000, price, minPay: MIN });
+    const quote = buildQuote({ tarifa: SIN_TARIFA, intent: 'to_foreign', giveAmount: 2_000_000, price, minPay: MIN });
     const msg = whatsappMessage(quote, 2_000_000);
     assert.match(msg, /convertir CLP 2\.000\.000 a dólares/);
     assert.match(msg, /US\$ 2\.174,62/);
@@ -221,21 +228,21 @@ describe('mensaje de WhatsApp', () => {
   });
 
   test('convertir a pesos invierte las monedas del mensaje', () => {
-    const quote = buildQuote({ intent: 'to_clp', giveAmount: 2174.62, price, minPay: MIN });
+    const quote = buildQuote({ tarifa: SIN_TARIFA, intent: 'to_clp', giveAmount: 2174.62, price, minPay: MIN });
     const msg = whatsappMessage(quote, 2174.62);
     assert.match(msg, /convertir US\$ 2\.174,62 a pesos/);
     assert.match(msg, /CLP 1\.999\.998/);
   });
 
   test('bajo el mínimo pregunta si pueden operar, sin prometer precio', () => {
-    const quote = buildQuote({ intent: 'to_foreign', giveAmount: 10_000, price, minPay: MIN });
+    const quote = buildQuote({ tarifa: SIN_TARIFA, intent: 'to_foreign', giveAmount: 10_000, price, minPay: MIN });
     const msg = whatsappMessage(quote, 10_000);
     assert.match(msg, /¿Pueden operar ese monto\?/);
     assert.doesNotMatch(msg, /precio referencial/);
   });
 
   test('sin precio disponible el mensaje lo dice, en vez de inventar una cifra', () => {
-    const quote = buildQuote({ intent: 'to_foreign', giveAmount: 2_000_000, price, minPay: MIN });
+    const quote = buildQuote({ tarifa: SIN_TARIFA, intent: 'to_foreign', giveAmount: 2_000_000, price, minPay: MIN });
     const msg = whatsappMessage({ ...quote, state: 'market_moving' }, 2_000_000);
     assert.match(msg, /no me está mostrando precio/);
     assert.doesNotMatch(msg, /919,70/);
@@ -243,7 +250,7 @@ describe('mensaje de WhatsApp', () => {
 
   test('sin monto NO se manda una cifra vacía al ejecutivo', () => {
     // Antes llegaba "quiero convertir CLP 0 a dólares (recibo aprox. US$ 0,00)".
-    const quote = buildQuote({ intent: 'to_foreign', giveAmount: 0, price, minPay: MIN });
+    const quote = buildQuote({ tarifa: SIN_TARIFA, intent: 'to_foreign', giveAmount: 0, price, minPay: MIN });
     const msg = whatsappMessage(quote, 0);
     assert.doesNotMatch(msg, /CLP 0|US\$ 0,00/);
     assert.match(msg, /quiero cotizar una operación/);
@@ -251,6 +258,7 @@ describe('mensaje de WhatsApp', () => {
 
   test('sobre el máximo pregunta, cuando hay un máximo definido', () => {
     const quote = buildQuote({
+      tarifa: SIN_TARIFA,
       intent: 'to_foreign',
       giveAmount: 90_000_000,
       price,
@@ -262,7 +270,7 @@ describe('mensaje de WhatsApp', () => {
   });
 
   test('la URL queda codificada y apunta al número configurado', () => {
-    const quote = buildQuote({ intent: 'to_foreign', giveAmount: 2_000_000, price, minPay: MIN });
+    const quote = buildQuote({ tarifa: SIN_TARIFA, intent: 'to_foreign', giveAmount: 2_000_000, price, minPay: MIN });
     const url = whatsappUrl('56977615921', quote, 2_000_000);
     assert.ok(url.startsWith('https://wa.me/56977615921?text='));
     assert.doesNotMatch(url.split('?text=')[1] ?? '', /[ ?&#]/);

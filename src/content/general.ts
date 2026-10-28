@@ -88,8 +88,10 @@ export const generalFaq: readonly GeneralItem[] = [
       concreto de lo que esa plataforma recibe. Generalizarlo a doce divisas
       sería menos cierto, no más moderno,
       la cuenta de destino (cualquiera registrada, del titular) y que **el mínimo
-      en pesos es fijo en 500.000 y su equivalente en dólares se mueve con el
-      precio del día**.
+      en pesos es fijo y su equivalente en dólares se mueve con el precio del
+      día**. Era 500.000; desde el 2026-10-27 es 20.000 (tarifario). La cifra
+      está escrita en la respuesta y no sale de `quoteLimits`: si el mínimo
+      vuelve a cambiar, hay que cambiarla acá también.
 
       Lo del mínimo no hubo que cambiarlo en ninguna parte: `quote.ts` ya mide
       «el monto en pesos de la operación, sea el que se entrega o el que se
@@ -102,7 +104,7 @@ export const generalFaq: readonly GeneralItem[] = [
       pendiente de `/como-funciona`, que es donde corresponde.
     */
     q: '¿Puedo volver a pesos cuando quiera?',
-    a: 'Sí. Depositas dólar digital en la plataforma y haces la conversión ahí, directo a pesos. Los pesos llegan a una cuenta bancaria registrada a tu nombre, la que elijas. El mínimo es el mismo en las dos direcciones: la operación tiene que valer al menos CLP 500.000, así que en dólares el mínimo se mueve con el precio del día.',
+    a: 'Sí. Depositas dólar digital en la plataforma y haces la conversión ahí, directo a pesos. Los pesos llegan a una cuenta bancaria registrada a tu nombre, la que elijas. El mínimo es el mismo en las dos direcciones: la operación tiene que valer al menos CLP 20.000, así que en dólares el mínimo se mueve con el precio del día.',
   },
   {
     q: '¿Qué pasa si mi banco retiene o rechaza la transferencia?',

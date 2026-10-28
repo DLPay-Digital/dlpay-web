@@ -158,9 +158,10 @@ de cerrar cada operación, porque el mercado se mueve.
 
 > El precio de referencia no es una promesa de ejecución. Lo confirma una persona antes de cerrar la operación.
 
-DLPay toma una referencia de mercado y le aplica su spread. El resultado es
-el precio que ves en el cotizador: un solo número, con el spread ya
-incorporado. Cómo se compone, en detalle, está en [tarifas](/tarifas/).
+DLPay convierte a la tasa de mercado, sin recargo, y lo que cobra va aparte
+y a la vista: un costo de envío y una comisión de cambio, que el cotizador
+enseña antes de que transfieras. Cuánto es cada uno, por destino y por monto,
+está en [tarifas](/tarifas/).
 
 Para entender el recorrido completo de una operación, desde tu transferencia
 hasta el dólar digital en tu billetera, está la página de

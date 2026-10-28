@@ -190,9 +190,15 @@ function positiveInt(raw: string | undefined): number | undefined {
  * web publicara un mínimo y aplicara otro. Ahora hay un solo valor y un solo
  * sitio donde cambiarlo.
  *
- * **El mínimo real es CLP 500.000**, confirmado por Sebastián el 2026-09-25.
- * Hasta ese día el valor por defecto era `50_000` y estaba marcado como
- * placeholder; con esto se cierra la mitad de **D6**.
+ * **El mínimo es CLP 20.000 desde el 2026-10-27**, con el tarifario: Sebastián
+ * lo fijó «a mínimo 20.000 pesos», en todos los destinos y en la vuelta a
+ * pesos. Del 2026-09-25 a ese día fue CLP 500.000, y antes de eso `50_000` era
+ * un placeholder. Con el costo de envío fijo, un mínimo bajo tiene un costo
+ * visible: en China, con $6.900 de envío, 20.000 pierden un tercio, y el
+ * cotizador lo enseña tal cual.
+ *
+ * **Si el entorno define `PUBLIC_QUOTE_MIN_CLP`, manda el entorno**: hay que
+ * comprobar que Staging y producción no lo tengan en 500.000.
  *
  * **Y `samplePayClp` también está confirmado**: CLP 2.000.000, ratificado por
  * Sebastián el mismo día. Con eso **D6 se cierra entera**.
@@ -221,7 +227,7 @@ function positiveInt(raw: string | undefined): number | undefined {
  */
 export function resolveQuoteLimits(env: SiteEnv): QuoteLimits {
   return {
-    minPayClp: positiveInt(env.PUBLIC_QUOTE_MIN_CLP) ?? 500_000,
+    minPayClp: positiveInt(env.PUBLIC_QUOTE_MIN_CLP) ?? 20_000,
     maxPayClp: positiveInt(env.PUBLIC_QUOTE_MAX_CLP),
     samplePayClp: 2_000_000,
   };
