@@ -442,3 +442,55 @@ que sigue el patrón *combobox* de la ARIA APG.
   por eso siguen en USD: la tarjeta «Tu cotización» de la Home, el puente de tarifas y «lo que ves
   al cotizar» de `/tarifas` (DS §5). **Si algún día cambia el destino con que abre, esas tres
   cambian con él.**
+
+---
+
+## Enmienda — 2026-10-27 · el tarifario
+
+*Cowork, entrega `tarifario-`. El modelo de precio es de Sebastián, del mismo día, con su planilla
+de tres tramos.*
+
+**Por qué.** El cotizador mostraba un solo número con el spread de DLPay adentro: «Sin comisiones
+ocultas: el precio ya incluye el spread». El modelo pasó a ser el contrario: **la tasa es la de
+mercado, sin recargo, y lo que DLPay cobra son dos líneas a la vista**. Ver `CLAUDE.md` §1, «El
+modelo de precio».
+
+### Lo que cambia
+
+| | hasta hoy | desde esta enmienda |
+|---|---|---|
+| **El tramo** | «Precio referencial» y su cifra, y debajo «Sin comisiones ocultas: el precio ya incluye el spread.» | **El desglose, en el orden en que le pasa al dinero:** «Costo de envío − CLP 500», «Comisión de cambio 0,95 % − CLP 18.995», «Monto a convertir CLP 1.980.505», con el código y no «$», como manda el DS §5 en el cotizador; después el punto con «Precio referencial de mercado, sin recargo · 1 USD = 919,70 CLP», y al pie «**Sin comisiones ocultas.**» |
+| **Pasar a pesos** | la misma tarjeta, sin cobro | con la tarifa «CLP – Chile». El orden se da vuelta, porque la cuenta también: primero el precio y «En pesos», después los dos cobros |
+| **Lo que llega** | pesos ÷ tasa | lo que queda después de los dos cobros. Escribir en «Llega aprox.» busca el menor monto con el que llega al menos eso (`invertir`) |
+| **El mínimo** | CLP 500.000 | **CLP 20.000** |
+| **Los destinos** | trece | **once**; China llega en dólares y la nota del riel lo dice: «Llega en dólares, no en la moneda local» |
+| **El mensaje de WhatsApp** | «Llegan aprox. US$ 2.174,62 (1 USD = 919,70 CLP)» | «Llegan aprox. US$ 2.153,43 **netos** (1 USD = 919,70 CLP)»: sin la palabra, el ejecutivo que divide por la tasa llega a otra cifra |
+
+**Lo que no cambia:** «Precio referencial», con esas dos palabras (§48); el destino de partida; el
+monto de partida; el botón, el enlace secundario y el fallback a WhatsApp de cada estado; y el
+comportamiento bidireccional del §3.
+
+**La tarifa no se calcula en el navegador desde el tarifario:** la isla recibe de cada destino el
+costo de envío ya en pesos y los tres porcentajes (`data-tarifas`). Ver `tarifario.ts`.
+
+### Anatomía del tramo (reemplaza esa parte del esquema del 2026-10-22)
+
+```
+│  ┌ Envías                          [CLP] ┐    │
+│  │ 2.000.000                             │    │
+│  └───────────────────────────────────────┘    │
+│   │  Costo de envío             − CLP 500     │
+│   │  Comisión de cambio 0,95 % − CLP 18.995   │
+│   │  ─────────────────────────────────────    │
+│   │  Monto a convertir       CLP 1.980.505    │
+│   │  Precio referencial de mercado, sin recargo
+│   ●  1 USD = 919,70 CLP                       │
+│   │  Sin comisiones ocultas.                  │
+│  ┌ Llega aprox.                    [USD] ┐    │
+│  │ 2.153,43                              │    │
+│  └───────────────────────────────────────┘    │
+```
+
+`REQUIERE VALIDACIÓN DE COMPLIANCE` — «Costo de envío», «Comisión de cambio» y sus cifras; «de
+mercado, sin recargo»; y que China llega en dólares.
+
