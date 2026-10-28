@@ -63,10 +63,14 @@
  *    dirección se decide desde las divisas: la ficha de cada monto es el
  *    selector, y un botón junto al precio da vuelta la operación. La decisión
  *    2 de arriba, del 2026-10-22, queda reemplazada.
- * 2. **Lo que cobramos, en una línea**: «Cobramos CLP 19.495 · Ver detalle».
- *    El detalle —costo de envío, comisión y monto a convertir— se despliega en
- *    el tramo (eligió el plegable contra un diálogo).
- * 3. **«Sin comisiones ocultas.» se queda a la vista**, al pie del tramo.
+ * 2. **Lo que cobramos, en el detalle.** Primero fue una línea, «Cobramos CLP
+ *    19.495 · Ver detalle», con el desglose plegado en el tramo. El mismo día,
+ *    con eso a la vista, Sebastián sacó la línea —«eso ya se sabe en el
+ *    detalle»— y pidió el detalle «tal cual al de Global66»: «Ver detalle» abre
+ *    una pestaña con el detalle completo, y en ella «Costos operacionales:
+ *    CLP 0», «para que sea llamativo».
+ * 3. **«Sin comisiones ocultas.» se queda a la vista**, al pie del tramo, junto
+ *    a «Ver detalle».
  *
  * La tarjeta baja de 733 a 545 px a 390, y la cifra que llega entra en la
  * primera pantalla de un iPhone de 390×844.
@@ -291,44 +295,21 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 
     <div class="tramo" data-tramo>
       {/*
-        ── Lo que cobramos, en una línea, y el detalle a un toque (2026-10-28) ─
+        ── El tramo: el precio, y el detalle a un toque (2026-10-28, b) ───────
 
-        Las tres filas del tarifario —costo de envío, comisión y monto a
-        convertir— llenaban el tramo. Ahora el tramo dice el total, «Cobramos
-        CLP 19.495», que es la cifra que un cliente compara, y el detalle se abre
-        desde esa misma línea. **El total no se esconde**: lo que se pliega es de
-        qué está hecho. «Sin comisiones ocultas» sigue a la vista.
+        Desde la entrega `compacto-` el tramo decía el total, «Cobramos CLP
+        19.495», con el desglose plegado debajo. Sebastián lo sacó: el total ya
+        está en el detalle. Ahora el tramo dice el precio y «Sin comisiones
+        ocultas.», y a su lado «Ver detalle», que abre el detalle completo en una
+        pestaña, como el de Global66 (abajo, `cot-detalle`).
 
-        REQUIERE VALIDACIÓN DE COMPLIANCE — «Cobramos», «Costo de envío»,
-        «Comisión de cambio» y sus cifras; y «sin recargo».
+        REQUIERE VALIDACIÓN DE COMPLIANCE — «sin recargo»; y que el cobro se lea
+        al abrir el detalle y no en la tarjeta.
       */}
-      <details class="cobro" data-cobro>
-        <summary class="cobro-fila">
-          <span class="cobro-in">
-            <span class="cobro-total"><span class="cobro-rot">Cobramos</span> <span class="num" data-c-total>CLP {formatCLP(cargosIniciales.envio + cargosIniciales.comision)}</span></span>
-            <span class="cobro-ver">Ver detalle<Icon name="chevron" size={14} class="cobro-ico" /></span>
-          </span>
-        </summary>
-        <dl class="cargos" data-cargos>
-          <div class="cargo" data-cargo="envio">
-            <dt>Costo de envío</dt>
-            <dd class="num" data-c-envio>− CLP {formatCLP(cargosIniciales.envio)}</dd>
-          </div>
-          <div class="cargo" data-cargo="comision">
-            <dt>Comisión de cambio <span class="pct num" data-c-pct>{formatComision(cargosIniciales.comisionPb)}</span></dt>
-            <dd class="num" data-c-comision>− CLP {formatCLP(cargosIniciales.comision)}</dd>
-          </div>
-          <div class="cargo subtotal" data-cargo="subtotal">
-            <dt data-c-sub-rot>Monto a convertir</dt>
-            <dd class="num" data-c-sub>CLP {formatCLP(cargosIniciales.aConvertir)}</dd>
-          </div>
-        </dl>
-      </details>
       <div class="tramo-fila" data-precio>
         <p class="tramo-precio">
           {/* «Precio referencial», con esas dos palabras (spec §48), y «sin
-              recargo»: el cobro va aparte, en la línea de arriba. «de mercado»
-              pasa al detalle. */}
+              recargo»: lo que cobramos va aparte, en el detalle. */}
           <span class="tramo-rot">Precio referencial, sin recargo</span>
           <span class="tramo-valor num" data-rate-display>{precioLegible(price.rate, DEFAULT_CURRENCY)}</span>
         </p>
@@ -342,9 +323,20 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
           <Icon name="intercambiar" size={20} />
         </button>
       </div>
-      <p class="tramo-nota" id="quoter-note">
-        <strong>Sin comisiones ocultas.</strong>
-      </p>
+      <div class="tramo-pie">
+        <p class="tramo-nota" id="quoter-note">
+          <strong>Sin comisiones ocultas.</strong>
+        </p>
+        <button
+          type="button"
+          class="ver-detalle"
+          aria-haspopup="dialog"
+          aria-controls="cot-detalle"
+          data-abrir-detalle
+        >
+          Ver detalle<Icon name="chevron" size={14} class="ver-ico" />
+        </button>
+      </div>
     </div>
 
     <div class="monto monto-llega">
@@ -453,6 +445,47 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
   <a class="secondary" href={platform.registerUrl}>
     o crea tu cuenta para operar en línea
   </a>
+
+  {/*
+    ── El detalle completo, en una pestaña (2026-10-28, b) ────────────────────
+
+    Pedido de Sebastián: «el esquema tal cual al de Global66 […] al clickear en
+    ver detalle se abra una pequeña pestaña con el detalle completo». Las filas
+    son las suyas, en el mismo orden: lo que envías; lo que cobramos, con sus
+    partes debajo; el monto a convertir; el precio; y lo que llega. **«Costos
+    operacionales: CLP 0»** también es pedido suyo, «para que sea llamativo», y
+    va en verde: es lo que no cobramos.
+
+    Es un `<dialog>` modal: atrapa el foco, Escape lo cierra (en Global66 no) y
+    el foco vuelve a «Ver detalle» (en Global66 se va al principio de la
+    página). Un clic en el fondo también lo cierra, como allá.
+
+    REQUIERE VALIDACIÓN DE COMPLIANCE — «Lo que cobramos», «Costos
+    operacionales: CLP 0» y las cifras.
+  */}
+  <dialog class="detalle" id="cot-detalle" aria-labelledby="detalle-titulo" data-detalle>
+    <div class="detalle-in">
+      <div class="detalle-cabeza">
+        <h3 class="detalle-titulo" id="detalle-titulo">Detalle completo</h3>
+        <button type="button" class="detalle-cerrar" data-cerrar-detalle>
+          Cerrar<span class="detalle-cruz"><Icon name="cerrar" size={16} /></span>
+        </button>
+      </div>
+      <dl class="detalle-lista" data-detalle-lista>
+        <div class="fila" data-fila="pone"><dt data-f-give-rot>Envías</dt><dd class="num" data-f-give>CLP {formatCLP(initialPay)}</dd></div>
+        {/* Las partes van como filas de la misma lista, y no dentro de otra caja:
+            una `dl` sólo admite un nivel de `div` entre ella y sus pares (axe,
+            `definition-list`). Lo que las agrupa es la letra y la sangría. */}
+        <div class="fila total" data-fila="cobro"><dt>Lo que cobramos<span class="sr-only">, la suma de las tres filas que siguen</span></dt><dd class="num" data-c-total>CLP {formatCLP(cargosIniciales.envio + cargosIniciales.comision)}</dd></div>
+        <div class="fila parte" data-fila="cobro"><dt>Costo de envío</dt><dd class="num" data-c-envio>CLP {formatCLP(cargosIniciales.envio)}</dd></div>
+        <div class="fila parte" data-fila="cobro"><dt>Comisión de cambio <span class="pct num" data-c-pct>{formatComision(cargosIniciales.comisionPb)}</span></dt><dd class="num" data-c-comision>CLP {formatCLP(cargosIniciales.comision)}</dd></div>
+        <div class="fila parte ultima cero" data-fila="cobro"><dt>Costos operacionales</dt><dd class="num">CLP 0</dd></div>
+        <div class="fila" data-fila="subtotal"><dt data-c-sub-rot>Monto a convertir</dt><dd class="num" data-c-sub>CLP {formatCLP(cargosIniciales.aConvertir)}</dd></div>
+        <div class="fila" data-fila="precio"><dt>Precio referencial</dt><dd class="num" data-f-tasa>{precioLegible(price.rate, DEFAULT_CURRENCY)}</dd></div>
+        <div class="fila llega" data-fila="llega"><dt data-f-get-rot>Llega aprox. a {DEFAULT_DESTINO}</dt><dd class="num" data-f-get>{DEFAULT_CURRENCY} {formatForeign(initialGet, currencyInfo(DEFAULT_CURRENCY).decimals)}</dd></div>
+      </dl>
+    </div>
+  </dialog>
 </section>
 
 <!--
@@ -704,92 +737,6 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     bottom: 0;
     border-left: 3px solid var(--verde-deep);
   }
-  /* ── Lo que cobramos: una línea, y el detalle a un toque (2026-10-28) ───
-     La línea es el control: el `summary` de un `details`, que abre y cierra
-     sin JavaScript y que un lector de pantalla anuncia como botón con su
-     estado. Mide 44 px de alto (DS §10) y se come el relleno de arriba del
-     tramo, para que el blanco no agrande la tarjeta. El `flex` va en un `span`
-     de dentro: Safari no dejaba de ser bloque a un `summary`.
-
-     Sebastián eligió este, «plegable», el 2026-10-28, contra un diálogo como el
-     «Detalle completo» de Global66: un toque abre y otro cierra, el detalle se
-     lee donde le pasa al dinero y sus cifras cambian mientras escribes. */
-  .cobro { margin: calc(-1 * var(--s-3)) 0 var(--s-1); }
-  .cobro-fila {
-    display: block;
-    color: var(--ink);
-    cursor: pointer;
-    list-style: none;
-  }
-  .cobro-fila::-webkit-details-marker { display: none; }
-  .cobro-in {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    column-gap: var(--s-3);
-    min-height: 44px;
-    font-size: var(--t-label);
-    line-height: 1.45;
-  }
-  .cobro-rot { color: var(--ink-mute); }
-  .cobro-total .num { font-weight: 600; white-space: nowrap; }
-  .cobro-ver {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    margin-left: auto;
-    font-weight: 600;
-    color: var(--verde-deep);
-    white-space: nowrap;
-  }
-  .cobro-fila:hover .cobro-ver { text-decoration: underline; }
-  .cobro-fila :global(.cobro-ico) {
-    transform: rotate(90deg);
-    transition: transform var(--m-fast) var(--m-ease);
-  }
-  .cobro[open] .cobro-fila :global(.cobro-ico) { transform: rotate(-90deg); }
-  .cobro-fila:focus { outline: none; }
-  .cobro-fila:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r-1); }
-
-  /* El detalle: filas de nombre y cifra, en la letra de la etiqueta y con la
-     cifra a la derecha, como el desglose de un recibo. Si no caben en una
-     línea —320 px con el espaciado de WCAG 1.4.12— la cifra baja a la suya. */
-  .cargos {
-    display: grid;
-    gap: var(--s-1);
-    margin: 0 0 var(--s-3);
-  }
-  .cargo {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    column-gap: var(--s-3);
-    font-size: var(--t-label);
-    line-height: 1.45;
-  }
-  .cargo dt { color: var(--ink-mute); }
-  .cargo dd { margin: 0 0 0 auto; color: var(--ink); white-space: nowrap; }
-  .cargo .pct { color: var(--ink); font-weight: 600; white-space: nowrap; }
-  /* El subtotal cierra la cuenta antes del punto: un filete de 1 px arriba, como
-     la raya de una suma. Es un borde, así que sigue en colores forzados. */
-  .cargo.subtotal {
-    padding-top: var(--s-1);
-    border-top: 1px solid var(--line);
-  }
-  .cargo.subtotal dt,
-  .cargo.subtotal dd { color: var(--ink); font-weight: 600; }
-  /* De vuelta a pesos el precio va primero y la línea del cobro después; el
-     subtotal abre la cuenta y no la cierra, así que el filete pasa abajo. */
-  .tramo.a-pesos .cobro { margin: var(--s-1) 0 0; }
-  .tramo.a-pesos .tramo-nota { margin-top: 0; }
-  .tramo.a-pesos .cargo.subtotal {
-    padding: 0 0 var(--s-1);
-    border-top: 0;
-    border-bottom: 1px solid var(--line);
-  }
-
   /* El precio y, a su derecha, el botón que da vuelta la operación: está donde
      ocurre la conversión. Redondo y de 44 px, en el blanco de las cajas. */
   .tramo-fila { display: flex; align-items: center; gap: var(--s-3); }
@@ -854,13 +801,136 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     box-shadow: 0 0 0 3px var(--papel);
     transform: translateY(-50%);
   }
+  /* ── «Sin comisiones ocultas.» y, a su lado, «Ver detalle» (2026-10-28, b)
+     La afirmación y la manera de comprobarla, en una línea. El botón mide 44 px
+     de alto (DS §10) y no agranda el tramo: el renglón ya los tenía. Si no
+     caben juntos —320 px con el espaciado de 1.4.12—, el botón baja. */
+  .tramo-pie {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: var(--s-3);
+    margin: var(--s-1) 0 calc(-1 * var(--s-2));
+  }
   .tramo-nota {
-    margin-top: var(--s-2);
     font-size: var(--t-label);
     line-height: 1.45;
     color: var(--ink-mute);
   }
   .tramo-nota strong { color: var(--ink); font-weight: 600; }
+  .ver-detalle {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    min-height: 44px;
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: var(--t-label);
+    font-weight: 600;
+    color: var(--verde-deep);
+    cursor: pointer;
+  }
+  .ver-detalle:hover { text-decoration: underline; }
+  .ver-detalle:focus { outline: none; }
+  .ver-detalle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r-1); }
+  .ver-detalle :global(.ver-ico) { transform: rotate(90deg); }
+
+  /* ── El detalle completo, en una pestaña (2026-10-28, b) ─────────────────
+     El esquema del de Global66, en la tarjeta del sitio: papel, radio de
+     tarjeta y la sombra de lo que se abre encima (`--elev-pop`). Centrado
+     también en el teléfono, como allá, con 16 px a cada lado. Las filas se
+     separan con `--line`, que no significa nada: el punteado, que en el DS es
+     un límite (§6.2), no se usa. Las partes de lo que cobramos van debajo de
+     su total, más chicas y entradas, sin raya entre ellas. */
+  .detalle {
+    width: min(440px, calc(100vw - 32px));
+    max-width: none;
+    max-height: calc(100vh - 32px);
+    margin: auto;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r-card);
+    background: var(--papel);
+    color: var(--ink);
+    box-shadow: var(--elev-pop);
+    overflow: auto;
+  }
+  .detalle:not([open]) { display: none; }
+  /* La página de atrás se queda quieta mientras el detalle está abierto. */
+  :global(html.sin-desplazar) { overflow: hidden; }
+  .detalle::backdrop { background: rgba(11, 19, 32, 0.6); }
+  /* Sin `showModal` (Safari 14, que está en el `cssTarget`): fija y sin fondo. */
+  .detalle.sin-modal { position: fixed; z-index: 40; inset: 0; }
+  .detalle-in { padding: var(--s-5); }
+  .detalle-cabeza {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    margin-bottom: var(--s-3);
+  }
+  .detalle-titulo { margin: 0; font-size: var(--t-h3); font-weight: 700; line-height: 1.25; }
+  .detalle-cerrar {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: var(--ls-label);
+    color: var(--ink-mute);
+    cursor: pointer;
+  }
+  .detalle-cruz {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--ink-mute);
+    border-radius: 50%;
+    color: var(--ink);
+  }
+  .detalle-cerrar:hover { color: var(--ink); }
+  .detalle-cerrar:hover .detalle-cruz { border-color: var(--ink); }
+  .detalle-cerrar:focus { outline: none; }
+  .detalle-cerrar:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r-1); }
+  .detalle-lista { margin: 0; }
+  .detalle-lista .fila {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    column-gap: var(--s-3);
+    padding: var(--s-2) 0;
+    font-size: var(--t-body-sm);
+    line-height: 1.45;
+    font-weight: 600;
+  }
+  .detalle-lista .fila { border-bottom: 1px solid var(--line); }
+  /* Lo que cobramos y sus partes se leen como un bloque: la raya va al final. */
+  .detalle-lista .total,
+  .detalle-lista .parte:not(.ultima) { border-bottom: 0; }
+  .detalle-lista dd { margin: 0 0 0 auto; white-space: nowrap; }
+  .detalle-lista .parte {
+    padding: 0 0 var(--s-1) var(--s-4);
+    font-size: var(--t-label);
+    font-weight: 400;
+    color: var(--ink-mute);
+  }
+  .detalle-lista .parte dd { color: var(--ink); }
+  .detalle-lista .parte.ultima { padding-bottom: var(--s-2); }
+  .detalle-lista .pct { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .detalle-lista .cero dd { color: var(--verde-deep); font-weight: 600; }
+  .detalle-lista .llega { border-bottom: 0; font-size: var(--t-body); font-weight: 700; }
 
   /* M2 · el dato acusa que cambió. 160ms, sólo sobre el valor nuevo. No es un
      conteo desde cero: eso mostraría precios falsos. NO al teclear: mientras
@@ -1015,6 +1085,7 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     .selector-op.activa { outline: 2px solid Highlight; outline-offset: -2px; }
     .selector-op[aria-selected='true']::after { border-color: Highlight; }
     .moneda { border: 1px solid CanvasText; }
+    .detalle { border: 1px solid CanvasText; }
     /* El botón de WhatsApp es un relleno, y el relleno se va: sin borde quedaba
        como un enlace suelto. Pasaba también antes del rediseño. */
     .cta { border: 1px solid LinkText; }
@@ -1265,13 +1336,18 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     const sentidoEl = root.querySelector<HTMLElement>('[data-sentido]');
     const giveBoton = root.querySelector<HTMLElement>('#give-boton');
     const getBoton = root.querySelector<HTMLElement>('#get-boton');
-    const cobroEl = root.querySelector<HTMLElement>('[data-cobro]');
     const cTotal = root.querySelector<HTMLElement>('[data-c-total]');
-    const envioRow = root.querySelector<HTMLElement>('[data-cargo="envio"]');
-    const comisionRow = root.querySelector<HTMLElement>('[data-cargo="comision"]');
-    const tramoEl = root.querySelector<HTMLElement>('[data-tramo]');
-    const precioEl = root.querySelector<HTMLElement>('[data-precio]');
-    const subtotalEl = root.querySelector<HTMLElement>('[data-cargo="subtotal"]');
+    // El detalle completo y sus filas, que se reordenan de vuelta a pesos.
+    const detalle = root.querySelector<HTMLDialogElement>('[data-detalle]');
+    const abrirDetalle = root.querySelector<HTMLButtonElement>('[data-abrir-detalle]');
+    const fila = (n: string): HTMLElement | null => root.querySelector<HTMLElement>(`[data-fila="${n}"]`);
+    const [filaPone, filaSub, filaPrecio] = ['pone', 'subtotal', 'precio'].map(fila);
+    const filasCobro = [...root.querySelectorAll<HTMLElement>('[data-fila="cobro"]')];
+    const fGiveRot = root.querySelector<HTMLElement>('[data-f-give-rot]');
+    const fGive = root.querySelector<HTMLElement>('[data-f-give]');
+    const fGetRot = root.querySelector<HTMLElement>('[data-f-get-rot]');
+    const fGet = root.querySelector<HTMLElement>('[data-f-get]');
+    const fTasa = root.querySelector<HTMLElement>('[data-f-tasa]');
     const cEnvio = root.querySelector<HTMLElement>('[data-c-envio]');
     const cPct = root.querySelector<HTMLElement>('[data-c-pct]');
     const cComision = root.querySelector<HTMLElement>('[data-c-comision]');
@@ -1309,34 +1385,30 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     /** Una cifra en pesos de una línea: «CLP 18.995», y «− CLP 18.995» si se
         descuenta. Con su código y no con «$»: en el cotizador hay una divisa
         concreta, y ahí los pesos son «CLP» (DS §5). */
-    const pesos = (v: number, resta = false): string => `${resta ? '− ' : ''}CLP ${formatCLP(v)}`;
+    const pesos = (v: number): string => `CLP ${formatCLP(v)}`;
+    /** Una cifra con su código delante, «USD 2.153,43», como los pesos. */
+    const cifra = (v: number, c: Currency): string => `${c} ${fmt(v, c)}`;
 
     /**
-     * Lo que cobramos: el total en la línea y, en el detalle, de qué está hecho.
-     * De vuelta a pesos el precio sube antes de la línea del cobro y el
-     * subtotal pasa a abrir la lista, porque ahí primero se convierte y después
-     * se descuenta. Se mueven los nodos, no se reordenan con CSS: así el lector
-     * de pantalla lee en el mismo orden que se ve (WCAG 1.3.2).
+     * El detalle completo. Las cifras van sin signo, como en un recibo: debajo
+     * de «Lo que cobramos» se lee que se descuentan. De vuelta a pesos las filas
+     * siguen a la cuenta, que también se da vuelta: lo que conviertes, el
+     * precio, los pesos que salen, lo que cobramos y lo que recibes. Se mueven
+     * los nodos, no se reordenan con CSS, para que el lector de pantalla lea en
+     * el mismo orden que se ve (WCAG 1.3.2); con el diálogo cerrado, nada que
+     * tenga el foco se mueve.
      */
     const pintarCargos = (envio: boolean): void => {
       const { cargos } = cargosDe(intent, giveAmount, rate, tarifa());
       if (cTotal) cTotal.textContent = pesos(cargos.envio + cargos.comision);
-      if (cEnvio) cEnvio.textContent = pesos(cargos.envio, true);
+      if (cEnvio) cEnvio.textContent = pesos(cargos.envio);
       if (cPct) cPct.textContent = formatComision(cargos.comisionPb);
-      if (cComision) cComision.textContent = pesos(cargos.comision, true);
+      if (cComision) cComision.textContent = pesos(cargos.comision);
       if (cSubRot) cSubRot.textContent = envio ? 'Monto a convertir' : 'En pesos';
       if (cSub) cSub.textContent = pesos(cargos.aConvertir);
-      tramoEl?.classList.toggle('a-pesos', !envio);
-      if (subtotalEl && envioRow && comisionRow) {
-        if (envio) comisionRow.after(subtotalEl);
-        else envioRow.before(subtotalEl);
-      }
-      // Se mueve la línea del cobro y no el precio: el precio lleva el botón
-      // que da vuelta la operación, y un nodo que se saca y se vuelve a poner
-      // pierde el foco. Con el teclado, el foco se quedaba en la nada.
-      if (cobroEl && precioEl) {
-        if (envio) precioEl.before(cobroEl);
-        else precioEl.after(cobroEl);
+      if (filaPone && filaSub && filaPrecio) {
+        if (envio) filaPone.after(...filasCobro, filaSub, filaPrecio);
+        else filaPone.after(filaPrecio, filaSub, ...filasCobro);
       }
     };
 
@@ -1432,6 +1504,12 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
         rateEl.textContent = legible;
         settle(rateEl);
       }
+      // El detalle completo, al día aunque esté cerrado: se abre ya escrito.
+      if (fGiveRot) fGiveRot.textContent = envio ? 'Envías' : 'Conviertes';
+      if (fGive) fGive.textContent = cifra(giveAmount, give);
+      if (fGetRot) fGetRot.textContent = envio ? `Llega aprox. a ${destino}` : 'Recibes aprox.';
+      if (fGet) fGet.textContent = cifra(received(), get);
+      if (fTasa) fTasa.textContent = legible;
 
       const fuera = quote.state === 'below_min' || quote.state === 'above_max';
       giveBox.classList.toggle('invalid', fuera && give === 'CLP');
@@ -1578,6 +1656,36 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       cambiarA(intent === 'to_foreign' ? 'to_clp' : 'to_foreign');
       render();
     });
+
+    /* El detalle completo. `showModal` atrapa el foco, Escape lo cierra y el
+       foco vuelve a «Ver detalle». Un clic en el fondo cierra, como en
+       Global66: el fondo es el propio `dialog`, porque el contenido va en
+       `.detalle-in`. Mientras está abierto, la página de atrás no se desplaza.
+       Sin `showModal` (Safari 14), se abre fijo y sin fondo. */
+    if (detalle && abrirDetalle) {
+      const cerrarDetalle = (): void => {
+        if (typeof detalle.close === 'function') detalle.close();
+        else { detalle.removeAttribute('open'); detalle.classList.remove('sin-modal'); abrirDetalle.focus(); }
+        document.documentElement.classList.remove('sin-desplazar');
+      };
+      abrirDetalle.addEventListener('click', () => {
+        document.documentElement.classList.add('sin-desplazar');
+        if (typeof detalle.showModal === 'function') detalle.showModal();
+        else {
+          // Sin el diálogo nativo, el foco y Escape se ponen a mano.
+          detalle.classList.add('sin-modal');
+          detalle.setAttribute('open', '');
+          detalle.querySelector<HTMLElement>('[data-cerrar-detalle]')?.focus();
+        }
+      });
+      detalle.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && typeof detalle.showModal !== 'function') cerrarDetalle();
+      });
+      detalle.querySelector('[data-cerrar-detalle]')?.addEventListener('click', cerrarDetalle);
+      detalle.addEventListener('click', (e) => { if (e.target === detalle) cerrarDetalle(); });
+      // Escape cierra el diálogo nativo sin pasar por `cerrarDetalle`.
+      detalle.addEventListener('close', () => document.documentElement.classList.remove('sin-desplazar'));
+    }
 
     /**
      * Un destino que llega de fuera: `?destino=Colombia` en la dirección, o un

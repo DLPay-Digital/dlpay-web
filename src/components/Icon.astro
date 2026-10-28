@@ -21,7 +21,8 @@ export type IconName =
   | 'empresa'
   | 'wallet'
   | 'candado'
-  | 'intercambiar';
+  | 'intercambiar'
+  | 'cerrar';
 
 interface Props {
   name: IconName;
@@ -73,6 +74,13 @@ const paths: Record<IconName, string> = {
     divisas. Dos flechas, una que sube y una que baja, en el trazo del set.
   */
   intercambiar: '<path d="M8 19V5M4.5 8.5L8 5l3.5 3.5"/><path d="M16 5v14M12.5 15.5L16 19l3.5-3.5"/>',
+  /*
+    La cruz que cierra el detalle completo del cotizador (entrega `compacto2-`,
+    2026-10-28). La necesidad que pide el DS §7: Sebastián quiso el detalle en
+    una pestaña que se abre y se cierra, como la de Global66, y su «Cerrar» va
+    con una cruz en un círculo. El círculo lo pone el CSS del botón.
+  */
+  cerrar: '<path d="M8 8l8 8M16 8l-8 8"/>',
 };
 ---
 <svg
