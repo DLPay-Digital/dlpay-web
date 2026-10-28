@@ -663,3 +663,33 @@ otra: una `dl` admite un solo nivel de `div` entre ella y sus pares.
 - «Lo que cobramos» y sus cifras;
 - «Costos operacionales: CLP 0»;
 - que la tarjeta ya no diga lo que cobramos sin abrir el detalle.
+
+**Corregido la misma tarde, por Sebastián, con el diálogo delante:**
+
+- **Sale la fila «Lo que cobramos»**, el total. El detalle enseña las partes —costo de envío,
+  comisión de cambio y costos operacionales— y nada más. Van seguidas y sin raya entre ellas, y ya
+  no van entradas, porque no cuelgan de nada.
+- **Todas las cifras a una sola medida**: 14 px y peso 600, alineadas a la derecha en el mismo
+  borde. Antes había tres tamaños —las partes más chicas y lo que llega más grande— y «se ve
+  desordenado». Lo que llega se distingue sólo por el peso, 700.
+
+El diálogo del bloque de arriba queda así:
+
+```
+┌ Detalle completo                    Cerrar (×) ┐
+│ Envías                           CLP 2.000.000 │
+│ ───────────────────────────────────────────── │
+│ Costo de envío                         CLP 500 │
+│ Comisión de cambio 0,95 %           CLP 18.995 │
+│ Costos operacionales                     CLP 0 │  ← en verde
+│ ───────────────────────────────────────────── │
+│ Monto a convertir                CLP 1.980.505 │
+│ ───────────────────────────────────────────── │
+│ Precio referencial          1 USD = 919,70 CLP │
+│ ───────────────────────────────────────────── │
+│ Llega aprox. a Estados Unidos     USD 2.153,43 │
+└────────────────────────────────────────────────┘
+```
+
+`REQUIERE VALIDACIÓN DE COMPLIANCE` — sin la fila del total, el detalle tampoco suma lo que
+cobramos: la suma la hace el cliente.

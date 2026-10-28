@@ -451,8 +451,10 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 
     Pedido de Sebastián: «el esquema tal cual al de Global66 […] al clickear en
     ver detalle se abra una pequeña pestaña con el detalle completo». Las filas
-    son las suyas, en el mismo orden: lo que envías; lo que cobramos, con sus
-    partes debajo; el monto a convertir; el precio; y lo que llega. **«Costos
+    son las suyas, en el mismo orden: lo que envías; lo que cobramos, parte por
+    parte; el monto a convertir; el precio; y lo que llega. *El mismo día salió
+    la fila del total, «Lo que cobramos», y las cifras pasaron a una sola medida:
+    a tres tamaños distintos se veía desordenado (Sebastián).* **«Costos
     operacionales: CLP 0»** también es pedido suyo, «para que sea llamativo», y
     va en verde: es lo que no cobramos.
 
@@ -460,7 +462,7 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     el foco vuelve a «Ver detalle» (en Global66 se va al principio de la
     página). Un clic en el fondo también lo cierra, como allá.
 
-    REQUIERE VALIDACIÓN DE COMPLIANCE — «Lo que cobramos», «Costos
+    REQUIERE VALIDACIÓN DE COMPLIANCE — el costo de envío, la comisión, «Costos
     operacionales: CLP 0» y las cifras.
   */}
   <dialog class="detalle" id="cot-detalle" aria-labelledby="detalle-titulo" data-detalle>
@@ -473,10 +475,9 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       </div>
       <dl class="detalle-lista" data-detalle-lista>
         <div class="fila" data-fila="pone"><dt data-f-give-rot>Envías</dt><dd class="num" data-f-give>CLP {formatCLP(initialPay)}</dd></div>
-        {/* Las partes van como filas de la misma lista, y no dentro de otra caja:
-            una `dl` sólo admite un nivel de `div` entre ella y sus pares (axe,
-            `definition-list`). Lo que las agrupa es la letra y la sangría. */}
-        <div class="fila total" data-fila="cobro"><dt>Lo que cobramos<span class="sr-only">, la suma de las tres filas que siguen</span></dt><dd class="num" data-c-total>CLP {formatCLP(cargosIniciales.envio + cargosIniciales.comision)}</dd></div>
+        {/* Los tres cobros van seguidos y sin raya entre ellos: es lo único que
+            los agrupa. «Lo que cobramos», el total, salió el 2026-10-28 a pedido
+            de Sebastián: el detalle enseña las partes y nada más. */}
         <div class="fila parte" data-fila="cobro"><dt>Costo de envío</dt><dd class="num" data-c-envio>CLP {formatCLP(cargosIniciales.envio)}</dd></div>
         <div class="fila parte" data-fila="cobro"><dt>Comisión de cambio <span class="pct num" data-c-pct>{formatComision(cargosIniciales.comisionPb)}</span></dt><dd class="num" data-c-comision>CLP {formatCLP(cargosIniciales.comision)}</dd></div>
         <div class="fila parte ultima cero" data-fila="cobro"><dt>Costos operacionales</dt><dd class="num">CLP 0</dd></div>
@@ -844,8 +845,10 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
      tarjeta y la sombra de lo que se abre encima (`--elev-pop`). Centrado
      también en el teléfono, como allá, con 16 px a cada lado. Las filas se
      separan con `--line`, que no significa nada: el punteado, que en el DS es
-     un límite (§6.2), no se usa. Las partes de lo que cobramos van debajo de
-     su total, más chicas y entradas, sin raya entre ellas. */
+     un límite (§6.2), no se usa. Los tres cobros van seguidos, sin raya entre
+     ellos. **Todas las cifras van a la misma medida y el mismo peso**, alineadas
+     a la derecha: la mono hace que las cifras caigan en columna. Sólo lo que
+     llega va más fuerte, en peso y no en tamaño. */
   .detalle {
     width: min(440px, calc(100vw - 32px));
     max-width: none;
@@ -916,21 +919,19 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     font-weight: 600;
   }
   .detalle-lista .fila { border-bottom: 1px solid var(--line); }
-  /* Lo que cobramos y sus partes se leen como un bloque: la raya va al final. */
-  .detalle-lista .total,
-  .detalle-lista .parte:not(.ultima) { border-bottom: 0; }
-  .detalle-lista dd { margin: 0 0 0 auto; white-space: nowrap; }
-  .detalle-lista .parte {
-    padding: 0 0 var(--s-1) var(--s-4);
-    font-size: var(--t-label);
-    font-weight: 400;
-    color: var(--ink-mute);
+  /* Los tres cobros se leen como un bloque: la raya va al final. */
+  .detalle-lista .parte:not(.ultima) { border-bottom: 0; padding-bottom: 0; }
+  .detalle-lista dd {
+    margin: 0 0 0 auto;
+    white-space: nowrap;
+    text-align: right;
+    font-size: var(--t-body-sm);
+    font-weight: 600;
   }
-  .detalle-lista .parte dd { color: var(--ink); }
-  .detalle-lista .parte.ultima { padding-bottom: var(--s-2); }
-  .detalle-lista .pct { color: var(--ink); font-weight: 600; white-space: nowrap; }
-  .detalle-lista .cero dd { color: var(--verde-deep); font-weight: 600; }
-  .detalle-lista .llega { border-bottom: 0; font-size: var(--t-body); font-weight: 700; }
+  .detalle-lista .pct { font-size: inherit; font-weight: 600; white-space: nowrap; }
+  .detalle-lista .cero dd { color: var(--verde-deep); }
+  .detalle-lista .llega { border-bottom: 0; }
+  .detalle-lista .llega dd { font-weight: 700; }
 
   /* M2 · el dato acusa que cambió. 160ms, sólo sobre el valor nuevo. No es un
      conteo desde cero: eso mostraría precios falsos. NO al teclear: mientras
@@ -1336,7 +1337,6 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     const sentidoEl = root.querySelector<HTMLElement>('[data-sentido]');
     const giveBoton = root.querySelector<HTMLElement>('#give-boton');
     const getBoton = root.querySelector<HTMLElement>('#get-boton');
-    const cTotal = root.querySelector<HTMLElement>('[data-c-total]');
     // El detalle completo y sus filas, que se reordenan de vuelta a pesos.
     const detalle = root.querySelector<HTMLDialogElement>('[data-detalle]');
     const abrirDetalle = root.querySelector<HTMLButtonElement>('[data-abrir-detalle]');
@@ -1390,8 +1390,8 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     const cifra = (v: number, c: Currency): string => `${c} ${fmt(v, c)}`;
 
     /**
-     * El detalle completo. Las cifras van sin signo, como en un recibo: debajo
-     * de «Lo que cobramos» se lee que se descuentan. De vuelta a pesos las filas
+     * El detalle completo. Las cifras van sin signo, como en un recibo: los
+     * rótulos ya dicen que son cobros. De vuelta a pesos las filas
      * siguen a la cuenta, que también se da vuelta: lo que conviertes, el
      * precio, los pesos que salen, lo que cobramos y lo que recibes. Se mueven
      * los nodos, no se reordenan con CSS, para que el lector de pantalla lea en
@@ -1400,7 +1400,6 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
      */
     const pintarCargos = (envio: boolean): void => {
       const { cargos } = cargosDe(intent, giveAmount, rate, tarifa());
-      if (cTotal) cTotal.textContent = pesos(cargos.envio + cargos.comision);
       if (cEnvio) cEnvio.textContent = pesos(cargos.envio);
       if (cPct) cPct.textContent = formatComision(cargos.comisionPb);
       if (cComision) cComision.textContent = pesos(cargos.comision);

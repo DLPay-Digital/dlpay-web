@@ -78,25 +78,24 @@ describe('el cotizador compacto', { skip: !existsSync(join(dist, 'index.html')) 
     assert.ok(detalle.includes('Detalle completo'));
   });
 
-  test('la tarjeta no dice lo que cobramos: lo dice el detalle', () => {
+  /* Sebastián, 2026-10-28: el detalle enseña las partes, sin la fila del total. */
+  test('ni la tarjeta ni el detalle llevan el total de lo que cobramos', () => {
     assert.ok(!/Cobramos|Lo que cobramos|data-c-total/.test(sinDetalle));
-    assert.ok(detalle.includes('Lo que cobramos'));
+    assert.ok(!/Lo que cobramos|data-c-total/.test(detalle));
   });
 
   /* Las cifras se leen del build y no se recalculan: con las tasas del entorno
      cambian, y lo que tiene que ser cierto con cualquier tasa es la suma. */
-  test('el detalle, en el orden de Global66, y lo cobrado es la suma de sus partes', () => {
-    const filas = ['Envías', 'Lo que cobramos', 'Costo de envío', 'Comisión de cambio', 'Costos operacionales', 'Monto a convertir', 'Precio referencial', 'Llega aprox.'];
+  test('el detalle, en el orden de Global66, y la cuenta cuadra', () => {
+    const filas = ['Envías', 'Costo de envío', 'Comisión de cambio', 'Costos operacionales', 'Monto a convertir', 'Precio referencial', 'Llega aprox.'];
     const pos = filas.map((f) => detalle.indexOf(f));
     assert.ok(pos.every((p) => p >= 0), `faltan filas: ${filas.filter((_, i) => pos[i]! < 0).join(', ')}`);
     assert.deepEqual([...pos].sort((a, b) => a - b), pos, 'el orden');
     const cifra = (attr: string): number =>
       // El atributo entero: `data-c-sub` no debe tomar `data-c-sub-rot`.
       parseAmount(detalle.match(new RegExp(`${attr}(?:[\\s=][^>]*)?>([^<]*)<`))?.[1]?.replace(/[^\d.,]/g, '') ?? '');
-    const total = cifra('data-c-total');
-    assert.ok(total > 0);
-    assert.equal(total, cifra('data-c-envio') + cifra('data-c-comision'));
-    assert.equal(cifra('data-c-sub') + total, cifra('data-f-give'));
+    assert.ok(cifra('data-c-comision') > 0);
+    assert.equal(cifra('data-c-sub') + cifra('data-c-envio') + cifra('data-c-comision'), cifra('data-f-give'));
   });
 
   test('los costos operacionales son cero, y se dice', () => {
