@@ -976,7 +976,7 @@ banderas redondas propias. Ver la enmienda (b) de `cotizador-spec.md`.
 
 **Y el 2026-10-28, compacto:** salen el interruptor «Enviar / Pasar a pesos» y el selector a lo
 ancho. La ficha de moneda de cada monto es el selector, un botón junto al precio da vuelta la
-operación, y lo que se cobra va en una línea, «Cobramos …», con el detalle plegado. Pedido de
+operación, y el detalle completo —con lo que cobramos y unos costos operacionales de CLP 0— se abre en una pestaña desde «Ver detalle», como en Global66 (la misma tarde; primero fue una línea «Cobramos …» con el detalle plegado). Pedido de
 Sebastián: «elegante y sin tanta palabrería». Ver la enmienda de esa fecha en `cotizador-spec.md`.
 
 **Las cifras siguen siendo referenciales, y ahora son varias.** Una tasa de muestra por divisa, con

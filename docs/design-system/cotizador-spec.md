@@ -533,6 +533,9 @@ subía desde abajo en el teléfono y un diálogo centrado en escritorio. Se prot
 eligió el plegable: un toque abre y otro cierra, el detalle se lee donde le pasa al dinero y sus
 cifras cambian mientras escribes.
 
+*Esto cambió la misma tarde: ver la enmienda (b), al final. La línea «Cobramos …» salió de la
+tarjeta, y el detalle se abre en un diálogo.*
+
 ### Anatomía (reemplaza las del 2026-10-22 y del 2026-10-27)
 
 ```
@@ -585,4 +588,78 @@ en el detalle «En pesos» abre la lista.
 `REQUIERE VALIDACIÓN DE COMPLIANCE` — «Cobramos» y su cifra, y la nota del riel con el destino
 nombrado.
 
+---
 
+## Enmienda — 2026-10-28 (b) · el detalle completo, en una pestaña
+
+*Cowork, entrega `compacto2-`. Las tres decisiones son de Sebastián, de la tarde del mismo día,
+con el cotizador compacto ya integrado y Global66 abierto al lado.*
+
+**Por qué.** Con la tarjeta compacta delante, Sebastián:
+
+- sacó «Cobramos CLP 19.495», porque «eso ya se sabe en el detalle»;
+- pidió el esquema del de Global66 «tal cual […] al clickear en ver detalle se abra una pequeña
+  pestaña con el detalle completo»;
+- pidió «Costos operacionales» en 0, «para que sea llamativo».
+
+### Lo que cambia
+
+| | desde la mañana | desde esta enmienda |
+|---|---|---|
+| **El tramo** | «Cobramos CLP 19.495 · Ver detalle», el precio y «Sin comisiones ocultas.» | **el precio y, en la línea de abajo, «Sin comisiones ocultas.» y «Ver detalle»**. La tarjeta no dice lo que cobramos |
+| **El detalle** | se desplegaba en el tramo (`details`) | **se abre en un diálogo modal**, «Detalle completo», centrado en escritorio y en el teléfono, como el de Global66. Lo cierran «Cerrar», Escape y un clic en el fondo; el foco vuelve a «Ver detalle» y la página de atrás no se desplaza mientras está abierto |
+| **Las filas** | costo de envío, comisión y monto a convertir | **las de Global66, en su orden**: Envías · Lo que cobramos, y debajo, más chicas y entradas, Costo de envío, Comisión de cambio con su % y **Costos operacionales: CLP 0**, en verde · Monto a convertir · Precio referencial · Llega aprox. a {destino} |
+| **Los signos** | «− CLP 500» | **«CLP 500»**, sin signo, como en un recibo: debajo de «Lo que cobramos» se lee que se descuenta |
+| **De vuelta a pesos** | el precio antes del cobro | el diálogo sigue la cuenta: Conviertes · Precio referencial · En pesos · Lo que cobramos y sus partes · Recibes aprox. |
+| **El alto, a 390** | 545 px | **522 px** |
+
+**Lo que hace mejor que Global66:**
+
+- **Escape cierra.** En Global66, no.
+- **El foco vuelve al botón que lo abrió.** Allá se va al principio de la página.
+- **El foco no sale del diálogo** mientras está abierto: es un `<dialog>` con `showModal`.
+
+**Lo que no cambia:**
+
+- las fichas y el botón de vuelta;
+- «Precio referencial, sin recargo» y «Sin comisiones ocultas.» a la vista;
+- la nota del riel;
+- los avisos;
+- la barra móvil;
+- el mensaje de WhatsApp.
+
+### Anatomía del tramo (reemplaza la de la enmienda de la mañana)
+
+```
+│   │  Precio referencial, sin recargo   ( ⇅ )  │  ← botón de vuelta, 44 px
+│   ●  1 USD = 919,70 CLP                       │
+│   │  Sin comisiones ocultas.    Ver detalle ⌄  │  ← abre el diálogo, 44 px
+```
+
+### El diálogo
+
+```
+┌ Detalle completo                    Cerrar (×) ┐
+│ Envías                           CLP 2.000.000 │
+│ ───────────────────────────────────────────── │
+│ Lo que cobramos                     CLP 19.495 │
+│     Costo de envío                     CLP 500 │
+│     Comisión de cambio 0,95 %       CLP 18.995 │
+│     Costos operacionales                 CLP 0 │  ← en verde
+│ ───────────────────────────────────────────── │
+│ Monto a convertir                CLP 1.980.505 │
+│ ───────────────────────────────────────────── │
+│ Precio referencial          1 USD = 919,70 CLP │
+│ ───────────────────────────────────────────── │
+│ Llega aprox. a Estados Unidos     USD 2.153,43 │
+└────────────────────────────────────────────────┘
+```
+
+Es una `dl`. Las partes de lo que cobramos son filas de la misma lista, no una lista dentro de
+otra: una `dl` admite un solo nivel de `div` entre ella y sus pares.
+
+`REQUIERE VALIDACIÓN DE COMPLIANCE`:
+
+- «Lo que cobramos» y sus cifras;
+- «Costos operacionales: CLP 0»;
+- que la tarjeta ya no diga lo que cobramos sin abrir el detalle.
