@@ -974,6 +974,11 @@ La enmienda completa, con la anatomía nueva, está al final de `cotizador-spec.
 **Y el mismo día, el destino con su bandera:** el `<select>` pasó a un selector con buscador y
 banderas redondas propias. Ver la enmienda (b) de `cotizador-spec.md`.
 
+**Y el 2026-10-28, compacto:** salen el interruptor «Enviar / Pasar a pesos» y el selector a lo
+ancho. La ficha de moneda de cada monto es el selector, un botón junto al precio da vuelta la
+operación, y lo que se cobra va en una línea, «Cobramos …», con el detalle plegado. Pedido de
+Sebastián: «elegante y sin tanta palabrería». Ver la enmienda de esa fecha en `cotizador-spec.md`.
+
 **Las cifras siguen siendo referenciales, y ahora son varias.** Una tasa de muestra por divisa, con
 la reserva que el sitio ya publica: el precio que se aplica es el que confirma el ejecutivo. Una
 divisa **sin tasa configurada no aparece en el selector**, que es el mecanismo de D21 y la garantía

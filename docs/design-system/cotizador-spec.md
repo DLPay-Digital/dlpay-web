@@ -494,3 +494,95 @@ costo de envío ya en pesos y los tres porcentajes (`data-tarifas`). Ver `tarifa
 `REQUIERE VALIDACIÓN DE COMPLIANCE` — «Costo de envío», «Comisión de cambio» y sus cifras; «de
 mercado, sin recargo»; y que China llega en dólares.
 
+---
+
+## Enmienda — 2026-10-28 · el cotizador compacto
+
+*Cowork, entrega `compacto-`. El pedido y las dos decisiones son de Sebastián, del mismo día.*
+
+**Por qué.** «Que el diseño de nuestro cotizador se vea elegante y sin tanta palabrería», con la
+eficiencia del de Global66 —el desglose bajo «Ver detalle completo»— y no su dibujo. Y quitar
+los botones «Enviar» y «Pasar a pesos», «dejando a libre disposición lo que quiera hacer el
+cliente cambiando desde las divisas».
+
+### Lo que cambia
+
+| | hasta hoy | desde esta enmienda |
+|---|---|---|
+| **La dirección** | el interruptor «Enviar / Pasar a pesos» (enmienda del 2026-10-22) | **sale**. La deciden las fichas de moneda y un botón que da vuelta la operación |
+| **El destino** | «¿A dónde envías?», un selector a lo ancho; de vuelta a pesos, «¿Qué divisa tienes?» | **sale el selector a lo ancho**: la ficha de cada monto es el selector, con bandera, código y flecha. Arriba, el peso chileno y las nueve divisas; abajo, los once destinos y «Chile, en pesos» |
+| **Un lado es siempre el peso** | lo garantizaba el interruptor | elegir una divisa en una ficha pone la otra en pesos. Elegir pesos vuelve a enviar, al último destino si llega en esa divisa y, si no, a uno que la reciba en su moneda |
+| **El botón de vuelta** | — | un círculo de 44 px junto al precio, con el icono `intercambiar`. Conserva el monto en pesos, como el interruptor. Se anuncia «Cambiar a pasar dólares a pesos» o «Cambiar a enviar pesos a {destino}», y al usarlo un aviso para lectores dice el sentido nuevo. **No dice «invertir»**, que en un sitio de dinero se lee como inversión |
+| **Lo que se cobra** | tres filas: costo de envío, comisión de cambio y monto a convertir | **una línea**, «Cobramos CLP 19.495 · Ver detalle», que es el `summary` de un `details`. Las tres filas son el detalle y se despliegan en el tramo. **El total no se pliega nunca** |
+| **El precio** | «Precio referencial de mercado, sin recargo» | «Precio referencial, sin recargo». Si no cabe junto al botón, baja un escalón, y otro: de 17 a 16 y a 14 px |
+| **La nota del riel** | «Llega en la moneda del destino. El plazo te lo confirma tu ejecutivo.» | **nombra el destino**: «Llega a Estados Unidos, en dólares. El plazo te lo confirma tu ejecutivo.» La ficha de abajo enseña sólo el código, y el del dólar sirve a tres países |
+| **El alto, a 390** | 733 px | **545 px**. En un iPhone de 390×844, la cifra que llega entra en la primera pantalla |
+
+**Lo que no cambia:**
+- la aritmética y el tipo `Quote`;
+- el mensaje de WhatsApp;
+- «Precio referencial», con esas dos palabras (§48);
+- «Sin comisiones ocultas.» a la vista, al pie del tramo, por decisión de Sebastián;
+- la nota del riel (§42);
+- los avisos de fuera de rango;
+- la barra móvil;
+- `?destino=` y `data-cotizar-destino`.
+
+**Se eligió contra un diálogo.** «Detalle de tu cotización», como el de Global66: una hoja que
+subía desde abajo en el teléfono y un diálogo centrado en escritorio. Se prototipó, y Sebastián
+eligió el plegable: un toque abre y otro cierra, el detalle se lee donde le pasa al dinero y sus
+cifras cambian mientras escribes.
+
+### Anatomía (reemplaza las del 2026-10-22 y del 2026-10-27)
+
+```
+┌───────────────────────────────────────────────┐
+│  ┌ Envías                      [CL CLP ⌄] ┐   │  ← la ficha es el selector
+│  │ 2.000.000                              │   │
+│  └────────────────────────────────────────┘   │
+│   │  Cobramos CLP 19.495      Ver detalle ⌄   │  ← summary, 44 px
+│   │   (Costo de envío · Comisión · Monto a convertir, plegados)
+│   │  Precio referencial, sin recargo   ( ⇅ )  │  ← botón de vuelta, 44 px
+│   ●  1 USD = 919,70 CLP                       │
+│   │  Sin comisiones ocultas.                  │
+│  ┌ Llega aprox.                [US USD ⌄] ┐   │
+│  │ 2.153,43                               │   │
+│  └────────────────────────────────────────┘   │
+│  Llega a Estados Unidos, en dólares. El plazo  │  ← nota del riel (§42)
+│  te lo confirma tu ejecutivo.                  │
+│  [       Continuar por WhatsApp       ]        │
+│       o crea tu cuenta para operar en línea    │
+└───────────────────────────────────────────────┘
+```
+
+De vuelta a pesos, el precio va antes de la línea del cobro, porque ahí primero se convierte, y
+en el detalle «En pesos» abre la lista.
+
+### Comportamiento
+
+- **Las fichas** siguen el selector de la enmienda (b): un botón con `aria-haspopup="listbox"`
+  que abre un panel con buscador (`combobox`). Con el teclado, las flechas mueven, Intro elige,
+  Escape cierra y Tab sale.
+- **Los nombres de las fichas** son «Moneda que envías: peso chileno, CLP», «Destino: Estados
+  Unidos, USD» y, de vuelta, «Recibes en: peso chileno, CLP».
+- **El panel abre hacia donde cabe** dentro del héroe, que esconde lo que se sale. Si tampoco
+  cabe, la lista se acorta, con un piso de tres opciones.
+- **El anillo de la caja** se enciende sólo con el foco en la cifra, no en la ficha.
+- **El foco no se pierde** al dar vuelta la operación: se mueve la línea del cobro, no el precio
+  con su botón.
+- Al llegar desde fuera (`data-cotizar-destino`), el foco queda en la ficha de abajo.
+
+### Pendientes que deja
+
+- **Con VoiceOver en el iPhone:** cómo se lee el `summary` («Cobramos CLP 19.495, Ver detalle»,
+  con su estado) y el aviso del cambio de sentido.
+- **La tarjeta «lo que ves al cotizar» de `/tarifas`** sigue enseñando el desglose abierto, que es
+  lo que se ve al abrir el detalle.
+- **«de mercado» sale de la tarjeta**, para que el precio quepa junto al botón; lo siguen diciendo
+  el glosario, `/tarifas` y `/precio`. Si Compliance lo quiere en el cotizador, vuelve como
+  «Precio referencial de mercado».
+
+`REQUIERE VALIDACIÓN DE COMPLIANCE` — «Cobramos» y su cifra, y la nota del riel con el destino
+nombrado.
+
+
