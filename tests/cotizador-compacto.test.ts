@@ -16,7 +16,7 @@
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 
@@ -106,6 +106,18 @@ describe('el cotizador compacto', { skip: !existsSync(join(dist, 'index.html')) 
     assert.ok(sinDetalle.includes('Precio referencial'), 'spec §48');
     assert.ok(sinDetalle.includes('Sin comisiones ocultas.'));
     assert.match(sinDetalle, new RegExp(`data-rail[^>]*>[\\s\\S]*?a ${DEFAULT_DESTINO}, en`), 'la nota del riel nombra el destino (§42)');
+  });
+
+  /* El precio baja de tamaño cuando no cabe, y eso se mide (`ajustar`). Con
+     movimiento reducido, `tokens.css` acorta todas las transiciones a .01ms, y
+     eso hacía de cada cambio de tamaño una transición: la medida leía el tamaño
+     de antes (entrega `tasas-`, 2026-10-29). Y con «1 EUR = 1.106,77 CLP» hizo
+     falta un tercer escalón. */
+  test('el precio cambia de tamaño sin transición, para que se pueda medir', () => {
+    const astro = join(dist, '_astro');
+    const css = readdirSync(astro).filter((f) => f.endsWith('.css')).map((f) => readFileSync(join(astro, f), 'utf8')).join('\n');
+    assert.match(css, /\.tramo-valor[^{,]*,\s*\.amount[^{]*\{transition-property:none\}/);
+    assert.match(css, /\.tramo-valor[^{]*\.extra-largo[^{]*\{font-size:var\(--t-dato-sm\)\}/);
   });
 
   test('el botón que da vuelta la operación dice lo que hace, y no «invertir»', () => {

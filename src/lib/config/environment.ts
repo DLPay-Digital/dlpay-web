@@ -210,7 +210,7 @@ function positiveInt(raw: string | undefined): number | undefined {
  *                     presentación: no bloquea nada y no afirma nada.
  *   · **el precio** — la tasa con la que se cotiza, que NO vive acá sino en
  *                     `ConfigPriceSource` (`PUBLIC_QUOTE_SAMPLE_RATE`, hoy
- *                     919,70). Ése es el que sigue abierto, y es **D7**, no D6.
+ *                     992,90). Ése es el que sigue abierto, y es **D7**, no D6.
  * **D21 cerrada el 2026-09-29: no hay tope.** Sebastián decidió no publicar un
  * monto máximo, así que `PUBLIC_QUOTE_MAX_CLP` se queda sin definir y el estado
  * `above_max` nunca se produce. **No es un pendiente: es la decisión.**

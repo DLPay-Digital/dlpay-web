@@ -784,9 +784,23 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
      y «919,70 CLP». Como las cifras de los montos, baja un escalón, y otro, y
      si ni así cabe —el espaciado de WCAG 1.4.12— se parte (`ajustar`). No es
      `nowrap`: un texto que no se parte empuja el ancho mínimo de la tarjeta, y
-     a 320 la tarjeta se salía 9 px del héroe, que la cortaba. */
+     a 320 la tarjeta se salía 9 px del héroe, que la cortaba.
+     El tercer escalón llegó con las tasas de Global66 (entrega `tasas-`,
+     2026-10-29): «1 EUR = 1.106,77 CLP» lleva dos caracteres más que el
+     precio más largo de antes y, a 14 px, se partía a 320–332. A 13 px, el
+     tamaño de las cifras chicas, cabe desde 322; a 320 y 321 se sigue
+     partiendo, como con el espaciado de 1.4.12. */
   .tramo-valor.largo { font-size: var(--t-body); }
   .tramo-valor.muy-largo { font-size: var(--t-body-sm); }
+  .tramo-valor.extra-largo { font-size: var(--t-dato-sm); }
+  /* `ajustar` cambia el tamaño y mide en el acto. Con movimiento reducido,
+     la regla de `tokens.css` que acorta todas las transiciones a .01ms hace de
+     cada cambio de tamaño una transición, y la medida leía el tamaño de antes:
+     el precio quedaba un escalón más chico de lo necesario o, tras girar el
+     teléfono, partido a 17 px. Sin transición, la medida es la del tamaño
+     nuevo. Ni el precio ni las cifras animan su tamaño. */
+  .tramo-valor,
+  .amount { transition-property: none; }
   /* El punto va colgado de la cifra del precio y no de la caja del tramo: así
      cae a la altura de esa línea sea cual sea el tamaño de letra. Su centro
      es el del tramo: 40 − 13 − 1,5 + 6,5 = 32 px a la izquierda del texto. */
@@ -1455,12 +1469,30 @@ const mayuscula = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
       if (rateEl) {
         const partido = (): boolean =>
           rateEl.getBoundingClientRect().height > parseFloat(getComputedStyle(rateEl).lineHeight) * 1.5;
-        rateEl.classList.remove('largo', 'muy-largo');
+        rateEl.classList.remove('largo', 'muy-largo', 'extra-largo');
         if (partido()) rateEl.classList.add('largo');
         if (partido()) rateEl.classList.replace('largo', 'muy-largo');
+        if (partido()) rateEl.classList.replace('muy-largo', 'extra-largo');
       }
     };
-    window.addEventListener('resize', ajustar, { passive: true });
+    /* Se vuelve a medir cuando cambia el ancho del tramo, y no con `resize`:
+       al cruzar 360 o 900 px, Chrome aplica las reglas `@media` del ancho
+       nuevo un cuadro después del evento, y `ajustar` medía la tarjeta con el
+       relleno o la columna de antes. El precio quedaba partido hasta el
+       siguiente cambio de tamaño (entrega `tasas-`, 2026-10-29). Se mide en el
+       cuadro siguiente para no cambiar lo observado dentro del aviso. */
+    const tramoEl = rateEl?.closest<HTMLElement>('.tramo');
+    if (tramoEl && 'ResizeObserver' in window) {
+      let ancho = 0;
+      new ResizeObserver((entradas) => {
+        const w = Math.round(entradas[0]?.contentRect.width ?? 0);
+        if (w === ancho) return;
+        ancho = w;
+        requestAnimationFrame(ajustar);
+      }).observe(tramoEl);
+    } else {
+      window.addEventListener('resize', ajustar, { passive: true });
+    }
 
     const render = (): void => {
       const { give, get } = currenciesFor(intent, divisa.c);

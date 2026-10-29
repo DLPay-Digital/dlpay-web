@@ -83,11 +83,12 @@ export interface CurrencyInfo {
    * un precio.**
    *
    * Sebastián pidió el 2026-10-22 que el cotizador funcionara con tasas de
-   * muestra en vez de esperar a las definitivas, y esto es eso: números de
-   * orden de magnitud, calculados sobre la tasa de muestra del dólar, para que
-   * la herramienta se pueda ver y probar. **Ninguno está verificado contra el
-   * mercado**, y los de monedas que se mueven rápido —bolívar, peso argentino—
-   * envejecen en días.
+   * muestra en vez de esperar a las definitivas, y esto es eso: números para
+   * que la herramienta se pueda ver y probar. **Desde el 2026-10-29, ocho son
+   * las de una cotización pública leída ese día** (ver la nota sobre el
+   * catálogo, abajo); el rand sigue siendo un orden de magnitud. Ninguna es
+   * una fuente, y las de monedas que se mueven rápido —el peso argentino—
+   * envejecen en horas.
    *
    * Lo que impide que esto se publique: `assertRatesConfirmed`, que detiene el
    * build con `PUBLIC_ALLOW_INDEXING=true` mientras alguna divisa siga
@@ -135,24 +136,42 @@ export interface IslandCurrency {
 export const DEFAULT_CURRENCY: ForeignCurrency = 'USD';
 
 /*
-  **Las tres muestras nuevas (MXN, CRC, ZAR) siguen la regla de las otras**:
-  orden de magnitud sobre la muestra del dólar, 919,70, y no sobre un precio de
-  hoy. MXN sale de la relación peso mexicano/dólar que publicaba Global66 el
-  2026-10-27 (≈ 18,7); CRC (≈ 505) y ZAR (≈ 17,6) no se pudieron mirar y son
-  las menos fiables de las nueve. **Las muestras de antes no se tocaron**,
-  aunque algunas ya envejecieron —el dólar del tarifario de Sebastián es 982—:
-  moverlas es D7, y el build no deja publicar ninguna.
+  **Las muestras son, desde el 2026-10-29, las tasas de Global66** (Sebastián:
+  «que sean el mismo»). Cowork las leyó ese día a las 09:48 en el cotizador de
+  global66.com/cl, con CLP 500.000, que es el monto con el que abre:
+
+  - **cada una es la cifra que Global66 muestra como «Tipo de cambio»**, con sus
+    dos decimales: 1 USD = 992,90 CLP, 1 EUR = 1.106,77 CLP, etc.;
+  - **el peso argentino y el colombiano** Global66 los muestra al revés —«1 CLP
+    = 1,62 ARS», «1 CLP = 3,19 COP»— y con esos dos decimales la cifra pierde
+    precisión, así que acá va la tasa que aplica en la cuenta (lo que recibe ÷
+    lo que convierte), en CLP por unidad. `precioLegible` la escribe con la
+    misma cifra que Global66: 1,62 y 3,19;
+  - **el rand no está en Global66** y sigue en su orden de magnitud de antes,
+    calculado sobre el dólar de muestra de entonces, 919,70.
+
+  Tres cosas que no hay que perder de vista:
+
+  1. **La tasa de Global66 depende del monto**: con CLP 2.000.000 el dólar daba
+     993,29. Acá hay una tasa por divisa, la de 500.000.
+  2. **Envejecen en horas**: entre dos lecturas, con dos minutos de diferencia,
+     el dólar pasó de 992,98 a 992,90. Siguen siendo muestras y el build sigue
+     sin dejar publicarlas (`assertRatesConfirmed`).
+  3. **No son una tasa de mercado sin recargo**: son la tasa al cliente de otro
+     servicio, con su margen dentro, y el modelo de precio (CLAUDE.md §1) y la
+     tarjeta del cotizador dicen «de mercado, sin recargo».
+     REQUIERE VALIDACIÓN DE COMPLIANCE — «sin recargo» con estas tasas (D7).
 */
 export const currencies: readonly CurrencyInfo[] = [
-  { code: 'USD', name: 'dólar',           plural: 'dólares',           destinations: ['Estados Unidos', 'China', 'Panamá'], sample: 919.70, decimals: 2, envVar: 'PUBLIC_QUOTE_SAMPLE_RATE' },
-  { code: 'EUR', name: 'euro',            plural: 'euros',             destinations: ['Europa'],     sample: 993,  decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_EUR' },
-  { code: 'ARS', name: 'peso argentino',  plural: 'pesos argentinos',  destinations: ['Argentina'],  sample: 0.92, decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_ARS' },
-  { code: 'BRL', name: 'real',            plural: 'reales',            destinations: ['Brasil'],     sample: 165,  decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_BRL' },
-  { code: 'COP', name: 'peso colombiano', plural: 'pesos colombianos', destinations: ['Colombia'],   sample: 0.23, decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_COP' },
-  { code: 'CRC', name: 'colón',           plural: 'colones',           destinations: ['Costa Rica'], sample: 1.82, decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_CRC' },
-  { code: 'MXN', name: 'peso mexicano',   plural: 'pesos mexicanos',   destinations: ['México'],     sample: 49.2, decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_MXN' },
-  { code: 'PEN', name: 'sol',             plural: 'soles',             destinations: ['Perú'],       sample: 248,  decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_PEN' },
-  { code: 'ZAR', name: 'rand',            plural: 'rands',             destinations: ['Sudáfrica'],  sample: 52.3, decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_ZAR' },
+  { code: 'USD', name: 'dólar',           plural: 'dólares',           destinations: ['Estados Unidos', 'China', 'Panamá'], sample: 992.90, decimals: 2, envVar: 'PUBLIC_QUOTE_SAMPLE_RATE' },
+  { code: 'EUR', name: 'euro',            plural: 'euros',             destinations: ['Europa'],     sample: 1106.77,  decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_EUR' },
+  { code: 'ARS', name: 'peso argentino',  plural: 'pesos argentinos',  destinations: ['Argentina'],  sample: 0.618706, decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_ARS' },
+  { code: 'BRL', name: 'real',            plural: 'reales',            destinations: ['Brasil'],     sample: 185.60,   decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_BRL' },
+  { code: 'COP', name: 'peso colombiano', plural: 'pesos colombianos', destinations: ['Colombia'],   sample: 0.313382, decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_COP' },
+  { code: 'CRC', name: 'colón',           plural: 'colones',           destinations: ['Costa Rica'], sample: 2.18,     decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_CRC' },
+  { code: 'MXN', name: 'peso mexicano',   plural: 'pesos mexicanos',   destinations: ['México'],     sample: 52.97,    decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_MXN' },
+  { code: 'PEN', name: 'sol',             plural: 'soles',             destinations: ['Perú'],       sample: 287.82,   decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_PEN' },
+  { code: 'ZAR', name: 'rand',            plural: 'rands',             destinations: ['Sudáfrica'],  sample: 52.3,     decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_ZAR' },
 ];
 
 const byCode = new Map(currencies.map((c) => [c.code, c]));
