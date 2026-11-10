@@ -32,14 +32,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
+      # Sin `actions/setup-node`: el servidor de GitHub ya trae Node, y el
+      # script sólo necesita `fetch`, que está desde Node 18. Una pieza menos
+      # que se quede vieja (2026-11-10: la v4 de las dos avisaba que corría en
+      # un Node retirado).
       - name: Traer las tasas
-        run: node scripts/actualizar-tasas.mjs
+        run: |
+          node --version
+          node scripts/actualizar-tasas.mjs
 
       - name: Commit, si cambiaron
         run: |
