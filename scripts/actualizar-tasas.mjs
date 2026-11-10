@@ -2,7 +2,7 @@
 /**
  * Trae las tasas de referencia y las escribe en `src/lib/pricing/tasas.json`.
  *
- * Lo corre `.github/workflows/tasas.yml` dos veces al día (ADR-0019); también
+ * Lo corre `.github/workflows/tasas.yml` una vez al día (ADR-0019); también
  * se puede correr a mano: `node scripts/actualizar-tasas.mjs`. Sin
  * dependencias: Node 18 o superior trae `fetch`.
  *
@@ -20,8 +20,8 @@
  *    el script se niega a escribirlo: el sitio sigue con la tasa anterior y la
  *    ejecución queda en rojo en GitHub, que es donde alguien lo va a ver.
  * 4. Escribe el archivo **sólo si alguna tasa cambió**. La API gratuita se
- *    actualiza una vez al día, así que la segunda ejecución del día casi
- *    siempre termina sin tocar nada, y sin commit.
+ *    actualiza una vez al día, así que correrlo de nuevo el mismo día
+ *    —a mano, desde Actions— termina sin tocar nada, y sin commit.
  *
  * Sale con código 0 si escribió o si no había nada nuevo, y con 1 si la
  * fuente falló o no pasó la comprobación.

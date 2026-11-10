@@ -47,8 +47,8 @@ describe('las tasas de referencia', () => {
     assert.equal(tasasActualizadas.toISOString(), new Date(json.actualizado).toISOString());
   });
 
-  test('el proceso corre dos veces al día y sólo hace commit del archivo de tasas', () => {
-    assert.equal([...workflow.matchAll(/- cron: '/g)].length, 2);
+  test('el proceso corre una vez al día y sólo hace commit del archivo de tasas', () => {
+    assert.equal([...workflow.matchAll(/- cron: '/g)].length, 1);
     const adds = [...workflow.matchAll(/git add (.+)/g)].map((m) => m[1]!.trim());
     assert.deepEqual(adds, ['src/lib/pricing/tasas.json']);
     assert.doesNotMatch(workflow, /\$\{\{\s*github\.event\./, 'sin entradas externas en los comandos');

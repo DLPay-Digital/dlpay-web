@@ -1,15 +1,15 @@
-# Las tasas de referencia del cotizador, dos veces al día (ADR-0019).
+# Las tasas de referencia del cotizador, una vez al día (ADR-0019).
 #
 # Trae las tasas, y si cambiaron hace un commit a `main` con
 # `src/lib/pricing/tasas.json`. Ese push dispara el despliegue de Cloudflare
 # que ya existe: este archivo no despliega nada por su cuenta.
 #
-# Horario, en UTC, que es como lo lee GitHub: 10:00 y 15:00. En Chile son las
-# 07:00 y las 12:00 con el horario de verano (UTC−3) y las 06:00 y las 11:00
-# con el de invierno (UTC−4). GitHub puede atrasar una ejecución programada
-# varios minutos, y eso da igual: la fuente gratuita cambia una vez al día,
-# hacia las 21:00 de Chile, así que la de la mañana trae la tasa nueva y la del
-# mediodía es la red por si la primera falló.
+# Horario, en UTC, que es como lo lee GitHub: 10:00. En Chile son las 07:00
+# con el horario de verano (UTC−3) y las 06:00 con el de invierno (UTC−4).
+# GitHub puede atrasar una ejecución programada varios minutos, y eso da igual:
+# la fuente gratuita cambia una vez al día, hacia las 21:00 de Chile, así que a
+# esa hora la tasa del día ya está. Si una mañana falla, se puede correr a mano
+# desde la pestaña Actions («Run workflow»).
 #
 # Sin credenciales: usa el `GITHUB_TOKEN` que GitHub da a cada ejecución,
 # limitado a este repositorio y a escribir su contenido.
@@ -18,7 +18,6 @@ name: Tasas de referencia
 on:
   schedule:
     - cron: '0 10 * * *'
-    - cron: '0 15 * * *'
   workflow_dispatch:
 
 permissions:

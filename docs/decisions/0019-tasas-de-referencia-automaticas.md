@@ -1,12 +1,14 @@
-# ADR-0019 — Las tasas de referencia se actualizan solas, dos veces al día
+# ADR-0019 — Las tasas de referencia se actualizan solas, una vez al día
 
 - **Estado:** Aceptada — 2026-11-10
 - **Decide:** Sebastián Villanueva. Lo pidió ese día: «que los precios de las divisas se vayan
   actualizando cada cierto tiempo y sin tanta complicación», sin que sea en tiempo real. Eligió:
   - **la fuente gratuita**, ExchangeRate-API en su modo abierto, en vez del plan Pro (USD 10 al
     mes, una tasa por hora);
-  - **dos ejecuciones al día**, «uno temprano en la mañana y otro al medio día», en vez de cada 3
-    horas, para no llenar el historial de GitHub.
+  - **una ejecución al día, a las 07:00.** Primero pidió cada 3 horas; al saber que la fuente
+    gratuita cambia una vez al día, pasó a dos —«uno temprano en la mañana y otro al medio día»—,
+    para no llenar el historial de GitHub, y el mismo día lo dejó en una: «lo mejor es que sea
+    solo una vez al día, el de las 07:00am».
 - **Ámbito:** de dónde salen las tasas del cotizador y de todo lo que se calcula con ellas —la
   tabla de `/tarifas`, los costos de envío en pesos, las cifras de ejemplo de la Home y de
   `/como-funciona`—. El cotizador, su aritmética y el tarifario no cambian.
@@ -27,12 +29,12 @@ falsa.
 
 ## Decisión
 
-**Un proceso de GitHub Actions trae la tasa de referencia de mercado dos veces al día, la escribe
+**Un proceso de GitHub Actions trae la tasa de referencia de mercado una vez al día, la escribe
 en un archivo del repositorio y, si cambió, hace un commit. El push dispara el despliegue que ya
 existe.**
 
 ```
-10:00 y 15:00 UTC (07:00 y 12:00 en Chile en verano; 06:00 y 11:00 en invierno)
+10:00 UTC (07:00 en Chile en verano; 06:00 en invierno)
   → scripts/actualizar-tasas.mjs pide open.er-api.com/v6/latest/USD
   → escribe src/lib/pricing/tasas.json, sólo si algo cambió
   → commit a main como github-actions[bot]
@@ -61,12 +63,15 @@ existe.**
   20 % desde la última lectura, que es antes un fallo de la fuente que del mercado.
 - **El pie dice de cuándo es la tasa**, así que una tasa vieja no se lee como una de hoy.
 
-### Por qué dos veces al día, si la fuente cambia una
+### Por qué una vez al día, y a esa hora
 
-La fuente gratuita publica una tasa al día, hacia las 00:00 UTC (las 21:00 de Chile en verano). La
-ejecución de la mañana la recoge; la del mediodía casi nunca encuentra nada, y entonces **no hace
-commit**. Es la red por si la primera falló o GitHub la atrasó. En la práctica, **un commit al
-día como mucho**.
+La fuente gratuita publica una tasa al día, hacia las 00:00 UTC (las 21:00 de Chile en verano), así
+que **más ejecuciones no traen tasas más frescas**: traen el mismo número. A las 07:00 la del día
+ya está, y el sitio la tiene antes de que empiece la jornada. **Un commit al día, como mucho.**
+
+Lo que se pierde es la red: si una mañana la fuente o GitHub fallan, el sitio sigue con la tasa del
+día anterior hasta la mañana siguiente, y el pie lo dice. Se recupera corriéndolo a mano desde la
+pestaña Actions de GitHub («Run workflow»).
 
 ### Lo que cuesta
 
@@ -74,8 +79,8 @@ Nada, medido el 2026-11-10 contra las páginas de precios:
 
 | | uso | incluido gratis |
 |---|---|---|
-| ExchangeRate-API, modo abierto | 2 consultas al día | sin cuota fija; piden no pasar de una por hora |
-| GitHub Actions | ~60 ejecuciones al mes, de menos de un minuto | unos 2.000 minutos al mes. **Sin tarjeta registrada, al agotarse se detiene, no cobra** |
+| ExchangeRate-API, modo abierto | 1 consulta al día | sin cuota fija; piden no pasar de una por hora |
+| GitHub Actions | ~30 ejecuciones al mes, de menos de un minuto | unos 2.000 minutos al mes. **Sin tarjeta registrada, al agotarse se detiene, no cobra** |
 | Cloudflare Workers Builds | ~30 builds al mes, de un minuto | 3.000 minutos al mes |
 
 ## Lo que no cambia
@@ -126,5 +131,5 @@ ellas.
 | **Un Worker que consulta la tasa en cada visita** | Tasas más frescas, a cambio de un servidor, una caché, una llamada desde el navegador, un CSP más ancho y más formas de fallar. Para «cada cierto tiempo» no compensa |
 | **Que el build consulte la API** | Cada build saldría a internet, dejaría de ser reproducible y fallaría con la fuente caída. Y seguiría haciendo falta algo que dispare el build |
 | **Copiar Global66 de forma automática** | Su tasa lleva su margen, leer su sitio con un programa probablemente choca con sus condiciones, y se rompe cada vez que cambian su página |
-| **Cada 3 horas** | Lo propuso Sebastián primero y lo cambió él mismo: con la fuente gratuita trae el mismo número siete de cada ocho veces y sólo llena el historial |
+| **Cada 3 horas, o dos veces al día** | Las propuso Sebastián y las cambió él mismo: con la fuente gratuita traen el mismo número que la de la mañana y sólo suman ejecuciones |
 | **El plan Pro** | Cuesta USD 10 al mes; se deja como siguiente paso si la tasa del día no alcanza |

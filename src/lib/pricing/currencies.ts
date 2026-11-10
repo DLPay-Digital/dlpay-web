@@ -145,8 +145,8 @@ export const tasasActualizadas: Date = new Date(tasasJson.actualizado);
 
 /*
   **Las tasas salen de `tasas.json`, que se actualiza solo** (ADR-0019,
-  2026-11-10). Un proceso de GitHub (`.github/workflows/tasas.yml`) corre dos
-  veces al día —a las 07:00 y a las 12:00 de Chile en verano—, pide la tasa de
+  2026-11-10). Un proceso de GitHub (`.github/workflows/tasas.yml`) corre una
+  vez al día —a las 07:00 de Chile en verano—, pide la tasa de
   referencia de mercado a la API abierta de ExchangeRate-API y, si cambió,
   hace un commit con el archivo. Ese push despliega Staging como cualquier
   otro. El navegador no consulta a nadie: la tasa viaja escrita en el HTML.
@@ -155,7 +155,7 @@ export const tasasActualizadas: Date = new Date(tasasJson.actualizado);
     (CLAUDE.md §1) y la tarjeta del cotizador dicen. Lo que DLPay cobra va
     aparte, en `tarifario.ts`.
   - **Cambia una vez al día**: la fuente gratuita se actualiza hacia las 21:00
-    de Chile. La segunda ejecución del día casi siempre no encuentra nada.
+    de Chile, y el proceso la recoge a la mañana siguiente.
   - **El peso argentino es el oficial.** Argentina tiene más de una cotización
     y una fuente genérica da ésa. PENDIENTE DE DECISIÓN — si el ejecutivo
     opera con otra, el peso argentino necesita una fuente propia (Sebastián).
