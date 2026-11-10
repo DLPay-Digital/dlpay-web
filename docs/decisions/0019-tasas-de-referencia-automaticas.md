@@ -113,8 +113,9 @@ Nada, medido el 2026-11-10 contra las páginas de precios:
 
 ## Lo que queda abierto
 
-- `PENDIENTE DE DECISIÓN` — **el peso argentino.** La fuente da la cotización oficial, y Argentina
-  tiene varias. Si el ejecutivo opera con otra, Argentina necesita una fuente propia (Sebastián).
+- ~~`PENDIENTE DE DECISIÓN` — **el peso argentino.** La fuente da la cotización oficial, y Argentina
+  tiene varias. Si el ejecutivo opera con otra, Argentina necesita una fuente propia (Sebastián).~~
+  **Cerrado el 2026-11-10:** Sebastián confirmó la cotización oficial, que es la que da la fuente.
 - `PENDIENTE DE DECISIÓN` — **si producción usa la tasa automática**, y con qué fuente (D7,
   Compliance).
 - **Si una tasa al día se queda corta**, el plan Pro (USD 10 al mes) da una por hora sin cambiar

@@ -157,8 +157,8 @@ export const tasasActualizadas: Date = new Date(tasasJson.actualizado);
   - **Cambia una vez al día**: la fuente gratuita se actualiza hacia las 21:00
     de Chile, y el proceso la recoge a la mañana siguiente.
   - **El peso argentino es el oficial.** Argentina tiene más de una cotización
-    y una fuente genérica da ésa. PENDIENTE DE DECISIÓN — si el ejecutivo
-    opera con otra, el peso argentino necesita una fuente propia (Sebastián).
+    y una fuente genérica da ésa. Sebastián confirmó el 2026-11-10 que es la
+    que se usa.
   - **Siguen sin poder publicarse**: `assertRatesConfirmed` no cambia, y con
     la indexación abierta cada divisa sigue necesitando su variable.
 
