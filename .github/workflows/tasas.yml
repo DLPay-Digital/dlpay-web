@@ -1,0 +1,55 @@
+# Las tasas de referencia del cotizador, dos veces al día (ADR-0019).
+#
+# Trae las tasas, y si cambiaron hace un commit a `main` con
+# `src/lib/pricing/tasas.json`. Ese push dispara el despliegue de Cloudflare
+# que ya existe: este archivo no despliega nada por su cuenta.
+#
+# Horario, en UTC, que es como lo lee GitHub: 10:00 y 15:00. En Chile son las
+# 07:00 y las 12:00 con el horario de verano (UTC−3) y las 06:00 y las 11:00
+# con el de invierno (UTC−4). GitHub puede atrasar una ejecución programada
+# varios minutos, y eso da igual: la fuente gratuita cambia una vez al día,
+# hacia las 21:00 de Chile, así que la de la mañana trae la tasa nueva y la del
+# mediodía es la red por si la primera falló.
+#
+# Sin credenciales: usa el `GITHUB_TOKEN` que GitHub da a cada ejecución,
+# limitado a este repositorio y a escribir su contenido.
+name: Tasas de referencia
+
+on:
+  schedule:
+    - cron: '0 10 * * *'
+    - cron: '0 15 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tasas
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Traer las tasas
+        run: node scripts/actualizar-tasas.mjs
+
+      - name: Commit, si cambiaron
+        run: |
+          if git diff --quiet -- src/lib/pricing/tasas.json; then
+            echo "Sin cambios: no hay commit."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/lib/pricing/tasas.json
+          git commit -m "chore(tasas): tasas de referencia del $(date -u +%Y-%m-%d)"
+          git push

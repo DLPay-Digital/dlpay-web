@@ -40,6 +40,8 @@
  * propia tarifa, porque lo que cuesta enviar depende de a dónde y no de en qué.
  */
 
+import tasasJson from './tasas.json' with { type: 'json' };
+
 /** Las divisas de destino. El peso chileno no es una de ellas: es el origen. */
 export type ForeignCurrency =
   | 'USD'
@@ -79,8 +81,10 @@ export interface CurrencyInfo {
    */
   decimals: 0 | 2;
   /**
-   * La tasa de MUESTRA, en CLP por 1 unidad. **Es un marcador de posición, no
-   * un precio.**
+   * La tasa de MUESTRA, en CLP por 1 unidad. **Desde el 2026-11-10 es la tasa
+   * de referencia de mercado del día, que `tasas.json` trae sola** (ADR-0019,
+   * y la nota sobre el catálogo, abajo). Lo que sigue es de antes, y lo del
+   * freno de producción sigue valiendo entero.
    *
    * Sebastián pidió el 2026-10-22 que el cotizador funcionara con tasas de
    * muestra en vez de esperar a las definitivas, y esto es eso: números para
@@ -135,43 +139,47 @@ export interface IslandCurrency {
 
 export const DEFAULT_CURRENCY: ForeignCurrency = 'USD';
 
+/** Las tasas de referencia y cuándo las publicó la fuente (ADR-0019). */
+const { tasas } = tasasJson as { tasas: Record<ForeignCurrency, number> };
+export const tasasActualizadas: Date = new Date(tasasJson.actualizado);
+
 /*
-  **Las muestras son, desde el 2026-10-29, las tasas de Global66** (Sebastián:
-  «que sean el mismo»). Cowork las leyó ese día a las 09:48 en el cotizador de
-  global66.com/cl, con CLP 500.000, que es el monto con el que abre:
+  **Las tasas salen de `tasas.json`, que se actualiza solo** (ADR-0019,
+  2026-11-10). Un proceso de GitHub (`.github/workflows/tasas.yml`) corre dos
+  veces al día —a las 07:00 y a las 12:00 de Chile en verano—, pide la tasa de
+  referencia de mercado a la API abierta de ExchangeRate-API y, si cambió,
+  hace un commit con el archivo. Ese push despliega Staging como cualquier
+  otro. El navegador no consulta a nadie: la tasa viaja escrita en el HTML.
 
-  - **cada una es la cifra que Global66 muestra como «Tipo de cambio»**, con sus
-    dos decimales: 1 USD = 992,90 CLP, 1 EUR = 1.106,77 CLP, etc.;
-  - **el peso argentino y el colombiano** Global66 los muestra al revés —«1 CLP
-    = 1,62 ARS», «1 CLP = 3,19 COP»— y con esos dos decimales la cifra pierde
-    precisión, así que acá va la tasa que aplica en la cuenta (lo que recibe ÷
-    lo que convierte), en CLP por unidad. `precioLegible` la escribe con la
-    misma cifra que Global66: 1,62 y 3,19;
-  - **el rand no está en Global66** y sigue en su orden de magnitud de antes,
-    calculado sobre el dólar de muestra de entonces, 919,70.
+  - **Es una tasa de mercado, sin recargo**, que es lo que el modelo de precio
+    (CLAUDE.md §1) y la tarjeta del cotizador dicen. Lo que DLPay cobra va
+    aparte, en `tarifario.ts`.
+  - **Cambia una vez al día**: la fuente gratuita se actualiza hacia las 21:00
+    de Chile. La segunda ejecución del día casi siempre no encuentra nada.
+  - **El peso argentino es el oficial.** Argentina tiene más de una cotización
+    y una fuente genérica da ésa. PENDIENTE DE DECISIÓN — si el ejecutivo
+    opera con otra, el peso argentino necesita una fuente propia (Sebastián).
+  - **Siguen sin poder publicarse**: `assertRatesConfirmed` no cambia, y con
+    la indexación abierta cada divisa sigue necesitando su variable.
 
-  Tres cosas que no hay que perder de vista:
+  *Del 2026-10-29 al 2026-11-10 las muestras fueron las tasas que mostraba el
+  cotizador de Global66 el 29 a las 09:48, con CLP 500.000, a pedido de
+  Sebastián. Se retiraron porque son la tasa al cliente de otro servicio, con
+  su margen dentro, y la tarjeta dice «sin recargo». Antes de eso eran órdenes
+  de magnitud sobre un dólar de 919,70.*
 
-  1. **La tasa de Global66 depende del monto**: con CLP 2.000.000 el dólar daba
-     993,29. Acá hay una tasa por divisa, la de 500.000.
-  2. **Envejecen en horas**: entre dos lecturas, con dos minutos de diferencia,
-     el dólar pasó de 992,98 a 992,90. Siguen siendo muestras y el build sigue
-     sin dejar publicarlas (`assertRatesConfirmed`).
-  3. **No son una tasa de mercado sin recargo**: son la tasa al cliente de otro
-     servicio, con su margen dentro, y el modelo de precio (CLAUDE.md §1) y la
-     tarjeta del cotizador dicen «de mercado, sin recargo».
-     REQUIERE VALIDACIÓN DE COMPLIANCE — «sin recargo» con estas tasas (D7).
+  REQUIERE VALIDACIÓN DE COMPLIANCE — las nueve tasas y su fuente (D7).
 */
 export const currencies: readonly CurrencyInfo[] = [
-  { code: 'USD', name: 'dólar',           plural: 'dólares',           destinations: ['Estados Unidos', 'China', 'Panamá'], sample: 992.90, decimals: 2, envVar: 'PUBLIC_QUOTE_SAMPLE_RATE' },
-  { code: 'EUR', name: 'euro',            plural: 'euros',             destinations: ['Europa'],     sample: 1106.77,  decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_EUR' },
-  { code: 'ARS', name: 'peso argentino',  plural: 'pesos argentinos',  destinations: ['Argentina'],  sample: 0.618706, decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_ARS' },
-  { code: 'BRL', name: 'real',            plural: 'reales',            destinations: ['Brasil'],     sample: 185.60,   decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_BRL' },
-  { code: 'COP', name: 'peso colombiano', plural: 'pesos colombianos', destinations: ['Colombia'],   sample: 0.313382, decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_COP' },
-  { code: 'CRC', name: 'colón',           plural: 'colones',           destinations: ['Costa Rica'], sample: 2.18,     decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_CRC' },
-  { code: 'MXN', name: 'peso mexicano',   plural: 'pesos mexicanos',   destinations: ['México'],     sample: 52.97,    decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_MXN' },
-  { code: 'PEN', name: 'sol',             plural: 'soles',             destinations: ['Perú'],       sample: 287.82,   decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_PEN' },
-  { code: 'ZAR', name: 'rand',            plural: 'rands',             destinations: ['Sudáfrica'],  sample: 52.3,     decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_ZAR' },
+  { code: 'USD', name: 'dólar',           plural: 'dólares',           destinations: ['Estados Unidos', 'China', 'Panamá'], sample: tasas.USD, decimals: 2, envVar: 'PUBLIC_QUOTE_SAMPLE_RATE' },
+  { code: 'EUR', name: 'euro',            plural: 'euros',             destinations: ['Europa'],     sample: tasas.EUR, decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_EUR' },
+  { code: 'ARS', name: 'peso argentino',  plural: 'pesos argentinos',  destinations: ['Argentina'],  sample: tasas.ARS, decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_ARS' },
+  { code: 'BRL', name: 'real',            plural: 'reales',            destinations: ['Brasil'],     sample: tasas.BRL, decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_BRL' },
+  { code: 'COP', name: 'peso colombiano', plural: 'pesos colombianos', destinations: ['Colombia'],   sample: tasas.COP, decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_COP' },
+  { code: 'CRC', name: 'colón',           plural: 'colones',           destinations: ['Costa Rica'], sample: tasas.CRC, decimals: 0, envVar: 'PUBLIC_QUOTE_RATE_CRC' },
+  { code: 'MXN', name: 'peso mexicano',   plural: 'pesos mexicanos',   destinations: ['México'],     sample: tasas.MXN, decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_MXN' },
+  { code: 'PEN', name: 'sol',             plural: 'soles',             destinations: ['Perú'],       sample: tasas.PEN, decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_PEN' },
+  { code: 'ZAR', name: 'rand',            plural: 'rands',             destinations: ['Sudáfrica'],  sample: tasas.ZAR, decimals: 2, envVar: 'PUBLIC_QUOTE_RATE_ZAR' },
 ];
 
 const byCode = new Map(currencies.map((c) => [c.code, c]));

@@ -11,6 +11,7 @@ import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import Alliances from './Alliances.astro';
 import { site, contact } from '../lib/config/site.ts';
+import { tasasActualizadas } from '../lib/pricing/currencies.ts';
 
 /*
   El enlace del pie está en las ONCE páginas, así que es el único de los cinco
@@ -31,6 +32,24 @@ const product = [
   { label: 'Confianza', href: '/confianza/' },
 ];
 const year = new Date().getFullYear();
+
+/*
+  De dónde salen las tasas, y de cuándo son (ADR-0019). La fuente gratuita
+  pide un enlace visible con este texto exacto, «Rates By Exchange Rate API»,
+  en las páginas que usan sus tasas. Va en el pie y no en cada página que
+  cotiza porque son tres —la Home, `/tarifas` y `/como-funciona`— y mañana
+  pueden ser más: el pie las cubre a todas por construcción. La hora es la de
+  Chile, que es la que lee el cliente.
+*/
+const fechaTasas = new Intl.DateTimeFormat('es-CL', {
+  timeZone: 'America/Santiago',
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+}).format(tasasActualizadas);
 ---
 <footer class="site-footer on-tinta-surface">
   <div class="inner">
@@ -80,6 +99,10 @@ const year = new Date().getFullYear();
       <Alliances />
       <div class="base">
         <p>{site.legalName} · opera bajo la marca {site.name}</p>
+        <p>
+          Tasas de referencia del <time datetime={tasasActualizadas.toISOString()}>{fechaTasas}</time> ·
+          <a class="fuente" lang="en" href="https://www.exchangerate-api.com" rel="noopener">Rates By Exchange Rate API</a>
+        </p>
         <p>© {year}</p>
       </div>
     </div>
@@ -155,6 +178,9 @@ const year = new Date().getFullYear();
     font-size: var(--t-dato-sm);
     color: var(--on-tinta-mute);
   }
+
+  .base a.fuente { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+  .base a.fuente:hover { color: var(--on-tinta); }
 
   /* A 760px las cuatro columnas dejaban ~125px por columna y "Términos y
      condiciones" partía en tres líneas. Peor aún a 900, donde el padding de
