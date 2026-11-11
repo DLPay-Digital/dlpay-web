@@ -146,7 +146,7 @@ export const tasasActualizadas: Date = new Date(tasasJson.actualizado);
 /*
   **Las tasas salen de `tasas.json`, que se actualiza solo** (ADR-0019,
   2026-11-10). Un proceso de GitHub (`.github/workflows/tasas.yml`) corre una
-  vez al día —a las 07:00 de Chile en verano—, pide la tasa de
+  vez al día —a las 07:17 de Chile en verano—, pide la tasa de
   referencia de mercado a la API abierta de ExchangeRate-API y, si cambió,
   hace un commit con el archivo. Ese push despliega Staging como cualquier
   otro. El navegador no consulta a nadie: la tasa viaja escrita en el HTML.

@@ -34,7 +34,7 @@ en un archivo del repositorio y, si cambió, hace un commit. El push dispara el 
 existe.**
 
 ```
-10:00 UTC (07:00 en Chile en verano; 06:00 en invierno)
+10:17 UTC (07:17 en Chile en verano; 06:17 en invierno)
   → scripts/actualizar-tasas.mjs pide open.er-api.com/v6/latest/USD
   → escribe src/lib/pricing/tasas.json, sólo si algo cambió
   → commit a main como github-actions[bot]
@@ -64,6 +64,11 @@ existe.**
 - **El pie dice de cuándo es la tasa**, así que una tasa vieja no se lee como una de hoy.
 
 ### Por qué una vez al día, y a esa hora
+
+**Enmienda del 2026-11-11: a las 07:17 y no a las 07:00.** La primera ejecución programada, a las
+10:00 UTC en punto, no se lanzó. GitHub advierte que, con mucha carga, atrasa o descarta
+ejecuciones programadas, «especialmente al comienzo de cada hora». Un minuto poco común lo
+esquiva. Lo que sigue se escribió con las 07:00.
 
 La fuente gratuita publica una tasa al día, hacia las 00:00 UTC (las 21:00 de Chile en verano), así
 que **más ejecuciones no traen tasas más frescas**: traen el mismo número. A las 07:00 la del día

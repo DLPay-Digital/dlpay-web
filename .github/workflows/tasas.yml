@@ -4,8 +4,13 @@
 # `src/lib/pricing/tasas.json`. Ese push dispara el despliegue de Cloudflare
 # que ya existe: este archivo no despliega nada por su cuenta.
 #
-# Horario, en UTC, que es como lo lee GitHub: 10:00. En Chile son las 07:00
-# con el horario de verano (UTC−3) y las 06:00 con el de invierno (UTC−4).
+# Horario, en UTC, que es como lo lee GitHub: 10:17. En Chile son las 07:17
+# con el horario de verano (UTC−3) y las 06:17 con el de invierno (UTC−4).
+#
+# **El minuto 17 es a propósito.** GitHub advierte que con mucha carga atrasa
+# o DESCARTA ejecuciones programadas, sobre todo al comienzo de cada hora. La
+# primera, a las 10:00 en punto, el 2026-11-11, no se lanzó.
+#
 # GitHub puede atrasar una ejecución programada varios minutos, y eso da igual:
 # la fuente gratuita cambia una vez al día, hacia las 21:00 de Chile, así que a
 # esa hora la tasa del día ya está. Si una mañana falla, se puede correr a mano
@@ -17,7 +22,7 @@ name: Tasas de referencia
 
 on:
   schedule:
-    - cron: '0 10 * * *'
+    - cron: '17 10 * * *'
   workflow_dispatch:
 
 permissions:
