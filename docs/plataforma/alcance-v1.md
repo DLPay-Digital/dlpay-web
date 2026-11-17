@@ -115,6 +115,11 @@ remesadora en Chile y es un punto de partida, no una definición.
 aritmética (`tarifario.ts`) y las mismas tasas (`tasas.json`), compartidas y no copiadas, para que
 el sitio y la plataforma no puedan dar dos cifras distintas.
 
+**Como una remesa** *(Sebastián, 2026-11-17)*: el cliente elige cuánto manda en pesos y a qué
+país, y **lo único que le importa es lo que llega**: «enviar 2 millones de pesos chilenos a Estados
+Unidos y que lleguen en dólares». La cifra que manda en la pantalla es la que llega, como en el
+cotizador del sitio desde el 2026-10-22.
+
 ### 5.4 Crear el envío
 
 1. **Elige o crea el destinatario:** nombre, país y cómo recibe.
@@ -128,15 +133,26 @@ destinatario dependen de eso: una cuenta bancaria pide banco y número; el efect
 de identidad; una billetera local, su número. Es la pregunta que más cambia esta pantalla, y sigue
 abierta por país.
 
-**`PENDIENTE DE DECISIÓN` — quién fija el precio final.** El sitio dice que **un ejecutivo
-confirma el precio**. Hay dos formas de llevarlo a la plataforma:
+**Quién fija el precio final — decidido para la versión 1 el 2026-11-17: el ejecutivo (A).** En
+palabras de Sebastián: el precio del dólar en la plataforma es **referencial**, porque sale de una
+fuente que se actualiza una vez al día y el dólar se mueve durante el día; **ese movimiento lo
+maneja DLPay**, y por eso entra el ejecutivo, para darle un precio al cliente y conversar con él.
+
+**La B queda para planificar, no descartada:** un panel con el precio del dólar al momento y un
+temporizador de 12 minutos para cerrar la operación sin esperar a nadie. **Tiene una condición
+técnica:** «el precio al momento» no puede salir de la fuente de hoy, que da una tasa al día
+(ADR-0019). Hace falta una fuente que se actualice durante el día —el plan Pro de la misma API da
+una por hora por USD 10 al mes, y una de minutos cuesta más— o que el equipo publique su precio en
+el panel varias veces al día. Se decide al planificarla.
+
+Las dos formas, para referencia:
 
 | | cómo | qué implica |
 |---|---|---|
 | **A. El ejecutivo confirma** | el cliente pide el envío y el ejecutivo lo confirma en el panel; la ventana de 12 minutos corre desde ahí | igual que hoy; el cliente espera a una persona |
 | **B. La plataforma confirma** | la cotización de la plataforma es la final, con su ventana de 12 minutos | más rápido, y cambia lo que el sitio dice hoy en varias páginas: que el precio de la web es referencial y lo confirma un ejecutivo |
 
-El prototipo puede hacer las dos y enseñarlas lado a lado.
+El prototipo construye la A. La B se diseña después, con su fuente de precio.
 
 ### 5.5 Avisar que transfirió
 
@@ -192,7 +208,8 @@ No es una etapa posterior (Principio 8). Aun con datos ficticios, el prototipo n
 
 - Empresas y su validación (KYB).
 - «Pasar a pesos» (recibir en Chile desde el extranjero): el cotizador del sitio lo tiene, y como
-  operación es otro recorrido con otros controles. *Pendiente de que Sebastián diga si entra.*
+  operación es otro recorrido con otros controles. **Queda fuera** (Sebastián, 2026-11-17): la
+  versión 1 es el cliente enviando sus pesos al destino que quiera.
 - Pagos automáticos: la plataforma no mueve dinero; registra lo que el equipo hace.
 - Conexión con bancos o proveedores de pago en destino.
 - Aplicación móvil: la plataforma es web y funciona en el teléfono.
@@ -202,15 +219,15 @@ No es una etapa posterior (Principio 8). Aun con datos ficticios, el prototipo n
 
 | # | Pregunta | Para cuándo |
 |---|---|---|
-| 1 | **¿Quién confirma el precio final, el ejecutivo o la plataforma?** (§5.4) | Antes del prototipo, o se prototipan las dos |
-| 2 | **¿Entra «pasar a pesos» en la versión 1?** (§8) | Antes del prototipo |
+| ~~1~~ | ~~¿Quién confirma el precio final?~~ **El ejecutivo**, en la versión 1; el panel con precio al momento y temporizador se planifica después (§5.4) | ✅ 2026-11-17 |
+| ~~2~~ | ~~¿Entra «pasar a pesos»?~~ **No**: la versión 1 es enviar pesos al destino que el cliente elija (§8) | ✅ 2026-11-17 |
 | 3 | **Cómo recibe el destinatario, por país** (D16, §5.4) | Antes de la versión real; el prototipo puede usar «cuenta bancaria» en todos |
 | 4 | **¿Quién del equipo hará de cumplimiento?** (§4) | Antes de la versión real |
 | 5 | **Los datos de la validación** (§5.2) | Con Compliance, cuando se reabra |
 
 ## 10. Lo que sigue a este documento
 
-1. **Sebastián lo aprueba**, con las respuestas 1 y 2 de §9.
+1. ~~**Sebastián lo aprueba**, con las respuestas 1 y 2 de §9.~~ Respondidas el 2026-11-17.
 2. **Se crea el repositorio** `DLPay-Digital/dlpay-plataforma` (lo crea Sebastián) y este
    documento se muda ahí.
 3. **ADR de arquitectura:** dónde corre, base de datos, archivos, correo, autenticación y costo
