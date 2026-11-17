@@ -98,8 +98,13 @@ decisión cambia cómo funciona el proyecto; los cambios de fondo van con un ADR
   - **La razón social del pie, «DLPZ INCZ SpA», no es la de esta empresa.** Se cambia cuando la
     nueva esté constituida (D9).
   - **«Crear cuenta» e «Iniciar sesión» llevan a la plataforma de Guita**, que es la del otro
-    servicio y la otra empresa. `PENDIENTE DE DECISIÓN` — si el sitio de remesas tiene
-    autoservicio propio, enlaza a otro, o deja esos botones (D30).
+    servicio y la otra empresa. **Se quedan así por ahora** (D30, decidido el mismo día).
+
+  **Y cuatro respuestas de Sebastián, el mismo 2026-11-17:** el sitio vivirá en **un dominio
+  propio** (D29); «Crear cuenta» e «Iniciar sesión» **siguen llevando a Guita** mientras se
+  construye una plataforma propia (D30); **la marca sigue siendo DLPay**; y el sitio **sigue sin
+  decir «remesa»** y con el mensaje de hoy hasta que la empresa esté constituida — «cuando tengamos
+  todo mejor pavimentado».
 
 - **Lo que falta para publicar es de Compliance.** Tres decisiones **bloquean** los textos legales: D9 (razón social), D19 (correo
   oficial) y D20 (alcance de los T&C). Pero no son lo único que necesita firma: hay además
@@ -1230,8 +1235,8 @@ Se resuelven cuando toque. **Ninguna justifica abrir una investigación nueva.**
 | ~~D26~~ | ~~Emblema de la UAF en el pie~~ | ✅ Cerrada 2026-09-07: Sebastián afirma registro y supervisión vigentes. Se publica el emblema **y** la frase que fija su alcance. La redacción exacta —"registrada y supervisada", nunca "autorizada" ni "avalada"— queda fijada en `lib/config/alliances.ts`; ampliarla es un claim nuevo | — |
 | ~~D11~~ | ~~Equipo con nombre y foto en `/confianza`~~ | ✅ **Cerrada 2026-09-29: no se publica.** Decisión de Sebastián, con la puerta abierta para más adelante. **No costó ningún cambio**: `/confianza` nunca tuvo hueco reservado ni marcador, y su sección «Quiénes somos» ya resuelve el caso sin nombres — afirma que el equipo está en Chile y que «te atiende una persona del equipo», que es una persona real sin exponer a nadie. Es coherente con el registro de esa misma página: no se publica lo que no se puede respaldar, y publicar nombres y caras pide consentimiento de cada uno. Si se reabre, lo que hace falta no es diseño sino ese consentimiento | — | — |
 | D12 | **Quién redacta y aprueba el copy** | No para Fase 3 | DLPay |
-| D29 | **En qué dominio vive el sitio de remesas** *(2026-11-17)*. Hasta hoy se suponía que sustituiría a `dlpay.cl`; van a funcionar a la par, así que necesita su propio dominio o un subdominio. Decide también si `docs/migracion-urls.md` sigue teniendo objeto | Sí, para Fase 6 | Sebastián |
-| D30 | **Adónde llevan «Crear cuenta» e «Iniciar sesión»** *(2026-11-17)*. Hoy, ocho enlaces llevan a la plataforma de Guita, que es la del servicio de dólar digital y la otra empresa | Sí, antes de publicar | Sebastián |
+| D29 | **En qué dominio vive el sitio de remesas** *(2026-11-17)*. **Decidido el mismo día: un dominio propio**, no un subdominio de `dlpay.cl`. Falta **cuál**, y comprarlo cuesta dinero: se pregunta antes. Con eso `docs/migracion-urls.md` deja de tener objeto como plan de redirecciones | Sí, para Fase 6 | Sebastián |
+| D30 | **Adónde llevan «Crear cuenta» e «Iniciar sesión»** *(2026-11-17)*. Ocho enlaces llevan a la plataforma de Guita, que es la del servicio de dólar digital y la otra empresa. **Decidido el mismo día: se quedan así** mientras se construye una plataforma propia, que Sebastián pidió empezar ya | No | — |
 | D13 | **SPF y DMARC ausentes** en `dlpay.cl` (riesgo de suplantación) | No — es de quien administra el DNS hoy | Guita / DLPay |
 | D14 | **Transferencia del dominio, DNS y Google Workspace** — *desde el 2026-11-17 probablemente no aplica: `dlpay.cl` sigue siendo el sitio de Guita y éste no lo reemplaza (D29)* | No para Fases 3–5; sí para Fase 6 (cutover) | DLPay ↔ Guita |
 | ~~D15~~ | ~~Cuenta/credenciales de CodeRabbit~~ | ✅ **Cerrada 2026-09-29: no se usa.** Se instaló la CLI y se desinstaló el mismo día, al aparecer el precio: **$24 por desarrollador y mes**, sin plan gratuito y con registro pensado para una organización. Sebastián decidió prescindir, con el argumento de que la revisión cruzada de quien entiende el proyecto cubre lo que hace falta. **Mi error de método:** recomendé en contra por motivos técnicos, él decidió instalarla con una buena razón, y el precio —que las banderas `--usage` y `--use-credits` ya insinuaban— no estuvo sobre la mesa hasta después de instalar. Una decisión de herramienta se evalúa con su coste delante. El razonamiento completo queda en §11 para no repetir la evaluación | — | — |
