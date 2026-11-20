@@ -1,16 +1,16 @@
 {
   "fuente": "ExchangeRate-API (open.er-api.com), tasa de referencia de mercado",
-  "actualizado": "2026-11-19T00:02:31.000Z",
+  "actualizado": "2026-11-20T00:02:32.000Z",
   "unidad": "CLP por 1 unidad de la divisa",
   "tasas": {
-    "USD": 993.467816,
-    "EUR": 1090.221723,
-    "ARS": 0.637557,
-    "BRL": 170.99736,
-    "COP": 0.300311,
-    "CRC": 2.234771,
-    "MXN": 53.05345,
-    "PEN": 290.539487,
-    "ZAR": 57.621408
+    "USD": 1007.791135,
+    "EUR": 1106.552008,
+    "ARS": 0.644784,
+    "BRL": 171.009152,
+    "COP": 0.301247,
+    "CRC": 2.263582,
+    "MXN": 52.959999,
+    "PEN": 293.826937,
+    "ZAR": 57.887023
   }
 }
